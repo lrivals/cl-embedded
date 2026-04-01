@@ -1,0 +1,47 @@
+# configs/ewc_config.yaml
+# Hyperparamètres EWC Online + MLP — Dataset 2 (Equipment Monitoring)
+# NE PAS modifier directement : créer une copie pour chaque variante expérimentale.
+
+exp_id: "exp_001_ewc_dataset2"
+
+model:
+  architecture: "mlp"
+  input_dim: 6           # 4 features numériques + 2 one-hot équipement
+  hidden_dims: [32, 16]
+  output_dim: 1
+  activation: "relu"
+  dropout: 0.2           # désactivé à l'inférence MCU
+
+training:
+  optimizer: "sgd"       # Adam interdit — overhead MCU
+  learning_rate: 0.01
+  momentum: 0.9
+  epochs_per_task: 10
+  batch_size: 32
+  seed: 42
+
+ewc:
+  lambda: 1000           # coefficient de régularisation (tuner : 10, 100, 500, 1000, 5000)
+  gamma: 0.9             # décroissance Fisher Online
+  n_fisher_samples: 200  # échantillons pour l'estimation Fisher
+
+data:
+  dataset: "equipment_monitoring"
+  path: "data/raw/equipment_monitoring/"
+  domain_column: "equipment"
+  domain_order: ["pump", "turbine", "compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+  categorical_columns: ["equipment"]
+  test_split: 0.2
+  normalizer_path: "configs/monitoring_normalizer.yaml"
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_001_ewc_dataset2/results/"
+
+memory:
+  target_ram_bytes: 65536      # 64 Ko — cible STM32N6
+  expected_ram_bytes: 9356     # estimé (poids + Fisher×2 + activations)
+  warn_if_above_bytes: 52000   # alerte si > 80% du budget

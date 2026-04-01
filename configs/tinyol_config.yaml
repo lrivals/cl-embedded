@@ -1,0 +1,76 @@
+# configs/tinyol_config.yaml
+# Hyperparamètres TinyOL (Backbone Autoencoder + tête OtO) — Dataset 1 (Pump Maintenance)
+
+exp_id: "exp_003_tinyol_dataset1"
+
+backbone:
+  # Encodeur (gelé après pré-entraînement)
+  input_dim: 25          # features statistiques par fenêtre (6 feat × 4 canaux + 1)
+  encoder_dims: [32, 16, 8]   # 25→32→16→8
+  activation: "relu"
+  checkpoint_path: "experiments/exp_003_tinyol_dataset1/backbone.pt"
+
+  # Décodeur (utilisé uniquement au pré-entraînement, ignoré en CL)
+  decoder_dims: [16, 32, 25]  # 8→16→32→25
+
+pretrain:
+  # Phase offline : entraînement batch de l'autoencoder
+  optimizer: "adam"      # Adam autorisé ici — phase offline sur PC uniquement
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 64
+  loss: "mse"
+  seed: 42
+  # Données : portion "normale" uniquement (pas de pannes)
+  # Split temporel : premières X% des données
+  pretrain_fraction: 0.3   # 30% des données les plus anciennes = "état sain"
+  val_fraction: 0.1
+
+oto_head:
+  # Tête OtO (entraînable en ligne après déploiement)
+  input_dim: 9           # embedding (8D) + MSE scalaire = 9
+  output_dim: 1
+  optimizer: "sgd"       # SGD obligatoire — compatible MCU
+  learning_rate: 0.01
+  momentum: 0.0          # pas de momentum → économise RAM
+  loss: "bce"
+
+data:
+  dataset: "pump_maintenance"
+  path: "data/raw/pump_maintenance/"
+  timestamp_column: "timestamp"
+  feature_columns: ["temperature", "vibration", "pressure", "rpm"]
+  label_column: "maintenance_required"
+  normalizer_path: "configs/pump_normalizer.yaml"
+
+  # Feature engineering
+  window_size: 32        # points temporels par fenêtre
+  step_size: 16          # pas glissant (50% chevauchement)
+  features_per_channel:  # features extraites par canal
+    - mean
+    - std
+    - rms
+    - kurtosis
+    - peak
+    - crest_factor
+
+  # Split CL (ordre chronologique OBLIGATOIRE)
+  n_tasks: 3
+  task_strategy: "chronological"   # ne pas mélanger les tâches
+
+# Extension buffer UINT8 (activée optionnellement)
+uint8_buffer:
+  enabled: false         # mettre true pour exp_004
+  size: 50               # nombre d'exemples stockés
+  embed_dim: 8           # dimension de z à stocker
+  # RAM buffer : 50 × 8 × 1 = 400 B + labels 50 B = ~450 B
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_003_tinyol_dataset1/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 7168     # ~7 Ko (tête OtO + activations ; backbone en Flash)
+  warn_if_above_bytes: 52000

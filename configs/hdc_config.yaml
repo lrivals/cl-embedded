@@ -1,0 +1,42 @@
+# configs/hdc_config.yaml
+# Hyperparamètres HDC (Hyperdimensional Computing) — Dataset 2 (Equipment Monitoring)
+
+exp_id: "exp_002_hdc_dataset2"
+
+hdc:
+  D: 1024            # dimension des hypervecteurs (puissance de 2 pour SIMD)
+  n_levels: 10       # niveaux de quantification par feature
+  seed: 42           # seed génération vecteurs de base (FIXER — ne jamais changer après init)
+  base_vectors_path: "configs/hdc_base_vectors.npz"   # sauvegardé à la 1ère init
+
+data:
+  dataset: "equipment_monitoring"
+  path: "data/raw/equipment_monitoring/"
+  domain_column: "equipment"
+  domain_order: ["pump", "turbine", "compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+  categorical_columns: ["equipment"]
+  n_features: 6          # après encodage one-hot
+  n_classes: 2           # faulty / normal
+  test_split: 0.2
+  normalizer_path: "configs/monitoring_normalizer.yaml"
+
+  # Bornes pour quantification (à remplir après exploration Dataset 2)
+  feature_bounds:
+    temperature:  [null, null]    # [min, max] calculé sur Task 1 (pumps)
+    pressure:     [null, null]
+    vibration:    [null, null]
+    humidity:     [null, null]
+    equip_enc_1:  [0, 1]
+    equip_enc_2:  [0, 1]
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params"]
+  output_dir: "experiments/exp_002_hdc_dataset2/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 12288    # ~12 Ko estimé (prototypes INT32 + buffer encodage)
+  warn_if_above_bytes: 52000

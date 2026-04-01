@@ -1,0 +1,61 @@
+# === Données (ne jamais committer) ===
+data/raw/
+data/processed/
+data/*.csv
+data/*.zip
+data/*.parquet
+
+# === Checkpoints modèles (trop lourds) ===
+experiments/**/checkpoint.pt
+experiments/**/backbone.pt
+experiments/**/*.onnx
+*.pt
+*.pth
+*.onnx
+*.tflite
+
+# Ce qui EST committé dans experiments/ :
+# - config_snapshot.yaml
+# - results/metrics.json
+# - results/*.png
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+
+# === Environnements virtuels ===
+.env
+.venv
+env/
+venv/
+ENV/
+
+# === Jupyter ===
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# === IDE ===
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# === Logs ===
+*.log
+runs/
+wandb/
+mlruns/
+
+# === Secrets ===
+.env
+*.key
+kaggle.json
