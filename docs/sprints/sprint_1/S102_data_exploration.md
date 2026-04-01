@@ -4,10 +4,11 @@
 |-------|--------|
 | **ID** | S1-02 |
 | **Sprint** | Sprint 1 — Semaine 1 (15–22 avril 2026) |
-| **Priorité** | 🔴 Critique |
+| **Priorité** | ✅ Terminé |
 | **Durée estimée** | 2h |
 | **Dépendances** | S1-01 (repo opérationnel) |
 | **Fichier cible** | `notebooks/01_data_exploration.ipynb` |
+| **Complété le** | 2 avril 2026 |
 
 ---
 
@@ -131,25 +132,42 @@ Ajouter une cellule Markdown récapitulant :
 
 ## Critères d'acceptation
 
-- [ ] `data/raw/equipment_monitoring/` contient au moins un fichier CSV
-- [ ] Le notebook tourne sans erreur de `Kernel → Restart & Run All`
-- [ ] Les 3 équipements (pump, turbine, compressor) sont présents dans le dataset
-- [ ] Les stats mean/std des features numériques (sur pumps) sont calculées et affichées
-- [ ] Un commentaire dans le notebook indique où reporter ces stats (`configs/monitoring_normalizer.yaml`)
-- [ ] Le notebook est sauvegardé dans `notebooks/` (pas à la racine)
-- [ ] `DOMAIN_ORDER = ["pump", "turbine", "compressor"]` est validé et documenté
+- [x] `data/raw/equipment_monitoring/` contient au moins un fichier CSV (`equipment_anomaly_data.csv`, 7672 lignes)
+- [x] Le notebook tourne sans erreur de `Kernel → Restart & Run All`
+- [x] Les 3 équipements (Pump, Turbine, Compressor) sont présents dans le dataset
+- [x] Les stats mean/std des features numériques (sur Pumps) sont calculées et affichées
+- [x] `configs/monitoring_normalizer.yaml` généré automatiquement par la Section 6 du notebook
+- [x] Le notebook est sauvegardé dans `notebooks/01_data_exploration.ipynb`
+- [x] `DOMAIN_ORDER = ["Pump", "Turbine", "Compressor"]` validé et documenté (Section 7 du notebook)
+
+> **Note** : les valeurs `equipment` sont capitalisées dans le CSV ("Pump", "Turbine", "Compressor").
 
 ---
 
 ## Sorties attendues à reporter ailleurs
 
-Après cette tâche, mettre à jour :
+| Élément | Où reporter | Statut |
+| ------- | ----------- | ------ |
+| mean/std features (sur Pumps) | `configs/monitoring_normalizer.yaml` | ✅ Fait |
+| Nb échantillons par domaine | Commentaire dans `src/data/monitoring_dataset.py` | ⬜ S1-03 |
+| Taux de défaut par domaine | `experiments/exp_001_ewc_dataset2/config_snapshot.yaml` | ⬜ S1-09 |
 
-| Élément | Où reporter |
-|---------|-------------|
-| mean/std features (sur pumps) | `configs/monitoring_normalizer.yaml` |
-| Nb échantillons par domaine | Commentaire dans `src/data/monitoring_dataset.py` |
-| Taux de défaut par domaine | `experiments/exp_001_ewc_dataset2/config_snapshot.yaml` |
+### Valeurs mesurées (N=2534 Pumps, Task 1)
+
+| Feature | mean | std |
+| ------- | ---- | --- |
+| temperature | 70.634028 | 15.781869 |
+| pressure | 35.629021 | 10.501268 |
+| vibration | 1.613323 | 0.700299 |
+| humidity | 50.197351 | 11.874382 |
+
+### Comptages par domaine
+
+| Domaine | N | Taux de défaut |
+| ------- | - | -------------- |
+| Pump (T1) | 2534 | 9.9% |
+| Turbine (T2) | 2565 | 10.1% |
+| Compressor (T3) | 2573 | 10.0% |
 
 ---
 

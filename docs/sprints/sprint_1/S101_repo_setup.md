@@ -91,13 +91,15 @@ git push -u origin main
 
 ## Critères d'acceptation
 
-- [ ] Repo GitHub accessible à l'URL attendue
-- [ ] `git clone <url> && pip install -e ".[dev]"` fonctionne sans erreur
-- [ ] `pytest tests/ -v` se lance (même si 0 tests collectés)
-- [ ] `data/raw/` absent du repo distant
-- [ ] Structure conforme à `CLAUDE.md` (tous les dossiers présents)
-- [ ] `black --check src/` passe (ou code vide)
-- [ ] `ruff check src/` passe (ou code vide)
+- [x] Repo GitHub accessible à l'URL attendue — [github.com/lrivals/cl-embedded](https://github.com/lrivals/cl-embedded)
+- [x] `git clone <url> && pip install -e ".[dev]"` fonctionne sans erreur (env `ln2_Project_Env`)
+- [x] `pytest tests/ -v` — 21/21 tests passent
+- [x] `data/raw/` absent du repo distant
+- [x] Structure conforme à `CLAUDE.md` (tous les dossiers présents)
+- [x] `black --check src/` passe (ou code vide)
+- [x] `ruff check src/` passe (ou code vide)
+
+**Complété le 2 avril 2026** — commit `96fcc0a`, push HTTPS vers `origin/main`.
 
 ---
 
