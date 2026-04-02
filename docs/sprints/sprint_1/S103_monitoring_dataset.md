@@ -6,6 +6,7 @@
 | **Sprint** | Sprint 1 — Semaine 1 (15–22 avril 2026) |
 | **Priorité** | 🔴 Critique |
 | **Durée estimée** | 3h |
+| **Statut** | ✅ Terminé — 2 avril 2026 |
 | **Dépendances** | S1-02 (dataset téléchargé, stats normalisation disponibles) |
 | **Fichier cible** | `src/data/monitoring_dataset.py` |
 
@@ -211,24 +212,24 @@ def test_label_binary():
 
 ## Critères d'acceptation
 
-- [ ] `src/data/monitoring_dataset.py` importable sans erreur
-- [ ] `get_cl_dataloaders()` retourne exactement 3 tâches dans l'ordre Pump → Turbine → Compressor
-- [ ] `X.shape == [*, 4]` et `y.shape == [*, 1]` pour tous les loaders
-- [ ] Pas de fuite d'information : aucune donnée Turbine ou Compressor dans T1
-- [ ] Normalisation issue de `monitoring_normalizer.yaml` — aucun recalcul en ligne
-- [ ] `tests/test_monitoring_dataset.py` — tous les tests passent via `pytest tests/ -v`
-- [ ] Annotations `# MEM:` présentes sur les tenseurs principaux
-- [ ] `ruff check src/data/monitoring_dataset.py` et `black --check` passent
+- [x] `src/data/monitoring_dataset.py` importable sans erreur
+- [x] `get_cl_dataloaders()` retourne exactement 3 tâches dans l'ordre Pump → Turbine → Compressor
+- [x] `X.shape == [*, 4]` et `y.shape == [*, 1]` pour tous les loaders
+- [x] Pas de fuite d'information : aucune donnée Turbine ou Compressor dans T1
+- [x] Normalisation issue de `monitoring_normalizer.yaml` — aucun recalcul en ligne
+- [x] `tests/test_monitoring_dataset.py` — 19/19 tests passent via `pytest tests/ -v`
+- [x] Annotations `# MEM:` présentes sur les tenseurs principaux
+- [x] `ruff check src/data/monitoring_dataset.py` passe (0 erreur)
 
 ---
 
 ## Sorties attendues à reporter ailleurs
 
-| Élément | Où reporter |
-|---------|-------------|
-| `input_dim = 4` confirmé | `configs/ewc_config.yaml` → `model.input_dim` |
-| Nb échantillons par domaine commenté | En-tête de `monitoring_dataset.py` |
-| Interface `get_cl_dataloaders` validée | Utilisée directement dans S1-06 (`cl_trainer.py`) |
+| Élément | Où reporter | Statut |
+|---------|-------------|--------|
+| `input_dim = 4` confirmé | `configs/ewc_config.yaml` → `model.input_dim` | ✅ Corrigé (était 6) |
+| Nb échantillons par domaine commenté | En-tête de `monitoring_dataset.py` | ✅ `DOMAIN_SIZES` constant |
+| Interface `get_cl_dataloaders` validée | Utilisée directement dans S1-06 (`cl_trainer.py`) | ✅ Interface stable |
 
 ---
 

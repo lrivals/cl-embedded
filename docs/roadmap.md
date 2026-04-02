@@ -1,6 +1,6 @@
 # Roadmap — CL-Embedded
 
-> Version : 1.2 | Mise à jour : 2 avril 2026  
+> Version : 1.3 | Mise à jour : 2 avril 2026  
 > Horizon : Phase 1 (PC Python) = avril–mai 2026
 
 ---
@@ -34,7 +34,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 |----|-------|:--------:|---------------|------------|
 | S1-01 | Créer le dépôt GitHub + structure de dossiers | ✅ | `README.md`, `.gitignore`, `pyproject.toml` | 1h |
 | S1-02 | Télécharger Dataset 2 (Monitoring) + exploration | ✅ | `notebooks/01_data_exploration.ipynb` | 2h |
-| S1-03 | Implémenter `monitoring_dataset.py` (loader + split domaine) | 🔴 | `src/data/monitoring_dataset.py` | 3h |
+| S1-03 | Implémenter `monitoring_dataset.py` (loader + split domaine) | ✅ | `src/data/monitoring_dataset.py` | 3h |
 | S1-04 | Implémenter `ewc_mlp.py` (MLP + perte EWC) | 🔴 | `src/models/ewc/ewc_mlp.py` | 4h |
 | S1-05 | Implémenter `fisher.py` (calcul Fisher diagonale) | 🔴 | `src/models/ewc/fisher.py` | 2h |
 | S1-06 | Implémenter `baselines.py` (fine-tuning naïf + joint) | 🔴 | `src/training/baselines.py` | 2h |

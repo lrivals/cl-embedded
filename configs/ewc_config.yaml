@@ -6,7 +6,7 @@ exp_id: "exp_001_ewc_dataset2"
 
 model:
   architecture: "mlp"
-  input_dim: 6           # 4 features numériques + 2 one-hot équipement
+  input_dim: 4           # 4 features numériques uniquement (equipment exclu — variable de split)
   hidden_dims: [32, 16]
   output_dim: 1
   activation: "relu"
