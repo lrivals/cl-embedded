@@ -1,0 +1,23 @@
+{
+  "model": "EWCMlpClassifier",
+  "input_shape": [
+    1,
+    4
+  ],
+  "forward": {
+    "ram_peak_bytes": 1171,
+    "ram_current_bytes": 72,
+    "inference_latency_ms": 0.035802419970423216,
+    "inference_latency_std_ms": 0.0017218385987714671,
+    "n_params": 705,
+    "params_fp32_bytes": 2820,
+    "params_int8_bytes": 705,
+    "within_budget_64ko": true
+  },
+  "update": {
+    "ram_peak_bytes_update": 6837,
+    "update_latency_ms": 0.6368667599963374,
+    "update_latency_std_ms": 0.034540374495099724,
+    "within_budget_64ko_update": true
+  }
+}

@@ -1,206 +1,313 @@
 """
-scripts/train_ewc.py — Script d'entraînement EWC Online sur Dataset 2.
+scripts/train_ewc.py — Script principal pour l'entraînement EWC Online sur Dataset 2.
 
 Usage :
     python scripts/train_ewc.py --config configs/ewc_config.yaml
-    python scripts/train_ewc.py --config configs/ewc_config.yaml --lambda 5000
+    python scripts/train_ewc.py --config configs/ewc_config.yaml --device cpu
+    python scripts/train_ewc.py --config configs/ewc_config.yaml --skip-baselines
 """
 
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import sys
 from pathlib import Path
 
-# Ajouter la racine du projet au path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 import torch
 import torch.optim as optim
-import torch.utils.data as data
 
+from src.data.monitoring_dataset import get_cl_dataloaders
 from src.evaluation.memory_profiler import full_memory_report
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
-from src.models.ewc.ewc_mlp import EWCMlpClassifier
+from src.models.ewc import EWCMlpClassifier
+from src.models.ewc.fisher import compute_fisher_diagonal, update_fisher_online
+from src.training.baselines import evaluate_task, train_joint, train_naive_sequential
 from src.utils.config_loader import get_exp_dir, load_config, save_config_snapshot
 from src.utils.reproducibility import set_seed
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="EWC Online Training — Dataset 2")
     parser.add_argument("--config", default="configs/ewc_config.yaml")
-    parser.add_argument("--lambda", dest="ewc_lambda", type=float, default=None,
-                        help="Override EWC lambda coefficient")
-    parser.add_argument("--seed", type=int, default=None)
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Vérifie la config et l'architecture sans entraîner")
+    parser.add_argument("--device", default="cpu")
+    parser.add_argument(
+        "--skip-baselines",
+        action="store_true",
+        help="Sauter les baselines (naive + joint) pour un test rapide",
+    )
     return parser.parse_args()
 
 
-def make_dummy_cl_stream(cfg: dict) -> list[dict]:
+def train_ewc(
+    model: EWCMlpClassifier,
+    tasks: list[dict],
+    config: dict,
+    device: str,
+) -> np.ndarray:
     """
-    Crée un stream CL factice pour valider le pipeline.
-    À remplacer par le vrai loader quand Dataset 2 est téléchargé.
+    Boucle d'entraînement EWC Online sur T tâches séquentielles.
+
+    Parameters
+    ----------
+    model : EWCMlpClassifier
+        Modèle à entraîner (modifié in-place).
+    tasks : list[dict]
+        Liste de dicts avec clés task_id, domain, train_loader, val_loader.
+    config : dict
+        Config complète chargée depuis ewc_config.yaml.
+    device : str
+        Device torch ("cpu" ou "cuda").
 
     Returns
     -------
-    list[dict] : [{"train": DataLoader, "test": DataLoader, "name": str}, ...]
+    np.ndarray [T, T]
+        acc_matrix[i, j] = accuracy sur la tâche j après entraînement sur la tâche i.
+        NaN pour j > i (tâches futures non encore vues).
     """
-    print("⚠️  Données réelles non trouvées — utilisation de données synthétiques.")
-    print(f"   → Télécharger Dataset 2 dans : {cfg['data']['path']}")
+    T = len(tasks)
+    acc_matrix = np.full((T, T), np.nan)
 
-    tasks = []
-    n_features = cfg["model"]["input_dim"]
-    n_samples = 500
+    epochs = config["training"]["epochs_per_task"]
+    lr = config["training"]["learning_rate"]
+    momentum = config["training"]["momentum"]
+    ewc_lambda = config["ewc"]["lambda"]
+    gamma = config["ewc"]["gamma"]
+    n_fisher_samples = config["ewc"]["n_fisher_samples"]
 
-    domain_names = cfg["data"]["domain_order"]
-    for i, domain in enumerate(domain_names):
-        # Simuler un shift de distribution par domaine (mean différente)
-        X = torch.randn(n_samples, n_features) + i * 0.5
-        y = (torch.randn(n_samples) > 0.3 + i * 0.1).float().unsqueeze(1)
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
 
-        split = int(n_samples * 0.8)
-        train_ds = data.TensorDataset(X[:split], y[:split])
-        test_ds = data.TensorDataset(X[split:], y[split:])
+    fisher = None      # Pas de régularisation pour la tâche 1
+    theta_star = None  # Pas de snapshot pour la tâche 1
 
-        tasks.append({
-            "name": domain,
-            "train": data.DataLoader(train_ds, batch_size=cfg["training"]["batch_size"], shuffle=True),
-            "test": data.DataLoader(test_ds, batch_size=64, shuffle=False),
-        })
+    model.to(device)
 
-    return tasks
+    for i, task in enumerate(tasks):
+        domain = task["domain"]
+        print(f"\n--- Tâche {i + 1}/{T} : {domain} ---")
 
-
-def evaluate_on_all_tasks(model, tasks, seen_up_to: int, device) -> list[float]:
-    """Évalue le modèle sur toutes les tâches vues."""
-    model.eval()
-    accs = []
-    for i, task in enumerate(tasks[:seen_up_to + 1]):
-        correct, total = 0, 0
-        with torch.no_grad():
-            for x, y in task["test"]:
+        model.train()
+        for epoch in range(epochs):
+            epoch_losses = []
+            for x, y in task["train_loader"]:
                 x, y = x.to(device), y.to(device)
-                pred = model(x) >= 0.5
-                correct += (pred == y.bool()).sum().item()
-                total += y.size(0)
-        accs.append(correct / total if total > 0 else 0.0)
-    model.train()
-    return accs
+                optimizer.zero_grad()
+                loss = model.ewc_loss(x, y, fisher, theta_star, ewc_lambda)
+                loss.backward()
+                optimizer.step()
+                epoch_losses.append(loss.item())
+
+            if (epoch + 1) % max(1, epochs // 5) == 0:
+                print(
+                    f"  Epoch {epoch + 1:2d}/{epochs}"
+                    f" | Loss moy: {np.mean(epoch_losses):.4f}"
+                )
+
+        # Fin de tâche : snapshot θ* + mise à jour Fisher Online
+        theta_star = model.get_theta_star()
+        new_fisher = compute_fisher_diagonal(
+            model, task["train_loader"], device, n_samples=n_fisher_samples
+        )
+        fisher = update_fisher_online(fisher, new_fisher, gamma=gamma)
+        print(f"  Fisher mis à jour (γ={gamma})")
+
+        # Évaluation sur toutes les tâches vues jusqu'ici
+        model.eval()
+        accs = []
+        for j in range(i + 1):
+            acc = evaluate_task(model, tasks[j]["val_loader"], device)
+            acc_matrix[i, j] = acc
+            accs.append(f"{tasks[j]['domain']}: {acc:.3f}")
+        print(f"  Accuracy : {' | '.join(accs)}")
+
+    return acc_matrix
 
 
-def main():
+def run_memory_profiling(
+    model: EWCMlpClassifier,
+    config: dict,
+    device: str,
+) -> dict:
+    """
+    Profile le forward pass et la mise à jour CL pour le rapport Gap 2.
+
+    Parameters
+    ----------
+    model : EWCMlpClassifier
+        Modèle après entraînement complet.
+    config : dict
+        Config pour récupérer input_dim.
+    device : str
+        Device torch.
+
+    Returns
+    -------
+    dict
+        Rapport complet (forward + update) depuis full_memory_report().
+    """
+    input_dim = config["model"]["input_dim"]
+
+    def update_fn(x: torch.Tensor, y: torch.Tensor) -> float:
+        optimizer = optim.SGD(model.parameters(), lr=0.01)
+        optimizer.zero_grad()
+        loss = model.ewc_loss(x, y, None, None, ewc_lambda=0.0)
+        loss.backward()
+        optimizer.step()
+        return loss.item()
+
+    return full_memory_report(
+        model,
+        input_shape=(1, input_dim),
+        update_fn=update_fn,
+        model_name="EWCMlpClassifier",
+    )
+
+
+def _fresh_model(config: dict) -> EWCMlpClassifier:
+    """Crée un nouveau EWCMlpClassifier depuis la config (poids réinitialisés)."""
+    return EWCMlpClassifier(
+        input_dim=config["model"]["input_dim"],
+        hidden_dims=config["model"]["hidden_dims"],
+        dropout=config["model"]["dropout"],
+    )
+
+
+def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
-
-    # Overrides CLI
-    if args.ewc_lambda is not None:
-        cfg["ewc"]["lambda"] = args.ewc_lambda
-    if args.seed is not None:
-        cfg["training"]["seed"] = args.seed
+    device = args.device
 
     set_seed(cfg["training"]["seed"])
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     exp_dir = get_exp_dir(cfg)
+    results_dir = exp_dir / "results"
+    checkpoints_dir = exp_dir / "checkpoints"
+    results_dir.mkdir(parents=True, exist_ok=True)
+    checkpoints_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"\n{'=' * 60}")
     print(f"  EWC Online — {cfg['exp_id']}")
     print(f"  λ={cfg['ewc']['lambda']} | γ={cfg['ewc']['gamma']} | device={device}")
+    print(f"  Sortie : {exp_dir}")
     print(f"{'=' * 60}\n")
 
-    # --- Modèle ---
-    model = EWCMlpClassifier(
-        input_dim=cfg["model"]["input_dim"],
-        hidden_dims=cfg["model"]["hidden_dims"],
-        dropout=cfg["model"]["dropout"],
-        ewc_lambda=cfg["ewc"]["lambda"],
-        ewc_gamma=cfg["ewc"]["gamma"],
-    ).to(device)
-
-    print(model.summary())
-    budget_check = model.check_ram_budget()
-    print(f"\nBudget RAM : {budget_check['utilization_pct']:.1f}% utilisé")
-
-    if args.dry_run:
-        print("\n✅ Dry run terminé — config et architecture OK.")
-        return
-
-    # --- Data ---
-    tasks = make_dummy_cl_stream(cfg)
-    T = len(tasks)
-
-    # --- Sauvegarde config ---
+    # Sauvegarde snapshot config
     save_config_snapshot(cfg, str(exp_dir))
+    print("Config snapshot sauvegardé.")
 
-    # --- Boucle CL ---
-    acc_matrix = np.full((T, T), np.nan)
-    optimizer = optim.SGD(
-        model.parameters(),
-        lr=cfg["training"]["learning_rate"],
-        momentum=cfg["training"]["momentum"],
+    # Chargement données
+    data_path = Path(cfg["data"]["path"])
+    normalizer_path = Path(cfg["data"]["normalizer_path"])
+
+    csv_candidates = list(data_path.glob("*.csv"))
+    if not csv_candidates:
+        raise FileNotFoundError(
+            f"Aucun fichier CSV trouvé dans '{data_path}'.\n"
+            f"Télécharger le Dataset 2 (Equipment Monitoring) depuis Kaggle "
+            f"et le placer dans ce dossier."
+        )
+    csv_path = csv_candidates[0]
+    print(f"Dataset : {csv_path}")
+
+    tasks = get_cl_dataloaders(
+        csv_path=csv_path,
+        normalizer_path=normalizer_path,
+        batch_size=cfg["training"]["batch_size"],
+        val_ratio=cfg["data"]["test_split"],
+        seed=cfg["training"]["seed"],
     )
+    T = len(tasks)
+    print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({T} tâches)\n")
 
-    for task_id, task in enumerate(tasks):
-        print(f"\n--- Tâche {task_id + 1}/{T} : {task['name']} ---")
+    # ── EWC ──────────────────────────────────────────────────────────────────
+    print("=" * 40)
+    print("  Entraînement EWC Online")
+    print("=" * 40)
+    model = _fresh_model(cfg)
+    acc_matrix_ewc = train_ewc(model, tasks, cfg, device)
+    np.save(results_dir / "acc_matrix_ewc.npy", acc_matrix_ewc)
+    metrics_ewc = compute_cl_metrics(acc_matrix_ewc)
 
-        # Entraînement
-        model.train()
-        for epoch in range(cfg["training"]["epochs_per_task"]):
-            epoch_losses = []
-            for x_batch, y_batch in task["train"]:
-                x_batch, y_batch = x_batch.to(device), y_batch.to(device)
-                optimizer.zero_grad()
-                total_loss, components = model.ewc_loss(x_batch, y_batch)
-                total_loss.backward()
-                optimizer.step()
-                epoch_losses.append(components["total"])
+    # ── Baselines ─────────────────────────────────────────────────────────────
+    metrics_naive: dict | None = None
+    metrics_joint: dict | None = None
 
-            if (epoch + 1) % 5 == 0:
-                print(f"  Epoch {epoch + 1:2d}/{cfg['training']['epochs_per_task']} "
-                      f"| Loss: {np.mean(epoch_losses):.4f} "
-                      f"(BCE: {components['bce']:.4f}, EWC: {components['ewc_reg']:.4f})")
+    if not args.skip_baselines:
+        print("\n" + "=" * 40)
+        print("  Baseline : Fine-tuning naïf")
+        print("=" * 40)
+        set_seed(cfg["training"]["seed"])
+        naive_model = _fresh_model(cfg)
+        acc_matrix_naive = train_naive_sequential(naive_model, tasks, cfg, device)
+        np.save(results_dir / "acc_matrix_naive.npy", acc_matrix_naive)
+        metrics_naive = compute_cl_metrics(acc_matrix_naive)
 
-        # Mise à jour EWC après la tâche
-        model.update_ewc_state(task["train"], device)
-        print(f"  ✅ État EWC mis à jour (Fisher + snapshot)")
+        print("\n" + "=" * 40)
+        print("  Baseline : Joint training")
+        print("=" * 40)
+        set_seed(cfg["training"]["seed"])
+        joint_model = _fresh_model(cfg)
+        acc_matrix_joint = train_joint(joint_model, tasks, cfg, device)
+        np.save(results_dir / "acc_matrix_joint.npy", acc_matrix_joint)
+        metrics_joint = compute_cl_metrics(acc_matrix_joint)
 
-        # Évaluation sur toutes les tâches vues
-        accs = evaluate_on_all_tasks(model, tasks, task_id, device)
-        for j, acc in enumerate(accs):
-            acc_matrix[task_id, j] = acc
-        print(f"  Accuracy : {' | '.join(f'{tasks[j][\"name\"]}: {accs[j]:.3f}' for j in range(len(accs)))}")
+    # ── Profiling mémoire ─────────────────────────────────────────────────────
+    print("\n" + "=" * 40)
+    print("  Profiling mémoire")
+    print("=" * 40)
+    memory_report = run_memory_profiling(model, cfg, device)
+    with open(results_dir / "memory_report.json", "w") as f:
+        json.dump(memory_report, f, indent=2)
 
-    # --- Métriques finales ---
-    metrics = compute_cl_metrics(acc_matrix)
-    print(f"\n{format_metrics_report(metrics, 'EWC Online')}")
-
-    # --- Profiling mémoire ---
-    mem_report = full_memory_report(
-        model,
-        input_shape=(1, cfg["model"]["input_dim"]),
-        model_name="EWC Online MLP",
-    )
-
-    # --- Sauvegarde résultats ---
-    results_dir = exp_dir / "results"
-    results_dir.mkdir(parents=True, exist_ok=True)
+    # ── Sauvegarde résultats ──────────────────────────────────────────────────
+    all_metrics: dict = {
+        "ewc": metrics_ewc,
+        "memory": memory_report,
+    }
+    if metrics_naive is not None:
+        all_metrics["naive"] = metrics_naive
+    if metrics_joint is not None:
+        all_metrics["joint"] = metrics_joint
 
     save_metrics(
-        metrics,
+        all_metrics,
         str(results_dir / "metrics.json"),
-        extra_info={
-            "exp_id": cfg["exp_id"],
-            "model": "EWC Online MLP",
-            "dataset": "equipment_monitoring",
-            "memory": mem_report["forward"],
-            "ewc_lambda": cfg["ewc"]["lambda"],
-        },
+        extra_info={"exp_id": cfg["exp_id"]},
     )
 
-    # Sauvegarde checkpoint
-    model.save_state(str(exp_dir / "checkpoint.pt"))
+    # Checkpoint modèle EWC final
+    model.save_state(str(checkpoints_dir / "ewc_task3_final.pt"))
+
+    # ── Rapport stdout ────────────────────────────────────────────────────────
+    print("\n" + "=" * 60)
+    report = format_metrics_report(
+        metrics_ewc,
+        model_name="EWCMlpClassifier",
+        baseline_finetune=metrics_naive,
+        baseline_joint=metrics_joint,
+    )
+    print(report)
+
+    # Vérification critère principal
+    if metrics_naive is not None:
+        aa_ewc = metrics_ewc.get("aa", 0.0)
+        aa_naive = metrics_naive.get("aa", 0.0)
+        if aa_ewc > aa_naive:
+            print(f"✓  EWC bat le fine-tuning naïf (aa_ewc={aa_ewc:.3f} > aa_naive={aa_naive:.3f})")
+        else:
+            print(
+                f"⚠  EWC ne bat pas le fine-tuning naïf "
+                f"(aa_ewc={aa_ewc:.3f} ≤ aa_naive={aa_naive:.3f}) "
+                f"— augmenter ewc.lambda ?"
+            )
+
+    ram_ok = memory_report.get("forward", {}).get("within_budget_64ko", False)
+    print(f"{'✓' if ram_ok else '⚠'}  Budget RAM 64 Ko : {'OK' if ram_ok else 'DÉPASSÉ'}")
+
     print(f"\n✅ Expérience terminée → {exp_dir}")
 
 

@@ -23,7 +23,7 @@ Deux phases doivent être profilées séparément :
 
 **Critère de succès** : `full_memory_report(model, (1, 6))` affiche les chiffres RAM et confirme `within_budget_64ko = True` pour `EWCMlpClassifier`.
 
-> **Statut** : ✅ **Implémenté** — `src/evaluation/memory_profiler.py` présent et fonctionnel.
+> **Statut** : ✅ **Implémenté et testé** — `src/evaluation/memory_profiler.py` présent et fonctionnel. `src/evaluation/__init__.py` mis à jour avec les exports. 15/15 tests verts (`pytest tests/test_memory_profiler.py`).
 
 ---
 
@@ -103,6 +103,7 @@ Tableau comparatif multi-modèles (utilisé en S2 pour EWC vs HDC).
 - [x] `ram_peak_bytes` mesurable (> 0) pour un forward pass réel
 - [x] `compare_models_memory()` retourne une string formatée sans erreur
 - [x] `ruff check src/evaluation/memory_profiler.py` et `black --check` passent
+- [x] 15/15 tests unitaires verts dans `tests/test_memory_profiler.py`
 
 ---
 

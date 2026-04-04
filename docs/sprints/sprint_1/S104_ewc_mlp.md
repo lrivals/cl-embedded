@@ -4,10 +4,11 @@
 |-------|--------|
 | **ID** | S1-04 |
 | **Sprint** | Sprint 1 — Semaine 1 (15–22 avril 2026) |
-| **Priorité** | 🔴 Critique |
+| **Priorité** | ✅ Terminé |
 | **Durée estimée** | 4h |
 | **Dépendances** | S1-03 (loader disponible pour valider le forward pass) |
 | **Fichiers cibles** | `src/models/ewc/ewc_mlp.py`, `src/models/ewc/__init__.py` |
+| **Complété le** | 2 avril 2026 |
 
 ---
 
@@ -244,16 +245,16 @@ def test_theta_star_detached():
 
 ## Critères d'acceptation
 
-- [ ] `from src.models.ewc import EWCMlpClassifier` — aucune erreur d'import
-- [ ] `forward()` : shape `[batch, 1]`, valeurs ∈ [0, 1] pour tout batch d'entrée
-- [ ] `ewc_loss()` : retourne une perte scalaire positive, différentiable, rétropropageable
-- [ ] `ewc_loss()` avec `fisher=None` == perte BCE pure (Task 1 sans régularisation)
-- [ ] Régularisation EWC croît avec λ (test `test_ewc_loss_increases_with_lambda`)
-- [ ] `n_params == 769` (conforme à `docs/models/ewc_mlp_spec.md` §2)
-- [ ] `get_theta_star()` retourne des tenseurs détachés (`requires_grad=False`)
-- [ ] Annotations `# MEM:` présentes sur chaque couche Linear et activation intermédiaire
-- [ ] `ruff check src/models/ewc/ewc_mlp.py` et `black --check` passent
-- [ ] `pytest tests/test_ewc_mlp.py -v` — tous les tests passent
+- [x] `from src.models.ewc import EWCMlpClassifier` — aucune erreur d'import
+- [x] `forward()` : shape `[batch, 1]`, valeurs ∈ [0, 1] pour tout batch d'entrée
+- [x] `ewc_loss()` : retourne une perte scalaire positive, différentiable, rétropropageable
+- [x] `ewc_loss()` avec `fisher=None` == perte BCE pure (Task 1 sans régularisation)
+- [x] Régularisation EWC croît avec λ (test `test_ewc_loss_increases_with_lambda`)
+- [x] `n_params == 769` (conforme à `docs/models/ewc_mlp_spec.md` §2)
+- [x] `get_theta_star()` retourne des tenseurs détachés (`requires_grad=False`)
+- [x] Annotations `# MEM:` présentes sur chaque couche Linear et activation intermédiaire
+- [x] `ruff check src/models/ewc/ewc_mlp.py` et `black --check` passent
+- [x] `pytest tests/test_ewc_mlp.py -v` — tous les tests passent (5/5 + 11 tests complémentaires)
 
 ---
 

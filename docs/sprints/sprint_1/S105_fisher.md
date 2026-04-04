@@ -4,6 +4,7 @@
 |-------|--------|
 | **ID** | S1-05 |
 | **Sprint** | Sprint 1 — Semaine 1 (15–22 avril 2026) |
+| **Statut** | ✅ Terminé (4 avril 2026) |
 | **Priorité** | 🔴 Critique |
 | **Durée estimée** | 2h |
 | **Dépendances** | S1-04 (`EWCMlpClassifier` disponible) |
@@ -268,16 +269,16 @@ def test_n_fisher_samples_limit():
 
 ## Critères d'acceptation
 
-- [ ] `from src.models.ewc.fisher import compute_fisher_diagonal, update_fisher_online` — aucune erreur
-- [ ] Fisher retournée : même structure (`name → Tensor`) que `model.named_parameters()`
-- [ ] Toutes les valeurs Fisher ≥ 0 (carrés de gradients)
-- [ ] Fisher non entièrement nulle sur un modèle avec gradients actifs
-- [ ] `update_fisher_online(None, fisher_new, gamma)` == copie de `fisher_new`
-- [ ] `update_fisher_online(f_old, f_new, gamma=0.9)` == `0.9 * f_old + f_new`
-- [ ] `n_samples` respecté : pas de crash si loader plus grand que `n_samples`
-- [ ] Annotation `# MEM:` présente sur le dict Fisher (taille estimée)
-- [ ] `pytest tests/test_fisher.py -v` — tous les tests passent
-- [ ] `ruff check src/models/ewc/fisher.py` et `black --check` passent
+- [x] `from src.models.ewc.fisher import compute_fisher_diagonal, update_fisher_online` — aucune erreur
+- [x] Fisher retournée : même structure (`name → Tensor`) que `model.named_parameters()`
+- [x] Toutes les valeurs Fisher ≥ 0 (carrés de gradients)
+- [x] Fisher non entièrement nulle sur un modèle avec gradients actifs
+- [x] `update_fisher_online(None, fisher_new, gamma)` == copie de `fisher_new`
+- [x] `update_fisher_online(f_old, f_new, gamma=0.9)` == `0.9 * f_old + f_new`
+- [x] `n_samples` respecté : pas de crash si loader plus grand que `n_samples`
+- [x] Annotation `# MEM:` présente sur le dict Fisher (taille estimée)
+- [x] `pytest tests/test_fisher.py -v` — tous les tests passent
+- [x] `ruff check src/models/ewc/fisher.py` et `black --check` passent
 
 ---
 

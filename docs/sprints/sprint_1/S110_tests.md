@@ -4,7 +4,7 @@
 |-------|--------|
 | **ID** | S1-10 |
 | **Sprint** | Sprint 1 — Semaine 1 (15–22 avril 2026) |
-| **Priorité** | 🟡 Normal |
+| **Priorité** | ✅ Terminé |
 | **Durée estimée** | 2h |
 | **Dépendances** | S1-04 (`ewc_mlp.py`), S1-05 (`fisher.py`), S1-06 (`baselines.py`), S1-07 (`metrics.py`), S1-08 (`memory_profiler.py`) |
 | **Fichiers cibles** | `tests/test_ewc.py`, `tests/conftest.py` |
@@ -261,14 +261,31 @@ class TestMemoryProfiler:
 
 ## Critères d'acceptation
 
-- [ ] `tests/conftest.py` — fixtures `model`, `cl_tasks`, `ewc_config`, `known_acc_matrix` disponibles
-- [ ] `pytest tests/test_ewc.py::TestEWCMlpClassifier -v` — tous les tests passent
-- [ ] `pytest tests/test_ewc.py::TestFisherDiagonal -v` — tous les tests passent
-- [ ] `pytest tests/test_ewc.py::TestCLMetrics -v` — tous les tests passent
-- [ ] `pytest tests/test_ewc.py::TestMemoryProfiler -v` — tous les tests passent
-- [ ] Durée totale < 10 s (pas d'accès dataset réel, tenseurs synthétiques uniquement)
-- [ ] `pytest tests/ -v` global — aucune régression sur les tests des sprints précédents
+- [x] `tests/conftest.py` — fixtures `model`, `cl_tasks`, `ewc_config`, `known_acc_matrix` disponibles
+- [x] `pytest tests/test_ewc.py::TestEWCMlpClassifier -v` — tous les tests passent
+- [x] `pytest tests/test_ewc.py::TestFisherDiagonal -v` — tous les tests passent
+- [x] `pytest tests/test_ewc.py::TestCLMetrics -v` — tous les tests passent
+- [x] `pytest tests/test_ewc.py::TestMemoryProfiler -v` — tous les tests passent
+- [x] Durée totale < 10 s — **1.32 s mesuré** (28 tests dans test_ewc.py, 71 tests total)
+- [x] `pytest tests/ -v` global — aucune régression (71/71 passés)
 - [ ] `ruff check tests/test_ewc.py` et `black --check` passent
+
+## Notes d'implémentation
+
+**Date de complétion** : 4 avril 2026
+
+**Écarts par rapport à la spec :**
+
+- `update_online_fisher` dans la spec → nom réel : `update_fisher_online` (fisher.py) — test adapté
+- `conftest.py` : `cl_tasks` dépend de `synthetic_loader` (fixture factory, input_dim=6) ; clé `domain` ajoutée
+- `test_baselines.py` (hors scope S1-10) mis à jour : `input_dim=4→6` pour cohérence avec le nouveau `cl_tasks`
+
+**Résultat final :**
+
+```text
+pytest tests/test_ewc.py -v   →  28 passed in 1.32s
+pytest tests/ -v              →  71 passed in 1.54s
+```
 
 ---
 

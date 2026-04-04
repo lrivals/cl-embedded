@@ -130,3 +130,24 @@ def test_format_report_runs():
     assert "AF" in report
     assert "BWT" in report
     assert "EWC Online" in report
+
+
+# ------------------------------------------------------------------
+# Test save_metrics
+# ------------------------------------------------------------------
+
+def test_save_metrics_creates_file(tmp_path):
+    """save_metrics() crée le répertoire parent et produit un JSON valide."""
+    import json
+
+    from src.evaluation.metrics import save_metrics
+
+    m = compute_cl_metrics(MATRIX_EWC_REALISTIC)
+    out = tmp_path / "results" / "metrics.json"
+    save_metrics(m, str(out), extra_info={"model": "test"})
+
+    assert out.exists()
+    data = json.loads(out.read_text())
+    assert "cl_metrics" in data
+    assert data["cl_metrics"]["n_tasks"] == 3
+    assert data["model"] == "test"

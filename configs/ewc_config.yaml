@@ -27,7 +27,7 @@ ewc:
 
 data:
   dataset: "equipment_monitoring"
-  path: "data/raw/equipment_monitoring/"
+  path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/"
   domain_column: "equipment"
   domain_order: ["pump", "turbine", "compressor"]
   label_column: "faulty"

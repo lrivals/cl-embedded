@@ -24,7 +24,7 @@ L'interface principale est la **matrice d'accuracy** `acc_matrix [T, T]` où `ac
 
 **Critère de succès** : `compute_cl_metrics(acc_matrix)` retourne un dict avec les quatre métriques scalaires, et les tests `tests/test_metrics.py` passent.
 
-> **Statut** : ✅ **Implémenté** — `src/evaluation/metrics.py` présent et fonctionnel.
+> **Statut** : ✅ **Implémenté et testé** — `src/evaluation/metrics.py` présent et fonctionnel. `src/evaluation/__init__.py` créé. 12/12 tests verts (`pytest tests/test_metrics.py`).
 
 ---
 
