@@ -1,6 +1,6 @@
 # Roadmap — CL-Embedded
 
-> Version : 1.5 | Mise à jour : 4 avril 2026  
+> Version : 1.7 | Mise à jour : 6 avril 2026  
 > Horizon : Phase 1 (PC Python) = avril–mai 2026
 
 ---
@@ -12,7 +12,7 @@ Phase 0 : Revue de littérature    [16 mars → 15 avril 2026]
   └── Manuscrit préliminaire (deadline : 15 avril)
 
 Phase 1 : Implémentation Python   [15 avril → 20 mai 2026]
-  └── Ce dépôt — 3 modèles CL + 2 baselines non supervisées
+  └── Ce dépôt — 3 modèles CL + 3 baselines non supervisées (dont Mahalanobis)
 
 Phase 2 : Portage MCU             [15 mai → 15 juin 2026]
   └── STM32N6 — profiling mémoire + latence
@@ -66,14 +66,14 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 | ID | Tâche | Priorité | Fichier cible | Durée est. |
 |----|-------|:--------:|---------------|------------|
-| S2-01 | Implémenter `base_vectors.py` (génération + save HDC) | 🔴 | `src/models/hdc/base_vectors.py` | 2h |
-| S2-02 | Implémenter `hdc_classifier.py` (encodage + prototypes + inférence) | 🔴 | `src/models/hdc/hdc_classifier.py` | 4h |
-| S2-03 | Expérience HDC : exp_002 | 🔴 | `experiments/exp_002_hdc_dataset2/` | 2h |
-| S2-04 | Notebook comparaison EWC vs HDC vs Fine-tuning | 🔴 | `notebooks/02_baseline_comparison.ipynb` | 3h |
-| S2-05 | `scenarios.py` (gestion générique des streams CL) | 🟡 | `src/training/scenarios.py` | 2h |
-| S2-06 | Visualisation accuracy matrix (heatmap forgetting) | 🟡 | `src/evaluation/plots.py` | 2h |
-| S2-07 | Config YAML pour HDC + refactoring configs | 🟡 | `configs/hdc_config.yaml` | 1h |
-| S2-08 | Tests unitaires HDC | 🟡 | `tests/test_hdc.py` | 2h |
+| S2-01 | Implémenter `base_vectors.py` (génération + save HDC) | ✅ | `src/models/hdc/base_vectors.py` | 2h |
+| S2-02 | Implémenter `hdc_classifier.py` (encodage + prototypes + inférence) | ✅ | `src/models/hdc/hdc_classifier.py` | 4h |
+| S2-03 | Expérience HDC : exp_002 | ✅ | `experiments/exp_002_hdc_dataset2/` | 2h |
+| S2-04 | Notebook comparaison EWC vs HDC vs Fine-tuning | ✅ | `notebooks/02_baseline_comparison.ipynb` | 3h |
+| S2-05 | `scenarios.py` (gestion générique des streams CL) | ✅ | `src/training/scenarios.py` | 2h |
+| S2-06 | Visualisation accuracy matrix (heatmap forgetting) | ✅ | `src/evaluation/plots.py` | 2h |
+| S2-07 | Config YAML pour HDC + refactoring configs | ✅ | `configs/hdc_config.yaml` | 1h |
+| S2-08 | Tests unitaires HDC | ✅ | `tests/test_hdc.py` | 2h |
 | S2-09 | Mise à jour README avec résultats préliminaires | 🟢 | `README.md` | 1h |
 
 **Livrable sprint 2** : comparaison EWC vs HDC vs Fine-tuning naïf sur Dataset 2, tableau de résultats complet.
@@ -118,10 +118,10 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 ### Sprint 5 — Semaine 5 (13–20 mai)
 
-**Objectif** : Baselines non supervisées (M4 K-Means+KNN, M5 PCA) sur Dataset 2 et Dataset 1
+**Objectif** : Baselines non supervisées (M4 K-Means+KNN, M5 PCA, M6 Mahalanobis) sur Dataset 2 et Dataset 1
 
 > **Dépendance** : `pump_dataset.py` (S3-02) requis pour les expériences sur Dataset 1.  
-> Ces modèles sont **PC-only** (pas de contraintes 64 Ko). Labels utilisés uniquement en évaluation.
+> Ces modèles sont **PC-only sauf Mahalanobis** (M6 compatible STM32N6 — O(d²) RAM, inversion offline). Labels utilisés uniquement en évaluation.
 
 | ID | Tâche | Priorité | Fichier cible | Durée est. |
 |----|-------|:--------:|---------------|------------|
@@ -133,9 +133,16 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 | S5-06 | Expérience non supervisée Dataset 2 : exp_005 | 🔴 | `experiments/exp_005_unsupervised_dataset2/` | 2h |
 | S5-07 | Expérience non supervisée Dataset 1 : exp_006 | 🔴 | `experiments/exp_006_unsupervised_dataset1/` | 2h |
 | S5-08 | Tests unitaires + spec `unsupervised_spec.md` | 🟡 | `tests/test_unsupervised.py`, `docs/models/unsupervised_spec.md` | 2h |
-| S5-09 | Notebook comparatif supervisé vs non supervisé (5 modèles) | 🟡 | `notebooks/05_supervised_vs_unsupervised.ipynb` | 2h |
+| S5-09 | Notebook comparatif supervisé vs non supervisé (6 modèles) | 🟡 | `notebooks/05_supervised_vs_unsupervised.ipynb` | 2h |
+| S5-10 | **Implémenter `mahalanobis_detector.py` (M6 — μ, Σ⁻¹ offline, seuil adaptatif)** | 🔴 | `src/models/unsupervised/mahalanobis_detector.py` | 2h |
+| S5-11 | **Expérience Mahalanobis Dataset 1 et 2 : exp_007** | 🔴 | `experiments/exp_007_mahalanobis/` | 2h |
+| S5-12 | *(optionnel)* Implémenter `gmm_detector.py` (GMM EM offline, K petit) | 🟢 | `src/models/unsupervised/gmm_detector.py` | 3h |
 
-**Livrable sprint 5** : 3 modèles non supervisés (K-Means dynamique, KNN anomaly, PCA reconstruction) évalués en scénario domain-incremental sur Dataset 2 et Dataset 1. Tableau comparatif AA/AF/BWT/AUROC vs M1/M2/M3.
+> **Pourquoi Mahalanobis (M6) et pas GMM/HMM en sprint dédié ?**  
+> Mahalanobis est le seul des trois à satisfaire simultanément : (a) computation embarquée viable (inversion Σ offline, produit matriciel online), (b) applicable aux deux datasets, (c) interprétable comme baseline de référence.  
+> GMM reste optionnel (entraînement EM offline, K=2–3 raisonnable). HMM exclu : complexité O(T×N²), Baum-Welch incompatible avec l'online learning, non applicable au Dataset 2 — relégué au backlog pour analyse offline.
+
+**Livrable sprint 5** : 4 modèles non supervisés (K-Means dynamique, KNN anomaly, PCA reconstruction, Mahalanobis) évalués en scénario domain-incremental sur Dataset 2 et Dataset 1. Tableau comparatif AA/AF/BWT/AUROC vs M1/M2/M3. M6 Mahalanobis profilé en RAM (compatible 64 Ko).
 
 ---
 
@@ -148,6 +155,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 | Profiling RAM/latence sur STM32N6 réel | 🔴 | Gap 2 — mesures précises |
 | Exploration backprop INT8 (MLP minimal) | 🟡 | Gap 3 |
 | Benchmark sur équipement Edge Spectrum | 🟡 | Contexte industriel Frédéric |
+| HMM (Hidden Markov Model) — analyse offline Dataset 1 | 🟢 | PC-only, hors contrainte 64 Ko. Baum-Welch incompatible online learning. Utile pour RUL offline uniquement. |
 
 ---
 
@@ -158,12 +166,13 @@ Mettre à jour ce tableau après chaque sprint :
 | Modèle | Implémenté | Testé | Expérience | Export ONNX | RAM mesurée |
 |--------|:----------:|:-----:|:----------:|:-----------:|:-----------:|
 | M2 EWC + MLP | ✅ | ✅ | ✅ | ⬜ | ✅ |
-| M3 HDC | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| M3 HDC | ✅ | ✅ | ✅ | ⬜ | ✅ |
 | M1 TinyOL | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | M1 + buffer UINT8 | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
 | M4a K-Means (K dynamique) | ⬜ | ⬜ | ⬜ | N/A | N/A |
 | M4b KNN anomaly detection | ⬜ | ⬜ | ⬜ | N/A | N/A |
 | M5 PCA reconstruction | ⬜ | ⬜ | ⬜ | N/A | N/A |
+| M6 Mahalanobis | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
 
 ### Résultats M2 EWC — exp_001 (4 avril 2026, seed=42)
 
@@ -179,3 +188,20 @@ Mettre à jour ce tableau après chaque sprint :
 
 > Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compressor — 705 paramètres.  
 > Note : oubli catastrophique quasi-absent sur ce dataset (domaines très similaires). Voir S109 pour l'analyse complète.
+
+### Résultats M3 HDC — exp_002 (6 avril 2026, seed=42)
+
+| Métrique | HDC Online |
+|----------|:----------:|
+| AA | **0.8698** |
+| AF | **0.0000** |
+| BWT | +0.0019 |
+| RAM estimée FP32 | **14 344 B (14.0 Ko)** |
+| RAM estimée INT8 | **6 152 B (6.0 Ko)** |
+| RAM peak mesuré (inférence) | **14 504 B (14.2 Ko)** |
+| Latence inférence | **0.048 ms** |
+| Budget 64 Ko | ✅ 22.1% utilisés (FP32) |
+
+> Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compressor — 2 048 éléments de prototypes.  
+> AF = 0 par construction (accumulation additive, pas d'oubli catastrophique possible).  
+> AA inférieure à EWC (0.8698 vs 0.9824) — attendu : HDC est moins expressif qu'un MLP mais 5× moins gourmand en RAM.

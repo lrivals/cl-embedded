@@ -1,0 +1,56 @@
+_snapshot_timestamp: '2026-04-06T13:10:57.935414'
+data:
+  categorical_columns:
+  - equipment
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - pump
+  - turbine
+  - compressor
+  feature_bounds:
+    humidity:
+    - null
+    - null
+    pressure:
+    - null
+    - null
+    temperature:
+    - null
+    - null
+    vibration:
+    - null
+    - null
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_column: faulty
+  n_classes: 2
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer.yaml
+  path: data/raw/equipment_monitoring/
+  test_split: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_002_hdc_dataset2/results/
+  seed: 42
+exp_id: exp_002_hdc_dataset2
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 12288
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+training:
+  batch_size: 32
+  seed: 42

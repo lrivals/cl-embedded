@@ -1,13 +1,17 @@
 # configs/hdc_config.yaml
 # Hyperparamètres HDC (Hyperdimensional Computing) — Dataset 2 (Equipment Monitoring)
+# NE PAS modifier les valeurs directement — utiliser ce fichier comme seul point de vérité.
+# Référence : docs/models/hdc_spec.md, S2-07
 
 exp_id: "exp_002_hdc_dataset2"
 
 hdc:
-  D: 1024            # dimension des hypervecteurs (puissance de 2 pour SIMD)
-  n_levels: 10       # niveaux de quantification par feature
-  seed: 42           # seed génération vecteurs de base (FIXER — ne jamais changer après init)
-  base_vectors_path: "configs/hdc_base_vectors.npz"   # sauvegardé à la 1ère init
+  D: 1024            # Dimension des hypervecteurs (puissance de 2 pour SIMD)
+                     # MEM: D × N_LEVELS × 1 B = 10 Ko @ INT8 (H_level)
+                     #      D × N_FEATURES × 1 B = 4 Ko @ INT8 (H_pos)
+  n_levels: 10       # Niveaux de quantification par feature
+  seed: 42           # Seed génération vecteurs de base — FIXER après 1ère init
+  base_vectors_path: "configs/hdc_base_vectors.npz"   # généré par S2-01
 
 data:
   dataset: "equipment_monitoring"
@@ -17,19 +21,38 @@ data:
   label_column: "faulty"
   feature_columns: ["temperature", "pressure", "vibration", "humidity"]
   categorical_columns: ["equipment"]
-  n_features: 6          # après encodage one-hot
-  n_classes: 2           # faulty / normal
+  n_features: 4      # Features numériques uniquement (sans one-hot équipement)
+                     # TODO(arnaud) : 4 ou 6 ? Voir S2-01 §1 pour la discussion.
+                     #
+                     # NOTE ARCHITECTURALE — n_features
+                     # La spec HDC (docs/models/hdc_spec.md §2.1) mentionne 6 features
+                     # (4 numériques + 2 one-hot). Mais monitoring_dataset.py retourne X
+                     # avec 4 features numériques uniquement (l'encodage one-hot équipement
+                     # est utilisé uniquement pour le split de domaine, pas comme feature
+                     # d'entrée du modèle).
+                     # Décision retenue : n_features = 4 pour cohérence avec le loader existant.
+  n_classes: 2       # faulty / normal
   test_split: 0.2
   normalizer_path: "configs/monitoring_normalizer.yaml"
 
-  # Bornes pour quantification (à remplir après exploration Dataset 2)
-  feature_bounds:
-    temperature:  [null, null]    # [min, max] calculé sur Task 1 (pumps)
-    pressure:     [null, null]
-    vibration:    [null, null]
-    humidity:     [null, null]
-    equip_enc_1:  [0, 1]
-    equip_enc_2:  [0, 1]
+training:
+  # HDC est one-pass par design — pas d'epochs, pas d'optimizer
+  # Ces champs sont présents pour cohérence avec ewc_config.yaml
+  optimizer: null        # HDC : pas de gradient
+  epochs_per_task: 1     # 1 passe par tâche (online learning strict)
+  batch_size: 1          # update sample-by-sample sur MCU
+  seed: 42
+
+# Bornes pour quantification — calculées sur Task 1 (pumps) uniquement
+# IMPORTANT : bornes sur données normalisées Z-score (après monitoring_normalizer.yaml)
+# TODO(dorra) : confirmer si les bornes doivent être sur données brutes ou normalisées Z-score.
+#              Sur MCU, la normalisation Z-score serait pré-calculée en Flash.
+# Lu par HDCClassifier._load_feature_bounds() — doit rester à la racine du config.
+feature_bounds:
+  temperature:  [-3.8249363899230957, 4.989019870758057]   # calculé sur Task 1 (pumps)
+  pressure:     [-2.898953437805176,  4.20745325088501]    # calculé sur Task 1 (pumps)
+  vibration:    [-2.757283926010132,  4.817769527435303]   # calculé sur Task 1 (pumps)
+  humidity:     [-3.3623745441436768, 3.3421783447265625]  # calculé sur Task 1 (pumps)
 
 evaluation:
   seed: 42
@@ -37,6 +60,13 @@ evaluation:
   output_dir: "experiments/exp_002_hdc_dataset2/results/"
 
 memory:
-  target_ram_bytes: 65536
-  expected_ram_bytes: 12288    # ~12 Ko estimé (prototypes INT32 + buffer encodage)
-  warn_if_above_bytes: 52000
+  target_ram_bytes: 65536       # 64 Ko — contrainte STM32N6
+  expected_ram_bytes: 14344     # ~14 Ko mesuré (prototypes INT32 + binarisés + buffer encodage)
+                                # MEM: 2 classes × 1024 dims × 4 B = 8 Ko (prototypes_acc INT32)
+                                #      2 classes × 1024 dims × 1 B = 2 Ko (prototypes_bin INT8)
+                                #      1 × 1024 dims × 4 B = 4 Ko (buffer encodage INT32, temporaire)
+                                #      2 × 4 B = 8 B (class_counts INT32)
+                                # TOTAL FP32 worst case : 14 344 B (14.0 Ko)
+                                # TOTAL INT8            :  6 152 B ( 6.0 Ko)
+                                # FIXME(gap2) : valider expected_ram_bytes contre tracemalloc mesuré.
+  warn_if_above_bytes: 52000    # Alerte si > ~80% du budget (laisse 14 Ko de marge)

@@ -38,11 +38,17 @@ pip install -e ".[dev]"
 # Train M2 (EWC) on Dataset 2 — start here
 python scripts/train_ewc.py --config configs/ewc_config.yaml
 
+# Generate HDC base vectors (once, before training HDC)
+python -m src.models.hdc.base_vectors
+
 # Train M3 (HDC) on Dataset 2
 python scripts/train_hdc.py --config configs/hdc_config.yaml
 
 # Train M1 (TinyOL) on Dataset 1
 python scripts/train_tinyol.py --config configs/tinyol_config.yaml
+
+# Compare EWC vs HDC vs Fine-tuning (Sprint 2)
+jupyter nbconvert --to notebook --execute notebooks/02_baseline_comparison.ipynb
 
 # Compare all models
 python scripts/evaluate_all.py --exp_dir experiments/
@@ -85,6 +91,62 @@ All implementations respect MCU portability requirements:
 - **Fixed normalization statistics** (computed offline, stored in configs/)
 - **No dynamic tensor allocation** in forward passes
 - **Memory annotations** (`# MEM: X B @ FP32`) on every layer
+
+## Notebooks
+
+| Notebook | Description |
+|----------|-------------|
+| [`notebooks/01_data_exploration.ipynb`](notebooks/01_data_exploration.ipynb) | Exploration Dataset 2 (Equipment Monitoring) |
+| [`notebooks/02_baseline_comparison.ipynb`](notebooks/02_baseline_comparison.ipynb) | **Comparison EWC vs HDC vs Fine-tuning** (Sprint 2) |
+
+## Results (Sprint 2 — Dataset 2, seed=42, 3 domains)
+
+| Metric | EWC Online | HDC | Fine-tuning naïf |
+|--------|:----------:|:---:|:----------------:|
+| AA | **0.9824** | 0.8698 | 0.9811 |
+| AF | **0.0010** | **0.0000** | 0.0000 |
+| BWT | +0.0000 | +0.0019 | +0.0010 |
+| RAM peak inference | **1.1 KB** | 14.2 KB | — |
+| Inference latency | **0.036 ms** | 0.048 ms | — |
+| Budget 64 KB | ✅ 1.8% | ✅ 22.1% | — |
+
+> Dataset 2 (Equipment Monitoring) — Pump → Turbine → Compressor.  
+> HDC: AF = 0 by construction (additive accumulation, no catastrophic forgetting possible). Lower accuracy than EWC expected — HDC is less expressive but uses ~12× less RAM for weight updates.  
+> Full results: `experiments/exp_002_hdc_dataset2/results/` · Analysis: `notebooks/02_baseline_comparison.ipynb`.
+
+### M2 EWC — exp_001 (4 avril 2026)
+
+| Metric | Value |
+|--------|-------|
+| AA | 0.9824 |
+| AF | 0.0010 |
+| BWT | +0.0000 |
+| RAM peak inference | 1 171 B (1.1 KB) |
+| RAM peak update | 6 837 B (6.7 KB) |
+| Inference latency | 0.036 ms |
+| n_params | 705 |
+
+### M3 HDC — exp_002 (6 avril 2026)
+
+| Metric | Value |
+|--------|-------|
+| AA | 0.8698 |
+| AF | 0.0000 |
+| BWT | +0.0019 |
+| RAM peak inference (measured) | 14 504 B (14.2 KB) |
+| RAM estimated FP32 | 14 344 B (14.0 KB) |
+| RAM estimated INT8 | 6 152 B (6.0 KB) |
+| Inference latency | 0.048 ms |
+| n_params (prototype elements) | 2 048 |
+
+## Progress Indicators
+
+| Model | Implemented | Tested | Experiment | RAM measured |
+|-------|:-----------:|:------:|:----------:|:------------:|
+| M2 EWC + MLP | ✅ | ✅ | ✅ exp_001 | ✅ |
+| M3 HDC | ✅ | ✅ | ✅ exp_002 | ✅ |
+| M1 TinyOL | ⬜ | ⬜ | ⬜ | ⬜ |
+| M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ | ⬜ |
 
 ## Evaluation Metrics
 

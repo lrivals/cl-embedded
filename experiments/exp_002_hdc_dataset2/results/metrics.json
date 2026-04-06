@@ -1,0 +1,40 @@
+{
+  "exp_id": "exp_002_hdc_dataset2",
+  "cl_metrics": {
+    "aa": 0.8697531741411043,
+    "af": 0.0,
+    "bwt": 0.001949317738791423,
+    "fwt": 0.0,
+    "forgetting_per_task": [
+      0.0,
+      0.0
+    ],
+    "bwt_per_task": [
+      0.0,
+      0.003898635477582846
+    ],
+    "acc_matrix": [
+      [
+        0.8816568047337278,
+        null,
+        null
+      ],
+      [
+        0.8698224852071006,
+        0.8538011695906432,
+        null
+      ],
+      [
+        0.8816568047337278,
+        0.8576998050682261,
+        0.8699029126213592
+      ]
+    ],
+    "n_tasks": 3,
+    "ram_peak_bytes": 14504,
+    "inference_latency_ms": 0.04758189997119189,
+    "n_params": 2048,
+    "estimated_ram_fp32_bytes": 14344,
+    "estimated_ram_int8_bytes": 6152
+  }
+}
