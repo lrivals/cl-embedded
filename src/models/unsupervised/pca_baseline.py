@@ -1,51 +1,22 @@
-# S5-04 — Implémenter `pca_baseline.py` (PCA reconstruction error)
+# ruff: noqa: N803, N806  — X est une convention mathématique ML (sklearn API)
+"""
+Baseline PCA reconstruction error pour la détection d'anomalies en scénario CL.
 
-| Champ | Valeur |
-|-------|--------|
-| **ID** | S5-04 |
-| **Sprint** | Sprint 5 — Semaine 5 (13–20 mai 2026) |
-| **Priorité** | 🔴 Critique |
-| **Durée estimée** | 2h |
-| **Dépendances** | S5-01 (structure + config YAML) |
-| **Fichiers cibles** | `src/models/unsupervised/pca_baseline.py` |
-| **Complété le** | 7 avril 2026 |
+PC-only — pas de contrainte 64 Ko STM32N6.
+Labels utilisés uniquement en évaluation, jamais pendant fit_task.
+"""
 
----
+from __future__ import annotations
 
-## Objectif
+from pathlib import Path
 
-Implémenter `PCABaseline`, une baseline de détection d'anomalies par erreur de reconstruction PCA. Le modèle projette chaque échantillon dans un sous-espace de dimension réduite puis reconstruit l'échantillon original. L'erreur de reconstruction (MSE) sert de score d'anomalie : un échantillon difficile à reconstruire est potentiellement anormal.
-
-**Points clés** :
-- Score d'anomalie = MSE entre l'échantillon original et sa reconstruction PCA
-- Support de `n_components` fixe ou sélection automatique par variance expliquée
-- Stratégie CL `refit` : PCA réentraîné à chaque tâche (distribution locale)
-- Stratégie CL `incremental` : sklearn `IncrementalPCA` pour simulation online
-- Seuil de décision calculé sur Task 0
-
-**Critère de succès** : `python -c "from src.models.unsupervised import PCABaseline"` passe, et un appel `fit_task` + `predict` retourne des prédictions binaires sur des données synthétiques.
-
----
-
-## Sous-tâches
-
-### 1. Constantes du module
-
-```python
-# src/models/unsupervised/pca_baseline.py
+import numpy as np
+from sklearn.decomposition import PCA, IncrementalPCA
 
 # Valeurs par défaut — toujours passer par configs/unsupervised_config.yaml
 N_COMPONENTS_DEFAULT: int = 2
 MIN_EXPLAINED_VARIANCE_DEFAULT: float = 0.95
 ANOMALY_PERCENTILE_DEFAULT: int = 95
-```
-
-### 2. Classe `PCABaseline`
-
-```python
-import numpy as np
-from pathlib import Path
-from sklearn.decomposition import PCA, IncrementalPCA
 
 
 class PCABaseline:
@@ -205,9 +176,9 @@ class PCABaseline:
         """
         if self.pca_ is None:
             raise RuntimeError("PCABaseline non entraîné. Appeler fit_task() d'abord.")
-        X_proj = self.pca_.transform(X)                    # [N, n_components]
+        X_proj = self.pca_.transform(X)  # [N, n_components]
         X_reconstructed = self.pca_.inverse_transform(X_proj)  # [N, n_features]
-        errors = np.mean((X - X_reconstructed) ** 2, axis=1)   # [N]
+        errors = np.mean((X - X_reconstructed) ** 2, axis=1)  # [N]
         return errors
 
     def anomaly_score(self, X: np.ndarray) -> np.ndarray:
@@ -292,6 +263,7 @@ class PCABaseline:
     def save(self, path: str | Path) -> None:
         """Sauvegarde le modèle au format pickle."""
         import pickle
+
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "wb") as f:
@@ -302,31 +274,6 @@ class PCABaseline:
     def load(cls, path: str | Path) -> "PCABaseline":
         """Charge un modèle sauvegardé."""
         import pickle
+
         with open(Path(path), "rb") as f:
             return pickle.load(f)
-```
-
----
-
-## Critères d'acceptation
-
-- [x] `from src.models.unsupervised import PCABaseline` — aucune erreur d'import
-- [x] `fit_task(X, task_id=0)` avec `n_components=2` — PCA entraîné, seuil calculé
-- [x] `fit_task(X, task_id=0)` avec `n_components=None` — sélection automatique retourne un entier ∈ [1, n_features]
-- [x] `reconstruction_error(X)` retourne `np.ndarray [N]` avec valeurs ≥ 0
-- [x] `predict(X)` retourne `np.ndarray [N]` avec valeurs ∈ {0, 1}
-- [x] `anomaly_score(X)` retourne dtype `float32`
-- [x] `score(X, y)` retourne float entre 0 et 1
-- [x] `cl_strategy="incremental"` — `pca_` est `IncrementalPCA`, `partial_fit` appelé
-- [x] `count_parameters()` = `n_components × n_features + n_features` (components_ + mean_)
-- [x] `ruff check src/models/unsupervised/pca_baseline.py` + `black --check` passent
-- [x] `save` + `load` round-trip : mêmes erreurs de reconstruction avant et après
-
----
-
-## Questions ouvertes
-
-- `TODO(arnaud)` : `cl_strategy="refit"` entraîne un nouveau PCA à chaque tâche sans mémoire — est-ce la bonne simulation d'un modèle non supervisé en scénario domain-incremental ? Ou faut-il entraîner PCA sur toutes les données vues (accumulation) ?
-- `TODO(arnaud)` : `n_components=2` sur 4 features est agressif (50% de réduction). Faut-il utiliser `n_components=None` avec `min_explained_variance=0.95` par défaut pour laisser le modèle choisir ? Dataset 2 a seulement 4 features numériques.
-- `TODO(dorra)` : `IncrementalPCA` est-il une meilleure simulation d'un algorithme embarqué ? Le vrai PCA online sur MCU s'approche plus d'un algorithme de mise à jour de covariance incrémentale (pas de stockage du dataset complet).
-- `FIXME(gap1)` : erreur de reconstruction PCA sur des données tabulaires basse dimension (4 features) peut être très petite — valider que les scores sont suffisamment discriminants pour la détection d'anomalies sur Dataset 2.

@@ -1,0 +1,66 @@
+# configs/unsupervised_config.yaml
+# Configuration partagée pour les baselines non supervisées (Sprint 5)
+# NE PAS modifier les valeurs directement dans le code source.
+# Toute modification doit passer par ce fichier.
+
+seed: 42
+exp_id: "exp_005_unsupervised_dataset2"
+exp_id_pump: "exp_006_unsupervised_dataset1"
+
+data:
+  dataset: "equipment_monitoring"
+  csv_path: "data/raw/equipment_monitoring/equipment_monitoring.csv"
+  normalizer_path: "configs/monitoring_normalizer.yaml"  # cohérent avec hdc_config.yaml
+  n_features: 4           # NUMERIC_FEATURES = [temperature, pressure, vibration, humidity]
+  batch_size: 256
+  val_ratio: 0.2
+  domain_column: "equipment"
+  domain_order: ["Pump", "Turbine", "Compressor"]  # casse cohérente avec DOMAIN_ORDER
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+
+kmeans:
+  k_method: "silhouette"  # "silhouette" | "elbow" | "fixed"
+  k_fixed: 3              # utilisé uniquement si k_method == "fixed"
+  k_min: 2                # borne basse pour la recherche K dynamique
+  k_max: 10               # borne haute pour la recherche K dynamique
+  anomaly_threshold: null  # null → calculé automatiquement (percentile sur Task 1)
+  anomaly_percentile: 95
+  n_init: 10              # sklearn KMeans n_init
+  max_iter: 300
+  cl_strategy: "refit"    # TODO(arnaud): "refit" | "accumulate"
+
+knn:
+  n_neighbors: 5
+  metric: "euclidean"     # "euclidean" | "manhattan" | "cosine"
+  anomaly_threshold: null  # null → calculé automatiquement (percentile sur Task 1)
+  anomaly_percentile: 95
+  cl_strategy: "accumulate"  # TODO(arnaud): "accumulate" | "refit"
+
+pca:
+  n_components: 2         # dimensions retenues
+  min_explained_variance: 0.95  # si n_components=null, sélection automatique
+  anomaly_threshold: null  # null → calculé automatiquement (percentile sur Task 1)
+  anomaly_percentile: 95
+  cl_strategy: "refit"    # "refit" | "incremental"
+                          # "incremental" → sklearn IncrementalPCA — TODO(dorra)
+
+evaluation:
+  metrics: ["aa", "af", "bwt", "auroc"]  # auroc évalué avec labels (éval uniquement)
+  n_latency_runs: 100
+  output_dir: "experiments/exp_005_unsupervised_dataset2/results/"
+
+memory:
+  target_ram_bytes: 65536   # 64 Ko (PC-only: contrainte non appliquée, info uniquement)
+  warn_if_above_bytes: 52000
+
+# --- Dataset 1 : Pump Maintenance (exp_006) ---
+data_pump:
+  csv_path: "data/raw/pump_maintenance/pump_maintenance.csv"
+  normalizer_path: "configs/pump_normalizer.yaml"  # fitté sur task 0 (pompe saine)
+  window_size: 32   # WINDOW_SIZE de pump_dataset.py — cohérent avec le normalizer existant
+  step_size: 16     # STEP_SIZE de pump_dataset.py
+  n_tasks: 3        # split temporel 1/3 — 1/3 — 1/3
+  batch_size: 32
+  val_ratio: 0.2
+  # MEM: 25 features/fenêtre × 4 B @ FP32 = 100 B/sample

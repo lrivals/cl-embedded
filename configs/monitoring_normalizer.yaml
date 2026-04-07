@@ -1,27 +1,15 @@
-# monitoring_normalizer.yaml
-# Statistiques de normalisation Z-score pour le Dataset 2 (Equipment Monitoring)
-#
-# RÈGLE : fit sur Task 1 (Pump) UNIQUEMENT pour éviter la fuite d'information
-# des tâches futures (T2=Turbine, T3=Compressor).
-# Référence : docs/context/datasets.md, notebooks/01_data_exploration.ipynb Section 6
-#
-# Généré par : notebooks/01_data_exploration.ipynb (Kernel → Restart & Run All)
-# N samples Pump (Task 1) : 2534
-
 fit_domain: Pump
 features:
-  - temperature
-  - pressure
-  - vibration
-  - humidity
+- temperature
+- pressure
+- vibration
+- humidity
 normalization: zscore
-
 mean:
   temperature: 70.634028
   pressure: 35.629021
   vibration: 1.613323
   humidity: 50.197351
-
 std:
   temperature: 15.781869
   pressure: 10.501268

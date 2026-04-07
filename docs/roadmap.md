@@ -1,6 +1,6 @@
 # Roadmap — CL-Embedded
 
-> Version : 1.7 | Mise à jour : 6 avril 2026  
+> Version : 2.0 | Mise à jour : 7 avril 2026  
 > Horizon : Phase 1 (PC Python) = avril–mai 2026
 
 ---
@@ -85,8 +85,8 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 | ID | Tâche | Priorité | Fichier cible | Durée est. |
 |----|-------|:--------:|---------------|------------|
-| S3-01 | Télécharger Dataset 1 (Pump) + exploration | 🔴 | `notebooks/01_data_exploration.ipynb` (section 2) | 2h |
-| S3-02 | Implémenter `pump_dataset.py` (fenêtrage + features) | 🔴 | `src/data/pump_dataset.py` | 4h |
+| S3-01 | Télécharger Dataset 1 (Pump) + exploration | ✅ | `notebooks/01_data_exploration.ipynb` (section 2) | 2h |
+| S3-02 | Implémenter `pump_dataset.py` (fenêtrage + features) | ✅ | `src/data/pump_dataset.py` | 4h |
 | S3-03 | Implémenter `autoencoder.py` (backbone + décodeur) | 🔴 | `src/models/tinyol/autoencoder.py` | 3h |
 | S3-04 | Pré-entraînement backbone (données normales uniquement) | 🔴 | `scripts/pretrain_tinyol.py` | 2h |
 | S3-05 | Implémenter `oto_head.py` (tête OtO + boucle SGD online) | 🔴 | `src/models/tinyol/oto_head.py` | 3h |
@@ -125,14 +125,14 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 | ID | Tâche | Priorité | Fichier cible | Durée est. |
 |----|-------|:--------:|---------------|------------|
-| S5-01 | Structure `src/models/unsupervised/` + config YAML | 🔴 | `configs/unsupervised_config.yaml`, `src/models/unsupervised/__init__.py` | 1h |
-| S5-02 | Implémenter `kmeans_detector.py` (K-Means + K dynamique silhouette/elbow) | 🔴 | `src/models/unsupervised/kmeans_detector.py` | 3h |
-| S5-03 | Implémenter `knn_detector.py` (KNN distance-based anomaly detection) | 🔴 | `src/models/unsupervised/knn_detector.py` | 2h |
-| S5-04 | Implémenter `pca_baseline.py` (PCA reconstruction error) | 🔴 | `src/models/unsupervised/pca_baseline.py` | 2h |
-| S5-05 | Script d'entraînement + évaluation CL non supervisé | 🔴 | `scripts/train_unsupervised.py` | 3h |
-| S5-06 | Expérience non supervisée Dataset 2 : exp_005 | 🔴 | `experiments/exp_005_unsupervised_dataset2/` | 2h |
-| S5-07 | Expérience non supervisée Dataset 1 : exp_006 | 🔴 | `experiments/exp_006_unsupervised_dataset1/` | 2h |
-| S5-08 | Tests unitaires + spec `unsupervised_spec.md` | 🟡 | `tests/test_unsupervised.py`, `docs/models/unsupervised_spec.md` | 2h |
+| S5-01 | Structure `src/models/unsupervised/` + config YAML | ✅ | `configs/unsupervised_config.yaml`, `src/models/unsupervised/__init__.py` | 1h |
+| S5-02 | Implémenter `kmeans_detector.py` (K-Means + K dynamique silhouette/elbow) | ✅ | `src/models/unsupervised/kmeans_detector.py` | 3h |
+| S5-03 | Implémenter `knn_detector.py` (KNN distance-based anomaly detection) | ✅ | `src/models/unsupervised/knn_detector.py` | 2h |
+| S5-04 | Implémenter `pca_baseline.py` (PCA reconstruction error) | ✅ | `src/models/unsupervised/pca_baseline.py` | 2h |
+| S5-05 | Script d'entraînement + évaluation CL non supervisé | ✅ | `scripts/train_unsupervised.py` | 3h |
+| S5-06 | Expérience non supervisée Dataset 2 : exp_005 | ✅ | `experiments/exp_005_unsupervised_dataset2/` | 2h |
+| S5-07 | Expérience non supervisée Dataset 1 : exp_006 | ✅ | `experiments/exp_006_unsupervised_dataset1/` | 2h |
+| S5-08 | Tests unitaires + spec `unsupervised_spec.md` | ✅ | `tests/test_unsupervised.py`, `docs/models/unsupervised_spec.md` | 2h |
 | S5-09 | Notebook comparatif supervisé vs non supervisé (6 modèles) | 🟡 | `notebooks/05_supervised_vs_unsupervised.ipynb` | 2h |
 | S5-10 | **Implémenter `mahalanobis_detector.py` (M6 — μ, Σ⁻¹ offline, seuil adaptatif)** | 🔴 | `src/models/unsupervised/mahalanobis_detector.py` | 2h |
 | S5-11 | **Expérience Mahalanobis Dataset 1 et 2 : exp_007** | 🔴 | `experiments/exp_007_mahalanobis/` | 2h |
@@ -143,6 +143,24 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 > GMM reste optionnel (entraînement EM offline, K=2–3 raisonnable). HMM exclu : complexité O(T×N²), Baum-Welch incompatible avec l'online learning, non applicable au Dataset 2 — relégué au backlog pour analyse offline.
 
 **Livrable sprint 5** : 4 modèles non supervisés (K-Means dynamique, KNN anomaly, PCA reconstruction, Mahalanobis) évalués en scénario domain-incremental sur Dataset 2 et Dataset 1. Tableau comparatif AA/AF/BWT/AUROC vs M1/M2/M3. M6 Mahalanobis profilé en RAM (compatible 64 Ko).
+
+---
+
+---
+
+## Sprints Phase 2 (détail)
+
+### Sprint 6 — Semaine 1 Phase 2 (20–27 mai 2026)
+
+**Objectif** : Setup environnement embarqué STM32 (NUCLEO-F439ZI + VS Code)
+
+> **Contexte** : La NUCLEO-F439ZI (Cortex-M4, 256 Ko RAM, pas de NPU) est une board de développement intermédiaire — la cible finale reste le STM32N6 (Cortex-M55, NPU). Ce sprint valide la chaîne compile → flash → debug avant d'avoir accès au hardware cible.
+
+| ID | Tâche | Priorité | Fichier cible | Durée est. |
+|----|-------|:--------:|---------------|------------|
+| S6-01 | Setup toolchain ARM GCC + OpenOCD + VS Code + Cortex-Debug + projet blink | 🔴 | `docs/sprints/sprint_6/S601_stm32_env_setup.md` | 3h |
+
+**Livrable sprint 6** : LED clignote sur NUCLEO-F439ZI, breakpoint VS Code opérationnel, `launch.json` documenté et reproductible.
 
 ---
 
@@ -169,9 +187,9 @@ Mettre à jour ce tableau après chaque sprint :
 | M3 HDC | ✅ | ✅ | ✅ | ⬜ | ✅ |
 | M1 TinyOL | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 | M1 + buffer UINT8 | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
-| M4a K-Means (K dynamique) | ⬜ | ⬜ | ⬜ | N/A | N/A |
-| M4b KNN anomaly detection | ⬜ | ⬜ | ⬜ | N/A | N/A |
-| M5 PCA reconstruction | ⬜ | ⬜ | ⬜ | N/A | N/A |
+| M4a K-Means (K dynamique) | ✅ | ✅ | ✅ | N/A | ✅ |
+| M4b KNN anomaly detection | ✅ | ✅ | ✅ | N/A | ✅ |
+| M5 PCA reconstruction | ✅ | ✅ | ✅ | N/A | ✅ |
 | M6 Mahalanobis | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
 
 ### Résultats M2 EWC — exp_001 (4 avril 2026, seed=42)
@@ -188,6 +206,22 @@ Mettre à jour ce tableau après chaque sprint :
 
 > Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compressor — 705 paramètres.  
 > Note : oubli catastrophique quasi-absent sur ce dataset (domaines très similaires). Voir S109 pour l'analyse complète.
+
+### Résultats M4a/M4b/M5 non supervisés — exp_005 (7 avril 2026, seed=42)
+
+Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compressor
+
+| Modèle | AA | AF | BWT | AUROC | RAM peak | Latence |
+|--------|:--:|:--:|:---:|:-----:|:--------:|:-------:|
+| K-Means (K=2, silhouette) | **0.9433** | 0.0049 | -0.0040 | **0.9621** | 5.2 Ko ✅ | 0.399 ms |
+| KNN (accumulate, k=5) | **0.9524** | 0.0275 | -0.0275 | **0.9728** | 110.5 Ko ⚠️ | 15.755 ms |
+| PCA (2 composantes, refit) | **0.9504** | 0.0020 | -0.0010 | **0.9078** | 2.1 Ko ✅ | 0.115 ms |
+
+> ⚠️ KNN dépasse 64 Ko (stratégie `accumulate` sur 6 137 échantillons = ~98 Ko de X_ref). **PC-only** — non portable STM32N6 sans modification de stratégie.  
+> AA nettement supérieure aux cibles (> 0.94 vs > 0.70) et AUROC > 0.90 : le Dataset 2 est bien séparable (peu de domain shift, mais forte séparabilité normal/faulty).  
+> Pour comparaison directe EWC (0.9824) > KNN (0.9524) ≈ PCA (0.9504) > K-Means (0.9433) — sans aucune supervision pendant l'entraînement.
+
+---
 
 ### Résultats M3 HDC — exp_002 (6 avril 2026, seed=42)
 

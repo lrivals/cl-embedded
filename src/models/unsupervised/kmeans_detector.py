@@ -1,37 +1,18 @@
-# S5-02 — Implémenter `kmeans_detector.py` (K-Means + K dynamique silhouette/elbow)
+# ruff: noqa: N803, N806  — X, X0 sont des conventions mathématiques ML (sklearn API)
+"""
+Baseline K-Means pour la détection d'anomalies en scénario domain-incremental.
 
-| Champ | Valeur |
-|-------|--------|
-| **ID** | S5-02 |
-| **Sprint** | Sprint 5 — Semaine 5 (13–20 mai 2026) |
-| **Priorité** | 🔴 Critique |
-| **Durée estimée** | 3h |
-| **Dépendances** | S5-01 (structure + config YAML) |
-| **Fichiers cibles** | `src/models/unsupervised/kmeans_detector.py` |
-| **Complété le** | 7 avril 2026 |
+PC-only — pas de contrainte 64 Ko STM32N6.
+Labels utilisés uniquement en évaluation, jamais pendant fit_task.
+"""
 
----
+from __future__ import annotations
 
-## Objectif
+from pathlib import Path
 
-Implémenter `KMeansDetector`, une baseline non supervisée de détection d'anomalies basée sur K-Means. Le modèle opère en scénario domain-incremental : il est entraîné séquentiellement sur les 3 domaines du Dataset 2 (Pump → Turbine → Compressor) sans accès aux labels pendant l'entraînement.
-
-**Points clés** :
-- Sélection K automatique via score silhouette ou méthode elbow selon `k_method` dans le YAML
-- Score d'anomalie = distance au centroïde le plus proche
-- Seuil de décision calculé sur le train set de Task 1 (percentile configurable)
-- Interface CL compatible avec `train_unsupervised.py` (S5-05)
-
-**Critère de succès** : `python -c "from src.models.unsupervised import KMeansDetector"` passe, et un appel complet `fit_task` + `predict` sur des données synthétiques retourne des prédictions binaires cohérentes.
-
----
-
-## Sous-tâches
-
-### 1. Constantes du module
-
-```python
-# src/models/unsupervised/kmeans_detector.py
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
 
 # Valeurs par défaut — toujours passer par configs/unsupervised_config.yaml
 K_METHOD_DEFAULT: str = "silhouette"  # "silhouette" | "elbow" | "fixed"
@@ -41,15 +22,6 @@ K_MAX_DEFAULT: int = 10
 ANOMALY_PERCENTILE_DEFAULT: int = 95
 N_INIT_DEFAULT: int = 10
 MAX_ITER_DEFAULT: int = 300
-```
-
-### 2. Classe `KMeansDetector`
-
-```python
-import numpy as np
-from pathlib import Path
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
 
 
 class KMeansDetector:
@@ -73,7 +45,7 @@ class KMeansDetector:
     kmeans_ : sklearn.cluster.KMeans | None
         Modèle K-Means entraîné (None avant fit_task).
     threshold_ : float | None
-        Seuil de décision (calculé sur Task 1 si anomaly_threshold est null).
+        Seuil de décision (calculé sur Task 0 si anomaly_threshold est null).
     k_selected_ : list[int]
         K sélectionné à chaque tâche (historique).
     task_id_ : int
@@ -122,7 +94,12 @@ class KMeansDetector:
         scores = []
 
         for k in ks:
-            km = KMeans(n_clusters=k, n_init=self.n_init, max_iter=self.max_iter, random_state=42)
+            km = KMeans(
+                n_clusters=k,
+                n_init=self.n_init,
+                max_iter=self.max_iter,
+                random_state=42,
+            )
             labels = km.fit_predict(X)
 
             if self.k_method == "silhouette":
@@ -133,7 +110,10 @@ class KMeansDetector:
                 # Elbow : minimiser l'inertie (coude de la courbe)
                 scores.append(km.inertia_)
             else:
-                raise ValueError(f"k_method inconnu : {self.k_method!r}. Valeurs valides : 'silhouette', 'elbow', 'fixed'.")
+                raise ValueError(
+                    f"k_method inconnu : {self.k_method!r}. "
+                    "Valeurs valides : 'silhouette', 'elbow', 'fixed'."
+                )
 
         if self.k_method == "silhouette":
             k_opt = list(ks)[int(np.argmax(scores))]
@@ -168,7 +148,7 @@ class KMeansDetector:
 
         k_opt = self._select_k(X)
         self.k_selected_.append(k_opt)
-        print(f"  [KMeans] Tâche {task_id} — K sélectionné : {k_opt} (méthode={self.k_method})")
+        print(f"  [KMeans] Tâche {task_id} — K sélectionné : {k_opt} " f"(méthode={self.k_method})")
 
         self.kmeans_ = KMeans(
             n_clusters=k_opt,
@@ -182,8 +162,10 @@ class KMeansDetector:
         if task_id == 0 and self.threshold_ is None:
             distances = self._compute_distances(X)
             self.threshold_ = float(np.percentile(distances, self.anomaly_percentile))
-            print(f"  [KMeans] Seuil calculé sur Task 0 : {self.threshold_:.4f} "
-                  f"(percentile {self.anomaly_percentile})")
+            print(
+                f"  [KMeans] Seuil calculé sur Task 0 : {self.threshold_:.4f} "
+                f"(percentile {self.anomaly_percentile})"
+            )
 
         return self
 
@@ -204,7 +186,7 @@ class KMeansDetector:
             raise RuntimeError("KMeansDetector non entraîné. Appeler fit_task() d'abord.")
         # sklearn transform() retourne [N, k] distances aux centroides
         dists = self.kmeans_.transform(X)  # [N, k]
-        return dists.min(axis=1)           # [N] — distance au centroïde le plus proche
+        return dists.min(axis=1)  # [N] — distance au centroïde le plus proche
 
     def anomaly_score(self, X: np.ndarray) -> np.ndarray:
         """
@@ -290,14 +272,15 @@ class KMeansDetector:
 
     def save(self, path: str | Path) -> None:
         """
-        Sauvegarde le modèle (centroides + seuil + historique) au format .npz.
+        Sauvegarde le modèle (centroides + seuil + historique) via pickle.
 
         Parameters
         ----------
         path : str | Path
-            Chemin de destination (ex. experiments/exp_005/checkpoints/kmeans_task2.npz).
+            Chemin de destination (ex. experiments/exp_005/checkpoints/kmeans_task2.pkl).
         """
         import pickle
+
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "wb") as f:
@@ -318,33 +301,6 @@ class KMeansDetector:
         KMeansDetector
         """
         import pickle
+
         with open(Path(path), "rb") as f:
             return pickle.load(f)
-```
-
----
-
-## Critères d'acceptation
-
-- [x] `from src.models.unsupervised import KMeansDetector` — aucune erreur d'import
-- [x] `fit_task(X, task_id=0)` — K sélectionné et seuil calculé sans erreur
-- [x] `fit_task(X, task_id=1)` — K sélectionné, seuil inchangé (calculé sur Task 0 uniquement)
-- [x] `predict(X)` retourne `np.ndarray` de shape `[N]` avec valeurs ∈ {0, 1}
-- [x] `anomaly_score(X)` retourne `np.ndarray` de shape `[N]`, dtype `float32`
-- [x] `score(X, y)` retourne un float entre 0 et 1
-- [x] `k_method="silhouette"` : K sélectionné ∈ `[k_min, k_max]`
-- [x] `k_method="elbow"` : K sélectionné ∈ `[k_min, k_max]`
-- [x] `k_method="fixed"` : K = `k_fixed` indépendamment des données
-- [x] `ruff check src/models/unsupervised/kmeans_detector.py` + `black --check` passent
-- [x] `save` + `load` round-trip : même prédictions avant et après sérialisation
-
-> ⚠️ `from src.models.unsupervised import KMeansDetector` échoue tant que S5-03 (`knn_detector.py`) et S5-04 (`pca_baseline.py`) ne sont pas implémentées — l'`__init__.py` importe les trois. Import direct `from src.models.unsupervised.kmeans_detector import KMeansDetector` fonctionnel dès maintenant.
-
----
-
-## Questions ouvertes
-
-- `TODO(arnaud)` : `cl_strategy="accumulate"` — conserver les centroides des tâches passées et augmenter K à chaque tâche ? Ou reset complet à chaque tâche (`refit`) ? Impact direct sur l'évaluation de l'oubli catastrophique.
-- `TODO(arnaud)` : le seuil de décision doit-il être recalibré à chaque tâche ou fixé une fois sur Task 0 ? Recalibrer = data leakage potentiel si on utilise les labels de validation.
-- `TODO(dorra)` : la méthode elbow (second dérivé discret) est-elle robuste sur des datasets de ~2000 échantillons par tâche ? Préférer silhouette par défaut ?
-- `FIXME(gap1)` : valider sur un dataset avec vrai domain shift (FEMTO PRONOSTIA) — les 3 domaines du Dataset 2 sont très similaires (voir résultats Sprint 1).

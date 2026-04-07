@@ -181,3 +181,73 @@ def hdc_cl_tasks(hdc_synthetic_loader) -> list[dict]:
         }
         for i, d in enumerate(["pump", "turbine", "compressor"])
     ]
+
+
+# ---------------------------------------------------------------------------
+# Fixtures — modèles non supervisés (S5-08)
+# ---------------------------------------------------------------------------
+
+_N_FEATURES = 4
+_N_TRAIN = 100
+_N_VAL = 40
+_N_ANOMALY = 20
+
+
+@pytest.fixture
+def unsupervised_data() -> dict:
+    """
+    Données synthétiques 4 features : normal N(0,1) + anomalie N(5,1).
+
+    Séparation nette pour des assertions déterministes (anomaly_score > normal_score).
+    """
+    rng = np.random.default_rng(42)
+    X_normal = rng.normal(0, 1, (_N_TRAIN, _N_FEATURES))
+    X_anomaly = rng.normal(5, 1, (_N_ANOMALY, _N_FEATURES))
+    X_train = np.vstack([X_normal, X_anomaly[:10]])
+    y_train = np.array([0] * _N_TRAIN + [1] * 10)
+    X_val = np.vstack([rng.normal(0, 1, (_N_VAL, _N_FEATURES)), X_anomaly[10:]])
+    y_val = np.array([0] * _N_VAL + [1] * 10)
+    return {"X_train": X_train, "y_train": y_train, "X_val": X_val, "y_val": y_val}
+
+
+@pytest.fixture
+def kmeans_config() -> dict:
+    """Config minimale KMeansDetector — cl_strategy='refit' (défaut implémentation)."""
+    return {
+        "kmeans": {
+            "k_min": 2,
+            "k_max": 4,
+            "k_method": "silhouette",
+            "anomaly_percentile": 95,
+            "cl_strategy": "refit",
+            "seed": 42,
+        }
+    }
+
+
+@pytest.fixture
+def knn_config() -> dict:
+    """Config minimale KNNDetector — cl_strategy='accumulate'."""
+    return {
+        "knn": {
+            "n_neighbors": 5,
+            "metric": "euclidean",
+            "anomaly_percentile": 95,
+            "cl_strategy": "accumulate",
+            "max_ref_samples": 200,
+            "seed": 42,
+        }
+    }
+
+
+@pytest.fixture
+def pca_config() -> dict:
+    """Config minimale PCABaseline — cl_strategy='refit' (défaut implémentation)."""
+    return {
+        "pca": {
+            "n_components": 2,
+            "anomaly_percentile": 95,
+            "cl_strategy": "refit",
+            "seed": 42,
+        }
+    }

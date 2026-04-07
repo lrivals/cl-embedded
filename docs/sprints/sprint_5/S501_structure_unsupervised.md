@@ -8,7 +8,7 @@
 | **Durée estimée** | 1h |
 | **Dépendances** | S1-03 (`monitoring_dataset.py` — pour connaître `N_FEATURES` et les domaines) |
 | **Fichiers cibles** | `src/models/unsupervised/__init__.py`, `configs/unsupervised_config.yaml` |
-| **Complété le** | — |
+| **Complété le** | 7 avril 2026 |
 
 ---
 
@@ -132,12 +132,18 @@ print(f"[OK] N_FEATURES = {x_sample.shape[1]}, domaines = {[t['domain'] for t in
 
 ## Critères d'acceptation
 
-- [ ] `src/models/unsupervised/__init__.py` créé et syntaxiquement valide (`ruff check` passe)
-- [ ] `configs/unsupervised_config.yaml` chargeable via `yaml.safe_load` sans erreur
-- [ ] `data.n_features: 4` cohérent avec `monitoring_dataset.py`
-- [ ] Les trois sections `kmeans`, `knn`, `pca` sont présentes dans le YAML
-- [ ] `anomaly_threshold: null` dans les trois sections (calcul automatique via percentile)
-- [ ] `black --check src/models/unsupervised/__init__.py` passe
+- [x] `src/models/unsupervised/__init__.py` créé et syntaxiquement valide (`ruff check` passe)
+- [x] `configs/unsupervised_config.yaml` chargeable via `yaml.safe_load` sans erreur
+- [x] `data.n_features: 4` cohérent avec `monitoring_dataset.py`
+- [x] Les trois sections `kmeans`, `knn`, `pca` sont présentes dans le YAML
+- [x] `anomaly_threshold: null` dans les trois sections (calcul automatique via percentile)
+- [x] `black --check src/models/unsupervised/__init__.py` passe
+
+## Notes d'implémentation
+
+- `normalizer_path` corrigé vers `configs/monitoring_normalizer.yaml` (format YAML cohérent avec `hdc_config.yaml` et `ewc_config.yaml`, et non `.pkl` comme indiqué dans la spec initiale).
+- Section `memory` ajoutée au YAML pour cohérence avec les autres configs (PC-only, non contraignante).
+- `domain_order` en casse mixte (`["Pump", "Turbine", "Compressor"]`) pour correspondre exactement à `DOMAIN_ORDER` dans `monitoring_dataset.py`.
 
 ---
 

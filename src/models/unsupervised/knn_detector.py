@@ -1,50 +1,22 @@
-# S5-03 — Implémenter `knn_detector.py` (KNN distance-based anomaly detection)
+# ruff: noqa: N803, N806  — X, X_ref sont des conventions mathématiques ML (sklearn API)
+"""
+Baseline KNN pour la détection d'anomalies en scénario domain-incremental.
 
-| Champ | Valeur |
-|-------|--------|
-| **ID** | S5-03 |
-| **Sprint** | Sprint 5 — Semaine 5 (13–20 mai 2026) |
-| **Priorité** | 🔴 Critique |
-| **Durée estimée** | 2h |
-| **Dépendances** | S5-01 (structure + config YAML) |
-| **Fichiers cibles** | `src/models/unsupervised/knn_detector.py` |
-| **Complété le** | 7 avril 2026 |
+PC-only — pas de contrainte 64 Ko STM32N6.
+Labels utilisés uniquement en évaluation, jamais pendant fit_task.
+"""
 
----
+from __future__ import annotations
 
-## Objectif
+from pathlib import Path
 
-Implémenter `KNNDetector`, une baseline de détection d'anomalies par distance aux k plus proches voisins. Le score d'anomalie est la distance moyenne aux k voisins les plus proches dans le jeu d'entraînement. Un échantillon éloigné de ses voisins est considéré comme anormal.
-
-**Points clés** :
-- Score d'anomalie = distance moyenne aux k plus proches voisins (pas de clustering)
-- Stratégie CL `accumulate` : les échantillons de référence s'accumulent entre tâches (réseau de voisins grandissant)
-- Stratégie CL `refit` : seuls les données de la tâche courante sont conservées
-- Seuil de décision calculé sur Task 0 (percentile configurable)
-
-**Critère de succès** : `python -c "from src.models.unsupervised import KNNDetector"` passe, et un appel `fit_task` + `predict` retourne des prédictions binaires correctes sur des données synthétiques.
-
----
-
-## Sous-tâches
-
-### 1. Constantes du module
-
-```python
-# src/models/unsupervised/knn_detector.py
+import numpy as np
+from sklearn.neighbors import NearestNeighbors
 
 # Valeurs par défaut — toujours passer par configs/unsupervised_config.yaml
 N_NEIGHBORS_DEFAULT: int = 5
 METRIC_DEFAULT: str = "euclidean"
 ANOMALY_PERCENTILE_DEFAULT: int = 95
-```
-
-### 2. Classe `KNNDetector`
-
-```python
-import numpy as np
-from pathlib import Path
-from sklearn.neighbors import NearestNeighbors
 
 
 class KNNDetector:
@@ -106,7 +78,7 @@ class KNNDetector:
         X : np.ndarray [N, n_features]
             Données d'entraînement (sans labels).
         task_id : int
-            Index de la tâche (0-based).
+            Index de la tâche (0-based). Task 0 = Pump, 1 = Turbine, 2 = Compressor.
 
         Returns
         -------
@@ -129,16 +101,17 @@ class KNNDetector:
             self.X_ref_ = X.copy()
             print(f"  [KNN] Tâche {task_id} — refit : {len(X)} références")
 
-        # (Re)construire l'index KNN
+        # (Re)construire l'index KNN — k borné pour éviter erreur sur petits jeux
+        k_eff = min(self.n_neighbors, len(self.X_ref_) - 1)
         self.nn_ = NearestNeighbors(
-            n_neighbors=min(self.n_neighbors, len(self.X_ref_) - 1),
+            n_neighbors=k_eff,
             metric=self.metric,
             algorithm="auto",
             n_jobs=-1,
         )
         self.nn_.fit(self.X_ref_)
 
-        # Calcul du seuil sur Task 0 uniquement (pas de leakage)
+        # Calcul du seuil sur Task 0 uniquement (pas de leakage inter-tâches)
         if task_id == 0 and self.threshold_ is None:
             scores = self._compute_scores(X)
             self.threshold_ = float(np.percentile(scores, self.anomaly_percentile))
@@ -165,7 +138,7 @@ class KNNDetector:
         if self.nn_ is None:
             raise RuntimeError("KNNDetector non entraîné. Appeler fit_task() d'abord.")
         distances, _ = self.nn_.kneighbors(X)  # distances : [N, k]
-        return distances.mean(axis=1)           # [N] — distance moyenne aux k voisins
+        return distances.mean(axis=1)  # [N] — distance moyenne aux k voisins
 
     def anomaly_score(self, X: np.ndarray) -> np.ndarray:
         """
@@ -180,12 +153,13 @@ class KNNDetector:
         Returns
         -------
         np.ndarray [N], dtype=float32
+            Scores d'anomalie.
         """
         return self._compute_scores(X).astype(np.float32)
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         """
-        Prédit le label binaire (0=normal, 1=anormal).
+        Prédit le label binaire (0=normal, 1=anormal) en comparant au seuil.
 
         Parameters
         ----------
@@ -194,6 +168,7 @@ class KNNDetector:
         Returns
         -------
         np.ndarray [N], dtype=int64
+            Prédictions binaires.
 
         Raises
         ------
@@ -219,6 +194,7 @@ class KNNDetector:
         Returns
         -------
         float
+            Accuracy.
         """
         preds = self.predict(X)
         return float((preds == y.astype(np.int64)).mean())
@@ -230,6 +206,7 @@ class KNNDetector:
         Returns
         -------
         int
+            N_ref × n_features (nombre de valeurs float dans X_ref_).
         """
         if self.X_ref_ is None:
             return 0
@@ -246,13 +223,15 @@ class KNNDetector:
 
     def save(self, path: str | Path) -> None:
         """
-        Sauvegarde le modèle au format pickle.
+        Sauvegarde le modèle (X_ref_ + index KNN + seuil) via pickle.
 
         Parameters
         ----------
         path : str | Path
+            Chemin de destination (ex. experiments/exp_005/checkpoints/knn_task2.pkl).
         """
         import pickle
+
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "wb") as f:
@@ -261,32 +240,18 @@ class KNNDetector:
 
     @classmethod
     def load(cls, path: str | Path) -> "KNNDetector":
-        """Charge un modèle sauvegardé."""
+        """
+        Charge un modèle sauvegardé.
+
+        Parameters
+        ----------
+        path : str | Path
+
+        Returns
+        -------
+        KNNDetector
+        """
         import pickle
+
         with open(Path(path), "rb") as f:
             return pickle.load(f)
-```
-
----
-
-## Critères d'acceptation
-
-- [ ] `from src.models.unsupervised import KNNDetector` — aucune erreur d'import
-- [ ] `fit_task(X, task_id=0)` — index KNN construit, seuil calculé sans erreur
-- [ ] `fit_task(X, task_id=1)` avec `cl_strategy="accumulate"` — `len(X_ref_)` augmente
-- [ ] `fit_task(X, task_id=1)` avec `cl_strategy="refit"` — `len(X_ref_)` = `len(X)` de Task 1
-- [ ] `predict(X)` retourne `np.ndarray` de shape `[N]` avec valeurs ∈ {0, 1}
-- [ ] `anomaly_score(X)` retourne `np.ndarray` de shape `[N]`, dtype `float32`
-- [ ] `score(X, y)` retourne un float entre 0 et 1
-- [ ] `count_parameters()` retourne `n_ref × n_features` (croissant si accumulate)
-- [ ] `ruff check src/models/unsupervised/knn_detector.py` + `black --check` passent
-- [ ] `save` + `load` round-trip : mêmes prédictions avant et après sérialisation
-
----
-
-## Questions ouvertes
-
-- `TODO(arnaud)` : `cl_strategy="accumulate"` est la valeur par défaut — mais sur 3 tâches × ~2000 échantillons, X_ref_ atteint ~6000 points × 4 features = ~192 Ko (FP32, RAM Python). Acceptable pour PC-only, mais confirmer que ce n'est pas une simulation fidèle d'un vrai MCU (qui ne pourrait pas stocker tout ça).
-- `TODO(arnaud)` : l'évaluation CL du KNN avec `accumulate` ne devrait pas montrer d'oubli catastrophique par construction (les données passées restent dans X_ref_). Faut-il quand même reporter AF et BWT pour la complétude du tableau comparatif ?
-- `TODO(dorra)` : `n_jobs=-1` dans NearestNeighbors utilise tous les cœurs CPU — désactiver pour une simulation plus fidèle d'un MCU mono-cœur ?
-- `FIXME(gap1)` : tester sur un dataset avec vrai déséquilibre de classes (plus d'anormaux dans certains domaines) — Dataset 2 a un ratio faulty/normal à vérifier.

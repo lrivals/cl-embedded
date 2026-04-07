@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | S5-02 (`KMeansDetector`), S5-03 (`KNNDetector`), S5-04 (`PCABaseline`) |
 | **Fichiers cibles** | `tests/test_unsupervised.py`, `docs/models/unsupervised_spec.md` |
-| **Complété le** | — |
+| **Complété le** | 7 avril 2026 |
 
 ---
 
@@ -359,14 +359,14 @@ Tous les modèles (`KMeansDetector`, `KNNDetector`, `PCABaseline`) implémentent
 
 ## Critères d'acceptation
 
-- [ ] `pytest tests/test_unsupervised.py -v` passe avec ≥ 12 tests, 0 skip
-- [ ] `KMeansDetector` : 10 tests dont init, fit, predict, score, anomaly_score, summary, count_parameters, save/load, ram_budget, sequential_fit
-- [ ] `KNNDetector` : ≥ 5 tests dont fit, predict, anomaly_score, accumulate_strategy, save/load
-- [ ] `PCABaseline` : ≥ 5 tests dont fit, predict, reconstruction_error, n_components, save/load, ram_budget
-- [ ] Fixtures `unsupervised_data`, `kmeans_config`, `knn_config`, `pca_config` ajoutées dans `conftest.py`
-- [ ] `docs/models/unsupervised_spec.md` créé avec sections interface, stratégies CL, empreinte mémoire
-- [ ] `ruff check tests/test_unsupervised.py` + `black --check` passent
-- [ ] Tous les tests s'exécutent en < 5 s
+- [x] `pytest tests/test_unsupervised.py -v` passe avec ≥ 12 tests, 0 skip — **21 tests, 0.97 s**
+- [x] `KMeansDetector` : 10 tests dont init, fit, predict, score, anomaly_score, summary, count_parameters, save/load, ram_budget, sequential_fit
+- [x] `KNNDetector` : ≥ 5 tests dont fit, predict, anomaly_score, accumulate_strategy, save/load
+- [x] `PCABaseline` : ≥ 5 tests dont fit, predict, reconstruction_error, n_components, save/load, ram_budget
+- [x] Fixtures `unsupervised_data`, `kmeans_config`, `knn_config`, `pca_config` ajoutées dans `conftest.py`
+- [x] `docs/models/unsupervised_spec.md` créé avec sections interface, stratégies CL, empreinte mémoire
+- [x] `ruff check tests/test_unsupervised.py` + `black --check` passent
+- [x] Tous les tests s'exécutent en < 5 s
 
 ---
 

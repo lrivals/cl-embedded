@@ -1,0 +1,22 @@
+"""
+Module baselines non supervisées pour la détection d'anomalies en scénario CL.
+
+Ces modèles sont PC-only — ils ne sont pas soumis à la contrainte 64 Ko STM32N6.
+Les labels ne sont utilisés qu'en évaluation (pas pendant l'entraînement).
+
+Modèles disponibles
+-------------------
+KMeansDetector : K-Means avec sélection K dynamique via silhouette/elbow.
+KNNDetector    : KNN distance-based anomaly detection.
+PCABaseline    : PCA reconstruction error baseline.
+
+Références
+----------
+docs/models/unsupervised_spec.md (à créer en S5-08)
+"""
+
+from .kmeans_detector import KMeansDetector
+from .knn_detector import KNNDetector
+from .pca_baseline import PCABaseline
+
+__all__ = ["KMeansDetector", "KNNDetector", "PCABaseline"]

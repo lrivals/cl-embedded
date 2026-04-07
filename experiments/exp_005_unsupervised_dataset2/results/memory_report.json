@@ -1,0 +1,29 @@
+{
+  "kmeans": {
+    "inference_latency_ms": 0.39869873984571313,
+    "inference_latency_std_ms": 0.14056982170126164,
+    "ram_peak_bytes": 5358,
+    "n_params": 8,
+    "ram_fp32_bytes": 32,
+    "ram_int8_bytes": 8,
+    "within_budget_64ko": true
+  },
+  "knn": {
+    "inference_latency_ms": 15.754705270046543,
+    "inference_latency_std_ms": 0.6549075906493166,
+    "ram_peak_bytes": 113102,
+    "n_params": 24548,
+    "ram_fp32_bytes": 98192,
+    "ram_int8_bytes": 24548,
+    "within_budget_64ko": false
+  },
+  "pca": {
+    "inference_latency_ms": 0.11476807019789703,
+    "inference_latency_std_ms": 0.014634559694684272,
+    "ram_peak_bytes": 2148,
+    "n_params": 12,
+    "ram_fp32_bytes": 48,
+    "ram_int8_bytes": 12,
+    "within_budget_64ko": true
+  }
+}

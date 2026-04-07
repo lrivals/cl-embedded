@@ -4,11 +4,11 @@
 |-------|--------|
 | **ID** | S3-02 |
 | **Sprint** | Sprint 3 — Semaine 3 (29 avril – 6 mai 2026) |
-| **Priorité** | 🔴 Critique |
+| **Priorité** | ✅ Terminé |
 | **Durée estimée** | 4h |
 | **Dépendances** | S3-01 (dataset téléchargé, stats normalisation calculées) |
 | **Fichier cible** | `src/data/pump_dataset.py` |
-| **Complété le** | — |
+| **Complété le** | 7 avril 2026 |
 
 ---
 
@@ -495,17 +495,17 @@ def test_task_tensors_shape(synthetic_features):
 
 ## Critères d'acceptation
 
-- [ ] `from src.data.pump_dataset import PumpMaintenanceDataset, CLStreamSplitter` — aucune erreur d'import
-- [ ] `features.shape == [N_windows, 25]` pour tout dataset valide
-- [ ] `labels.shape == [N_windows]`, valeurs ∈ {0.0, 1.0}
-- [ ] Découpage chronologique strict : T1 < T2 < T3 (pas de mélange)
-- [ ] Absence d'overlap entre tâches : `set(T1) ∩ set(T2) == ∅`
-- [ ] `strategy="random"` lève une `ValueError` explicite
-- [ ] `fit_normalizer(task_id=0)` → mean ≈ 0 sur Task 1 après `apply_normalizer()`
-- [ ] `save_normalizer("configs/pump_normalizer.yaml")` génère un YAML valide committable
-- [ ] Annotations `# MEM:` présentes sur les tenseurs de fenêtres et features
-- [ ] `pytest tests/test_pump_dataset.py -v` — tous les tests passent
-- [ ] `ruff check src/data/pump_dataset.py` + `black --check` passent
+- [x] `from src.data.pump_dataset import PumpMaintenanceDataset, CLStreamSplitter` — aucune erreur d'import
+- [x] `features.shape == [N_windows, 25]` pour tout dataset valide (1 249 fenêtres sur 20 000 points)
+- [x] `labels.shape == [N_windows]`, valeurs ∈ {0.0, 1.0}
+- [x] Découpage chronologique strict : T1 < T2 < T3 (pas de mélange)
+- [x] Absence d'overlap entre tâches : `set(T1) ∩ set(T2) == ∅`
+- [x] `strategy="random"` lève une `ValueError` explicite
+- [x] `fit_normalizer(task_id=0)` → mean ≈ 0 sur Task 1 après `apply_normalizer()`
+- [x] `save_normalizer("configs/pump_normalizer.yaml")` génère un YAML valide committable
+- [x] Annotations `# MEM:` présentes sur les tenseurs de fenêtres et features
+- [x] `pytest tests/test_pump_dataset.py -v` — 26/26 tests passent (23 unitaires + 3 intégration)
+- [x] `ruff check src/data/pump_dataset.py` + `black --check` passent
 
 ---
 
@@ -513,10 +513,20 @@ def test_task_tensors_shape(synthetic_features):
 
 | Élément | Où reporter | Statut |
 |---------|-------------|--------|
-| `N_FEATURES = 25` confirmé | `configs/tinyol_config.yaml` → `backbone.input_dim` | ⬜ déjà dans le YAML |
-| Nb fenêtres total + par tâche | En-tête de `pump_dataset.py` | ⬜ après S3-01 |
-| Interface `get_task_tensors` | Utilisée dans S3-04 (`pretrain_tinyol.py`) et S3-06 (exp_003) | ⬜ |
-| `configs/pump_normalizer.yaml` | Committable — utilisé par S3-04 et MCU | ⬜ S3-04 |
+| `N_FEATURES = 25` confirmé | `configs/tinyol_config.yaml` → `backbone.input_dim` | ✅ déjà dans le YAML |
+| Nb fenêtres total + par tâche | En-tête de `pump_dataset.py` | ✅ 1 249 fenêtres (≈ 416/tâche) |
+| Interface `get_task_tensors` | Utilisée dans S3-04 (`pretrain_tinyol.py`) et S3-06 (exp_003) | ✅ implémentée |
+| `configs/pump_normalizer.yaml` | Committable — utilisé par S3-04 et MCU | ✅ généré le 7 avril 2026 |
+
+## Résultats mesurés
+
+| Paramètre | Valeur |
+| --------- | ------ |
+| N total fenêtres | 1 249 (sur 20 000 points, WINDOW=32, STEP=16) |
+| Fenêtres / tâche | ≈ 416 (T1), ≈ 416 (T2), ≈ 417 (T3) |
+| `N_FEATURES` | 25 (6 stats × 4 canaux + 1 temporel) |
+| Normalizer fit sur | Task 1 uniquement (416 fenêtres) |
+| Fichiers livrés | `src/data/pump_dataset.py`, `tests/test_pump_dataset.py`, `configs/pump_normalizer.yaml` |
 
 ---
 

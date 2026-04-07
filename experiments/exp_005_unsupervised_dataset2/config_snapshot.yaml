@@ -1,0 +1,54 @@
+_snapshot_timestamp: '2026-04-07T21:44:32.334397'
+data:
+  batch_size: 256
+  csv_path: data/raw/equipment_monitoring/equipment_monitoring.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - Pump
+  - Turbine
+  - Compressor
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_column: faulty
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer.yaml
+  val_ratio: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - auroc
+  n_latency_runs: 100
+  output_dir: experiments/exp_005_unsupervised_dataset2/results/
+exp_id: exp_005_unsupervised_dataset2
+kmeans:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  k_fixed: 3
+  k_max: 10
+  k_method: silhouette
+  k_min: 2
+  max_iter: 300
+  n_init: 10
+knn:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: accumulate
+  metric: euclidean
+  n_neighbors: 5
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+pca:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  min_explained_variance: 0.95
+  n_components: 2
+seed: 42

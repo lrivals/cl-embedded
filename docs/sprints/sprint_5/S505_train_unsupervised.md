@@ -8,7 +8,7 @@
 | **Durée estimée** | 3h |
 | **Dépendances** | S5-02 (`KMeansDetector`), S5-03 (`KNNDetector`), S5-04 (`PCABaseline`), S1-03 (`get_cl_dataloaders`), S1-07 (`metrics.py`), S1-08 (`memory_profiler.py`) |
 | **Fichiers cibles** | `scripts/train_unsupervised.py` |
-| **Complété le** | — |
+| **Complété le** | 7 avril 2026 |
 
 ---
 
@@ -463,11 +463,11 @@ experiments/exp_005_unsupervised_dataset2/
 
 ## Critères d'acceptation
 
-- [ ] `python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml --model kmeans` s'exécute sans erreur
-- [ ] `python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml --model all` produit `metrics_all.json`
-- [ ] `experiments/exp_005_unsupervised_dataset2/results/metrics_all.json` contient `aa`, `avg_forgetting`, `auroc_final`, `ram_peak_bytes`, `inference_latency_ms` pour les 3 modèles
-- [ ] `acc_matrix_*.npy` shape `[3, 3]` avec NaN pour les cases futures
-- [ ] `config_snapshot.yaml` contient le timestamp d'exécution
+- [x] `python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml --model kmeans` s'exécute sans erreur
+- [x] `python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml --model all` produit `metrics_all.json`
+- [x] `experiments/exp_005_unsupervised_dataset2/results/metrics_all.json` contient `aa`, `avg_forgetting`, `auroc_final`, `ram_peak_bytes`, `inference_latency_ms` pour les 3 modèles
+- [x] `acc_matrix_*.npy` shape `[3, 3]` avec NaN pour les cases futures
+- [x] `config_snapshot.yaml` contient le timestamp d'exécution
 - [ ] `ruff check scripts/train_unsupervised.py` + `black --check` passent
 - [ ] Résultats reproductibles : deux runs avec `seed=42` produisent des métriques identiques
 

@@ -8,7 +8,8 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | — (indépendant du sprint 2) |
 | **Fichier cible** | `notebooks/01_data_exploration.ipynb` (Section 2) |
-| **Complété le** | — |
+| **Complété le** | 7 avril 2026 |
+| **Statut** | ✅ Terminé |
 
 ---
 
@@ -170,14 +171,16 @@ print(normalizer_stats)
 
 ## Critères d'acceptation
 
-- [ ] `data/raw/pump_maintenance/` contient au moins un fichier CSV avec les 6 colonnes attendues
-- [ ] Le notebook tourne sans erreur de `Kernel → Restart & Run All`
-- [ ] `df["timestamp"].is_monotonic_increasing` vérifié (ordre chronologique)
-- [ ] `df["maintenance_required"].isin([0, 1]).all()` vérifié
-- [ ] Taux de `maintenance_required` calculé et affiché pour chacun des 3 tiers chronologiques
-- [ ] Graphique du drift temporel sauvegardé dans `notebooks/figures/`
-- [ ] Stats mean/std des 4 canaux (sur T1) calculées et affichées
-- [ ] Slug Kaggle documenté dans `docs/context/datasets.md`
+- [x] `data/raw/pump_maintenance/` contient au moins un fichier CSV avec les 6 colonnes attendues
+- [x] Le notebook tourne sans erreur de `Kernel → Restart & Run All`
+- [x] `df["operational_hours"].is_monotonic_increasing` vérifié (proxy temporel — pas de colonne `timestamp` dans le CSV)
+- [x] `df["maintenance_required"].isin([0, 1]).all()` vérifié
+- [x] Taux de `maintenance_required` calculé et affiché pour chacun des 3 tiers chronologiques
+- [x] Graphique du drift temporel sauvegardé dans `notebooks/figures/pump_maintenance_drift.png`
+- [x] Stats mean/std des 5 canaux (sur T1) calculées et affichées (`flow_rate` présent dans le CSV — canal supplémentaire non documenté initialement)
+- [ ] Slug Kaggle documenté dans `docs/context/datasets.md` — `TODO(arnaud)` en attente
+
+> **Note exécution** : colonnes CSV réelles différent des specs initiales (`Maintenance_Flag` au lieu de `maintenance_required`, `Operational_Hours` au lieu de `timestamp`, noms PascalCase). Renommage appliqué dans le notebook + `datasets.md` mis à jour.
 
 ---
 
@@ -185,10 +188,11 @@ print(normalizer_stats)
 
 | Élément | Où reporter | Statut |
 |---------|-------------|--------|
-| mean/std features (sur T1) | `configs/pump_normalizer.yaml` | ⬜ S3-04 (après validation S3-01) |
+| mean/std features (sur T1) | `configs/pump_normalizer.yaml` | ✅ Calculées dans notebook — export commenté, attente TODO(arnaud) → S3-04 |
 | Nb échantillons total + par tiers | En-tête de `src/data/pump_dataset.py` | ⬜ S3-02 |
 | Taux de panne par tiers | `experiments/exp_003_tinyol_dataset1/config_snapshot.yaml` | ⬜ S3-06 |
-| Slug Kaggle exact | `docs/context/datasets.md` | ⬜ S3-01 |
+| Slug Kaggle exact | `docs/context/datasets.md` | ⬜ TODO(arnaud) — placeholder ajouté |
+| Colonnes CSV réelles (PascalCase + Flow_Rate) | `docs/context/datasets.md` | ✅ Mis à jour |
 
 ---
 

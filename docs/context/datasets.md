@@ -6,22 +6,27 @@
 
 | Propriété | Valeur |
 |-----------|--------|
-| **Source** | Kaggle |
-| **Chemin local** | `data/raw/pump_maintenance/` |
+| **Source** | Kaggle — `TODO(arnaud): slug exact à renseigner` |
+| **Chemin local** | `data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv` |
 | **Type** | Séries temporelles multivariées |
 | **Nature** | Simulé (réaliste) |
-| **Tâche ML** | Classification binaire (maintenance_required: 0/1) |
+| **Tâche ML** | Classification binaire (Maintenance_Flag: 0/1) |
+| **N échantillons** | 20 000 |
 
-### Variables
+### Variables (noms bruts CSV → convention pipeline)
 
-| Colonne | Type | Description |
-|---------|------|-------------|
-| `timestamp` | datetime | Horodatage de la mesure |
-| `temperature` | float (°C) | État thermique de la machine |
-| `vibration` | float | Indicateur de défaut mécanique |
-| `pressure` | float | Pression interne du système |
-| `rpm` | float | Vitesse de rotation |
-| `maintenance_required` | int (0/1) | Label binaire |
+| Colonne CSV brute | Rename pipeline | Type | Description |
+|-------------------|-----------------|------|-------------|
+| `Pump_ID` | — (non utilisé) | int | Identifiant de la pompe |
+| `Temperature` | `temperature` | float (°C) | État thermique de la machine |
+| `Vibration` | `vibration` | float | Indicateur de défaut mécanique |
+| `Pressure` | `pressure` | float | Pression interne du système |
+| `Flow_Rate` | `flow_rate` | float | Débit (5e canal — absent de la spec initiale) |
+| `RPM` | `rpm` | float | Vitesse de rotation |
+| `Operational_Hours` | `operational_hours` | float | Proxy temporel (remplace `timestamp` absent) |
+| `Maintenance_Flag` | `maintenance_required` | int (0/1) | Label binaire |
+
+> **Note** : le CSV ne contient pas de colonne `timestamp`. L'axe temporel est reconstruit par tri croissant de `Operational_Hours`. Le renommage vers les noms snake_case est effectué à l'import dans `pump_dataset.py`.
 
 ### Scénario CL associé
 

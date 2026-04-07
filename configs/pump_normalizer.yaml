@@ -1,0 +1,80 @@
+fit_task: task_1_chronological
+normalization: zscore
+feature_names:
+- mean_temperature
+- std_temperature
+- rms_temperature
+- kurtosis_temperature
+- peak_temperature
+- crest_factor_temperature
+- mean_vibration
+- std_vibration
+- rms_vibration
+- kurtosis_vibration
+- peak_vibration
+- crest_factor_vibration
+- mean_pressure
+- std_pressure
+- rms_pressure
+- kurtosis_pressure
+- peak_pressure
+- crest_factor_pressure
+- mean_rpm
+- std_rpm
+- rms_rpm
+- kurtosis_rpm
+- peak_rpm
+- crest_factor_rpm
+- temporal_position
+mean:
+  mean_temperature: 100.47957611083984
+  std_temperature: 28.141834259033203
+  rms_temperature: 104.37877655029297
+  kurtosis_temperature: -1.0972846746444702
+  peak_temperature: 147.26210021972656
+  crest_factor_temperature: 1.4136029481887817
+  mean_vibration: 2.526782751083374
+  std_vibration: 1.3894238471984863
+  rms_vibration: 2.887468099594116
+  kurtosis_vibration: -1.1369096040725708
+  peak_vibration: 4.8377814292907715
+  crest_factor_vibration: 1.6836148500442505
+  mean_pressure: 200.49026489257812
+  std_pressure: 56.80934143066406
+  rms_pressure: 208.45777893066406
+  kurtosis_pressure: -1.1277985572814941
+  peak_pressure: 293.6990051269531
+  crest_factor_pressure: 1.4117878675460815
+  mean_rpm: 1997.6795654296875
+  std_rpm: 566.0850219726562
+  rms_rpm: 2077.00927734375
+  kurtosis_rpm: -1.0932881832122803
+  peak_rpm: 2943.5419921875
+  crest_factor_rpm: 1.4207216501235962
+  temporal_position: 0.16626602411270142
+std:
+  mean_temperature: 5.0562944412231445
+  std_temperature: 2.3105764389038086
+  rms_temperature: 4.908740520477295
+  kurtosis_temperature: 0.2754769027233124
+  peak_temperature: 2.670309066772461
+  crest_factor_temperature: 0.06379406154155731
+  mean_vibration: 0.2360120564699173
+  std_vibration: 0.11989749222993851
+  rms_vibration: 0.21849742531776428
+  kurtosis_vibration: 0.24787475168704987
+  peak_vibration: 0.14343398809432983
+  crest_factor_vibration: 0.11769714206457138
+  mean_pressure: 10.430992126464844
+  std_pressure: 4.942173004150391
+  rms_pressure: 10.112853050231934
+  kurtosis_pressure: 0.24098584055900574
+  peak_pressure: 6.0461578369140625
+  crest_factor_pressure: 0.06561414152383804
+  mean_rpm: 111.37554168701172
+  std_rpm: 47.3709716796875
+  rms_rpm: 108.89096069335938
+  kurtosis_rpm: 0.2600926458835602
+  peak_rpm: 53.327911376953125
+  crest_factor_rpm: 0.07179959863424301
+  temporal_position: 0.09622476249933243
