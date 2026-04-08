@@ -8,7 +8,7 @@
 | **Durée estimée** | 3h |
 | **Dépendances** | S3-02 (pour valider le forward pass avec données réelles) |
 | **Fichiers cibles** | `src/models/tinyol/autoencoder.py`, `src/models/tinyol/__init__.py` |
-| **Complété le** | — |
+| **Complété le** | 8 avril 2026 |
 
 ---
 

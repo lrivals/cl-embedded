@@ -87,7 +87,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 |----|-------|:--------:|---------------|------------|
 | S3-01 | Télécharger Dataset 1 (Pump) + exploration | ✅ | `notebooks/01_data_exploration.ipynb` (section 2) | 2h |
 | S3-02 | Implémenter `pump_dataset.py` (fenêtrage + features) | ✅ | `src/data/pump_dataset.py` | 4h |
-| S3-03 | Implémenter `autoencoder.py` (backbone + décodeur) | 🔴 | `src/models/tinyol/autoencoder.py` | 3h |
+| S3-03 | Implémenter `autoencoder.py` (backbone + décodeur) | ✅ | `src/models/tinyol/autoencoder.py` | 3h |
 | S3-04 | Pré-entraînement backbone (données normales uniquement) | 🔴 | `scripts/pretrain_tinyol.py` | 2h |
 | S3-05 | Implémenter `oto_head.py` (tête OtO + boucle SGD online) | 🔴 | `src/models/tinyol/oto_head.py` | 3h |
 | S3-06 | Expérience TinyOL : exp_003 | 🔴 | `experiments/exp_003_tinyol_dataset1/` | 3h |
@@ -137,6 +137,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 | S5-10 | **Implémenter `mahalanobis_detector.py` (M6 — μ, Σ⁻¹ offline, seuil adaptatif)** | ✅ | `src/models/unsupervised/mahalanobis_detector.py` | 2h |
 | S5-11 | **Expérience Mahalanobis Dataset 1 et 2 : exp_007** | ✅ | `experiments/exp_007_mahalanobis/` | 2h |
 | S5-12 | *(optionnel)* Implémenter `gmm_detector.py` (GMM EM offline, K petit) | 🟢 | `src/models/unsupervised/gmm_detector.py` | 3h |
+| S5-13 | Visualisation espace des features + clusters (PCA 2D, ellipses Mahalanobis, Voronoï K-Means, heatmap PCA reconstruction) | ✅ | `src/evaluation/feature_space_plots.py`, `notebooks/figures/05_feature_space_*.png` | 2h |
 
 > **Corrections de chemins dataset appliquées le 8 avril 2026** — Standardisation de tous les configs vers une clé `csv_path` avec chemin complet vers le fichier CSV (au lieu de clés `path` pointant vers des dossiers avec fallback glob fragile) :
 >
@@ -192,7 +193,7 @@ Mettre à jour ce tableau après chaque sprint :
 |--------|:----------:|:-----:|:----------:|:-----------:|:-----------:|
 | M2 EWC + MLP | ✅ | ✅ | ✅ | ⬜ | ✅ |
 | M3 HDC | ✅ | ✅ | ✅ | ⬜ | ✅ |
-| M1 TinyOL | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| M1 TinyOL | 🔄 | 🔄 | ⬜ | ⬜ | ⬜ |
 | M1 + buffer UINT8 | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
 | M4a K-Means (K dynamique) | ✅ | ✅ | ✅ | N/A | ✅ |
 | M4b KNN anomaly detection | ✅ | ✅ | ✅ | N/A | ✅ |
