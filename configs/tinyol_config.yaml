@@ -37,7 +37,7 @@ oto_head:
 
 data:
   dataset: "pump_maintenance"
-  path: "data/raw/pump_maintenance/"
+  csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
   timestamp_column: "timestamp"
   feature_columns: ["temperature", "vibration", "pressure", "rpm"]
   label_column: "maintenance_required"

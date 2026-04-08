@@ -200,17 +200,15 @@ def main() -> None:
     print("Config snapshot sauvegardé.")
 
     # Chargement données
-    data_path = Path(cfg["data"]["path"])
+    csv_path = Path(cfg["data"]["csv_path"])
     normalizer_path = Path(cfg["data"]["normalizer_path"])
 
-    csv_candidates = list(data_path.glob("*.csv"))
-    if not csv_candidates:
+    if not csv_path.exists():
         raise FileNotFoundError(
-            f"Aucun fichier CSV trouvé dans '{data_path}'.\n"
-            f"Télécharger le Dataset 2 (Equipment Monitoring) depuis Kaggle "
-            f"et le placer dans ce dossier."
+            f"CSV introuvable : {csv_path}\n"
+            "Télécharger le Dataset 2 (Equipment Monitoring) depuis Kaggle "
+            "et le placer dans ce dossier."
         )
-    csv_path = csv_candidates[0]
     print(f"Dataset : {csv_path}")
 
     tasks = get_cl_dataloaders(

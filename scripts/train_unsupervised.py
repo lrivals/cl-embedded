@@ -43,7 +43,7 @@ from sklearn.metrics import roc_auc_score
 
 from src.data.monitoring_dataset import get_cl_dataloaders
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
-from src.models.unsupervised import KMeansDetector, KNNDetector, PCABaseline
+from src.models.unsupervised import KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
 from src.utils.config_loader import get_exp_dir, load_config, save_config_snapshot
 from src.utils.reproducibility import set_seed
 
@@ -64,7 +64,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        choices=["kmeans", "knn", "pca", "all"],
+        choices=["kmeans", "knn", "pca", "mahalanobis", "all"],
         default="all",
         help="Modèle à entraîner (default: all)",
     )
@@ -75,6 +75,11 @@ def parse_args() -> argparse.Namespace:
         choices=["monitoring", "pump"],
         help="Dataset : monitoring (Dataset 2) | pump (Dataset 1)",
     )
+    parser.add_argument(
+        "--exp_id",
+        default=None,
+        help="Override exp_id depuis la config (ex. exp_007_mahalanobis)",
+    )
     return parser.parse_args()
 
 
@@ -83,14 +88,16 @@ def parse_args() -> argparse.Namespace:
 # ---------------------------------------------------------------------------
 
 
-def build_model(model_name: str, config: dict) -> KMeansDetector | KNNDetector | PCABaseline:
+def build_model(
+    model_name: str, config: dict
+) -> KMeansDetector | KNNDetector | PCABaseline | MahalanobisDetector:
     """
     Instancie un détecteur non supervisé depuis la sous-section YAML correspondante.
 
     Parameters
     ----------
     model_name : str
-        "kmeans", "knn" ou "pca".
+        "kmeans", "knn", "pca" ou "mahalanobis".
     config : dict
         Config complète (unsupervised_config.yaml). La sous-section model_name est extraite.
 
@@ -104,8 +111,10 @@ def build_model(model_name: str, config: dict) -> KMeansDetector | KNNDetector |
         return KNNDetector(config["knn"])
     elif model_name == "pca":
         return PCABaseline(config["pca"])
+    elif model_name == "mahalanobis":
+        return MahalanobisDetector(config["mahalanobis"])
     else:
-        raise ValueError(f"Modèle inconnu : {model_name!r}. Choix : kmeans, knn, pca")
+        raise ValueError(f"Modèle inconnu : {model_name!r}. Choix : kmeans, knn, pca, mahalanobis")
 
 
 # ---------------------------------------------------------------------------
@@ -310,6 +319,7 @@ def run_model(
     config: dict,
     tasks: list[dict],
     results_dir: Path,
+    dataset_tag: str = "dataset2",
 ) -> dict:
     """
     Entraîne, évalue et profile un modèle non supervisé.
@@ -317,13 +327,15 @@ def run_model(
     Parameters
     ----------
     model_name : str
-        "kmeans", "knn" ou "pca".
+        "kmeans", "knn", "pca" ou "mahalanobis".
     config : dict
         Config complète.
     tasks : list[dict]
         Tâches CL (sortie de get_cl_dataloaders).
     results_dir : Path
         Répertoire de sortie pour les artefacts.
+    dataset_tag : str
+        Suffixe dataset pour les noms de fichiers ("dataset2" ou "dataset1").
 
     Returns
     -------
@@ -359,26 +371,37 @@ def run_model(
           f"n_params: {mem['n_params']}")
 
     # --- Sauvegarde artefacts ---
-    np.save(results_dir / f"acc_matrix_{model_name}.npy", acc_matrix)
-    np.save(results_dir / f"auroc_matrix_{model_name}.npy", auroc_matrix)
-    model.save(results_dir / f"model_{model_name}.pkl")
+    np.save(results_dir / f"acc_matrix_{model_name}_{dataset_tag}.npy", acc_matrix)
+    np.save(results_dir / f"auroc_matrix_{model_name}_{dataset_tag}.npy", auroc_matrix)
 
+    checkpoints_dir = results_dir.parent / "checkpoints"
+    checkpoints_dir.mkdir(parents=True, exist_ok=True)
+    model.save(checkpoints_dir / f"{model_name}_{dataset_tag}_task{T - 1}_final.pkl")
+
+    # Clés plates requises par S511 + clés détaillées existantes
     result = {
         "model": model_name,
+        # Clés requises à la racine (S511 REQUIRED_KEYS)
+        "acc_final": float(cl_metrics["aa"]),
+        "avg_forgetting": float(cl_metrics["af"]),
+        "backward_transfer": float(cl_metrics["bwt"]),
+        "auroc_final": auroc_avg,
+        "ram_peak_bytes": mem["ram_peak_bytes"],
+        "inference_latency_ms": mem["inference_latency_ms"],
+        "n_params": mem["n_params"],
+        # Clés détaillées
         **cl_metrics,
         "auroc_avg": auroc_avg,
         "auroc_per_task": [
             None if math.isnan(v) else v for v in auroc_final_row.tolist()
         ],
-        "acc_matrix": [
-            [None if math.isnan(v) else v for v in row]
-            for row in acc_matrix.tolist()
-        ],
         "memory": mem,
     }
 
-    save_metrics(result, results_dir / f"metrics_{model_name}.json")
-    print(f"  Résultats → {results_dir / f'metrics_{model_name}.json'}")
+    metrics_path = results_dir / f"metrics_{model_name}_{dataset_tag}.json"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(result, f, indent=2)
+    print(f"  Résultats → {metrics_path}")
 
     return result
 
@@ -395,6 +418,14 @@ def main() -> None:
     cfg = load_config(args.config)
     set_seed(cfg.get("seed", 42))
 
+    # --- Override exp_id depuis CLI ---
+    dataset_tag = "dataset1" if args.dataset == "pump" else "dataset2"
+    if args.exp_id:
+        if args.dataset == "pump":
+            cfg["exp_id_pump"] = args.exp_id
+        else:
+            cfg["exp_id"] = args.exp_id
+
     # --- Sélection dataset et répertoires ---
     if args.dataset == "pump":
         exp_id = cfg.get("exp_id_pump", "exp_006_unsupervised_dataset1")
@@ -402,7 +433,7 @@ def main() -> None:
         cfg["_dataset"] = "pump"
     else:
         exp_id = cfg.get("exp_id", "exp_005_unsupervised_dataset2")
-        results_dir = Path(cfg["evaluation"]["output_dir"])
+        results_dir = Path(f"experiments/{exp_id}/results")
         cfg["_dataset"] = "monitoring"
 
     exp_dir = results_dir.parent
@@ -447,12 +478,12 @@ def main() -> None:
     print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({len(tasks)} tâches)")
 
     # --- Sélection des modèles ---
-    model_names = ["kmeans", "knn", "pca"] if args.model == "all" else [args.model]
+    model_names = ["kmeans", "knn", "pca", "mahalanobis"] if args.model == "all" else [args.model]
 
     # --- Entraînement ---
     all_results: dict[str, dict] = {}
     for name in model_names:
-        all_results[name] = run_model(name, cfg, tasks, results_dir)
+        all_results[name] = run_model(name, cfg, tasks, results_dir, dataset_tag=dataset_tag)
 
     # --- Tableau comparatif ---
     print(f"\n{'=' * 72}")
@@ -481,6 +512,18 @@ def main() -> None:
     with open(all_metrics_path, "w", encoding="utf-8") as f:
         json.dump(all_results, f, indent=2)
     print(f"\nRésultats complets → {all_metrics_path}")
+
+    # --- Comparatif vs exp_005 (Dataset 2 uniquement) ---
+    if dataset_tag == "dataset2":
+        ref_path = Path("experiments/exp_005_unsupervised_dataset2/results/metrics_all.json")
+        if ref_path.exists():
+            with open(ref_path, encoding="utf-8") as f:
+                ref_results = json.load(f)
+            comparison = {**ref_results, **all_results}
+            comparison_path = results_dir / "metrics_comparison.json"
+            with open(comparison_path, "w", encoding="utf-8") as f:
+                json.dump(comparison, f, indent=2)
+            print(f"Comparatif vs exp_005 → {comparison_path}")
 
 
 if __name__ == "__main__":

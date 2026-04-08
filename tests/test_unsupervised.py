@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from src.models.unsupervised import KMeansDetector, KNNDetector, PCABaseline
+from src.models.unsupervised import KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
 
 # ===========================================================================
 # KMeansDetector — 10 tests
@@ -213,3 +213,112 @@ class TestPCABaseline:
         model.fit_task(unsupervised_data["X_train"], task_id=0)
         ram_fp32 = model.count_parameters() * 4
         assert ram_fp32 <= 65536, f"PCA dépasse 64 Ko : {ram_fp32} B"
+
+
+# ===========================================================================
+# MahalanobisDetector — 10 tests
+# ===========================================================================
+
+
+class TestMahalanobisDetector:
+
+    def test_init_from_config(self, mahalanobis_config: dict) -> None:
+        """MahalanobisDetector s'instancie correctement depuis la config."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        assert model is not None
+
+    def test_fit_task_and_predict_binary(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """fit_task puis predict retourne des prédictions binaires {0, 1}."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        preds = model.predict(unsupervised_data["X_val"])
+        assert preds.shape == (len(unsupervised_data["X_val"]),)
+        assert set(np.unique(preds)).issubset({0, 1})
+
+    def test_anomaly_score_shape(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """anomaly_score retourne un vecteur float32 de la bonne taille, valeurs ≥ 0."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        scores = model.anomaly_score(unsupervised_data["X_val"])
+        assert scores.shape == (len(unsupervised_data["X_val"]),)
+        assert scores.dtype == np.float32
+        assert np.all(scores >= 0), "Distance de Mahalanobis doit être non-négative"
+
+    def test_score_between_0_and_1(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """score() retourne une accuracy dans [0, 1]."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        acc = model.score(unsupervised_data["X_val"], unsupervised_data["y_val"])
+        assert 0.0 <= acc <= 1.0
+
+    def test_anomalies_have_higher_score(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """Les anomalies N(5,1) ont un score moyen supérieur aux normaux N(0,1)."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        scores = model.anomaly_score(unsupervised_data["X_val"])
+        y = unsupervised_data["y_val"]
+        assert scores[y == 1].mean() > scores[y == 0].mean()
+
+    def test_sequential_fit_two_tasks(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """fit_task séquentiel sur 2 tâches — threshold inchangé après task_id=1."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        threshold_after_task0 = model.threshold_
+        model.fit_task(unsupervised_data["X_train"], task_id=1)
+        assert model.threshold_ == threshold_after_task0, (
+            "Le seuil ne doit pas être recalculé après Task 0"
+        )
+        preds = model.predict(unsupervised_data["X_val"])
+        assert preds.shape == (len(unsupervised_data["X_val"]),)
+
+    def test_summary_returns_string(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """summary() retourne une chaîne non vide après fit_task."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        s = model.summary()
+        assert isinstance(s, str) and len(s) > 0
+
+    def test_count_parameters_equals_d_plus_d2(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """count_parameters() retourne d + d² (pour d=4 → 20)."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        d = unsupervised_data["X_train"].shape[1]  # 4
+        assert model.count_parameters() == d + d * d
+
+    def test_save_and_load(
+        self, mahalanobis_config: dict, unsupervised_data: dict, tmp_path
+    ) -> None:
+        """save() puis load() (classmethod) préserve les prédictions."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        preds_before = model.predict(unsupervised_data["X_val"])
+
+        checkpoint = tmp_path / "mahalanobis_test.pkl"
+        model.save(checkpoint)
+
+        model2 = MahalanobisDetector.load(checkpoint)
+        np.testing.assert_array_equal(preds_before, model2.predict(unsupervised_data["X_val"]))
+
+    def test_ram_bytes_d4(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """_estimate_ram_bytes() == 80 pour d=4 (= (4 + 16) × 4 octets @ FP32)."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        assert model._estimate_ram_bytes() == 80, (
+            f"Attendu 80 B pour d=4, obtenu {model._estimate_ram_bytes()} B"
+        )

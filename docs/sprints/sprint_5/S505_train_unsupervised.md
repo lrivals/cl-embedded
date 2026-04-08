@@ -473,6 +473,69 @@ experiments/exp_005_unsupervised_dataset2/
 
 ---
 
+## Corrections appliquées
+
+### Bugfix — `data.csv_path` incorrect dans `configs/unsupervised_config.yaml` (8 avril 2026)
+
+**Sévérité** : 🟡 Non-critique — fonctionne via fallback `rglob`, mais chemin YAML faux
+
+La spec initiale définissait :
+
+```yaml
+csv_path: "data/raw/equipment_monitoring/equipment_monitoring.csv"
+```
+
+Ce fichier n'existe pas. Le CSV réel est dans un sous-dossier :
+
+```text
+data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+```
+
+Le script `train_unsupervised.py` (lignes 455–465) dispose d'un fallback `rglob("*.csv")` sur le dossier parent qui trouvait le vrai CSV automatiquement. L'expérience exp_005 s'est donc exécutée correctement malgré le mauvais chemin config. Le chemin est corrigé pour éliminer la dépendance au fallback.
+
+**Correction appliquée dans `configs/unsupervised_config.yaml`** :
+
+```yaml
+# Avant (incorrect)
+csv_path: "data/raw/equipment_monitoring/equipment_monitoring.csv"
+
+# Après (correct)
+csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+```
+
+---
+
+### Standardisation csv_path — `ewc_config.yaml`, `hdc_config.yaml` et scripts (8 avril 2026)
+
+**Sévérité** : 🟡 Robustesse — les scripts fonctionnaient via glob/rglob, mais de façon fragile
+
+Dans le même audit que la correction `unsupervised_config.yaml`, les configs EWC et HDC ont été mis à jour :
+
+**`configs/ewc_config.yaml`** — dossier avec glob non-récursif → chemin complet :
+
+```yaml
+# Avant
+path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/"
+# Après
+csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+```
+
+**`configs/hdc_config.yaml`** — dossier parent avec rglob récursif → chemin complet :
+
+```yaml
+# Avant
+path: "data/raw/equipment_monitoring/"
+# Après
+csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+```
+
+Les scripts correspondants ont été simplifiés en conséquence :
+
+- `scripts/train_ewc.py` (lignes 203–213) : suppression `glob("*.csv")` → lecture directe `Path(cfg["data"]["csv_path"])` avec `FileNotFoundError` explicite
+- `scripts/train_hdc.py` (lignes 300–310) : suppression `rglob("*.csv")` → même patron
+
+---
+
 ## Questions ouvertes
 
 - `TODO(arnaud)` : AUROC ou accuracy avec seuil fixé comme métrique principale pour les non supervisés ? AUROC est plus robuste au déséquilibre de classes mais nécessite les labels en éval — ce qui est acceptable selon le protocole du sprint.

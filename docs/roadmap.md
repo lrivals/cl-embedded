@@ -1,6 +1,6 @@
 # Roadmap — CL-Embedded
 
-> Version : 2.0 | Mise à jour : 7 avril 2026  
+> Version : 2.1 | Mise à jour : 8 avril 2026  
 > Horizon : Phase 1 (PC Python) = avril–mai 2026
 
 ---
@@ -134,9 +134,16 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 | S5-07 | Expérience non supervisée Dataset 1 : exp_006 | ✅ | `experiments/exp_006_unsupervised_dataset1/` | 2h |
 | S5-08 | Tests unitaires + spec `unsupervised_spec.md` | ✅ | `tests/test_unsupervised.py`, `docs/models/unsupervised_spec.md` | 2h |
 | S5-09 | Notebook comparatif supervisé vs non supervisé (6 modèles) | 🟡 | `notebooks/05_supervised_vs_unsupervised.ipynb` | 2h |
-| S5-10 | **Implémenter `mahalanobis_detector.py` (M6 — μ, Σ⁻¹ offline, seuil adaptatif)** | 🔴 | `src/models/unsupervised/mahalanobis_detector.py` | 2h |
-| S5-11 | **Expérience Mahalanobis Dataset 1 et 2 : exp_007** | 🔴 | `experiments/exp_007_mahalanobis/` | 2h |
+| S5-10 | **Implémenter `mahalanobis_detector.py` (M6 — μ, Σ⁻¹ offline, seuil adaptatif)** | ✅ | `src/models/unsupervised/mahalanobis_detector.py` | 2h |
+| S5-11 | **Expérience Mahalanobis Dataset 1 et 2 : exp_007** | ✅ | `experiments/exp_007_mahalanobis/` | 2h |
 | S5-12 | *(optionnel)* Implémenter `gmm_detector.py` (GMM EM offline, K petit) | 🟢 | `src/models/unsupervised/gmm_detector.py` | 3h |
+
+> **Corrections de chemins dataset appliquées le 8 avril 2026** — Standardisation de tous les configs vers une clé `csv_path` avec chemin complet vers le fichier CSV (au lieu de clés `path` pointant vers des dossiers avec fallback glob fragile) :
+>
+> - `configs/unsupervised_config.yaml` : `data_pump.csv_path` corrigé (🔴 critique — `FileNotFoundError`) et `data.csv_path` corrigé (🟡 fallback rglob supprimé). Voir [S505](sprints/sprint_5/S505_train_unsupervised.md), [S507](sprints/sprint_5/S507_exp006.md).
+> - `configs/tinyol_config.yaml` : clé `data.path` renommée `data.csv_path` + chemin complet avec nom de fichier (🟢 préventif — `train_tinyol.py` non encore implémenté). Voir [S302](sprints/sprint_3/S302_pump_dataset.md).
+> - `configs/ewc_config.yaml` : clé `data.path` (dossier) renommée `data.csv_path` (chemin complet CSV) ; `scripts/train_ewc.py` mis à jour (suppression `glob("*.csv")` → lecture directe).
+> - `configs/hdc_config.yaml` : clé `data.path` (dossier parent) renommée `data.csv_path` (chemin complet CSV) ; `scripts/train_hdc.py` mis à jour (suppression `rglob("*.csv")` → lecture directe).
 
 > **Pourquoi Mahalanobis (M6) et pas GMM/HMM en sprint dédié ?**  
 > Mahalanobis est le seul des trois à satisfaire simultanément : (a) computation embarquée viable (inversion Σ offline, produit matriciel online), (b) applicable aux deux datasets, (c) interprétable comme baseline de référence.  
@@ -190,7 +197,7 @@ Mettre à jour ce tableau après chaque sprint :
 | M4a K-Means (K dynamique) | ✅ | ✅ | ✅ | N/A | ✅ |
 | M4b KNN anomaly detection | ✅ | ✅ | ✅ | N/A | ✅ |
 | M5 PCA reconstruction | ✅ | ✅ | ✅ | N/A | ✅ |
-| M6 Mahalanobis | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
+| M6 Mahalanobis | ✅ | ✅ | ✅ | N/A | ✅ |
 
 ### Résultats M2 EWC — exp_001 (4 avril 2026, seed=42)
 
@@ -220,6 +227,23 @@ Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compresso
 > ⚠️ KNN dépasse 64 Ko (stratégie `accumulate` sur 6 137 échantillons = ~98 Ko de X_ref). **PC-only** — non portable STM32N6 sans modification de stratégie.  
 > AA nettement supérieure aux cibles (> 0.94 vs > 0.70) et AUROC > 0.90 : le Dataset 2 est bien séparable (peu de domain shift, mais forte séparabilité normal/faulty).  
 > Pour comparaison directe EWC (0.9824) > KNN (0.9524) ≈ PCA (0.9504) > K-Means (0.9433) — sans aucune supervision pendant l'entraînement.
+
+---
+
+### Résultats M6 Mahalanobis — exp_007 (8 avril 2026, seed=42)
+
+Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compressor — d=4 features
+
+| Modèle | AA | AF | BWT | AUROC | RAM peak | Latence |
+|--------|:--:|:--:|:---:|:-----:|:--------:|:-------:|
+| **Mahalanobis ✅** | **0.9524** | **0.0010** | **-0.0010** | **0.9718** | **80 B analytique** | **0.018 ms** |
+| K-Means (exp_005) ✅ | 0.9433 | 0.0049 | -0.0040 | 0.9621 | 5.2 Ko | 0.399 ms |
+| KNN (exp_005) ⚠️ | 0.9524 | 0.0275 | -0.0275 | 0.9728 | 110.5 Ko | 15.755 ms |
+| PCA (exp_005) ✅ | 0.9504 | 0.0020 | -0.0010 | 0.9078 | 2.1 Ko | 0.115 ms |
+
+> **Meilleur modèle embarqué** : Mahalanobis domine sur tous les critères embarqués. AA = KNN (0.9524), AUROC proche de KNN (0.9718 vs 0.9728), oubli AF quasi-nul (0.0010), latence ×22 plus rapide que K-Means, RAM analytique = 80 B @ FP32 (0.12% du budget 64 Ko STM32N6).  
+> RAM tracemalloc = 1504 B (overhead Python ×18.8 vs analytique — non représentatif du MCU). n_params = 20 (d + d² pour d=4). cl_strategy=refit : μ et Σ⁻¹ recalculés à chaque tâche, oubli structurel volontaire.  
+> Dataset 1 (Pump) non exécuté : données Kaggle non disponibles localement. `FIXME(gap1)` : valider sur FEMTO PRONOSTIA.
 
 ---
 

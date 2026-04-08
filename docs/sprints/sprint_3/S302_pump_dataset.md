@@ -554,6 +554,54 @@ task0 = cl_stream.get_task_tensors(task_id=0, batch_size=config["pretrain"]["bat
 
 ---
 
+## Corrections appliquées
+
+### Mise à jour — `data.path` dans `configs/tinyol_config.yaml` (8 avril 2026)
+
+**Sévérité** : 🟢 Cosmétique — aucun script actif (`train_tinyol.py` non encore implémenté)
+
+Le chemin `data.path` pointait vers le dossier parent :
+
+```yaml
+path: "data/raw/pump_maintenance/"
+```
+
+Le CSV réel est dans un sous-dossier avec espace dans le nom :
+
+```text
+data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv
+```
+
+Mis à jour vers le bon sous-dossier pour que `train_tinyol.py` (S3-04/S3-06) puisse utiliser `rglob("*.csv")` ou pointer directement le CSV sans fallback supplémentaire.
+
+**Correction appliquée dans `configs/tinyol_config.yaml`** :
+
+```yaml
+# Avant
+path: "data/raw/pump_maintenance/"
+
+# Après
+path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/"
+```
+
+### Mise à jour — clé renommée `csv_path` + chemin complet (8 avril 2026)
+
+**Sévérité** : 🟢 Préventif — aucun script actif à ce jour
+
+La correction précédente pointait encore vers un dossier (sans nom de fichier CSV). La clé `data.path` est renommée `data.csv_path` et inclut désormais le nom de fichier complet, en cohérence avec `unsupervised_config.yaml` et le patron des autres configs :
+
+```yaml
+# Avant (correction intermédiaire — dossier uniquement)
+path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/"
+
+# Après (correction finale — chemin complet vers le CSV)
+csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
+```
+
+Le futur `train_tinyol.py` devra lire `cfg["data"]["csv_path"]` directement (sans glob), suivant le même patron que `train_ewc.py` et `train_hdc.py` après leurs corrections respectives.
+
+---
+
 ## Questions ouvertes
 
 - `TODO(arnaud)` : stratégie de découpage en 3 tâches — égal (33%/33%/33%) ou basé sur des seuils de taux de panne observés dans S3-01 ?

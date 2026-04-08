@@ -9,7 +9,7 @@ exp_id_pump: "exp_006_unsupervised_dataset1"
 
 data:
   dataset: "equipment_monitoring"
-  csv_path: "data/raw/equipment_monitoring/equipment_monitoring.csv"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
   normalizer_path: "configs/monitoring_normalizer.yaml"  # cohérent avec hdc_config.yaml
   n_features: 4           # NUMERIC_FEATURES = [temperature, pressure, vibration, humidity]
   batch_size: 256
@@ -45,6 +45,12 @@ pca:
   cl_strategy: "refit"    # "refit" | "incremental"
                           # "incremental" → sklearn IncrementalPCA — TODO(dorra)
 
+mahalanobis:
+  anomaly_threshold: null        # null → calculé automatiquement (percentile sur Task 0)
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6              # régularisation Σ : Σ_reg = Σ + reg_covar * I
+  cl_strategy: "refit"           # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
+
 evaluation:
   metrics: ["aa", "af", "bwt", "auroc"]  # auroc évalué avec labels (éval uniquement)
   n_latency_runs: 100
@@ -56,7 +62,7 @@ memory:
 
 # --- Dataset 1 : Pump Maintenance (exp_006) ---
 data_pump:
-  csv_path: "data/raw/pump_maintenance/pump_maintenance.csv"
+  csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
   normalizer_path: "configs/pump_normalizer.yaml"  # fitté sur task 0 (pompe saine)
   window_size: 32   # WINDOW_SIZE de pump_dataset.py — cohérent avec le normalizer existant
   step_size: 16     # STEP_SIZE de pump_dataset.py

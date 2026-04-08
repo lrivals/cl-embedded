@@ -251,3 +251,16 @@ def pca_config() -> dict:
             "seed": 42,
         }
     }
+
+
+@pytest.fixture
+def mahalanobis_config() -> dict:
+    """Config minimale MahalanobisDetector — cl_strategy='refit'."""
+    return {
+        "mahalanobis": {
+            "anomaly_threshold": None,
+            "anomaly_percentile": 95,
+            "reg_covar": 1e-6,
+            "cl_strategy": "refit",
+        }
+    }
