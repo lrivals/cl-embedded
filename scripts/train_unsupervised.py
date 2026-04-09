@@ -43,7 +43,7 @@ from sklearn.metrics import roc_auc_score
 
 from src.data.monitoring_dataset import get_cl_dataloaders
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
-from src.models.unsupervised import KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
+from src.models.unsupervised import DBSCANDetector, KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
 from src.utils.config_loader import get_exp_dir, load_config, save_config_snapshot
 from src.utils.reproducibility import set_seed
 
@@ -64,7 +64,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--model",
-        choices=["kmeans", "knn", "pca", "mahalanobis", "all"],
+        choices=["kmeans", "knn", "pca", "mahalanobis", "dbscan", "all"],
         default="all",
         help="Modèle à entraîner (default: all)",
     )
@@ -90,14 +90,14 @@ def parse_args() -> argparse.Namespace:
 
 def build_model(
     model_name: str, config: dict
-) -> KMeansDetector | KNNDetector | PCABaseline | MahalanobisDetector:
+) -> KMeansDetector | KNNDetector | PCABaseline | MahalanobisDetector | DBSCANDetector:
     """
     Instancie un détecteur non supervisé depuis la sous-section YAML correspondante.
 
     Parameters
     ----------
     model_name : str
-        "kmeans", "knn", "pca" ou "mahalanobis".
+        "kmeans", "knn", "pca", "mahalanobis" ou "dbscan".
     config : dict
         Config complète (unsupervised_config.yaml). La sous-section model_name est extraite.
 
@@ -113,8 +113,10 @@ def build_model(
         return PCABaseline(config["pca"])
     elif model_name == "mahalanobis":
         return MahalanobisDetector(config["mahalanobis"])
+    elif model_name == "dbscan":
+        return DBSCANDetector(config["dbscan"])
     else:
-        raise ValueError(f"Modèle inconnu : {model_name!r}. Choix : kmeans, knn, pca, mahalanobis")
+        raise ValueError(f"Modèle inconnu : {model_name!r}. Choix : kmeans, knn, pca, mahalanobis, dbscan")
 
 
 # ---------------------------------------------------------------------------
@@ -478,7 +480,7 @@ def main() -> None:
     print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({len(tasks)} tâches)")
 
     # --- Sélection des modèles ---
-    model_names = ["kmeans", "knn", "pca", "mahalanobis"] if args.model == "all" else [args.model]
+    model_names = ["kmeans", "knn", "pca", "mahalanobis", "dbscan"] if args.model == "all" else [args.model]
 
     # --- Entraînement ---
     all_results: dict[str, dict] = {}

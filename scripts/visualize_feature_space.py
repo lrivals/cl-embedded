@@ -44,7 +44,7 @@ from src.evaluation.plots import save_figure
 from src.models.unsupervised.mahalanobis_detector import MahalanobisDetector
 from src.utils.config_loader import load_config
 
-OUTPUT_DIR = Path("notebooks/figures")
+OUTPUT_DIR = Path("notebooks/figures/feature_space")
 
 
 # ---------------------------------------------------------------------------

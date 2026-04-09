@@ -27,7 +27,7 @@ fig, ax = plt.subplots(figsize=(8, 6))
 model, X_proj, xlabel, ylabel = fit_projection(X, method="kpca_rbf", gamma=0.5)
 plot_feature_space_2d(X_proj, y, "Kernel PCA RBF", ax, xlabel=xlabel, ylabel=ylabel)
 
-out = Path("notebooks/figures/kpca_rbf_snippet.png")
+out = Path("notebooks/figures/model_viz/kpca_rbf_snippet.png")
 out.parent.mkdir(parents=True, exist_ok=True)
 fig.tight_layout()
 fig.savefig(out, dpi=150)

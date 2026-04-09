@@ -51,6 +51,15 @@ mahalanobis:
   reg_covar: 1.0e-6              # régularisation Σ : Σ_reg = Σ + reg_covar * I
   cl_strategy: "refit"           # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
 
+dbscan:
+  EPSILON: 0.5          # rayon de voisinage (à tuner par dataset)
+  MIN_SAMPLES: 5        # nombre minimum de voisins pour un core point
+  metric: euclidean
+  algorithm: auto       # auto | ball_tree | kd_tree | brute
+  anomaly_threshold: null  # null → calculé automatiquement (percentile sur Task 0)
+  anomaly_percentile: 95
+  cl_strategy: "refit"  # TODO(arnaud): "refit" | "accumulate"
+
 evaluation:
   metrics: ["aa", "af", "bwt", "auroc"]  # auroc évalué avec labels (éval uniquement)
   n_latency_runs: 100

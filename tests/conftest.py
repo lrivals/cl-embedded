@@ -264,3 +264,19 @@ def mahalanobis_config() -> dict:
             "cl_strategy": "refit",
         }
     }
+
+
+@pytest.fixture
+def dbscan_config() -> dict:
+    """Config minimale DBSCANDetector — cl_strategy='refit'."""
+    return {
+        "dbscan": {
+            "EPSILON": 2.0,       # large pour données synthétiques N(0,1) / N(5,1)
+            "MIN_SAMPLES": 3,
+            "metric": "euclidean",
+            "algorithm": "auto",
+            "anomaly_threshold": None,
+            "anomaly_percentile": 95,
+            "cl_strategy": "refit",
+        }
+    }

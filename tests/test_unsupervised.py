@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from src.models.unsupervised import KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
+from src.models.unsupervised import DBSCANDetector, KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
 
 # ===========================================================================
 # KMeansDetector — 10 tests
@@ -322,3 +322,105 @@ class TestMahalanobisDetector:
         assert model._estimate_ram_bytes() == 80, (
             f"Attendu 80 B pour d=4, obtenu {model._estimate_ram_bytes()} B"
         )
+
+
+# ===========================================================================
+# DBSCANDetector — 10 tests
+# ===========================================================================
+
+
+class TestDBSCANDetector:
+
+    def test_init_from_config(self, dbscan_config: dict) -> None:
+        """DBSCANDetector s'instancie correctement depuis la config."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        assert model is not None
+        assert model.eps == dbscan_config["dbscan"]["EPSILON"]
+        assert model.min_samples == dbscan_config["dbscan"]["MIN_SAMPLES"]
+
+    def test_fit_task_and_predict_binary(
+        self, dbscan_config: dict, unsupervised_data: dict
+    ) -> None:
+        """fit_task puis predict retourne des prédictions binaires {0, 1}."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        preds = model.predict(unsupervised_data["X_val"])
+        assert preds.shape == (len(unsupervised_data["X_val"]),)
+        assert set(np.unique(preds)).issubset({0, 1})
+
+    def test_anomaly_score_shape(self, dbscan_config: dict, unsupervised_data: dict) -> None:
+        """anomaly_score retourne un vecteur float32 de la bonne taille, valeurs ≥ 0."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        scores = model.anomaly_score(unsupervised_data["X_val"])
+        assert scores.shape == (len(unsupervised_data["X_val"]),)
+        assert scores.dtype == np.float32
+        assert np.all(scores >= 0), "Score DBSCAN doit être non-négatif"
+
+    def test_score_between_0_and_1(self, dbscan_config: dict, unsupervised_data: dict) -> None:
+        """score() retourne une accuracy dans [0, 1]."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        acc = model.score(unsupervised_data["X_val"], unsupervised_data["y_val"])
+        assert 0.0 <= acc <= 1.0
+
+    def test_anomalies_have_higher_score(
+        self, dbscan_config: dict, unsupervised_data: dict
+    ) -> None:
+        """Les anomalies N(5,1) ont un score moyen supérieur aux normaux N(0,1).
+
+        DBSCAN entraîné sur normaux N(0,1) → core points proches de 0.
+        Anomalies N(5,1) sont distantes des core points → score élevé.
+        """
+        cfg = dict(dbscan_config["dbscan"])
+        model = DBSCANDetector(cfg)
+        x_normal = unsupervised_data["X_train"][unsupervised_data["y_train"] == 0]
+        model.fit_task(x_normal, task_id=0)
+        scores = model.anomaly_score(unsupervised_data["X_val"])
+        y = unsupervised_data["y_val"]
+        assert scores[y == 1].mean() > scores[y == 0].mean()
+
+    def test_sequential_fit_two_tasks(self, dbscan_config: dict, unsupervised_data: dict) -> None:
+        """fit_task séquentiel sur 2 tâches — threshold inchangé après task_id=1."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        threshold_after_task0 = model.threshold_
+        model.fit_task(unsupervised_data["X_train"], task_id=1)
+        assert model.threshold_ == threshold_after_task0, (
+            "Le seuil ne doit pas être recalculé après Task 0"
+        )
+        preds = model.predict(unsupervised_data["X_val"])
+        assert preds.shape == (len(unsupervised_data["X_val"]),)
+
+    def test_summary_returns_string(self, dbscan_config: dict, unsupervised_data: dict) -> None:
+        """summary() retourne une chaîne non vide après fit_task."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        s = model.summary()
+        assert isinstance(s, str) and len(s) > 0
+
+    def test_count_parameters_positive(self, dbscan_config: dict, unsupervised_data: dict) -> None:
+        """count_parameters() retourne un entier > 0 après fit_task."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        n = model.count_parameters()
+        assert isinstance(n, int) and n > 0
+
+    def test_save_and_load(self, dbscan_config: dict, unsupervised_data: dict, tmp_path) -> None:
+        """save() puis load() (classmethod) préserve les prédictions."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        preds_before = model.predict(unsupervised_data["X_val"])
+
+        checkpoint = tmp_path / "dbscan_test.pkl"
+        model.save(checkpoint)
+
+        model2 = DBSCANDetector.load(checkpoint)
+        np.testing.assert_array_equal(preds_before, model2.predict(unsupervised_data["X_val"]))
+
+    def test_ram_budget(self, dbscan_config: dict, unsupervised_data: dict) -> None:
+        """count_parameters() × 4 bytes ≤ 64 Ko pour cl_strategy=refit (contrainte STM32N6)."""
+        model = DBSCANDetector(dbscan_config["dbscan"])
+        model.fit_task(unsupervised_data["X_train"], task_id=0)
+        ram_fp32 = model.count_parameters() * 4
+        assert ram_fp32 <= 65536, f"DBSCAN (refit) dépasse 64 Ko : {ram_fp32} B"

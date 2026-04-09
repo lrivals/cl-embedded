@@ -134,31 +134,157 @@ normalizer.save("configs/monitoring_normalizer.yaml")
 
 ---
 
-## Comparaison et rôles dans le projet
-
-| Critère | Dataset 1 — Pump | Dataset 2 — Monitoring |
-|---------|-----------------|----------------------|
-| Réalisme CL | ✅ Drift temporel naturel | ⚠️ Frontières artificielles |
-| Complexité pipeline | ⚠️ Feature engineering requis | ✅ Données prêtes |
-| Prototypage rapide | ⚠️ | ✅ Idéal pour valider baselines |
-| Modèles associés | M1 TinyOL | M2 EWC, M3 HDC |
-| Scénario CL | Domain-incr. temporel | Domain-incr. par type équipement |
-| Démarrage recommandé | Phase 2 (semaine 3–4) | Phase 1 (semaine 1–2) |
-
 ---
 
-## Référence scientifique — FEMTO PRONOSTIA
-
-> Ce dataset n'est PAS utilisé dans les expériences Python de ce dépôt.  
-> Il sert uniquement d'argument scientifique de positionnement dans le manuscrit.
+## Dataset 3 — Battery Remaining Useful Life (RUL)
 
 | Propriété | Valeur |
 |-----------|--------|
-| **Référence** | Nectoux et al. (2012) |
-| **Type** | Dégradation de roulements (vibrations + température) |
-| **Nature** | Données réelles (tests run-to-failure accélérés) |
+| **Source** | Kaggle |
+| **Chemin local** | `data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv` |
+| **Type** | Tabulaire séquentiel (cycles de charge/décharge) |
+| **Nature** | Simulé / mesuré sur banc (lithium-ion) |
+| **Tâche ML** | Détection d'anomalie binaire (`faulty = RUL ≤ ANOMALY_THRESHOLD`) |
+| **N échantillons** | ~15 064 cycles |
+
+### Colonnes brutes — Battery RUL
+
+| Colonne CSV brute | Rename pipeline | Type | Description |
+|-------------------|-----------------|------|-------------|
+| `Cycle_Index` | `cycle_index` | int | Proxy temporel (tri croissant, non utilisé comme feature) |
+| `Discharge Time (s)` | `discharge_time_s` | float | Durée de décharge complète |
+| `Decrement 3.6-3.4V (s)` | `decrement_3640v_s` | float | Durée dans la fenêtre de tension critique |
+| `Max. Voltage Dischar. (V)` | `max_voltage_discharge_v` | float | Tension maximale en décharge |
+| `Min. Voltage Charg. (V)` | `min_voltage_charge_v` | float | Tension minimale en charge |
+| `Time at 4.15V (s)` | `time_at_415v_s` | float | Durée à tension de charge maximale |
+| `Time constant current (s)` | `time_constant_current_s` | float | Phase courant constant (CCCV) |
+| `Charging time (s)` | `charging_time_s` | float | Durée totale de charge |
+| `RUL` | `rul` | int (0–1112) | Remaining Useful Life — converti en label binaire |
+
+> **Label binaire** : `faulty = int(rul <= ANOMALY_THRESHOLD)`. Valeur par défaut : `ANOMALY_THRESHOLD = 200` (≈18% du RUL max). Configurable dans `configs/unsupervised_config.yaml`.
+
+### Scénario CL — Battery RUL
+
+**Domain-Incremental temporel** : les 15 064 cycles sont découpés en 3 tiers chronologiques égaux par `cycle_index`. Tâche 0 = début de vie (batterie saine, RUL élevé), Tâche 2 = fin de vie (dégradée, RUL → 0). Même architecture de scénario que Dataset 1 — Pump.
+
+### Pipeline de preprocessing — Battery RUL
+
+```python
+# src/data/battery_rul_dataset.py
+
+N_FEATURES: int = 7        # colonnes numériques hors cycle_index et rul
+N_TASKS: int = 3           # tiers chronologiques par cycle_index
+ANOMALY_THRESHOLD: int = 200   # RUL ≤ 200 → faulty=1
+VAL_RATIO: float = 0.2
+```
+
+### Chargement recommandé — Battery RUL
+
+```python
+from src.data.battery_rul_dataset import get_battery_dataloaders
+import yaml
+
+cfg = yaml.safe_load(open("configs/unsupervised_config.yaml"))["battery_rul"]
+tasks = get_battery_dataloaders(cfg)
+# → [{task_id: 0, train_loader, val_loader, n_train, n_val}, ...]
+```
+
+---
+
+## Dataset 4 — FEMTO PRONOSTIA (IEEE PHM Challenge 2012)
+
+| Propriété | Valeur |
+|-----------|--------|
+| **Référence** | Nectoux et al. (2012) — IEEE PHM Data Challenge |
+| **Chemin local** | `data/raw/Pronostia dataset/` |
+| **Type** | Séries temporelles brutes (vibrations + température) |
+| **Nature** | **Données réelles** (tests run-to-failure sur banc FEMTO-ST) |
+| **Tâche ML** | Détection d'anomalie binaire (derniers 20% de vie = faulty=1) |
 | **Accès** | Public — IEEE PHM Challenge 2012 |
-| **Pertinence Gap 1** | Seul dataset industriel de dégradation réel cité dans le corpus |
+| **N fichiers (Learning_set)** | 8 384 fichiers acc + 850 fichiers temp (6 roulements) |
+| **Pertinence Gap 1** | **Seul dataset réel industriel** du projet — contribution directe au Gap 1 |
+
+> **Utilisation** : uniquement le **Learning_set** (6 roulements avec run-to-failure complet, ~588 Mo CSV ou 883 Mo `.npy`). Les Test_set et Full_Test_Set (>2 Go) ne sont pas utilisés dans les expériences Python.
+
+### Structure des fichiers
+
+```
+data/raw/Pronostia dataset/
+├── Learning_set/
+│   ├── Bearing1_1/   ← Condition 1 (1800 rpm, 4000 N)
+│   ├── Bearing1_2/   ← Condition 1
+│   ├── Bearing2_1/   ← Condition 2 (1650 rpm, 4200 N)
+│   ├── Bearing2_2/   ← Condition 2
+│   ├── Bearing3_1/   ← Condition 3 (1500 rpm, 5000 N)
+│   └── Bearing3_2/   ← Condition 3
+└── binaries/
+    ├── Bearing1_1.npy   # shape: (n_files, 2560, 2)
+    └── ...              # acc_X et acc_Y pré-chargés
+```
+
+**Format des fichiers acc** (6 colonnes, sans header) : `heure, min, sec, ms, acc_X, acc_Y`
+
+### Features extraites — Pronostia
+
+Feature engineering par fenêtre (1 fichier acc = 2560 points) :
+6 statistiques × 2 axes (acc_X, acc_Y) = **12 features** par fenêtre.
+
+Statistiques calculées : mean, std, rms, kurtosis, peak, crest_factor.
+
+> **Label binaire** : les 20% dernières fenêtres temporelles de chaque bearing = `faulty=1` (dégradation avancée). Paramètre `ANOMALY_LAST_PCT = 0.20` dans `configs/unsupervised_config.yaml`.
+
+### Scénario CL — Pronostia
+
+**Domain-Incremental par condition opératoire** :
+
+| Tâche | Bearings | Condition | Vitesse | Charge |
+|-------|----------|-----------|---------|--------|
+| Task 0 | Bearing1_1, Bearing1_2 | Condition 1 | 1800 rpm | 4000 N |
+| Task 1 | Bearing2_1, Bearing2_2 | Condition 2 | 1650 rpm | 4200 N |
+| Task 2 | Bearing3_1, Bearing3_2 | Condition 3 | 1500 rpm | 5000 N |
+
+### Pipeline de preprocessing — Pronostia
+
+```python
+# src/data/pronostia_dataset.py
+
+N_FEATURES: int = 12           # 6 stats × 2 axes (acc_X, acc_Y)
+WINDOW_SIZE: int = 2560        # = 1 fichier acc complet
+ANOMALY_LAST_PCT: float = 0.20 # last 20% fenêtres d'un bearing = faulty=1
+N_TASKS: int = 3               # 3 conditions opératoires
+PROCESSED_PATH = "data/processed/pronostia/features.csv"  # gitignored, re-calculable
+```
+
+### Chargement recommandé — Pronostia
+
+```python
+from src.data.pronostia_dataset import preprocess_to_csv, get_pronostia_dataloaders
+import yaml
+
+# 1. Préprocessing (no-op si CSV déjà généré)
+preprocess_to_csv()  # lit binaries/*.npy, extrait 12 features, sauvegarde CSV
+
+# 2. Chargement
+cfg = yaml.safe_load(open("configs/unsupervised_config.yaml"))["pronostia"]
+tasks = get_pronostia_dataloaders(cfg)
+# → [{task_id: 0, condition: "1800rpm", train_loader, val_loader, n_train, n_val}, ...]
+```
+
+---
+
+## Comparaison et rôles dans le projet
+
+| Critère | Dataset 1 — Pump | Dataset 2 — Monitoring | Dataset 3 — Battery RUL | Dataset 4 — Pronostia |
+|---------|-----------------|----------------------|------------------------|----------------------|
+| Nature | Simulé | Simulé | Simulé/mesuré | **Réel** ✅ |
+| Type | Séries temporelles | Tabulaire statique | Tabulaire séquentiel | Séries temporelles brutes |
+| Réalisme CL | ✅ Drift temporel | ⚠️ Frontières artificielles | ✅ Drift temporel | ✅ Conditions opératoires réelles |
+| Feature engineering | ✅ (sliding window) | ❌ (prêt) | ❌ (prêt) | ✅ (sliding window .npy) |
+| N features | 25 | 4 | 7 | 12 |
+| N tâches | 3 | 3 | 3 | 3 |
+| Modèles associés | M1 TinyOL | M2 EWC, M3 HDC | Non-supervisés (S5-16) | Non-supervisés (S5-16) |
+| Pertinence Gap 1 | ⚠️ Simulé | ⚠️ Simulé | ⚠️ Simulé | **✅ Réel — contribution directe** |
+| Expériences | exp_001, exp_002 | exp_003 à exp_008 | exp_009 | exp_010 |
 
 ---
 

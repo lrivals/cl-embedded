@@ -138,6 +138,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 | S5-11 | **Expérience Mahalanobis Dataset 1 et 2 : exp_007** | ✅ | `experiments/exp_007_mahalanobis/` | 2h |
 | S5-12 | *(optionnel)* Implémenter `gmm_detector.py` (GMM EM offline, K petit) | 🟢 | `src/models/unsupervised/gmm_detector.py` | 3h |
 | S5-13 | Visualisation espace des features + clusters (PCA 2D, ellipses Mahalanobis, Voronoï K-Means, heatmap PCA reconstruction) | ✅ | `src/evaluation/feature_space_plots.py`, `notebooks/figures/05_feature_space_*.png` | 2h |
+| S5-14 | Implémenter `dbscan_detector.py` (M7 DBSCAN — density-based clustering, epsilon adaptatif, points bruit = anomalies) + expérience exp_008 | ✅ | `src/models/unsupervised/dbscan_detector.py`, `experiments/exp_008_dbscan/` | 3h |
 
 > **Corrections de chemins dataset appliquées le 8 avril 2026** — Standardisation de tous les configs vers une clé `csv_path` avec chemin complet vers le fichier CSV (au lieu de clés `path` pointant vers des dossiers avec fallback glob fragile) :
 >
@@ -199,6 +200,7 @@ Mettre à jour ce tableau après chaque sprint :
 | M4b KNN anomaly detection | ✅ | ✅ | ✅ | N/A | ✅ |
 | M5 PCA reconstruction | ✅ | ✅ | ✅ | N/A | ✅ |
 | M6 Mahalanobis | ✅ | ✅ | ✅ | N/A | ✅ |
+| M7 DBSCAN | ⬜ | ⬜ | ⬜ | N/A | ⬜ |
 
 ### Résultats M2 EWC — exp_001 (4 avril 2026, seed=42)
 
