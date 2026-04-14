@@ -41,6 +41,8 @@ import yaml
 from scipy.stats import kurtosis as scipy_kurtosis
 from torch.utils.data import DataLoader, TensorDataset
 
+from sklearn.model_selection import StratifiedShuffleSplit
+
 from src.utils.config_loader import load_config
 from src.utils.reproducibility import set_seed
 
@@ -563,3 +565,134 @@ def get_pump_dataloaders(
         splitter.get_task_tensors(i, batch_size=batch_size, val_ratio=val_ratio, seed=seed)
         for i in range(N_TASKS)
     ]
+
+
+def get_pump_dataloaders_by_id(
+    csv_path: str,
+    normalizer_path: str,
+    batch_size: int = 32,
+    val_ratio: float = VAL_RATIO,
+    seed: int = 42,
+    window_size: int = WINDOW_SIZE,
+    step_size: int = STEP_SIZE,
+) -> list[dict]:
+    """
+    Crée un scénario CL domain-incremental où chaque tâche correspond à un Pump_ID distinct.
+
+    Les données sont découpées par identifiant de pompe (Pump_ID ∈ {1, 2, 3, 4, 5}), donnant
+    5 tâches ordonnées croissamment. Contrairement au scénario chronologique, le drift est
+    inter-pompe (caractéristiques mécaniques distinctes) plutôt qu'intra-pompe (vieillissement).
+
+    Pipeline par tâche :
+        load → filter(pump_id) → extract_features → apply_normalizer → stratified_split
+
+    Parameters
+    ----------
+    csv_path : str
+        Chemin complet vers le CSV pump maintenance.
+    normalizer_path : str
+        Chemin vers pump_normalizer.yaml (normaliseur ajusté sur Task 1 chronologique).
+    batch_size : int
+        Taille de batch pour les DataLoaders. Default : VAL_RATIO (32).
+    val_ratio : float
+        Fraction validation (split stratifié sur label). Default : VAL_RATIO (0.2).
+    seed : int
+        Seed reproductibilité. Default : 42.
+    window_size : int
+        Taille fenêtre glissante. Default : WINDOW_SIZE (32).
+    step_size : int
+        Pas entre fenêtres. Default : STEP_SIZE (16).
+
+    Returns
+    -------
+    list[dict]
+        Liste de 5 dicts (un par Pump_ID croissant) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,            # 1..5
+                "pump_id": int,            # identifiant pompe (1..5)
+                "train_loader": DataLoader,
+                "val_loader": DataLoader,
+                "n_train": int,
+                "n_val": int,
+            }
+    """
+    set_seed(seed)
+
+    # 1. Chargement complet du dataset
+    ds = PumpMaintenanceDataset(Path(csv_path))
+    full_df = ds.load()
+
+    # 2. Colonne pump_id renommée par _COLUMN_RENAME ("Pump_ID" → "pump_id")
+    if "pump_id" not in full_df.columns:
+        raise ValueError(
+            f"Colonne 'pump_id' introuvable après renommage. "
+            f"Colonnes présentes : {list(full_df.columns)}"
+        )
+    pump_ids = sorted(full_df["pump_id"].unique())
+
+    # 3. Normalisation Z-score (stats fixes, calculées sur Task 1 chronologique)
+    normalizer = load_pump_normalizer(Path(normalizer_path))
+    mean_vec = normalizer["mean"]  # [N_FEATURES]
+    std_vec = normalizer["std"]    # [N_FEATURES]
+
+    result: list[dict] = []
+
+    for task_idx, pid in enumerate(pump_ids):
+        # 4a. Filtrer les lignes du pump_id courant (ordre chronologique préservé)
+        pump_df = full_df[full_df["pump_id"] == pid].copy().reset_index(drop=True)
+
+        # 4b. Extraction features via la méthode existante (fenêtrage glissant)
+        original_df = ds._df
+        ds._df = pump_df
+        X, y = ds.extract_features(window_size=window_size, step_size=step_size)
+        ds._df = original_df  # restaurer l'état original
+
+        # 4c. Normalisation Z-score avec stats fixes
+        # MEM: X [N_windows, 25] × 4B = N_windows × 100 B @ FP32
+        X = (X - mean_vec) / std_vec
+
+        # 4d. Split stratifié par label (évite un split purement temporel
+        #     qui pourrait concentrer les défauts dans val uniquement)
+        n = len(X)
+        unique_classes = np.unique(y)
+
+        if len(unique_classes) >= 2 and int(n * val_ratio) >= 2:
+            sss = StratifiedShuffleSplit(n_splits=1, test_size=val_ratio, random_state=seed)
+            train_idx, val_idx = next(sss.split(X, y))
+        else:
+            # Fallback temporel si une seule classe ou dataset trop petit
+            n_val = max(1, int(n * val_ratio))
+            train_idx = np.arange(n - n_val)
+            val_idx = np.arange(n - n_val, n)
+
+        x_train = torch.from_numpy(X[train_idx].astype(np.float32))  # MEM: n_train×25×4 B @ FP32
+        y_train = torch.from_numpy(y[train_idx].astype(np.float32)).unsqueeze(1)
+        x_val = torch.from_numpy(X[val_idx].astype(np.float32))
+        y_val = torch.from_numpy(y[val_idx].astype(np.float32)).unsqueeze(1)
+
+        train_loader = DataLoader(
+            TensorDataset(x_train, y_train),
+            batch_size=batch_size,
+            shuffle=True,
+        )
+        val_loader = DataLoader(
+            TensorDataset(x_val, y_val),
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        result.append(
+            {
+                "task_id": task_idx + 1,
+                "pump_id": int(pid),
+                "train_loader": train_loader,
+                "val_loader": val_loader,
+                "n_train": len(train_idx),
+                "n_val": len(val_idx),
+            }
+        )
+
+    return result

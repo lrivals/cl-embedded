@@ -8,7 +8,7 @@
 | **Durée estimée** | 3h |
 | **Dépendances** | S3-03 (`autoencoder.py` opérationnel) + S3-04 (`backbone.pt` disponible) |
 | **Fichier cible** | `src/models/tinyol/oto_head.py` |
-| **Complété le** | — |
+| **Complété le** | 9 avril 2026 |
 
 ---
 
@@ -243,15 +243,15 @@ if __name__ == "__main__":
 
 ## Critères d'acceptation
 
-- [ ] `src/models/tinyol/oto_head.py` créé, importable sans erreur
-- [ ] `OtOHead(input_dim=9).n_params() == 10`
-- [ ] `OtOHead` : sortie dans `[0, 1]` pour toute entrée FP32
-- [ ] `TinyOLOnlineTrainer.update(x, y)` s'exécute sur un seul échantillon sans erreur
-- [ ] Backbone gelé : `sum(p.requires_grad for p in autoencoder.parameters()) == 0`
-- [ ] Optimiseur SGD sans momentum (`momentum=0.0` dans la config)
-- [ ] Aucune valeur hardcodée : `learning_rate` et `momentum` lus depuis `tinyol_config.yaml`
-- [ ] Annotations `# MEM:` présentes sur chaque tenseur intermédiaire
-- [ ] `ruff check src/models/tinyol/oto_head.py` + `black --check` passent
+- [x] `src/models/tinyol/oto_head.py` créé, importable sans erreur
+- [x] `OtOHead(input_dim=9).n_params() == 10`
+- [x] `OtOHead` : sortie dans `[0, 1]` pour toute entrée FP32
+- [x] `TinyOLOnlineTrainer.update(x, y)` s'exécute sur un seul échantillon sans erreur
+- [x] Backbone gelé : `sum(p.requires_grad for p in autoencoder.parameters()) == 0`
+- [x] Optimiseur SGD sans momentum (`momentum=0.0` dans la config)
+- [x] Aucune valeur hardcodée : `learning_rate` et `momentum` lus depuis `tinyol_config.yaml`
+- [x] Annotations `# MEM:` présentes sur chaque tenseur intermédiaire
+- [x] `ruff check src/models/tinyol/oto_head.py` + `black --check` passent
 - [ ] `pytest tests/test_tinyol.py -k oto -v` passe (dépend de S3-07)
 
 ---

@@ -21,7 +21,6 @@ import numpy as np
 import torch
 import torch.optim as optim
 
-from src.data.monitoring_dataset import get_cl_dataloaders
 from src.evaluation.memory_profiler import full_memory_report
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
 from src.models.ewc import EWCMlpClassifier
@@ -29,6 +28,60 @@ from src.models.ewc.fisher import compute_fisher_diagonal, update_fisher_online
 from src.training.baselines import evaluate_task, train_joint, train_naive_sequential
 from src.utils.config_loader import get_exp_dir, load_config, save_config_snapshot
 from src.utils.reproducibility import set_seed
+
+
+def _get_tasks(cfg: dict) -> list[dict]:
+    """Charge les tâches CL selon le dataset spécifié dans config."""
+    dataset = cfg["data"].get("dataset", "equipment_monitoring")
+    csv_path = Path(cfg["data"]["csv_path"])
+    normalizer_path = Path(cfg["data"]["normalizer_path"])
+    batch_size = cfg["training"]["batch_size"]
+    val_ratio = cfg["data"]["test_split"]
+    seed = cfg["training"]["seed"]
+
+    if dataset == "pump_maintenance":
+        task_split = cfg["data"].get("task_split", "chronological")
+        if task_split == "by_pump_id":
+            from src.data.pump_dataset import get_pump_dataloaders_by_id
+            return get_pump_dataloaders_by_id(
+                csv_path=str(csv_path),
+                normalizer_path=str(normalizer_path),
+                batch_size=batch_size,
+                val_ratio=val_ratio,
+                seed=seed,
+                window_size=cfg["data"]["window_size"],
+                step_size=cfg["data"]["step_size"],
+            )
+        from src.data.pump_dataset import get_pump_dataloaders
+        return get_pump_dataloaders(
+            csv_path=csv_path,
+            normalizer_path=normalizer_path,
+            batch_size=batch_size,
+            val_ratio=val_ratio,
+            seed=seed,
+            window_size=cfg["data"]["window_size"],
+            step_size=cfg["data"]["step_size"],
+        )
+    else:
+        task_split = cfg["data"].get("task_split", "by_equipment")
+        if task_split == "by_location":
+            from src.data.monitoring_dataset import get_cl_dataloaders_by_location
+            return get_cl_dataloaders_by_location(
+                csv_path=csv_path,
+                normalizer_path=normalizer_path,
+                batch_size=batch_size,
+                val_ratio=val_ratio,
+                seed=seed,
+                location_order=cfg["data"].get("location_order"),
+            )
+        from src.data.monitoring_dataset import get_cl_dataloaders
+        return get_cl_dataloaders(
+            csv_path=csv_path,
+            normalizer_path=normalizer_path,
+            batch_size=batch_size,
+            val_ratio=val_ratio,
+            seed=seed,
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -39,6 +92,16 @@ def parse_args() -> argparse.Namespace:
         "--skip-baselines",
         action="store_true",
         help="Sauter les baselines (naive + joint) pour un test rapide",
+    )
+    parser.add_argument(
+        "--data_config",
+        default=None,
+        help="Config data override (ex. configs/pump_by_id_config.yaml)",
+    )
+    parser.add_argument(
+        "--exp_dir",
+        default=None,
+        help="Répertoire expérience override (ex. experiments/exp_013_ewc_pump_by_id)",
     )
     return parser.parse_args()
 
@@ -87,7 +150,7 @@ def train_ewc(
     model.to(device)
 
     for i, task in enumerate(tasks):
-        domain = task["domain"]
+        domain = task.get("domain", f"Tâche {task['task_id']}")
         print(f"\n--- Tâche {i + 1}/{T} : {domain} ---")
 
         model.train()
@@ -121,7 +184,7 @@ def train_ewc(
         for j in range(i + 1):
             acc = evaluate_task(model, tasks[j]["val_loader"], device)
             acc_matrix[i, j] = acc
-            accs.append(f"{tasks[j]['domain']}: {acc:.3f}")
+            accs.append(f"{tasks[j].get('domain', f'T{j+1}')}: {acc:.3f}")
         print(f"  Accuracy : {' | '.join(accs)}")
 
     return acc_matrix
@@ -179,6 +242,17 @@ def _fresh_model(config: dict) -> EWCMlpClassifier:
 def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
+
+    # Override section data depuis --data_config (ex. pump_by_id_config.yaml)
+    if args.data_config:
+        data_cfg = load_config(args.data_config)
+        cfg["data"].update(data_cfg.get("data", {}))
+
+    # Override répertoire expérience depuis --exp_dir
+    if args.exp_dir:
+        cfg["evaluation"]["output_dir"] = str(Path(args.exp_dir) / "results")
+        cfg["exp_id"] = Path(args.exp_dir).name
+
     device = args.device
 
     set_seed(cfg["training"]["seed"])
@@ -204,22 +278,13 @@ def main() -> None:
     normalizer_path = Path(cfg["data"]["normalizer_path"])
 
     if not csv_path.exists():
-        raise FileNotFoundError(
-            f"CSV introuvable : {csv_path}\n"
-            "Télécharger le Dataset 2 (Equipment Monitoring) depuis Kaggle "
-            "et le placer dans ce dossier."
-        )
+        raise FileNotFoundError(f"CSV introuvable : {csv_path}")
     print(f"Dataset : {csv_path}")
 
-    tasks = get_cl_dataloaders(
-        csv_path=csv_path,
-        normalizer_path=normalizer_path,
-        batch_size=cfg["training"]["batch_size"],
-        val_ratio=cfg["data"]["test_split"],
-        seed=cfg["training"]["seed"],
-    )
+    tasks = _get_tasks(cfg)
     T = len(tasks)
-    print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({T} tâches)\n")
+    labels = [t.get("domain", f"T{t['task_id']}") for t in tasks]
+    print(f"Tâches chargées : {labels} ({T} tâches)\n")
 
     # ── EWC ──────────────────────────────────────────────────────────────────
     print("=" * 40)

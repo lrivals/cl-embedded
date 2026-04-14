@@ -1,0 +1,28 @@
+{
+  "exp_id": "exp_011_tinyol_dataset2",
+  "model": "tinyol",
+  "dataset": "equipment_monitoring",
+  "timestamp": "2026-04-10T10:06:31.297384",
+  "seed": 42,
+  "acc_final": 0.9123316273710849,
+  "avg_forgetting": 0.007851365243674302,
+  "backward_transfer": -0.002917966131686156,
+  "acc_matrix": [
+    [
+      0.9102121361618155
+    ],
+    [
+      0.9200789343857918,
+      0.9215399610136452
+    ],
+    [
+      0.9111988159842132,
+      0.9147173489278753,
+      0.9110787172011662
+    ]
+  ],
+  "ram_peak_bytes": 4379,
+  "inference_latency_ms": 0.009751210027388879,
+  "n_params_oto": 10,
+  "n_params_encoder": 184
+}

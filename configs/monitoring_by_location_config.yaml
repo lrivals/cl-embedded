@@ -1,0 +1,49 @@
+# monitoring_by_location_config.yaml — Scénario CL domain-incremental par location géographique
+#
+# Utilisation (via --data_config) :
+#   python scripts/train_ewc.py --config configs/ewc_config.yaml \
+#       --data_config configs/monitoring_by_location_config.yaml \
+#       --exp_dir experiments/exp_016_ewc_monitoring_by_location
+#
+#   python scripts/train_hdc.py --config configs/hdc_config.yaml \
+#       --data_config configs/monitoring_by_location_config.yaml \
+#       --exp_dir experiments/exp_017_hdc_monitoring_by_location
+#
+#   python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml \
+#       --model mahalanobis --dataset monitoring \
+#       --data_config configs/monitoring_by_location_config.yaml \
+#       --exp_dir experiments/exp_019_mahalanobis_monitoring_by_location
+#
+# Ce fichier surcharge uniquement la section "data" du config principal via cfg["data"].update().
+# Sections model/training/ewc/hdc héritées du config principal.
+
+data:
+  csv_path: /home/leonard/Documents/ENAC/cl-embedded/data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  normalizer_path: configs/monitoring_normalizer.yaml
+
+  # Nouveau mode de split : domain-incremental par location géographique (5 tâches)
+  task_split: by_location
+
+  # Colonnes du CSV
+  location_col: location
+  equipment_col: equipment   # conservé pour analyse croisée equipment × location
+  label_col: faulty
+  feature_cols: [temperature, pressure, vibration, humidity]
+
+  # Ordre des tâches : alphabétique par défaut
+  # TODO(arnaud): valider si un ordre par similarité de distribution serait plus pertinent
+  location_order:
+    - Atlanta
+    - Chicago
+    - Houston
+    - New York
+    - San Francisco
+
+  # Split train/val stratifié sur faulty
+  val_ratio: 0.2
+  test_split: 0.2   # alias pour compatibilité avec train_ewc.py / train_hdc.py
+
+  # Clés héritées conservées (pour éviter KeyError dans les scripts existants)
+  dataset: equipment_monitoring
+  n_features: 4
+  batch_size: 32

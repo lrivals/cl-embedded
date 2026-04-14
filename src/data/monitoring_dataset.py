@@ -60,6 +60,18 @@ DOMAIN_SIZES: dict[str, int] = {"Pump": 2534, "Turbine": 2565, "Compressor": 257
 # Mapping ordinal fixe pour l'encodage catégoriel
 EQUIPMENT_ENCODING: dict[str, int] = {"Pump": 0, "Turbine": 1, "Compressor": 2}
 
+# Ordre des locations pour le scénario CL domain-incremental par site géographique
+DEFAULT_LOCATION_ORDER: list[str] = [
+    "Atlanta",
+    "Chicago",
+    "Houston",
+    "New York",
+    "San Francisco",
+]
+
+# Colonne géographique dans le CSV
+LOCATION_COL: str = "location"
+
 
 # ---------------------------------------------------------------------------
 # 1. Chargement et validation du CSV brut
@@ -401,6 +413,135 @@ def get_cl_dataloaders(
             {
                 "task_id": task_id,
                 "domain": domain,
+                "train_loader": train_loader,
+                "val_loader": val_loader,
+                "n_train": len(x_train),
+                "n_val": len(x_val),
+            }
+        )
+
+    return tasks
+
+
+def get_cl_dataloaders_by_location(
+    csv_path: str | Path,
+    normalizer_path: str | Path,
+    batch_size: int = 32,
+    val_ratio: float = VAL_RATIO,
+    seed: int = 42,
+    location_order: list[str] | None = None,
+) -> list[dict]:
+    """
+    Scénario CL domain-incremental où chaque tâche correspond à une location géographique.
+
+    Chaque tâche regroupe les 3 types d'équipements (Pump, Turbine, Compressor) d'un
+    même site. L'ordre par défaut est alphabétique :
+    Atlanta → Chicago → Houston → New York → San Francisco.
+
+    Normalisation fixée sur Task 1 (Atlanta, tous équipements confondus) via le
+    ``monitoring_normalizer.yaml`` — aucun re-fit pour éviter la fuite d'information.
+
+    Parameters
+    ----------
+    csv_path : str | Path
+        Chemin vers equipment_anomaly_data.csv.
+    normalizer_path : str | Path
+        Chemin vers configs/monitoring_normalizer.yaml.
+    batch_size : int
+        Taille des mini-batches. Default : 32.
+    val_ratio : float
+        Fraction validation, stratifiée sur ``faulty``. Default : VAL_RATIO (0.2).
+    seed : int
+        Seed reproductibilité. Default : 42.
+    location_order : list[str] | None
+        Ordre des locations. Défaut : DEFAULT_LOCATION_ORDER (alphabétique).
+
+    Returns
+    -------
+    list[dict]
+        Liste de 5 dicts (un par location) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,           # 1 → 5
+                "location": str,          # ex. "Atlanta"
+                "domain": str,            # alias de location (compatibilité run_cl_scenario)
+                "train_loader": DataLoader,
+                "val_loader": DataLoader,
+                "n_train": int,
+                "n_val": int,
+            }
+
+    Raises
+    ------
+    ValueError
+        Si la colonne ``location`` est absente ou si des locations sont manquantes.
+    """
+    csv_path = Path(csv_path)
+    normalizer_path = Path(normalizer_path)
+
+    if location_order is None:
+        location_order = DEFAULT_LOCATION_ORDER
+
+    set_seed(seed)
+
+    # Chargement et validation des colonnes de base (features, equipment, faulty)
+    df = load_raw_dataset(csv_path)
+
+    # Validation spécifique à la colonne location
+    if LOCATION_COL not in df.columns:
+        raise ValueError(
+            f"Colonne '{LOCATION_COL}' absente du CSV. "
+            f"Colonnes présentes : {list(df.columns)}"
+        )
+
+    present_locations = set(df[LOCATION_COL].unique())
+    missing_locations = set(location_order) - present_locations
+    if missing_locations:
+        raise ValueError(
+            f"Locations manquantes dans '{LOCATION_COL}' : {missing_locations}\n"
+            f"Locations présentes : {present_locations}"
+        )
+
+    # Prétraitement global
+    normalizer = load_normalizer(normalizer_path)
+    df = normalize_features(df, normalizer)
+    df = encode_categoricals(df)
+
+    tasks: list[dict] = []
+
+    for task_id, location in enumerate(location_order, start=1):
+        df_loc = df[df[LOCATION_COL] == location]
+
+        df_train, df_val = train_test_split(
+            df_loc,
+            test_size=val_ratio,
+            stratify=df_loc[LABEL_COL],
+            random_state=seed,
+        )
+        df_train = df_train.reset_index(drop=True)
+        df_val = df_val.reset_index(drop=True)
+
+        x_train, y_train = df_to_tensors(df_train)
+        x_val, y_val = df_to_tensors(df_val)
+
+        train_loader = DataLoader(
+            TensorDataset(x_train, y_train),
+            batch_size=batch_size,
+            shuffle=True,
+        )
+        val_loader = DataLoader(
+            TensorDataset(x_val, y_val),
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        tasks.append(
+            {
+                "task_id": task_id,
+                "location": location,
+                "domain": location,  # alias pour compatibilité avec run_cl_scenario()
                 "train_loader": train_loader,
                 "val_loader": val_loader,
                 "n_train": len(x_train),

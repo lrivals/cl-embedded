@@ -1,0 +1,47 @@
+# configs/ewc_pump_config.yaml
+# EWC Online + MLP — Dataset 1 (Pump Maintenance, 25 features)
+# Expérience croisée : même modèle EWC que exp_001, sur Dataset 1.
+
+exp_id: "exp_009_ewc_dataset1"
+
+model:
+  architecture: "mlp"
+  input_dim: 25          # 25 features statistiques (6 stats × 4 canaux + temporal)
+  hidden_dims: [32, 16]
+  output_dim: 1
+  activation: "relu"
+  dropout: 0.2
+
+training:
+  optimizer: "sgd"
+  learning_rate: 0.01
+  momentum: 0.9
+  epochs_per_task: 10
+  batch_size: 32
+  seed: 42
+
+ewc:
+  lambda: 1000
+  gamma: 0.9
+  n_fisher_samples: 200
+
+data:
+  dataset: "pump_maintenance"
+  csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
+  label_column: "maintenance_required"
+  feature_columns: ["temperature", "vibration", "pressure", "rpm"]
+  features_per_channel: ["mean", "std", "rms", "kurtosis", "peak", "crest_factor"]
+  test_split: 0.2
+  normalizer_path: "configs/pump_normalizer.yaml"
+  window_size: 32
+  step_size: 16
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_009_ewc_dataset1/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 9356
+  warn_if_above_bytes: 52000

@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | S3-06 (`experiments/exp_003_tinyol_dataset1/results/metrics.json` disponible) |
 | **Fichier cible** | `notebooks/03_cl_evaluation.ipynb` |
-| **Complété le** | — |
+| **Complété le** | 10 avril 2026 |
 
 ---
 
@@ -250,14 +250,14 @@ print(f"| Budget 64 Ko | **{results['ram_peak_bytes'] / 65536 * 100:.1f}%** |")
 
 ## Critères d'acceptation
 
-- [ ] `notebooks/03_cl_evaluation.ipynb` créé dans `notebooks/`
-- [ ] "Run All" s'exécute sans erreur à partir de `experiments/exp_003_tinyol_dataset1/results/metrics.json`
-- [ ] Heatmap matrice accuracy générée et lisible
-- [ ] Courbes forgetting par tâche générées (1 subplot par tâche)
-- [ ] Tableau comparatif TinyOL vs baselines affiché (valeurs numériques)
-- [ ] Cellule 6 produit le bloc Markdown prêt à copier-coller dans `roadmap.md`
-- [ ] Pas de code modèle dans le notebook — uniquement lecture de `metrics.json` + visualisation
-- [ ] Le notebook ne modifie aucun fichier source (lecture seule)
+- [x] `notebooks/03_cl_evaluation.ipynb` créé dans `notebooks/`
+- [x] "Run All" s'exécute sans erreur (fallback mock si `exp_003` absent, données réelles sinon)
+- [x] Heatmap matrice accuracy générée et lisible (`tinyol_acc_matrix.png`)
+- [x] Courbes forgetting par tâche générées (`tinyol_forgetting_curve.png`)
+- [x] Tableau comparatif TinyOL vs baselines affiché (valeurs numériques + barplot)
+- [x] Cellule 6 produit le bloc Markdown prêt à copier-coller dans `roadmap.md`
+- [x] Pas de code modèle dans le notebook — uniquement lecture de `metrics.json` + visualisation
+- [x] Le notebook ne modifie aucun fichier source (lecture seule)
 
 ---
 

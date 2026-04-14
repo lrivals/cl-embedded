@@ -36,13 +36,73 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 import numpy as np
 import yaml
 
-from src.data.monitoring_dataset import get_cl_dataloaders
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
 from src.models.hdc import HDCClassifier
 from src.utils.config_loader import get_exp_dir, load_config, save_config_snapshot
 from src.utils.reproducibility import set_seed
 
-_FEATURE_NAMES = ["temperature", "pressure", "vibration", "humidity"]
+def _get_feature_names(cfg: dict) -> list[str]:
+    """Retourne la liste ordonnée des noms de features selon le dataset."""
+    dataset = cfg["data"].get("dataset", "equipment_monitoring")
+    if dataset == "pump_maintenance":
+        cols = cfg["data"]["feature_columns"]
+        stats = cfg["data"]["features_per_channel"]
+        return [f"{s}_{c}" for c in cols for s in stats] + ["temporal_position"]
+    return cfg["data"]["feature_columns"]
+
+
+def _get_tasks(cfg: dict) -> list[dict]:
+    """Charge les tâches CL selon le dataset spécifié dans config."""
+    dataset = cfg["data"].get("dataset", "equipment_monitoring")
+    csv_path = Path(cfg["data"]["csv_path"])
+    normalizer_path = Path(cfg["data"]["normalizer_path"])
+    batch_size = cfg["training"]["batch_size"]
+    val_ratio = cfg["data"]["test_split"]
+    seed = cfg["training"]["seed"]
+
+    if dataset == "pump_maintenance":
+        task_split = cfg["data"].get("task_split", "chronological")
+        if task_split == "by_pump_id":
+            from src.data.pump_dataset import get_pump_dataloaders_by_id
+            return get_pump_dataloaders_by_id(
+                csv_path=str(csv_path),
+                normalizer_path=str(normalizer_path),
+                batch_size=batch_size,
+                val_ratio=val_ratio,
+                seed=seed,
+                window_size=cfg["data"]["window_size"],
+                step_size=cfg["data"]["step_size"],
+            )
+        from src.data.pump_dataset import get_pump_dataloaders
+        return get_pump_dataloaders(
+            csv_path=csv_path,
+            normalizer_path=normalizer_path,
+            batch_size=batch_size,
+            val_ratio=val_ratio,
+            seed=seed,
+            window_size=cfg["data"]["window_size"],
+            step_size=cfg["data"]["step_size"],
+        )
+    else:
+        task_split = cfg["data"].get("task_split", "by_equipment")
+        if task_split == "by_location":
+            from src.data.monitoring_dataset import get_cl_dataloaders_by_location
+            return get_cl_dataloaders_by_location(
+                csv_path=csv_path,
+                normalizer_path=normalizer_path,
+                batch_size=batch_size,
+                val_ratio=val_ratio,
+                seed=seed,
+                location_order=cfg["data"].get("location_order"),
+            )
+        from src.data.monitoring_dataset import get_cl_dataloaders
+        return get_cl_dataloaders(
+            csv_path=csv_path,
+            normalizer_path=normalizer_path,
+            batch_size=batch_size,
+            val_ratio=val_ratio,
+            seed=seed,
+        )
 
 
 def parse_args() -> argparse.Namespace:
@@ -58,27 +118,40 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Sauter les baselines (non applicable pour HDC — option conservée pour cohérence CLI)",
     )
+    parser.add_argument(
+        "--data_config",
+        default=None,
+        help="Config data override (ex. configs/pump_by_id_config.yaml)",
+    )
+    parser.add_argument(
+        "--exp_dir",
+        default=None,
+        help="Répertoire expérience override (ex. experiments/exp_014_hdc_pump_by_id)",
+    )
     return parser.parse_args()
 
 
 def compute_feature_bounds_task1(
     train_loader,
+    feature_names: list[str],
 ) -> dict[str, tuple[float, float]]:
     """
-    Calcule min/max de chaque feature sur le train set de Task 1 (Pump).
+    Calcule min/max de chaque feature sur le train set de Task 1.
 
-    À appeler UNE SEULE FOIS (Task 1) et à persister dans hdc_config.yaml.
+    À appeler UNE SEULE FOIS (Task 1) et à persister dans le config YAML.
     Appliqué à toutes les tâches suivantes sans recalcul (pas de data leakage).
 
     Parameters
     ----------
     train_loader : DataLoader
-        DataLoader de Task 1 (Pump) uniquement.
+        DataLoader de Task 1 uniquement.
+    feature_names : list[str]
+        Noms des features dans l'ordre des colonnes du tenseur X.
 
     Returns
     -------
     dict[str, tuple[float, float]]
-        {"temperature": (min, max), "pressure": (min, max), ...}
+        {nom_feature: (min, max)} dans l'ordre de feature_names.
     """
     all_x = []
     for x_batch, _ in train_loader:
@@ -86,7 +159,7 @@ def compute_feature_bounds_task1(
     x_all = np.concatenate(all_x, axis=0)  # [N_task1, n_features]  # noqa: N806
 
     bounds: dict[str, tuple[float, float]] = {}
-    for i, name in enumerate(_FEATURE_NAMES):
+    for i, name in enumerate(feature_names):
         bounds[name] = (float(x_all[:, i].min()), float(x_all[:, i].max()))
     return bounds
 
@@ -115,8 +188,9 @@ def _ensure_feature_bounds(config: dict, task1_loader, config_path: str) -> None
     if not needs_update:
         return
 
-    print("[HDC] Calcul des feature_bounds sur Task 1 (Pump)...")
-    bounds = compute_feature_bounds_task1(task1_loader)
+    feature_names = _get_feature_names(config)
+    print(f"[HDC] Calcul des feature_bounds sur Task 1 ({len(feature_names)} features)...")
+    bounds = compute_feature_bounds_task1(task1_loader, feature_names)
     config["feature_bounds"] = {k: list(v) for k, v in bounds.items()}
 
     # Persister dans le YAML pour les runs suivants
@@ -177,7 +251,7 @@ def train_hdc(
     acc_matrix = np.full((n_tasks, n_tasks), np.nan)
 
     for task_idx, task in enumerate(tasks):
-        domain = task["domain"]
+        domain = task.get("domain", f"Tâche {task['task_id']}")
         print(f"\n{'=' * 60}")
         print(f"Tâche {task_idx + 1}/{n_tasks} : {domain}")
         print(f"  Train: {task['n_train']} samples | Val: {task['n_val']} samples")
@@ -196,7 +270,8 @@ def train_hdc(
         for eval_idx in range(task_idx + 1):
             acc = evaluate_task_hdc(model, tasks[eval_idx]["val_loader"])
             acc_matrix[task_idx, eval_idx] = acc
-            print(f"  Acc tâche {eval_idx + 1} ({tasks[eval_idx]['domain']}): {acc:.4f}")
+            lbl = tasks[eval_idx].get("domain", f"T{eval_idx + 1}")
+            print(f"  Acc tâche {eval_idx + 1} ({lbl}): {acc:.4f}")
 
     return acc_matrix
 
@@ -277,6 +352,19 @@ def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
 
+    # Override section data depuis --data_config (ex. pump_by_id_config.yaml)
+    if args.data_config:
+        data_cfg = load_config(args.data_config)
+        cfg["data"].update(data_cfg.get("data", {}))
+        # Forcer recalcul des feature_bounds si scénario by_pump_id
+        if cfg["data"].get("task_split") == "by_pump_id":
+            cfg["feature_bounds"] = None
+
+    # Override répertoire expérience depuis --exp_dir
+    if args.exp_dir:
+        cfg["evaluation"]["output_dir"] = str(Path(args.exp_dir) / "results")
+        cfg["exp_id"] = Path(args.exp_dir).name
+
     set_seed(cfg["training"]["seed"])
 
     exp_dir = get_exp_dir(cfg)
@@ -301,25 +389,18 @@ def main() -> None:
     normalizer_path = Path(cfg["data"]["normalizer_path"])
 
     if not csv_path.exists():
-        raise FileNotFoundError(
-            f"CSV introuvable : {csv_path}\n"
-            "Télécharger le Dataset 2 (Equipment Monitoring) depuis Kaggle "
-            "et le placer dans ce dossier."
-        )
+        raise FileNotFoundError(f"CSV introuvable : {csv_path}")
     print(f"Dataset : {csv_path}")
 
-    tasks = get_cl_dataloaders(
-        csv_path=csv_path,
-        normalizer_path=normalizer_path,
-        batch_size=cfg["training"]["batch_size"],
-        val_ratio=cfg["data"]["test_split"],
-        seed=cfg["training"]["seed"],
-    )
+    tasks = _get_tasks(cfg)
     n_tasks = len(tasks)
-    print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({n_tasks} tâches)\n")
+    labels = [t.get("domain", f"T{t['task_id']}") for t in tasks]
+    print(f"Tâches chargées : {labels} ({n_tasks} tâches)\n")
 
     # --- Feature bounds Task 1 (calculées si absentes) ---
-    _ensure_feature_bounds(cfg, tasks[0]["train_loader"], args.config)
+    # Si --data_config fourni, écrire les bounds dans ce fichier (pas le config principal)
+    bounds_config_path = args.data_config if args.data_config else args.config
+    _ensure_feature_bounds(cfg, tasks[0]["train_loader"], bounds_config_path)
 
     # --- Modèle HDC ---
     model = HDCClassifier(cfg)

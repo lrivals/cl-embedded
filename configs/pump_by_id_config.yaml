@@ -1,0 +1,26 @@
+# pump_by_id_config.yaml — Scénario CL domain-incremental par Pump_ID (5 tâches)
+#
+# Chaque tâche correspond à un identifiant de pompe distinct (Pump_ID ∈ {1,2,3,4,5}).
+# Ce fichier override la section "data" des configs modèles via --data_config.
+#
+# Usage :
+#   python scripts/train_ewc.py \
+#     --config configs/ewc_pump_config.yaml \
+#     --data_config configs/pump_by_id_config.yaml \
+#     --exp_dir experiments/exp_013_ewc_pump_by_id
+
+data:
+  csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
+  normalizer_path: "configs/pump_normalizer.yaml"
+  task_split: by_pump_id          # nouveau mode : un Pump_ID par tâche (5 tâches)
+  pump_id_col: Pump_ID
+  label_col: Maintenance_Flag
+  feature_cols: [temperature, vibration, pressure, rpm]
+  feature_columns: [temperature, vibration, pressure, rpm]  # alias pour compatibilité scripts
+  features_per_channel: [mean, std, rms, kurtosis, peak, crest_factor]
+  window_size: 32
+  step_size: 16
+  val_ratio: 0.2
+  test_split: 0.2                  # alias val_ratio pour compatibilité EWC/HDC
+  dataset: pump_maintenance
+  label_column: maintenance_required

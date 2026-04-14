@@ -1,0 +1,54 @@
+# configs/tinyol_monitoring_config.yaml
+# TinyOL (Backbone Autoencoder + tête OtO) — Dataset 2 (Equipment Monitoring)
+# Expérience croisée : même architecture TinyOL, sur Dataset 2 (4 features).
+
+exp_id: "exp_011_tinyol_dataset2"
+
+backbone:
+  # Encodeur (gelé après pré-entraînement)
+  input_dim: 4           # 4 features numériques (temperature, pressure, vibration, humidity)
+  encoder_dims: [8, 8, 8]  # 4→8→8→8 (embedding dim = 8)
+  activation: "relu"
+  checkpoint_path: "experiments/exp_011_tinyol_dataset2/backbone.pt"
+
+  # Décodeur (utilisé uniquement au pré-entraînement)
+  decoder_dims: [8, 8, 4]  # 8→8→8→4 (reconstrução input_dim=4)
+
+pretrain:
+  optimizer: "adam"
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 64
+  loss: "mse"
+  seed: 42
+  pretrain_fraction: 1.0  # toutes les données normales de Task 1 (pump domain)
+  val_fraction: 0.1
+
+oto_head:
+  # Identique à Dataset 1 : embedding (8D) + MSE scalaire = 9 entrées
+  input_dim: 9
+  output_dim: 1
+  optimizer: "sgd"
+  learning_rate: 0.01
+  momentum: 0.0
+  loss: "bce"
+
+data:
+  dataset: "equipment_monitoring"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+  domain_column: "equipment"
+  domain_order: ["pump", "turbine", "compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+  normalizer_path: "configs/monitoring_normalizer.yaml"
+  n_tasks: 3
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_011_tinyol_dataset2/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 1000   # backbone plus petit : ~216 params encodeur + 10 OtO
+  warn_if_above_bytes: 52000

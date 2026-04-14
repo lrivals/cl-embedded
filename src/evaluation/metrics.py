@@ -196,6 +196,48 @@ def save_metrics(
     print(f"✅ Métriques sauvegardées → {output_path}")
 
 
+def evaluate_task_with_preds(
+    model: object,
+    val_loader: object,
+) -> tuple[float, np.ndarray, np.ndarray]:
+    """
+    Évalue un modèle sur un val_loader et retourne accuracy + prédictions brutes.
+
+    Variante de evaluate_task_generic() (scenarios.py) qui collecte aussi y_true/y_pred
+    pour permettre la construction de matrices de confusion et courbes ROC.
+
+    Parameters
+    ----------
+    model : BaseCLModel
+        Modèle évalué — doit exposer model.predict(x_np) → np.ndarray [B].
+    val_loader : DataLoader
+        DataLoader de validation. Retourne (x, y) avec x : Tensor [B, F].
+
+    Returns
+    -------
+    acc : float
+        Accuracy binaire ∈ [0, 1].
+    y_true : np.ndarray [N]
+        Vraies étiquettes (int 0/1).
+    y_pred : np.ndarray [N]
+        Prédictions brutes du modèle (probabilités ou scores continus).
+    """
+    all_preds: list[np.ndarray] = []
+    all_labels: list[np.ndarray] = []
+
+    for x, y in val_loader:
+        x_np = x.numpy() if hasattr(x, "numpy") else np.asarray(x)
+        y_np = y.numpy().flatten() if hasattr(y, "numpy") else np.asarray(y).flatten()
+        preds = model.predict(x_np)  # type: ignore[attr-defined]
+        all_preds.append(np.asarray(preds).flatten())
+        all_labels.append(y_np)
+
+    y_true = np.concatenate(all_labels)
+    y_pred = np.concatenate(all_preds)
+    acc = accuracy_binary(y_true, y_pred)
+    return acc, y_true, y_pred
+
+
 def accuracy_binary(y_true: np.ndarray, y_pred: np.ndarray, threshold: float = 0.5) -> float:
     """
     Accuracy binaire avec seuil.

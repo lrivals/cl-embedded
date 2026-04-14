@@ -80,6 +80,16 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Override exp_id depuis la config (ex. exp_007_mahalanobis)",
     )
+    parser.add_argument(
+        "--data_config",
+        default=None,
+        help="Config data override (ex. configs/pump_by_id_config.yaml)",
+    )
+    parser.add_argument(
+        "--exp_dir",
+        default=None,
+        help="Répertoire expérience override (ex. experiments/exp_015_mahalanobis_pump_by_id)",
+    )
     return parser.parse_args()
 
 
@@ -126,10 +136,14 @@ def build_model(
 
 def load_pump_tasks(config: dict) -> list[dict]:
     """
-    Charge Dataset 1 (Pump Maintenance) en scénario domain-incremental temporel.
+    Charge Dataset 1 (Pump Maintenance) en scénario domain-incremental.
 
-    Délègue à get_pump_dataloaders() de pump_dataset.py et injecte la clé
-    "domain" pour compatibilité avec train_unsupervised().
+    Supporte deux modes selon ``data_pump["task_split"]`` :
+    - ``"chronological"`` (défaut) : 3 tâches temporelles (pump_healthy → wearing → prefailure)
+    - ``"by_pump_id"`` : 5 tâches par identifiant de pompe (Pump_ID 1 → 2 → 3 → 4 → 5)
+
+    Délègue à pump_dataset.py et injecte la clé "domain" pour compatibilité
+    avec train_unsupervised().
 
     Parameters
     ----------
@@ -139,26 +153,38 @@ def load_pump_tasks(config: dict) -> list[dict]:
     Returns
     -------
     list[dict]
-        3 tâches chronologiques : pump_healthy → pump_wearing → pump_prefailure.
-        Chaque dict contient : train_loader, val_loader, domain, n_train, n_val.
+        Liste de tâches (3 ou 5) avec : train_loader, val_loader, domain, n_train, n_val.
     """
-    from src.data.pump_dataset import get_pump_dataloaders
-
     data_cfg = config["data_pump"]
-    domain_names = ["pump_healthy", "pump_wearing", "pump_prefailure"]
+    task_split = data_cfg.get("task_split", "chronological")
 
-    tasks = get_pump_dataloaders(
-        csv_path=Path(data_cfg["csv_path"]),
-        normalizer_path=Path(data_cfg["normalizer_path"]),
-        batch_size=data_cfg.get("batch_size", 32),
-        val_ratio=data_cfg.get("val_ratio", 0.2),
-        seed=config.get("seed", 42),
-        window_size=data_cfg.get("window_size", 32),
-        step_size=data_cfg.get("step_size", 16),
-    )
-
-    for i, task in enumerate(tasks):
-        task["domain"] = domain_names[i]
+    if task_split == "by_pump_id":
+        from src.data.pump_dataset import get_pump_dataloaders_by_id
+        tasks = get_pump_dataloaders_by_id(
+            csv_path=str(data_cfg["csv_path"]),
+            normalizer_path=str(data_cfg["normalizer_path"]),
+            batch_size=data_cfg.get("batch_size", 32),
+            val_ratio=data_cfg.get("val_ratio", 0.2),
+            seed=config.get("seed", 42),
+            window_size=data_cfg.get("window_size", 32),
+            step_size=data_cfg.get("step_size", 16),
+        )
+        for task in tasks:
+            task["domain"] = f"pump{task['pump_id']}"
+    else:
+        from src.data.pump_dataset import get_pump_dataloaders
+        domain_names = ["pump_healthy", "pump_wearing", "pump_prefailure"]
+        tasks = get_pump_dataloaders(
+            csv_path=Path(data_cfg["csv_path"]),
+            normalizer_path=Path(data_cfg["normalizer_path"]),
+            batch_size=data_cfg.get("batch_size", 32),
+            val_ratio=data_cfg.get("val_ratio", 0.2),
+            seed=config.get("seed", 42),
+            window_size=data_cfg.get("window_size", 32),
+            step_size=data_cfg.get("step_size", 16),
+        )
+        for i, task in enumerate(tasks):
+            task["domain"] = domain_names[i]
 
     return tasks
 
@@ -420,6 +446,16 @@ def main() -> None:
     cfg = load_config(args.config)
     set_seed(cfg.get("seed", 42))
 
+    # Override section data depuis --data_config selon le dataset ciblé
+    if args.data_config:
+        data_cfg = load_config(args.data_config)
+        if args.dataset == "monitoring":
+            cfg["data"].update(data_cfg.get("data", {}))
+        else:
+            if "data_pump" not in cfg:
+                cfg["data_pump"] = {}
+            cfg["data_pump"].update(data_cfg.get("data", {}))
+
     # --- Override exp_id depuis CLI ---
     dataset_tag = "dataset1" if args.dataset == "pump" else "dataset2"
     if args.exp_id:
@@ -437,6 +473,11 @@ def main() -> None:
         exp_id = cfg.get("exp_id", "exp_005_unsupervised_dataset2")
         results_dir = Path(f"experiments/{exp_id}/results")
         cfg["_dataset"] = "monitoring"
+
+    # Override répertoire expérience depuis --exp_dir
+    if args.exp_dir:
+        results_dir = Path(args.exp_dir) / "results"
+        exp_id = Path(args.exp_dir).name
 
     exp_dir = results_dir.parent
     results_dir.mkdir(parents=True, exist_ok=True)
@@ -469,13 +510,25 @@ def main() -> None:
 
         normalizer_path = Path(cfg["data"]["normalizer_path"])
         print(f"\nChargement des données depuis {csv_path} ...")
-        tasks = get_cl_dataloaders(
-            csv_path=csv_path,
-            normalizer_path=normalizer_path,
-            batch_size=cfg["data"]["batch_size"],
-            val_ratio=cfg["data"]["val_ratio"],
-            seed=cfg.get("seed", 42),
-        )
+        task_split = cfg["data"].get("task_split", "by_equipment")
+        if task_split == "by_location":
+            from src.data.monitoring_dataset import get_cl_dataloaders_by_location
+            tasks = get_cl_dataloaders_by_location(
+                csv_path=csv_path,
+                normalizer_path=normalizer_path,
+                batch_size=cfg["data"]["batch_size"],
+                val_ratio=cfg["data"]["val_ratio"],
+                seed=cfg.get("seed", 42),
+                location_order=cfg["data"].get("location_order"),
+            )
+        else:
+            tasks = get_cl_dataloaders(
+                csv_path=csv_path,
+                normalizer_path=normalizer_path,
+                batch_size=cfg["data"]["batch_size"],
+                val_ratio=cfg["data"]["val_ratio"],
+                seed=cfg.get("seed", 42),
+            )
 
     print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({len(tasks)} tâches)")
 

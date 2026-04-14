@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | S3-02 (`pump_dataset.py` opérationnel) + S3-03 (`autoencoder.py` opérationnel) |
 | **Fichier cible** | `scripts/pretrain_tinyol.py` |
-| **Complété le** | — |
+| **Complété le** | 9 avril 2026 |
 
 ---
 
@@ -294,15 +294,15 @@ def _save_config_snapshot(config: dict, path: Path) -> None:
 
 ## Critères d'acceptation
 
-- [ ] `python scripts/pretrain_tinyol.py --config configs/tinyol_config.yaml` s'exécute sans erreur
-- [ ] `experiments/exp_003_tinyol_dataset1/backbone.pt` créé et chargeable avec `torch.load()`
-- [ ] `configs/pump_normalizer.yaml` généré (YAML valide, committable)
-- [ ] `experiments/exp_003_tinyol_dataset1/pretrain_loss_curve.png` créé — courbe décroissante
-- [ ] `experiments/exp_003_tinyol_dataset1/config_snapshot.yaml` créé (reproductibilité)
-- [ ] Val MSE finale < Train MSE initiale (convergence effective)
-- [ ] Aucun hyperparamètre hardcodé dans le script — tout vient de `tinyol_config.yaml`
-- [ ] `set_seed(config["pretrain"]["seed"])` appelé en début de script
-- [ ] `ruff check scripts/pretrain_tinyol.py` + `black --check` passent
+- [x] `python scripts/pretrain_tinyol.py --config configs/tinyol_config.yaml` s'exécute sans erreur
+- [x] `experiments/exp_003_tinyol_dataset1/backbone.pt` créé et chargeable avec `torch.load()`
+- [x] `configs/pump_normalizer.yaml` généré (YAML valide, committable)
+- [x] `experiments/exp_003_tinyol_dataset1/pretrain_loss_curve.png` créé — courbe décroissante
+- [x] `experiments/exp_003_tinyol_dataset1/config_snapshot.yaml` créé (reproductibilité)
+- [x] Val MSE finale < Train MSE initiale (convergence effective)
+- [x] Aucun hyperparamètre hardcodé dans le script — tout vient de `tinyol_config.yaml`
+- [x] `set_seed(config["pretrain"]["seed"])` appelé en début de script
+- [x] `ruff check scripts/pretrain_tinyol.py` + `black --check` passent
 
 ---
 

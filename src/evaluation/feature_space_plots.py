@@ -431,6 +431,175 @@ def plot_pca_reconstruction_heatmap(
     ax.set_ylabel("PC2", fontsize=FIGURE_FONT_SIZE)
 
 
+def plot_clustering_with_correctness(
+    X_tasks: list[np.ndarray],
+    y_true_tasks: list[np.ndarray],
+    y_pred_tasks: list[np.ndarray],
+    cluster_labels_tasks: list[np.ndarray],
+    task_names: list[str] | None = None,
+    model_name: str = "Détecteur",
+    projection: str = "pca",
+    centroids_tasks: list[np.ndarray] | None = None,
+) -> plt.Figure:
+    """
+    Scatter 2D des données clusterisées avec annotation correct/incorrect par cluster.
+
+    Pour chaque tâche, affiche les données projetées en 2D (PCA ou t-SNE), colorées par
+    cluster d'appartenance. Les points sont classés correct (○) ou incorrect (✗) selon
+    la concordance entre y_true et y_pred. Chaque cluster reçoit une annotation textuelle
+    indiquant le pourcentage de points correctement classifiés.
+
+    Compatible avec K-Means (cluster_labels ∈ [0, k-1]) et DBSCAN
+    (cluster_labels = -1 pour les points bruit).
+
+    Parameters
+    ----------
+    X_tasks : list[np.ndarray]
+        Liste de T tableaux [N_t, d] — features brutes par tâche.
+    y_true_tasks : list[np.ndarray]
+        Liste de T tableaux [N_t] — vraies étiquettes binaires {0, 1}.
+    y_pred_tasks : list[np.ndarray]
+        Liste de T tableaux [N_t] — prédictions du détecteur (probabilités ou labels).
+    cluster_labels_tasks : list[np.ndarray]
+        Liste de T tableaux [N_t] — identifiants de cluster (int). -1 = bruit (DBSCAN).
+    task_names : list[str] | None
+        Noms des tâches. Défaut : ["T1", "T2", ...].
+    model_name : str
+        Nom du modèle pour le titre de la figure.
+    projection : str
+        Méthode de projection 2D : 'pca' | 'kpca_rbf' | 'kpca_poly' | 'tsne'.
+        Une PCA commune est ajustée sur l'ensemble des données pour comparabilité.
+    centroids_tasks : list[np.ndarray] | None
+        Liste de T tableaux [k, d] — centroïdes K-Means en espace original.
+        Si fourni, les centroïdes sont projetés et affichés en étoiles noires.
+
+    Returns
+    -------
+    plt.Figure
+
+    Notes
+    -----
+    La projection est ajustée sur l'ensemble des données (toutes tâches concaténées)
+    pour garantir un espace commun entre les tâches.
+    """
+    T = len(X_tasks)
+    if task_names is None:
+        task_names = [f"T{t + 1}" for t in range(T)]
+
+    # Projection commune ajustée sur toutes les données
+    X_all = np.concatenate(X_tasks, axis=0)
+    proj_model, X_all_proj, xlabel, ylabel = fit_projection(X_all, method=projection)
+
+    # Découper la projection par tâche
+    splits = np.cumsum([len(X) for X in X_tasks])[:-1]
+    X_proj_tasks = np.split(X_all_proj, splits, axis=0)
+
+    # Palette clusters — jusqu'à 12 clusters distincts
+    CLUSTER_COLORS = [
+        "#2196F3", "#FF9800", "#9C27B0", "#009688", "#F44336",
+        "#CDDC39", "#795548", "#00BCD4", "#E91E63", "#3F51B5",
+        "#8BC34A", "#FF5722",
+    ]
+    NOISE_COLOR = "#BDBDBD"  # gris DBSCAN bruit
+
+    fig, axes = plt.subplots(1, T, figsize=(5.5 * T, 5.0), squeeze=False)
+
+    for col, (X_proj, y_true, y_pred_raw, cluster_labels) in enumerate(
+        zip(X_proj_tasks, y_true_tasks, y_pred_tasks, cluster_labels_tasks)
+    ):
+        ax = axes[0, col]
+
+        y_true_int = np.asarray(y_true).flatten().astype(int)
+        y_pred_int = (np.asarray(y_pred_raw).flatten() >= 0.5).astype(int)
+        cluster_labels = np.asarray(cluster_labels).flatten().astype(int)
+        correct_mask = y_true_int == y_pred_int
+
+        unique_clusters = sorted(np.unique(cluster_labels))
+
+        for k_idx, k in enumerate(unique_clusters):
+            mask_k = cluster_labels == k
+            is_noise = k == -1
+
+            color = NOISE_COLOR if is_noise else CLUSTER_COLORS[k_idx % len(CLUSTER_COLORS)]
+            cluster_label = "Bruit" if is_noise else f"Cluster {k}"
+
+            # Points corrects (cercles pleins)
+            mask_ok = mask_k & correct_mask
+            if mask_ok.sum() > 0:
+                ax.scatter(
+                    X_proj[mask_ok, 0], X_proj[mask_ok, 1],
+                    c=color, marker="o", alpha=0.6, s=18,
+                    linewidths=0, label=f"{cluster_label} ✓" if k_idx == 0 else None,
+                )
+
+            # Points incorrects (croix)
+            mask_err = mask_k & ~correct_mask
+            if mask_err.sum() > 0:
+                ax.scatter(
+                    X_proj[mask_err, 0], X_proj[mask_err, 1],
+                    c=color, marker="x", alpha=0.9, s=30,
+                    linewidths=1.2, label=f"{cluster_label} ✗" if k_idx == 0 else None,
+                )
+
+            # Annotation textuelle au centroïde du cluster dans l'espace projeté
+            if not is_noise and mask_k.sum() > 0:
+                n_cluster = int(mask_k.sum())
+                pct_correct = float(correct_mask[mask_k].mean()) * 100
+                cx, cy = X_proj[mask_k, 0].mean(), X_proj[mask_k, 1].mean()
+                ax.annotate(
+                    f"C{k}\n✓{pct_correct:.0f}%\n(n={n_cluster})",
+                    xy=(cx, cy),
+                    fontsize=7,
+                    ha="center",
+                    va="center",
+                    bbox={"boxstyle": "round,pad=0.25", "fc": color, "alpha": 0.25, "ec": "none"},
+                )
+
+        # Centroïdes K-Means si fournis
+        if centroids_tasks is not None and col < len(centroids_tasks):
+            centroids_4d = centroids_tasks[col]
+            if centroids_4d is not None and len(centroids_4d) > 0:
+                # Projeter les centroïdes dans le même espace 2D que X_all
+                if hasattr(proj_model, "transform"):
+                    centroids_proj = proj_model.transform(centroids_4d)
+                else:  # t-SNE : pas de transform(), fallback vstack
+                    _, combined, _, _ = fit_projection(
+                        np.vstack([X_all, centroids_4d]), method=projection
+                    )
+                    centroids_proj = combined[-len(centroids_4d):]
+                ax.scatter(
+                    centroids_proj[:, 0], centroids_proj[:, 1],
+                    c="black", marker="*", s=220, zorder=6, label="Centroïdes",
+                )
+
+        # Légende manuelle correct/incorrect
+        from matplotlib.lines import Line2D
+        legend_elems = [
+            Line2D([0], [0], marker="o", color="grey", markersize=6, linewidth=0, label="Correct ✓"),
+            Line2D([0], [0], marker="x", color="grey", markersize=6, linewidth=1.5, label="Incorrect ✗"),
+        ]
+        ax.legend(handles=legend_elems, fontsize=8, loc="upper right")
+
+        global_acc = float(correct_mask.mean()) * 100
+        ax.set_title(
+            f"{task_names[col]}\nPrécision globale : {global_acc:.1f}%",
+            fontsize=FIGURE_FONT_SIZE,
+            fontweight="bold",
+        )
+        ax.set_xlabel(xlabel, fontsize=FIGURE_FONT_SIZE - 2)
+        ax.set_ylabel(ylabel if col == 0 else "", fontsize=FIGURE_FONT_SIZE - 2)
+        ax.grid(True, alpha=0.25)
+
+    fig.suptitle(
+        f"Clustering {projection.upper()} — {model_name}\n"
+        "Couleur = cluster | ○ = correct | ✗ = incorrect",
+        fontsize=FIGURE_FONT_SIZE + 1,
+        fontweight="bold",
+    )
+    fig.tight_layout()
+    return fig
+
+
 def plot_cl_evolution(
     task_arrays: list[tuple[np.ndarray, np.ndarray]],
     pca2d: PCA,

@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | S3-05 (`oto_head.py` opérationnel) — S3-03 (`autoencoder.py`) recommandé |
 | **Fichier cible** | `tests/test_tinyol.py` |
-| **Complété le** | — |
+| **Complété le** | 9 avril 2026 |
 
 ---
 
@@ -252,14 +252,14 @@ class TestMemoryBudget:
 
 ## Critères d'acceptation
 
-- [ ] `pytest tests/test_tinyol.py -v` retourne ≥ 10 tests `PASSED` en < 30s
-- [ ] Aucun test ne nécessite le Dataset 1 (fichiers dans `data/raw/`)
-- [ ] `TestTinyOLAutoencoder::test_encoder_param_count` passe (1 496 params)
-- [ ] `TestOtOHead::test_param_count` passe (10 params)
-- [ ] `TestTinyOLOnlineTrainer::test_backbone_frozen` passe (gel complet)
-- [ ] `TestTinyOLOnlineTrainer::test_update_does_not_modify_backbone` passe
-- [ ] `TestMemoryBudget` — les deux assertions budget mémoire passent
-- [ ] `ruff check tests/test_tinyol.py` + `black --check` passent
+- [x] `pytest tests/test_tinyol.py -v` retourne ≥ 10 tests `PASSED` en < 30s — **17 PASSED en 1.26s**
+- [x] Aucun test ne nécessite le Dataset 1 (fichiers dans `data/raw/`)
+- [x] `TestTinyOLAutoencoder::test_encoder_param_count` passe (1 496 params)
+- [x] `TestOtOHead::test_param_count` passe (10 params)
+- [x] `TestTinyOLOnlineTrainer::test_backbone_frozen` passe (gel complet)
+- [x] `TestTinyOLOnlineTrainer::test_update_does_not_modify_backbone` passe
+- [x] `TestMemoryBudget` — les deux assertions budget mémoire passent
+- [x] `ruff check tests/test_tinyol.py` + `black --check` passent
 
 ---
 

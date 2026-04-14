@@ -57,7 +57,7 @@ def evaluate_task_generic(
     all_labels: list[np.ndarray] = []
 
     for x, y in val_loader:
-        x_np = x.numpy()
+        x_np = x.numpy() if hasattr(x, "numpy") else np.asarray(x)
         y_np = y.numpy().flatten()
         preds = model.predict(x_np)  # [B] ou [B, 1] → doit retourner [B]
         all_preds.append(preds.flatten())
@@ -137,3 +137,62 @@ def run_cl_scenario(
             acc_matrix[i, j] = evaluate_task_generic(model, tasks[j]["val_loader"])
 
     return acc_matrix
+
+
+def run_cl_scenario_full(
+    model: BaseCLModel,
+    tasks: list[dict],
+    config: dict,
+) -> tuple[np.ndarray, dict[tuple[int, int], tuple[np.ndarray, np.ndarray]]]:
+    """
+    Variante de run_cl_scenario() qui collecte aussi les prédictions brutes par (tâche_train, tâche_eval).
+
+    Retourne acc_matrix ET preds_dict pour la construction de matrices de confusion et courbes ROC.
+    L'interface run_cl_scenario() reste inchangée (compatibilité).
+
+    Parameters
+    ----------
+    model : BaseCLModel
+        Modèle initialisé (non entraîné) avant l'appel.
+    tasks : list[dict]
+        Même format que run_cl_scenario() — clés 'task_id', 'domain', 'train_loader', 'val_loader'.
+    config : dict
+        Configuration YAML chargée.
+
+    Returns
+    -------
+    acc_matrix : np.ndarray [T, T]
+        Matrice d'accuracy CL (NaN pour j > i).
+    preds_dict : dict[tuple[int, int], tuple[np.ndarray, np.ndarray]]
+        preds_dict[(i, j)] = (y_true, y_pred) — après entraînement sur tâche i, évaluation sur tâche j.
+        Uniquement les couples (i, j) avec j ≤ i (tâches déjà vues).
+        y_pred contient les scores bruts du modèle (probabilités ou scores continus).
+
+    Notes
+    -----
+    Utilise evaluate_task_with_preds() (metrics.py) pour collecter y_true/y_pred sans dupliquer
+    la logique de predict().
+    """
+    from src.evaluation.metrics import evaluate_task_with_preds
+
+    T = len(tasks)
+    acc_matrix = np.full((T, T), np.nan)
+    preds_dict: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
+
+    for i, task in enumerate(tasks):
+        # --- Mise à jour online sur la tâche i ---
+        for x_batch, y_batch in task["train_loader"]:
+            x_np = x_batch.numpy()
+            y_np = y_batch.numpy().flatten()
+            model.update(x_np, y_np)
+
+        # --- Fin de tâche : consolidation ---
+        model.on_task_end(task["task_id"], task["train_loader"])
+
+        # --- Évaluation sur toutes les tâches vues jusqu'ici ---
+        for j in range(i + 1):
+            acc, y_true, y_pred = evaluate_task_with_preds(model, tasks[j]["val_loader"])
+            acc_matrix[i, j] = acc
+            preds_dict[(i, j)] = (y_true, y_pred)
+
+    return acc_matrix, preds_dict
