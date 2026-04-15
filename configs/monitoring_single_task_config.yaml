@@ -1,0 +1,13 @@
+# Baseline single-task — Dataset 2 Equipment Monitoring
+# Pas de tâches séquentielles : split train/val/test global uniquement.
+# Usage : --data_config configs/monitoring_single_task_config.yaml
+# MEM: pas de structure CL, acc_matrix non générée
+
+data:
+  dataset: equipment_monitoring
+  task_split: "no_split"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+  test_ratio: 0.2    # fraction du dataset total réservée au test
+  val_ratio: 0.1     # fraction du train pour early stopping
+  seed: 42
+  # normalizer_path non requis : Z-score fittée sur le train split en interne

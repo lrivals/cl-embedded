@@ -1,0 +1,10 @@
+{
+  "exp_id": "exp_040_mahalanobis_pump_single_task",
+  "model": "mahalanobis",
+  "accuracy": 0.4457831325301205,
+  "f1": 0.1038961038961039,
+  "auc_roc": 0.511386073450046,
+  "ram_peak_bytes": 2092,
+  "inference_latency_ms": 0.007175530081440229,
+  "n_params": 650
+}

@@ -62,6 +62,12 @@ N_FEATURES: int = 25
 # Nombre de tâches CL (split chronologique égal)
 N_TASKS: int = 3
 
+# Nombre de tâches CL — scénario temporel (4 quartiles de 5 000 entrées)
+N_TEMPORAL_TASKS: int = 4
+
+# Entrées par tâche dans le scénario temporel (20 000 / 4)
+ENTRIES_PER_TEMPORAL_TASK: int = 5000
+
 # Canaux retenus pour le fenêtrage (conforme tinyol_config.yaml)
 FEATURE_COLUMNS: list[str] = ["temperature", "vibration", "pressure", "rpm"]
 
@@ -696,3 +702,265 @@ def get_pump_dataloaders_by_id(
         )
 
     return result
+
+
+def get_pump_dataloaders_by_temporal_window(
+    csv_path: str | Path,
+    normalizer_path: str | Path,
+    n_tasks: int = N_TEMPORAL_TASKS,
+    entries_per_task: int = ENTRIES_PER_TEMPORAL_TASK,
+    batch_size: int = 32,
+    val_ratio: float = VAL_RATIO,
+    seed: int = 42,
+    window_size: int = WINDOW_SIZE,
+    step_size: int = STEP_SIZE,
+) -> list[dict]:
+    """
+    Crée un scénario CL domain-incremental par fenêtres temporelles.
+
+    Découpe les 20 000 entrées en ``n_tasks`` tranches de ``entries_per_task`` lignes
+    chacune, triées par Operational_Hours (ordre chronologique global, tous Pump_ID mélangés).
+
+      T1 : lignes 0–4 999    (Operational_Hours les plus basses)
+      T2 : lignes 5 000–9 999
+      T3 : lignes 10 000–14 999
+      T4 : lignes 15 000–19 999
+
+    Applique le même feature engineering que ``get_pump_dataloaders()`` :
+    fenêtrage WINDOW_SIZE=32, STEP_SIZE=16, 6 stats × 4 canaux + temporal_position.
+
+    Normalisation Z-score ajustée sur T1 uniquement (``pump_normalizer.yaml`` préajusté).
+
+    Split train/val **temporel** (chronologique, pas stratifié) pour respecter l'ordre
+    causal : les ``val_ratio`` dernières fenêtres de chaque tâche constituent le set de
+    validation.
+
+    Parameters
+    ----------
+    csv_path : str | Path
+        Chemin complet vers le CSV pump maintenance.
+    normalizer_path : str | Path
+        Chemin vers ``pump_normalizer.yaml`` (normaliseur ajusté sur Task 1 chronologique).
+    n_tasks : int
+        Nombre de tâches (quartiles). Default : N_TEMPORAL_TASKS (4).
+    entries_per_task : int
+        Nombre de lignes CSV par tâche. Default : ENTRIES_PER_TEMPORAL_TASK (5 000).
+    batch_size : int
+        Taille de batch pour les DataLoaders. Default : 32.
+    val_ratio : float
+        Fraction validation (split temporel, pas stratifié). Default : VAL_RATIO (0.2).
+    seed : int
+        Seed reproductibilité. Default : 42.
+    window_size : int
+        Taille fenêtre glissante. Default : WINDOW_SIZE (32).
+    step_size : int
+        Pas entre fenêtres. Default : STEP_SIZE (16).
+
+    Returns
+    -------
+    list[dict]
+        Liste de ``n_tasks`` dicts (un par quartile temporel) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,            # 1..n_tasks
+                "temporal_window": int,    # alias sémantique de task_id
+                "train_loader": DataLoader,
+                "val_loader": DataLoader,
+                "n_train": int,
+                "n_val": int,
+            }
+    """
+    set_seed(seed)
+
+    # 1. Chargement + tri chronologique global (load() trie par operational_hours)
+    ds = PumpMaintenanceDataset(Path(csv_path))
+    full_df = ds.load()  # déjà trié par operational_hours croissant
+
+    # 2. Chargement du normaliseur fixe (ajusté sur T1 chronologique)
+    normalizer = load_pump_normalizer(Path(normalizer_path))
+    mean_vec = normalizer["mean"]  # [N_FEATURES]
+    std_vec = normalizer["std"]    # [N_FEATURES]
+
+    result: list[dict] = []
+
+    for task_idx in range(n_tasks):
+        # 3. Découper la tranche de entries_per_task lignes (indices continus)
+        start = task_idx * entries_per_task
+        end = start + entries_per_task
+        slice_df = full_df.iloc[start:end].copy().reset_index(drop=True)
+
+        # 4. Extraction features via fenêtrage glissant (même pipeline que get_pump_dataloaders)
+        original_df = ds._df
+        ds._df = slice_df
+        X, y = ds.extract_features(window_size=window_size, step_size=step_size)
+        ds._df = original_df  # restaurer l'état original
+
+        # 5. Normalisation Z-score avec stats fixes (pas de recalcul par tâche)
+        # MEM: X [N_windows, 25] × 4B = N_windows × 100 B @ FP32
+        X = (X - mean_vec) / std_vec
+
+        # 6. Split train/val temporel (chronologique — pas de shuffle pour respecter causalité)
+        n = len(X)
+        n_val = max(1, int(n * val_ratio))
+        train_idx = np.arange(n - n_val)
+        val_idx = np.arange(n - n_val, n)
+
+        x_train = torch.from_numpy(X[train_idx].astype(np.float32))  # MEM: n_train×25×4 B @ FP32
+        y_train = torch.from_numpy(y[train_idx].astype(np.float32)).unsqueeze(1)
+        x_val = torch.from_numpy(X[val_idx].astype(np.float32))
+        y_val = torch.from_numpy(y[val_idx].astype(np.float32)).unsqueeze(1)
+
+        train_loader = DataLoader(
+            TensorDataset(x_train, y_train),
+            batch_size=batch_size,
+            shuffle=True,
+        )
+        val_loader = DataLoader(
+            TensorDataset(x_val, y_val),
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        result.append(
+            {
+                "task_id": task_idx + 1,
+                "temporal_window": task_idx + 1,
+                "train_loader": train_loader,
+                "val_loader": val_loader,
+                "n_train": len(train_idx),
+                "n_val": len(val_idx),
+            }
+        )
+
+    return result
+
+
+# ---------------------------------------------------------------------------
+# 6. Loader single-task (baseline hors-CL)
+# ---------------------------------------------------------------------------
+
+
+def get_pump_dataloaders_single_task(
+    csv_path: Path,
+    normalizer_path: Path,
+    batch_size: int = 32,
+    test_ratio: float = 0.2,
+    val_ratio: float = 0.1,
+    seed: int = 42,
+    window_size: int = WINDOW_SIZE,
+    step_size: int = STEP_SIZE,
+) -> dict:
+    """
+    Retourne un dict unique (pas une liste) avec toutes les données pump fusionnées.
+
+    Pas de découpage temporel ou par pump_id — baseline hors-CL.
+    Tous les Pump_ID et toutes les périodes opérationnelles sont réunis.
+    La normalisation Z-score est fittée sur le train split uniquement.
+
+    Parameters
+    ----------
+    csv_path : Path
+        Chemin vers le CSV brut (Large_Industrial_Pump_Maintenance_Dataset.csv).
+    normalizer_path : Path
+        Accepté pour compatibilité avec les autres loaders, mais ignoré.
+        La normalisation est calculée sur le train split en interne.
+    batch_size : int
+        Taille des mini-batches. Default : 32.
+    test_ratio : float
+        Fraction réservée au test (sur le dataset total). Default : 0.2.
+    val_ratio : float
+        Fraction réservée à la validation (sur le train uniquement). Default : 0.1.
+    seed : int
+        Seed pour la reproductibilité. Default : 42.
+    window_size : int
+        Taille de la fenêtre glissante. Default : WINDOW_SIZE (32).
+    step_size : int
+        Pas entre fenêtres. Default : STEP_SIZE (16).
+
+    Returns
+    -------
+    dict
+        ``{"train_loader": DataLoader, "val_loader": DataLoader,
+           "test_loader": DataLoader, "n_train": int, "n_val": int, "n_test": int}``
+    """
+    set_seed(seed)
+
+    # 1. Chargement du CSV complet (tous Pump_ID, toutes périodes)
+    ds = PumpMaintenanceDataset(Path(csv_path))
+    ds.load()
+
+    # 2. Extraction des 25 features via fenêtrage glissant (identique aux autres loaders)
+    # MEM: X [N_windows, 25] × 4 B = N_windows × 100 B @ FP32
+    X, y = ds.extract_features(window_size=window_size, step_size=step_size)
+
+    n_total = len(X)
+
+    # 3. Split stratifié train+val / test
+    n_test = max(1, int(n_total * test_ratio))
+    try:
+        sss_test = StratifiedShuffleSplit(n_splits=1, test_size=n_test, random_state=seed)
+        trainval_idx, test_idx = next(sss_test.split(X, y))
+    except ValueError:
+        # Fallback si classe unique ou données insuffisantes
+        rng = np.random.default_rng(seed)
+        perm = rng.permutation(n_total)
+        test_idx = perm[:n_test]
+        trainval_idx = perm[n_test:]
+
+    X_trainval, y_trainval = X[trainval_idx], y[trainval_idx]
+    X_test, y_test = X[test_idx], y[test_idx]
+
+    # 4. Split stratifié train / val (sur le train+val uniquement)
+    n_val = max(1, int(len(X_trainval) * val_ratio))
+    try:
+        sss_val = StratifiedShuffleSplit(n_splits=1, test_size=n_val, random_state=seed)
+        train_idx_inner, val_idx_inner = next(sss_val.split(X_trainval, y_trainval))
+    except ValueError:
+        rng = np.random.default_rng(seed + 1)
+        perm = rng.permutation(len(X_trainval))
+        val_idx_inner = perm[:n_val]
+        train_idx_inner = perm[n_val:]
+
+    X_train = X_trainval[train_idx_inner]
+    y_train = y_trainval[train_idx_inner]
+    X_val = X_trainval[val_idx_inner]
+    y_val = y_trainval[val_idx_inner]
+
+    # 5. Normalisation Z-score fittée sur X_train uniquement (pas de fuite vers val/test)
+    # MEM: mean/std [25] × 4 B = 100 B @ FP32 chacun
+    mean_vec = X_train.mean(axis=0)
+    std_vec = X_train.std(axis=0)
+    std_vec[std_vec == 0] = 1.0  # éviter la division par zéro
+
+    X_train = (X_train - mean_vec) / std_vec
+    X_val = (X_val - mean_vec) / std_vec
+    X_test = (X_test - mean_vec) / std_vec
+
+    # 6. Conversion en tenseurs et DataLoaders
+    x_tr = torch.from_numpy(X_train.astype(np.float32))   # MEM: n_train×25×4 B @ FP32
+    y_tr = torch.from_numpy(y_train.astype(np.float32)).unsqueeze(1)
+    x_va = torch.from_numpy(X_val.astype(np.float32))
+    y_va = torch.from_numpy(y_val.astype(np.float32)).unsqueeze(1)
+    x_te = torch.from_numpy(X_test.astype(np.float32))
+    y_te = torch.from_numpy(y_test.astype(np.float32)).unsqueeze(1)
+
+    train_loader = DataLoader(
+        TensorDataset(x_tr, y_tr), batch_size=batch_size, shuffle=True
+    )
+    val_loader = DataLoader(
+        TensorDataset(x_va, y_va), batch_size=batch_size, shuffle=False
+    )
+    test_loader = DataLoader(
+        TensorDataset(x_te, y_te), batch_size=batch_size, shuffle=False
+    )
+
+    return {
+        "train_loader": train_loader,
+        "val_loader": val_loader,
+        "test_loader": test_loader,
+        "n_train": len(X_train),
+        "n_val": len(X_val),
+        "n_test": len(X_test),
+    }

@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | Sprint 8 — Phase 1 Extension |
 | **Priorité globale** | 🔴 Critique — notebooks support présentation encadrants |
-| **Durée estimée totale** | ~28h |
+| **Durée estimée totale** | ~33h (+5h baselines single-task) |
 | **Dépendances** | Sprint 6 terminé (exp_012–015, exp_020–021, exp_024–029 exécutées, loader temporel opérationnel) |
 
 ---
@@ -73,6 +73,17 @@ notebooks/figures/cl_evaluation/
 ---
 
 ## Tâches
+
+### Baseline Single-Task (pré-requis aux notebooks CL)
+
+| ID | Tâche | Priorité | Fichier(s) cible(s) | Durée est. | Dépendances |
+|----|-------|:---:|---------------------|:---:|-------------|
+| S8-15 | Infrastructure & expériences single-task pump (exp_036–041) | 🔴 | `configs/pump_single_task_config.yaml`, `src/data/pump_dataset.py`, `experiments/exp_036–041/` | 3h | Sprint 6 terminé |
+| S8-16 | Notebook baseline pump single-task | 🔴 | `notebooks/cl_eval/baselines/pump_single_task.ipynb` | 2h | S8-15 |
+
+> Détail : [S814_exp_single_task_pump.md](S814_exp_single_task_pump.md) et [S815_notebook_baseline_pump.md](S815_notebook_baseline_pump.md)
+
+---
 
 ### Scénario pump_by_pump_id
 
@@ -217,7 +228,9 @@ Questions spécifiques à Dataset 1 :
 
 ## Critères d'acceptation
 
-- [ ] 14 notebooks créés dans `notebooks/cl_eval/pump_*/`
+- [ ] S8-15 : exp_036–041 exécutées, `metrics_single_task.json` présent pour chaque modèle
+- [ ] S8-16 : notebook `baselines/pump_single_task.ipynb` exécuté sans erreur, 4 figures sauvegardées
+- [ ] 14 notebooks CL créés dans `notebooks/cl_eval/pump_*/`
 - [ ] Chaque notebook s'exécute sans erreur (kernel restart + run all)
 - [ ] Toutes les figures sauvegardées dans `notebooks/figures/cl_evaluation/{model}/pump/{scenario}/`
 - [ ] Les notebooks by_pump_id incluent le barplot `plot_performance_by_pump_id_bar()`
@@ -230,7 +243,10 @@ Questions spécifiques à Dataset 1 :
 
 ## Livrable sprint 8
 
-14 notebooks pour Dataset 1 (7 by_pump_id + 7 by_temporal_window) prêts pour présentation aux encadrants. Réponses documentées aux questions scientifiques sur les AA ≈ 0.50 observées sur ce dataset.
+- **2 notebooks baseline** (`baselines/pump_single_task.ipynb`) — référence hors-CL pour les 6 modèles sur Dataset 1, avec diagnostic structurel (AA ≈ 0.50 : dataset ou contrainte CL ?)
+- **14 notebooks CL** (7 by_pump_id + 7 by_temporal_window) — évaluation incrémentale complète
+
+Ensemble, ces 16 notebooks documentent Dataset 1 et répondent aux questions scientifiques sur les AA ≈ 0.50 observées dans les scénarios CL.
 
 ---
 
@@ -243,4 +259,4 @@ Questions spécifiques à Dataset 1 :
 
 ---
 
-> **⚠️ Après l'implémentation de ce sprint** : exécuter tous les notebooks via "Restart Kernel & Run All Cells" et vérifier l'absence d'erreurs. Contrôler que les sous-dossiers de figures sont bien créés. Mettre à jour `docs/roadmap_phase1.md` en marquant S8-01 à S8-14 comme ✅.
+> **⚠️ Après l'implémentation de ce sprint** : exécuter tous les notebooks via "Restart Kernel & Run All Cells" et vérifier l'absence d'erreurs. Contrôler que les sous-dossiers de figures sont bien créés. Mettre à jour `docs/roadmap_phase1.md` en marquant S8-01 à S8-16 comme ✅.

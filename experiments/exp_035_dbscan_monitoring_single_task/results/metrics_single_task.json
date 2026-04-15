@@ -1,0 +1,10 @@
+{
+  "exp_id": "exp_035_dbscan_monitoring_single_task",
+  "model": "dbscan",
+  "accuracy": 0.9550488599348534,
+  "f1": 0.7088607594936709,
+  "auc_roc": 0.990640636379974,
+  "ram_peak_bytes": 113418,
+  "inference_latency_ms": 0.3650828801255557,
+  "n_params": 17684
+}

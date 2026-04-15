@@ -1,0 +1,10 @@
+{
+  "exp_id": "exp_033_kmeans_monitoring_single_task",
+  "model": "kmeans",
+  "accuracy": 0.9550488599348534,
+  "f1": 0.7088607594936709,
+  "auc_roc": 0.9820616138399402,
+  "ram_peak_bytes": 5410,
+  "inference_latency_ms": 0.5692968402217957,
+  "n_params": 12
+}

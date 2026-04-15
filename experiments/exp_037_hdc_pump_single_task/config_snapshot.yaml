@@ -1,0 +1,127 @@
+_snapshot_timestamp: '2026-04-15T13:39:53.136018'
+data:
+  csv_path: data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv
+  dataset: pump_maintenance
+  feature_columns:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  features_per_channel:
+  - mean
+  - std
+  - rms
+  - kurtosis
+  - peak
+  - crest_factor
+  label_column: maintenance_required
+  n_classes: 2
+  n_features: 25
+  normalizer_path: configs/pump_normalizer.yaml
+  seed: 42
+  step_size: 16
+  task_split: no_split
+  test_ratio: 0.2
+  test_split: 0.2
+  val_ratio: 0.1
+  window_size: 32
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_037_hdc_pump_single_task/results
+  seed: 42
+exp_id: exp_037_hdc_pump_single_task
+feature_bounds:
+  crest_factor_pressure:
+  - -2.6376419067382812
+  - 2.717505931854248
+  crest_factor_rpm:
+  - -2.5239155292510986
+  - 3.295477867126465
+  crest_factor_temperature:
+  - -2.208789348602295
+  - 4.118959903717041
+  crest_factor_vibration:
+  - -2.46998929977417
+  - 3.6074185371398926
+  kurtosis_pressure:
+  - -2.4396512508392334
+  - 4.024374008178711
+  kurtosis_rpm:
+  - -1.95249342918396
+  - 3.91713285446167
+  kurtosis_temperature:
+  - -1.67041015625
+  - 5.162563323974609
+  kurtosis_vibration:
+  - -1.9288594722747803
+  - 4.250949859619141
+  mean_pressure:
+  - -2.579291820526123
+  - 3.0908572673797607
+  mean_rpm:
+  - -2.765509605407715
+  - 3.000889539718628
+  mean_temperature:
+  - -3.2325186729431152
+  - 2.8183388710021973
+  mean_vibration:
+  - -2.573185920715332
+  - 3.175762176513672
+  peak_pressure:
+  - -4.22963809967041
+  - 1.0213834047317505
+  peak_rpm:
+  - -4.514590263366699
+  - 1.037123203277588
+  peak_temperature:
+  - -3.8709981441497803
+  - 1.0235347747802734
+  peak_vibration:
+  - -4.8035078048706055
+  - 1.1295802593231201
+  rms_pressure:
+  - -2.6372528076171875
+  - 3.2912750244140625
+  rms_rpm:
+  - -2.811948776245117
+  - 2.9799017906188965
+  rms_temperature:
+  - -3.1504459381103516
+  - 2.6443426609039307
+  rms_vibration:
+  - -2.8906896114349365
+  - 2.893463373184204
+  std_pressure:
+  - -3.2636587619781494
+  - 3.384768486022949
+  std_rpm:
+  - -4.192825794219971
+  - 3.171133279800415
+  std_temperature:
+  - -3.614572286605835
+  - 2.3497939109802246
+  std_vibration:
+  - -3.496396541595459
+  - 2.5829455852508545
+  temporal_position:
+  - -1.727892279624939
+  - 1.0367352962493896
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_pump_base_vectors.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 14344
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42

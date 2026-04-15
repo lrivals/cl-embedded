@@ -1,0 +1,75 @@
+_snapshot_timestamp: '2026-04-14T17:07:57.300852'
+data:
+  batch_size: 32
+  categorical_columns:
+  - equipment
+  csv_path: /home/leonard/Documents/ENAC/cl-embedded/data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - pump
+  - turbine
+  - compressor
+  equipment_col: equipment
+  feature_cols:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_col: faulty
+  label_column: faulty
+  location_col: location
+  location_order:
+  - Atlanta
+  - Chicago
+  - Houston
+  - New York
+  - San Francisco
+  n_classes: 2
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer.yaml
+  task_split: by_location
+  test_split: 0.2
+  val_ratio: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_017_hdc_monitoring_by_location/results
+  seed: 42
+exp_id: exp_017_hdc_monitoring_by_location
+feature_bounds:
+  humidity:
+  - -3.3623745441436768
+  - 3.3421783447265625
+  pressure:
+  - -2.898953437805176
+  - 4.20745325088501
+  temperature:
+  - -3.8249363899230957
+  - 4.989019870758057
+  vibration:
+  - -2.757283926010132
+  - 4.817769527435303
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 14344
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42

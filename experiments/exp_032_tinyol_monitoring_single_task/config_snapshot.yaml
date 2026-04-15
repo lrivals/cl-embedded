@@ -1,0 +1,73 @@
+exp_id: exp_032_tinyol_monitoring_single_task
+backbone:
+  input_dim: 25
+  encoder_dims:
+  - 32
+  - 16
+  - 8
+  activation: relu
+  checkpoint_path: experiments/exp_003_tinyol_dataset1/backbone.pt
+  decoder_dims:
+  - 16
+  - 32
+  - 25
+pretrain:
+  optimizer: adam
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 64
+  loss: mse
+  seed: 42
+  pretrain_fraction: 0.3
+  val_fraction: 0.1
+oto_head:
+  input_dim: 9
+  output_dim: 1
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.0
+  loss: bce
+data:
+  dataset: equipment_monitoring
+  csv_path: data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  timestamp_column: timestamp
+  feature_columns:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  label_column: maintenance_required
+  normalizer_path: configs/pump_normalizer.yaml
+  window_size: 32
+  step_size: 16
+  features_per_channel:
+  - mean
+  - std
+  - rms
+  - kurtosis
+  - peak
+  - crest_factor
+  n_tasks: 3
+  task_strategy: chronological
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+  seed: 42
+uint8_buffer:
+  enabled: false
+  size: 50
+  embed_dim: 8
+evaluation:
+  seed: 42
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_032_tinyol_monitoring_single_task/results
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 7168
+  warn_if_above_bytes: 52000

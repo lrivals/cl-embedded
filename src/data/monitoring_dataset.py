@@ -550,3 +550,112 @@ def get_cl_dataloaders_by_location(
         )
 
     return tasks
+
+
+# ---------------------------------------------------------------------------
+# 9. Baseline single-task (hors-CL)
+# ---------------------------------------------------------------------------
+
+
+def get_monitoring_dataloaders_single_task(
+    csv_path: Path,
+    batch_size: int = 32,
+    test_ratio: float = 0.2,
+    val_ratio: float = 0.1,
+    seed: int = 42,
+) -> dict:
+    """
+    Retourne un dict unique avec toutes les données monitoring (tous équipements fusionnés).
+
+    Pas de découpage par domaine — baseline hors-CL.
+    La normalisation Z-score est fittée sur le train split uniquement (pas de
+    ``normalizer_path`` externe), ce qui est correct car il n'y a pas de risque
+    de fuite entre tâches séquentielles dans ce scénario.
+
+    Split 3-voies stratifié sur ``faulty`` :
+        1. train+val (80%) / test (20% = test_ratio)
+        2. train (90% de train+val) / val (10% de train+val = val_ratio)
+
+    Parameters
+    ----------
+    csv_path : Path
+        Chemin vers equipment_anomaly_data.csv.
+    batch_size : int
+        Taille des mini-batches. Default : 32.
+    test_ratio : float
+        Fraction du dataset total réservée au test. Default : 0.2.
+    val_ratio : float
+        Fraction du sous-ensemble train+val réservée à la validation. Default : 0.1.
+    seed : int
+        Seed de reproductibilité. Default : 42.
+
+    Returns
+    -------
+    dict avec clés :
+        - ``train_loader`` : DataLoader — données d'entraînement
+        - ``val_loader``   : DataLoader — données de validation (early stopping)
+        - ``test_loader``  : DataLoader — données de test final
+        - ``n_train``      : int
+        - ``n_val``        : int
+        - ``n_test``       : int
+        - ``normalizer``   : dict — {"mean": {...}, "std": {...}} fittée sur train
+
+    Notes
+    -----
+    # MEM: dataset complet ~7672 × 4 × 4 B = 122 752 B @ FP32
+    Retourne un dict (pas une liste) — signal que ce n'est pas un scénario CL.
+    """
+    set_seed(seed)
+
+    # Chargement et encodage
+    df = load_raw_dataset(csv_path)
+    df = encode_categoricals(df)
+
+    # Split stratifié train+val / test
+    df_trainval, df_test = train_test_split(
+        df,
+        test_size=test_ratio,
+        stratify=df[LABEL_COL],
+        random_state=seed,
+    )
+
+    # Split stratifié train / val (val_ratio sur le train uniquement)
+    df_train, df_val = train_test_split(
+        df_trainval,
+        test_size=val_ratio,
+        stratify=df_trainval[LABEL_COL],
+        random_state=seed,
+    )
+
+    df_train = df_train.reset_index(drop=True)
+    df_val = df_val.reset_index(drop=True)
+    df_test = df_test.reset_index(drop=True)
+
+    # Z-score fittée exclusivement sur le train split
+    mean_series = df_train[NUMERIC_FEATURES].mean()
+    std_series = df_train[NUMERIC_FEATURES].std().replace(0, 1.0)
+    normalizer: dict = {
+        "mean": mean_series.to_dict(),
+        "std": std_series.to_dict(),
+    }
+
+    df_train = normalize_features(df_train, normalizer)
+    df_val = normalize_features(df_val, normalizer)
+    df_test = normalize_features(df_test, normalizer)
+
+    x_train, y_train = df_to_tensors(df_train)
+    x_val, y_val = df_to_tensors(df_val)
+    x_test, y_test = df_to_tensors(df_test)
+
+    def _make_loader(X: torch.Tensor, y: torch.Tensor, shuffle: bool) -> DataLoader:
+        return DataLoader(TensorDataset(X, y), batch_size=batch_size, shuffle=shuffle)
+
+    return {
+        "train_loader": _make_loader(x_train, y_train, shuffle=True),
+        "val_loader": _make_loader(x_val, y_val, shuffle=False),
+        "test_loader": _make_loader(x_test, y_test, shuffle=False),
+        "n_train": len(x_train),
+        "n_val": len(x_val),
+        "n_test": len(x_test),
+        "normalizer": normalizer,
+    }

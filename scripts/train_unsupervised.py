@@ -171,6 +171,35 @@ def load_pump_tasks(config: dict) -> list[dict]:
         )
         for task in tasks:
             task["domain"] = f"pump{task['pump_id']}"
+    elif task_split == "by_temporal_window":
+        from src.data.pump_dataset import get_pump_dataloaders_by_temporal_window
+        tasks = get_pump_dataloaders_by_temporal_window(
+            csv_path=str(data_cfg["csv_path"]),
+            normalizer_path=str(data_cfg["normalizer_path"]),
+            n_tasks=data_cfg.get("n_tasks", 4),
+            entries_per_task=data_cfg.get("entries_per_task", 5000),
+            batch_size=data_cfg.get("batch_size", 32),
+            val_ratio=data_cfg.get("val_ratio", 0.2),
+            seed=config.get("seed", 42),
+            window_size=data_cfg.get("window_size", 32),
+            step_size=data_cfg.get("step_size", 16),
+        )
+        for task in tasks:
+            task["domain"] = f"temporal_window_{task['temporal_window']}"
+    elif task_split == "no_split":
+        from src.data.pump_dataset import get_pump_dataloaders_single_task
+        st = get_pump_dataloaders_single_task(
+            csv_path=Path(data_cfg["csv_path"]),
+            normalizer_path=Path(data_cfg.get("normalizer_path", "configs/pump_normalizer.yaml")),
+            batch_size=data_cfg.get("batch_size", 32),
+            test_ratio=data_cfg.get("test_ratio", 0.2),
+            val_ratio=data_cfg.get("val_ratio", 0.1),
+            seed=config.get("seed", 42),
+            window_size=data_cfg.get("window_size", 32),
+            step_size=data_cfg.get("step_size", 16),
+        )
+        st["_single_task_mode"] = True
+        return [st]
     else:
         from src.data.pump_dataset import get_pump_dataloaders
         domain_names = ["pump_healthy", "pump_wearing", "pump_prefailure"]
@@ -435,7 +464,184 @@ def run_model(
 
 
 # ---------------------------------------------------------------------------
-# 7. Point d'entrée principal
+# 7. Baseline single-task (hors-CL)
+# ---------------------------------------------------------------------------
+
+
+def _run_single_task_unsupervised(
+    model_names: list[str],
+    cfg: dict,
+    results_dir: Path,
+    exp_dir: Path,
+    dataset_tag: str,
+) -> None:
+    """
+    Entraîne et évalue les modèles non supervisés en mode single-task.
+
+    Pas de structure CL : toutes les données monitoring sont fusionnées en un seul
+    split train/test global. Sortie : ``metrics_single_task.json`` par modèle.
+
+    Parameters
+    ----------
+    model_names : list[str]
+        Modèles à évaluer.
+    cfg : dict
+        Config complète.
+    results_dir : Path
+    exp_dir : Path
+    dataset_tag : str
+    """
+    from sklearn.metrics import accuracy_score, f1_score
+
+    from src.data.monitoring_dataset import get_monitoring_dataloaders_single_task
+
+    csv_path = Path(cfg["data"]["csv_path"])
+    data = get_monitoring_dataloaders_single_task(
+        csv_path=csv_path,
+        batch_size=cfg["data"].get("batch_size", 32),
+        test_ratio=cfg["data"].get("test_ratio", 0.2),
+        val_ratio=cfg["data"].get("val_ratio", 0.1),
+        seed=cfg.get("seed", 42),
+    )
+
+    X_train, _ = extract_numpy(data["train_loader"])
+    X_test, y_test = extract_numpy(data["test_loader"])
+
+    print(f"\n  Single-task : {X_train.shape[0]} train | {X_test.shape[0]} test")
+
+    for model_name in model_names:
+        print(f"\n{'=' * 60}")
+        print(f"  Modèle : {model_name.upper()} (single-task)")
+        print(f"{'=' * 60}")
+
+        model = build_model(model_name, cfg)
+        model.fit_task(X_train, task_id=0)
+
+        # Scores d'anomalie sur test
+        test_scores = model.anomaly_score(X_test)
+
+        # Seuil identique à celui du modèle (percentile sur train)
+        train_scores = model.anomaly_score(X_train)
+        percentile_val = cfg.get(model_name, {}).get("anomaly_percentile", 95)
+        threshold = float(np.percentile(train_scores, percentile_val))
+        y_pred = (test_scores > threshold).astype(int)
+
+        acc = float(accuracy_score(y_test, y_pred))
+        f1 = float(f1_score(y_test, y_pred, zero_division=0))
+        try:
+            auc = float(roc_auc_score(y_test, test_scores))
+        except ValueError:
+            auc = float("nan")
+
+        print(f"  Test → accuracy={acc:.4f} | f1={f1:.4f} | auc_roc={auc:.4f}")
+
+        # Profil mémoire
+        n_latency_runs = cfg.get("evaluation", {}).get("n_latency_runs", 100)
+        mem = profile_model(model, X_test[:1], n_runs=n_latency_runs)
+        print(f"  RAM peak: {mem['ram_peak_bytes'] / 1024:.1f} Ko  |  "
+              f"Latence: {mem['inference_latency_ms']:.3f} ms  |  "
+              f"n_params: {mem['n_params']}")
+
+        metrics: dict = {
+            "exp_id": exp_dir.name,
+            "model": model_name,
+            "accuracy": acc,
+            "f1": f1,
+            "auc_roc": auc,
+            "ram_peak_bytes": mem["ram_peak_bytes"],
+            "inference_latency_ms": mem["inference_latency_ms"],
+            "n_params": mem["n_params"],
+        }
+
+        metrics_path = results_dir / "metrics_single_task.json"
+        with open(metrics_path, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+        print(f"  Résultats → {metrics_path}")
+        print(f"✅ {model_name.upper()} single-task terminé → {exp_dir}")
+
+
+def _run_single_task_unsupervised_pump(
+    model_names: list[str],
+    data: dict,
+    cfg: dict,
+    results_dir: Path,
+    exp_dir: Path,
+    dataset_tag: str,
+) -> None:
+    """
+    Entraîne et évalue les modèles non supervisés en mode single-task sur le Dataset 1 Pump.
+
+    Utilise les données pré-chargées par get_pump_dataloaders_single_task() (pas de
+    re-chargement monitoring). Sortie : ``metrics_single_task.json`` par modèle.
+
+    Parameters
+    ----------
+    model_names : list[str]
+        Modèles à évaluer.
+    data : dict
+        Sortie de get_pump_dataloaders_single_task().
+    cfg : dict
+        Config complète.
+    results_dir : Path
+    exp_dir : Path
+    dataset_tag : str
+    """
+    from sklearn.metrics import accuracy_score, f1_score
+
+    X_train, _ = extract_numpy(data["train_loader"])
+    X_test, y_test = extract_numpy(data["test_loader"])
+
+    print(f"\n  Single-task pump : {X_train.shape[0]} train | {X_test.shape[0]} test")
+
+    for model_name in model_names:
+        print(f"\n{'=' * 60}")
+        print(f"  Modèle : {model_name.upper()} (single-task pump)")
+        print(f"{'=' * 60}")
+
+        model = build_model(model_name, cfg)
+        model.fit_task(X_train, task_id=0)
+
+        test_scores = model.anomaly_score(X_test)
+        train_scores = model.anomaly_score(X_train)
+        percentile_val = cfg.get(model_name, {}).get("anomaly_percentile", 95)
+        threshold = float(np.percentile(train_scores, percentile_val))
+        y_pred = (test_scores > threshold).astype(int)
+
+        acc = float(accuracy_score(y_test, y_pred))
+        f1 = float(f1_score(y_test, y_pred, zero_division=0))
+        try:
+            auc = float(roc_auc_score(y_test, test_scores))
+        except ValueError:
+            auc = float("nan")
+
+        print(f"  Test → accuracy={acc:.4f} | f1={f1:.4f} | auc_roc={auc:.4f}")
+
+        n_latency_runs = cfg.get("evaluation", {}).get("n_latency_runs", 100)
+        mem = profile_model(model, X_test[:1], n_runs=n_latency_runs)
+        print(f"  RAM peak: {mem['ram_peak_bytes'] / 1024:.1f} Ko  |  "
+              f"Latence: {mem['inference_latency_ms']:.3f} ms  |  "
+              f"n_params: {mem['n_params']}")
+
+        metrics: dict = {
+            "exp_id": exp_dir.name,
+            "model": model_name,
+            "accuracy": acc,
+            "f1": f1,
+            "auc_roc": auc,
+            "ram_peak_bytes": mem["ram_peak_bytes"],
+            "inference_latency_ms": mem["inference_latency_ms"],
+            "n_params": mem["n_params"],
+        }
+
+        metrics_path = results_dir / "metrics_single_task.json"
+        with open(metrics_path, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+        print(f"  Résultats → {metrics_path}")
+        print(f"✅ {model_name.upper()} single-task pump terminé → {exp_dir}")
+
+
+# ---------------------------------------------------------------------------
+# 8. Point d'entrée principal
 # ---------------------------------------------------------------------------
 
 
@@ -489,10 +695,17 @@ def main() -> None:
 
     save_config_snapshot(cfg, str(exp_dir))
 
+    # --- Sélection des modèles (avant chargement des données) ---
+    model_names = ["kmeans", "knn", "pca", "mahalanobis", "dbscan"] if args.model == "all" else [args.model]
+
     # --- Chargement des données ---
     if args.dataset == "pump":
         print(f"\nChargement Dataset 1 (Pump Maintenance) ...")
         tasks = load_pump_tasks(cfg)
+        # Mode single-task (task_split: no_split) — baseline hors-CL
+        if tasks[0].get("_single_task_mode"):
+            _run_single_task_unsupervised_pump(model_names, tasks[0], cfg, results_dir, exp_dir, dataset_tag)
+            return
     else:
         csv_path = Path(cfg["data"]["csv_path"])
         if not csv_path.exists():
@@ -508,9 +721,15 @@ def main() -> None:
             csv_path = candidates[0]
             print(f"CSV trouvé (fallback) : {csv_path}")
 
+        task_split = cfg["data"].get("task_split", "by_equipment")
+
+        # Mode single-task (task_split: no_split) — baseline hors-CL
+        if task_split == "no_split":
+            _run_single_task_unsupervised(model_names, cfg, results_dir, exp_dir, dataset_tag)
+            return
+
         normalizer_path = Path(cfg["data"]["normalizer_path"])
         print(f"\nChargement des données depuis {csv_path} ...")
-        task_split = cfg["data"].get("task_split", "by_equipment")
         if task_split == "by_location":
             from src.data.monitoring_dataset import get_cl_dataloaders_by_location
             tasks = get_cl_dataloaders_by_location(
@@ -531,9 +750,6 @@ def main() -> None:
             )
 
     print(f"Tâches chargées : {[t['domain'] for t in tasks]} ({len(tasks)} tâches)")
-
-    # --- Sélection des modèles ---
-    model_names = ["kmeans", "knn", "pca", "mahalanobis", "dbscan"] if args.model == "all" else [args.model]
 
     # --- Entraînement ---
     all_results: dict[str, dict] = {}

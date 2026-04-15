@@ -1,0 +1,10 @@
+{
+  "exp_id": "exp_039_kmeans_pump_single_task",
+  "model": "kmeans",
+  "accuracy": 0.44176706827309237,
+  "f1": 0.06711409395973154,
+  "auc_roc": 0.502632618138739,
+  "ram_peak_bytes": 5862,
+  "inference_latency_ms": 0.33447007997892797,
+  "n_params": 50
+}

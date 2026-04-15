@@ -1,0 +1,157 @@
+{
+  "exp_id": "exp_025_ewc_pump_temporal",
+  "cl_metrics": {
+    "ewc": {
+      "aa": 0.5120967741935484,
+      "af": 0.005376344086021501,
+      "bwt": 0.0,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.016129032258064502,
+        0.0
+      ],
+      "bwt_per_task": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "acc_matrix": [
+        [
+          0.5967741935483871,
+          null,
+          null,
+          null
+        ],
+        [
+          0.5967741935483871,
+          0.532258064516129,
+          null,
+          null
+        ],
+        [
+          0.5967741935483871,
+          0.5483870967741935,
+          0.41935483870967744,
+          null
+        ],
+        [
+          0.5967741935483871,
+          0.532258064516129,
+          0.41935483870967744,
+          0.5
+        ]
+      ],
+      "n_tasks": 4
+    },
+    "memory": {
+      "model": "EWCMlpClassifier",
+      "input_shape": [
+        1,
+        25
+      ],
+      "forward": {
+        "ram_peak_bytes": 1171,
+        "ram_current_bytes": 72,
+        "inference_latency_ms": 0.036059479995174115,
+        "inference_latency_std_ms": 0.003809767918630498,
+        "n_params": 1377,
+        "params_fp32_bytes": 5508,
+        "params_int8_bytes": 1377,
+        "within_budget_64ko": true
+      },
+      "update": {
+        "ram_peak_bytes_update": 6740,
+        "update_latency_ms": 0.6848220999972909,
+        "update_latency_std_ms": 0.07601709882955635,
+        "within_budget_64ko_update": true
+      }
+    },
+    "naive": {
+      "aa": 0.5120967741935484,
+      "af": 0.005376344086021501,
+      "bwt": -0.005376344086021501,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.016129032258064502,
+        0.0
+      ],
+      "bwt_per_task": [
+        0.0,
+        -0.016129032258064502,
+        0.0
+      ],
+      "acc_matrix": [
+        [
+          0.5967741935483871,
+          null,
+          null,
+          null
+        ],
+        [
+          0.5483870967741935,
+          0.5483870967741935,
+          null,
+          null
+        ],
+        [
+          0.5967741935483871,
+          0.5483870967741935,
+          0.41935483870967744,
+          null
+        ],
+        [
+          0.5967741935483871,
+          0.532258064516129,
+          0.41935483870967744,
+          0.5
+        ]
+      ],
+      "n_tasks": 4
+    },
+    "joint": {
+      "aa": 0.5483870967741935,
+      "af": 0.0,
+      "bwt": NaN,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        NaN,
+        NaN,
+        NaN
+      ],
+      "acc_matrix": [
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null,
+          null
+        ],
+        [
+          0.6129032258064516,
+          0.5,
+          0.5,
+          0.5806451612903226
+        ]
+      ],
+      "n_tasks": 4
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_038_tinyol_pump_single_task",
+  "accuracy": 0.5662650602409639,
+  "f1": 0.6666666666666666,
+  "auc_roc": 0.4872976174805845,
+  "ram_peak_bytes": 944,
+  "inference_latency_ms": 0.008745840059418697,
+  "n_params": 2901
+}

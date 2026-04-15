@@ -1,0 +1,78 @@
+exp_id: exp_018_tinyol_monitoring_by_location
+backbone:
+  input_dim: 4
+  encoder_dims:
+  - 8
+  - 8
+  - 8
+  activation: relu
+  checkpoint_path: experiments/exp_011_tinyol_dataset2/backbone.pt
+  decoder_dims:
+  - 8
+  - 8
+  - 4
+pretrain:
+  optimizer: adam
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 64
+  loss: mse
+  seed: 42
+  pretrain_fraction: 1.0
+  val_fraction: 0.1
+oto_head:
+  input_dim: 9
+  output_dim: 1
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.0
+  loss: bce
+data:
+  dataset: equipment_monitoring
+  csv_path: /home/leonard/Documents/ENAC/cl-embedded/data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  domain_column: equipment
+  domain_order:
+  - pump
+  - turbine
+  - compressor
+  label_column: faulty
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  normalizer_path: configs/monitoring_normalizer.yaml
+  n_tasks: 3
+  task_split: by_location
+  location_col: location
+  equipment_col: equipment
+  label_col: faulty
+  feature_cols:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  location_order:
+  - Atlanta
+  - Chicago
+  - Houston
+  - New York
+  - San Francisco
+  val_ratio: 0.2
+  test_split: 0.2
+  n_features: 4
+  batch_size: 32
+evaluation:
+  seed: 42
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_018_tinyol_monitoring_by_location/results
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 1000
+  warn_if_above_bytes: 52000

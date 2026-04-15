@@ -19,7 +19,9 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.optim as optim
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 
 from src.evaluation.memory_profiler import full_memory_report
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
@@ -52,6 +54,33 @@ def _get_tasks(cfg: dict) -> list[dict]:
                 window_size=cfg["data"]["window_size"],
                 step_size=cfg["data"]["step_size"],
             )
+        elif task_split == "by_temporal_window":
+            from src.data.pump_dataset import get_pump_dataloaders_by_temporal_window
+            return get_pump_dataloaders_by_temporal_window(
+                csv_path=str(csv_path),
+                normalizer_path=str(normalizer_path),
+                n_tasks=cfg["data"].get("n_tasks", 4),
+                entries_per_task=cfg["data"].get("entries_per_task", 5000),
+                batch_size=batch_size,
+                val_ratio=val_ratio,
+                seed=seed,
+                window_size=cfg["data"]["window_size"],
+                step_size=cfg["data"]["step_size"],
+            )
+        elif task_split == "no_split":
+            from src.data.pump_dataset import get_pump_dataloaders_single_task
+            st = get_pump_dataloaders_single_task(
+                csv_path=csv_path,
+                normalizer_path=normalizer_path,
+                batch_size=batch_size,
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=seed,
+                window_size=cfg["data"]["window_size"],
+                step_size=cfg["data"]["step_size"],
+            )
+            st["_single_task_mode"] = True
+            return [st]
         from src.data.pump_dataset import get_pump_dataloaders
         return get_pump_dataloaders(
             csv_path=csv_path,
@@ -64,6 +93,17 @@ def _get_tasks(cfg: dict) -> list[dict]:
         )
     else:
         task_split = cfg["data"].get("task_split", "by_equipment")
+        if task_split == "no_split":
+            from src.data.monitoring_dataset import get_monitoring_dataloaders_single_task
+            st = get_monitoring_dataloaders_single_task(
+                csv_path=csv_path,
+                batch_size=batch_size,
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=seed,
+            )
+            st["_single_task_mode"] = True
+            return [st]
         if task_split == "by_location":
             from src.data.monitoring_dataset import get_cl_dataloaders_by_location
             return get_cl_dataloaders_by_location(
@@ -239,6 +279,122 @@ def _fresh_model(config: dict) -> EWCMlpClassifier:
     )
 
 
+def _run_single_task_ewc(
+    model: EWCMlpClassifier,
+    data: dict,
+    cfg: dict,
+    device: str,
+    results_dir: Path,
+    exp_dir: Path,
+) -> None:
+    """
+    Entraîne le MLP EWC sur une seule tâche (tout le dataset monitoring fusionné).
+
+    Pas de pénalité EWC (pas de tâches précédentes) — entraînement BCE standard.
+    Sortie : ``results/metrics_single_task.json`` avec les 6 métriques obligatoires.
+
+    Parameters
+    ----------
+    model : EWCMlpClassifier
+    data : dict
+        Sortie de get_monitoring_dataloaders_single_task().
+    cfg : dict
+        Config complète.
+    device : str
+    results_dir : Path
+    exp_dir : Path
+    """
+    epochs = cfg["training"]["epochs_per_task"] * 3  # plus d'epochs — pas de CL
+    lr = cfg["training"]["learning_rate"]
+    momentum = cfg["training"]["momentum"]
+
+    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
+    criterion = nn.BCEWithLogitsLoss()
+    model.to(device)
+
+    print(f"\n{'=' * 40}")
+    print(f"  EWC Single-Task — {cfg['exp_id']}")
+    print(f"  {data['n_train']} train | {data['n_val']} val | {data['n_test']} test")
+    print(f"  {epochs} epochs | lr={lr} | momentum={momentum}")
+    print(f"{'=' * 40}")
+
+    best_val_acc = 0.0
+    for epoch in range(epochs):
+        model.train()
+        for x, y in data["train_loader"]:
+            x, y = x.to(device), y.to(device)
+            optimizer.zero_grad()
+            logits = model(x)
+            loss = criterion(logits, y)
+            loss.backward()
+            optimizer.step()
+
+        # Validation (early stopping léger)
+        model.eval()
+        val_preds, val_true = [], []
+        with torch.no_grad():
+            for x, y in data["val_loader"]:
+                x = x.to(device)
+                logits = model(x)
+                probs = torch.sigmoid(logits).cpu().numpy()
+                val_preds.extend(probs.ravel())
+                val_true.extend(y.numpy().ravel())
+        val_acc = accuracy_score(
+            np.array(val_true), (np.array(val_preds) > 0.5).astype(int)
+        )
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+        if (epoch + 1) % max(1, epochs // 5) == 0:
+            print(f"  Epoch {epoch + 1:3d}/{epochs} | val_acc={val_acc:.4f}")
+
+    # Évaluation finale sur test
+    model.eval()
+    test_preds, test_probs, test_true = [], [], []
+    with torch.no_grad():
+        for x, y in data["test_loader"]:
+            x = x.to(device)
+            logits = model(x)
+            probs = torch.sigmoid(logits).cpu().numpy().ravel()
+            preds = (probs > 0.5).astype(int)
+            test_probs.extend(probs)
+            test_preds.extend(preds)
+            test_true.extend(y.numpy().ravel().astype(int))
+
+    y_true = np.array(test_true)
+    y_pred = np.array(test_preds)
+    y_scores = np.array(test_probs)
+
+    acc = float(accuracy_score(y_true, y_pred))
+    f1 = float(f1_score(y_true, y_pred, zero_division=0))
+    try:
+        auc = float(roc_auc_score(y_true, y_scores))
+    except ValueError:
+        auc = float("nan")
+
+    print(f"\n  Test → accuracy={acc:.4f} | f1={f1:.4f} | auc_roc={auc:.4f}")
+
+    # Profiling mémoire
+    print("\n  Profiling mémoire...")
+    memory_report = run_memory_profiling(model, cfg, device)
+    n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+    metrics: dict = {
+        "exp_id": cfg["exp_id"],
+        "accuracy": acc,
+        "f1": f1,
+        "auc_roc": auc,
+        "ram_peak_bytes": memory_report.get("forward", {}).get("ram_peak_bytes", 0),
+        "inference_latency_ms": memory_report.get("forward", {}).get("inference_latency_ms", 0.0),
+        "n_params": n_params,
+    }
+
+    metrics_path = results_dir / "metrics_single_task.json"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"\n  Résultats → {metrics_path}")
+    print(f"✅ EWC single-task terminé → {exp_dir}")
+
+
 def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
@@ -275,7 +431,6 @@ def main() -> None:
 
     # Chargement données
     csv_path = Path(cfg["data"]["csv_path"])
-    normalizer_path = Path(cfg["data"]["normalizer_path"])
 
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV introuvable : {csv_path}")
@@ -283,6 +438,19 @@ def main() -> None:
 
     tasks = _get_tasks(cfg)
     T = len(tasks)
+
+    # Mode single-task (task_split: no_split) — baseline hors-CL
+    if tasks[0].get("_single_task_mode"):
+        _run_single_task_ewc(
+            model=_fresh_model(cfg),
+            data=tasks[0],
+            cfg=cfg,
+            device=device,
+            results_dir=results_dir,
+            exp_dir=exp_dir,
+        )
+        return
+
     labels = [t.get("domain", f"T{t['task_id']}") for t in tasks]
     print(f"Tâches chargées : {labels} ({T} tâches)\n")
 

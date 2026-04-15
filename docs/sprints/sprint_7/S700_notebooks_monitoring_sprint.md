@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | Sprint 7 — Phase 1 Extension |
 | **Priorité globale** | 🔴 Critique — notebooks support présentation encadrants |
-| **Durée estimée totale** | ~28h |
+| **Durée estimée totale** | ~33h (+5h baselines single-task) |
 | **Dépendances** | Sprint 6 terminé (exp_016–023 exécutées, `save_figure()` corrigé) |
 
 ---
@@ -76,6 +76,17 @@ notebooks/figures/cl_evaluation/
 ---
 
 ## Tâches
+
+### Baseline Single-Task (pré-requis aux notebooks CL)
+
+| ID | Tâche | Priorité | Fichier(s) cible(s) | Durée est. | Dépendances |
+|----|-------|:---:|---------------------|:---:|-------------|
+| S7-15 | Infrastructure & expériences single-task monitoring (exp_030–035) | 🔴 | `configs/monitoring_single_task_config.yaml`, `src/data/monitoring_dataset.py`, `experiments/exp_030–035/` | 3h | Sprint 6 terminé |
+| S7-16 | Notebook baseline monitoring single-task | 🔴 | `notebooks/cl_eval/baselines/monitoring_single_task.ipynb` | 2h | S7-15 |
+
+> Détail : [S715_exp_single_task_monitoring.md](S715_exp_single_task_monitoring.md) et [S716_notebook_baseline_monitoring.md](S716_notebook_baseline_monitoring.md)
+
+---
 
 ### Scénario monitoring_by_equipment
 
@@ -250,7 +261,9 @@ Cellule Markdown structurée avec :
 
 ## Critères d'acceptation
 
-- [ ] 14 notebooks créés dans `notebooks/cl_eval/monitoring_*/`
+- [ ] S7-15 : exp_030–035 exécutées, `metrics_single_task.json` présent pour chaque modèle
+- [ ] S7-16 : notebook `baselines/monitoring_single_task.ipynb` exécuté sans erreur, 4 figures sauvegardées
+- [ ] 14 notebooks CL créés dans `notebooks/cl_eval/monitoring_*/`
 - [ ] Chaque notebook s'exécute sans erreur (kernel restart + run all)
 - [ ] Toutes les figures sauvegardées dans `notebooks/figures/cl_evaluation/{model}/monitoring/{scenario}/`
 - [ ] Les notebooks de comparaison chargent bien les 6 modèles
@@ -261,7 +274,10 @@ Cellule Markdown structurée avec :
 
 ## Livrable sprint 7
 
-14 notebooks pour Dataset 2 (7 by_equipment + 7 by_location) prêts pour présentation aux encadrants. Support de présentation avancement avec tableaux récapitulatifs AA/AF/BWT/RAM.
+- **2 notebooks baseline** (`baselines/monitoring_single_task.ipynb`) — référence hors-CL pour les 6 modèles sur Dataset 2
+- **14 notebooks CL** (7 by_equipment + 7 by_location) — évaluation incrémentale complète
+
+Ensemble, ces 16 notebooks fournissent le support de présentation pour les réunions d'encadrement avec tableaux AA/AF/BWT/RAM et la mise en perspective baseline vs. CL.
 
 ---
 

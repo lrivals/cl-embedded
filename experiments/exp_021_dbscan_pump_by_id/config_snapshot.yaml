@@ -1,0 +1,102 @@
+_dataset: pump
+_snapshot_timestamp: '2026-04-14T17:21:01.428498'
+data:
+  batch_size: 256
+  csv_path: data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - Pump
+  - Turbine
+  - Compressor
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_column: faulty
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer.yaml
+  val_ratio: 0.2
+data_pump:
+  batch_size: 32
+  csv_path: data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv
+  dataset: pump_maintenance
+  feature_cols:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  feature_columns:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  features_per_channel:
+  - mean
+  - std
+  - rms
+  - kurtosis
+  - peak
+  - crest_factor
+  label_col: Maintenance_Flag
+  label_column: maintenance_required
+  n_classes: 2
+  n_features: 25
+  n_tasks: 3
+  normalizer_path: configs/pump_normalizer.yaml
+  pump_id_col: Pump_ID
+  step_size: 16
+  task_split: by_pump_id
+  test_split: 0.2
+  val_ratio: 0.2
+  window_size: 32
+dbscan:
+  EPSILON: 0.5
+  MIN_SAMPLES: 5
+  algorithm: auto
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  metric: euclidean
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - auroc
+  n_latency_runs: 100
+  output_dir: experiments/exp_005_unsupervised_dataset2/results/
+exp_id: exp_005_unsupervised_dataset2
+exp_id_pump: exp_006_unsupervised_dataset1
+kmeans:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  k_fixed: 3
+  k_max: 10
+  k_method: silhouette
+  k_min: 2
+  max_iter: 300
+  n_init: 10
+knn:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: accumulate
+  metric: euclidean
+  n_neighbors: 5
+mahalanobis:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  reg_covar: 1.0e-06
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+pca:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  min_explained_variance: 0.95
+  n_components: 2
+seed: 42

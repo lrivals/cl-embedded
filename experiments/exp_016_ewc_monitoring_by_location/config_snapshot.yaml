@@ -1,0 +1,72 @@
+_snapshot_timestamp: '2026-04-14T17:07:29.520292'
+data:
+  batch_size: 32
+  categorical_columns:
+  - equipment
+  csv_path: /home/leonard/Documents/ENAC/cl-embedded/data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - pump
+  - turbine
+  - compressor
+  equipment_col: equipment
+  feature_cols:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_col: faulty
+  label_column: faulty
+  location_col: location
+  location_order:
+  - Atlanta
+  - Chicago
+  - Houston
+  - New York
+  - San Francisco
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer.yaml
+  task_split: by_location
+  test_split: 0.2
+  val_ratio: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_016_ewc_monitoring_by_location/results
+  seed: 42
+ewc:
+  gamma: 0.9
+  lambda: 1000
+  n_fisher_samples: 200
+exp_id: exp_016_ewc_monitoring_by_location
+memory:
+  expected_ram_bytes: 9356
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+model:
+  activation: relu
+  architecture: mlp
+  dropout: 0.2
+  hidden_dims:
+  - 32
+  - 16
+  input_dim: 4
+  output_dim: 1
+training:
+  batch_size: 32
+  epochs_per_task: 10
+  learning_rate: 0.01
+  momentum: 0.9
+  optimizer: sgd
+  seed: 42

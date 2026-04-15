@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_031_hdc_monitoring_single_task",
+  "accuracy": 0.8560260586319218,
+  "f1": 0.5571142284569138,
+  "auc_roc": 0.879356904363289,
+  "ram_peak_bytes": 14640,
+  "inference_latency_ms": 0.04901361997326603,
+  "n_params": 2048
+}

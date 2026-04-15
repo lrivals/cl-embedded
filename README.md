@@ -5,19 +5,31 @@
 
 ## Overview
 
-This repository implements and compares three continual learning (CL) methods designed for deployment on microcontrollers with severely limited resources (target: STM32N6, ~64 KB RAM). The application domain is industrial predictive maintenance.
+This repository implements and compares continual learning (CL) methods designed for deployment on microcontrollers with severely limited resources (target: STM32N6, ~64 KB RAM). The application domain is industrial predictive maintenance.
 
 The implementations target **PC-first development** with explicit design constraints ensuring portability to the MCU target (no dynamic allocation, SGD-only optimizer, ReLU activations, fixed normalization statistics).
 
-## The Three Models
+## Models
 
-| ID | Method | CL Family | Dataset | Target RAM |
-|----|--------|-----------|---------|-----------|
-| **M2** | EWC Online + MLP | Regularization-based | Equipment Monitoring | ~9 KB |
-| **M3** | Hyperdimensional Computing (HDC) | Architecture-based | Equipment Monitoring | ~12 KB |
-| **M1** | TinyOL + OtO Head | Architecture-based | Pump Maintenance | ~7 KB |
+### Supervised CL Methods
 
-All models operate within the 64 KB RAM budget of the STM32N6 target.
+| ID | Method | CL Family | Dataset | RAM (update) |
+|----|--------|-----------|---------|--------------|
+| **M2** | EWC Online + MLP | Regularization-based | Equipment Monitoring + Pump | ~6.7 KB |
+| **M3** | Hyperdimensional Computing (HDC) | Architecture-based | Equipment Monitoring + Pump | ~14.0 KB |
+| **M1** | TinyOL + OtO Head | Architecture-based | Pump Maintenance | ~5.8 KB |
+
+### Unsupervised Baselines
+
+| ID | Method | MCU-compatible | Dataset | RAM (params) |
+|----|--------|:--------------:|---------|--------------|
+| **M6** | Mahalanobis distance | ✅ | Both | 80 B |
+| **M4** | K-Means clustering | ❌ | Both | ~4 KB |
+| **M4b** | KNN anomaly detection | ❌ | Both | ~4 KB |
+| **M5** | PCA reconstruction error | ❌ | Both | ~4 KB |
+| — | DBSCAN | ❌ | Both | — |
+
+All models operate within the 64 KB RAM budget of the STM32N6 target (M6 is the only unsupervised method viable on MCU).
 
 ## Scientific Positioning — Triple Gap
 
@@ -35,22 +47,25 @@ See [`docs/context/triple_gap.md`](docs/context/triple_gap.md) for the full anal
 # Install dependencies
 pip install -e ".[dev]"
 
-# Train M2 (EWC) on Dataset 2 — start here
+# Train M2 (EWC) — Equipment Monitoring
 python scripts/train_ewc.py --config configs/ewc_config.yaml
 
 # Generate HDC base vectors (once, before training HDC)
 python -m src.models.hdc.base_vectors
 
-# Train M3 (HDC) on Dataset 2
+# Train M3 (HDC) — Equipment Monitoring
 python scripts/train_hdc.py --config configs/hdc_config.yaml
 
-# Train M1 (TinyOL) on Dataset 1
+# Pre-train TinyOL backbone (Dataset 1 — normal samples only)
+python scripts/pretrain_tinyol.py --config configs/tinyol_config.yaml
+
+# Train M1 (TinyOL) — Pump Maintenance
 python scripts/train_tinyol.py --config configs/tinyol_config.yaml
 
-# Compare EWC vs HDC vs Fine-tuning (Sprint 2)
-jupyter nbconvert --to notebook --execute notebooks/02_baseline_comparison.ipynb
+# Train unsupervised baselines (K-Means, Mahalanobis, DBSCAN, PCA, KNN)
+python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml
 
-# Compare all models
+# Run all evaluations
 python scripts/evaluate_all.py --exp_dir experiments/
 
 # Memory profiling
@@ -61,25 +76,43 @@ python scripts/profile_memory.py --model ewc
 
 ```
 cl-embedded/
-├── CLAUDE.md               # Context for Claude Code (read first)
-├── README.md               # This file
-├── configs/                # YAML hyperparameters (versioned)
-├── data/                   # Raw + processed data (gitignored)
+├── CLAUDE.md                   # Context for Claude Code (read first)
+├── README.md                   # This file
+├── configs/                    # YAML hyperparameters (versioned)
+│   ├── ewc_config.yaml         # M2 — Equipment Monitoring
+│   ├── ewc_pump_config.yaml    # M2 — Pump Maintenance
+│   ├── hdc_config.yaml         # M3 — Equipment Monitoring
+│   ├── hdc_pump_config.yaml    # M3 — Pump Maintenance
+│   ├── tinyol_config.yaml      # M1 — Pump Maintenance
+│   ├── tinyol_monitoring_config.yaml
+│   ├── unsupervised_config.yaml
+│   ├── pump_by_id_config.yaml
+│   ├── pump_by_temporal_window_config.yaml
+│   ├── monitoring_by_location_config.yaml
+│   ├── pump_normalizer.yaml    # Fixed Z-score statistics
+│   └── monitoring_normalizer.yaml
+├── data/                       # Raw + processed data (gitignored)
 ├── docs/
-│   ├── models/             # Detailed implementation specs (3 models)
-│   ├── context/            # Project context, hardware, datasets
-│   └── roadmap.md          # Development roadmap
-├── skills/                 # Claude prompting guides
+│   ├── models/                 # Detailed implementation specs (3 models + unsupervised)
+│   ├── context/                # Project context, hardware, datasets
+│   ├── sprints/                # Sprint-level task tracking
+│   └── roadmap_phase1.md       # Phase 1 development roadmap (Sprints 1–9)
+├── skills/                     # Claude prompting guides
 ├── src/
-│   ├── data/               # Dataset loaders
-│   ├── models/             # Model implementations
-│   ├── training/           # CL training loops + baselines
-│   ├── evaluation/         # CL metrics + memory profiler
-│   └── utils/              # Quantization helpers, reproducibility
-├── experiments/            # Reproducible experiment outputs
-├── notebooks/              # Exploration + visualization
-├── tests/                  # Unit tests
-└── scripts/                # CLI entry points
+│   ├── data/                   # Dataset loaders (pump + monitoring)
+│   ├── models/
+│   │   ├── ewc/                # M2 — EWC Online + MLP
+│   │   ├── hdc/                # M3 — Hyperdimensional Computing
+│   │   ├── tinyol/             # M1 — TinyOL autoencoder + OtO head
+│   │   └── unsupervised/       # K-Means, KNN, PCA, Mahalanobis, DBSCAN
+│   ├── training/               # CL scenarios + baselines
+│   ├── evaluation/             # CL metrics + memory profiler + plots
+│   └── utils/                  # Reproducibility, config loader
+├── experiments/                # 37+ reproducible experiment outputs
+├── notebooks/                  # Exploration + visualization
+│   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–8)
+├── tests/                      # Unit tests
+└── scripts/                    # CLI entry points
 ```
 
 ## Key Design Constraints
@@ -96,57 +129,62 @@ All implementations respect MCU portability requirements:
 
 | Notebook | Description |
 |----------|-------------|
-| [`notebooks/01_data_exploration.ipynb`](notebooks/01_data_exploration.ipynb) | Exploration Dataset 2 (Equipment Monitoring) |
-| [`notebooks/02_baseline_comparison.ipynb`](notebooks/02_baseline_comparison.ipynb) | **Comparison EWC vs HDC vs Fine-tuning** (Sprint 2) |
+| [`notebooks/01_data_exploration.ipynb`](notebooks/01_data_exploration.ipynb) | EDA — Dataset 1 (Pump) + Dataset 2 (Equipment Monitoring) |
+| [`notebooks/02_baseline_comparison.ipynb`](notebooks/02_baseline_comparison.ipynb) | EWC vs HDC vs Fine-tuning — Equipment Monitoring |
+| [`notebooks/03_cl_evaluation.ipynb`](notebooks/03_cl_evaluation.ipynb) | CL evaluation — Pump Maintenance (TinyOL) |
+| [`notebooks/cl_eval/`](notebooks/cl_eval/) | Granular single-task + scenario comparisons (Sprints 7–8) |
 
-## Results (Sprint 2 — Dataset 2, seed=42, 3 domains)
+## Results
 
-| Metric | EWC Online | HDC | Fine-tuning naïf |
-|--------|:----------:|:---:|:----------------:|
-| AA | **0.9824** | 0.8698 | 0.9811 |
-| AF | **0.0010** | **0.0000** | 0.0000 |
-| BWT | +0.0000 | +0.0019 | +0.0010 |
-| RAM peak inference | **1.1 KB** | 14.2 KB | — |
-| Inference latency | **0.036 ms** | 0.048 ms | — |
-| Budget 64 KB | ✅ 1.8% | ✅ 22.1% | — |
+> seed=42, CPU. RAM = tracemalloc peak (includes Python overhead; not representative of MCU deployment).
 
-> Dataset 2 (Equipment Monitoring) — Pump → Turbine → Compressor.  
-> HDC: AF = 0 by construction (additive accumulation, no catastrophic forgetting possible). Lower accuracy than EWC expected — HDC is less expressive but uses ~12× less RAM for weight updates.  
-> Full results: `experiments/exp_002_hdc_dataset2/results/` · Analysis: `notebooks/02_baseline_comparison.ipynb`.
+### Dataset 2 — Equipment Monitoring, by_equipment (3 domains: Pump → Turbine → Compressor)
 
-### M2 EWC — exp_001 (4 avril 2026)
+| Method | AA | AF | BWT | RAM peak | Latency |
+|--------|:--:|:--:|:---:|:--------:|:-------:|
+| EWC Online (M2) | **0.9824** | 0.0010 | +0.0000 | 1.1 KB | 0.036 ms |
+| HDC (M3) | 0.8698 | **0.0000** | +0.0019 | 14.2 KB | 0.048 ms |
+| Mahalanobis (M6) | 0.9524 | 0.0010 | −0.0010 | 1.5 KB | **0.018 ms** |
+| Fine-tuning naïf | 0.9811 | 0.0000 | +0.0010 | — | — |
 
-| Metric | Value |
-|--------|-------|
-| AA | 0.9824 |
-| AF | 0.0010 |
-| BWT | +0.0000 |
-| RAM peak inference | 1 171 B (1.1 KB) |
-| RAM peak update | 6 837 B (6.7 KB) |
-| Inference latency | 0.036 ms |
-| n_params | 705 |
+> EWC achieves best accuracy with minimal forgetting. Mahalanobis is optimal for MCU deployment (80 B model weights, no backprop). HDC: AF = 0 by construction.
 
-### M3 HDC — exp_002 (6 avril 2026)
+### Dataset 1 — Pump Maintenance, by_id (5 pumps)
 
-| Metric | Value |
-|--------|-------|
-| AA | 0.8698 |
-| AF | 0.0000 |
-| BWT | +0.0019 |
-| RAM peak inference (measured) | 14 504 B (14.2 KB) |
-| RAM estimated FP32 | 14 344 B (14.0 KB) |
-| RAM estimated INT8 | 6 152 B (6.0 KB) |
-| Inference latency | 0.048 ms |
-| n_params (prototype elements) | 2 048 |
+| Method | AA | AF | BWT | RAM peak | Latency |
+|--------|:--:|:--:|:---:|:--------:|:-------:|
+| TinyOL (M1) | 0.5629 | 0.0071 | −0.0030 | 5.8 KB | **0.010 ms** |
+| EWC Online (M2) | **0.5658** | **0.0099** | −0.0099 | 1.1 KB | 0.036 ms |
+| Fine-tuning naïf | 0.5339 | 0.0595 | −0.0496 | — | — |
 
-## Progress Indicators
+> Low AA on Dataset 1 is documented — inter-pump distributions are very similar (weak domain shift). See `docs/roadmap_phase1.md` for analysis.
 
-| Model | Implemented | Tested | Experiment | RAM measured |
-|-------|:-----------:|:------:|:----------:|:------------:|
-| M2 EWC + MLP | ✅ | ✅ | ✅ exp_001 | ✅ |
-| M3 HDC | ✅ | ✅ | ✅ exp_002 | ✅ |
-| M1 TinyOL | ⬜ | ⬜ | ⬜ | ⬜ |
-| M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ | ⬜ |
+Full experiment outputs: [`experiments/`](experiments/)
+
+## Progress
+
+| Component | Implemented | Tested | Experiments | RAM measured |
+|-----------|:-----------:|:------:|:-----------:|:------------:|
+| M2 EWC + MLP | ✅ | ✅ | ✅ exp_001, 013, 016, 025, 030, 036 | ✅ |
+| M3 HDC | ✅ | ✅ | ✅ exp_002, 014, 017, 026, 031, 037 | ✅ |
+| M1 TinyOL | ✅ | ✅ | ✅ exp_003, 011, 012, 018, 024, 032, 038 | ✅ |
+| M6 Mahalanobis | ✅ | ✅ | ✅ exp_007, 015, 019, 027, 034, 040 | ✅ |
+| M4 K-Means + KNN | ✅ | ✅ | ✅ exp_005, 020, 022, 028, 033, 039 | ✅ |
+| M5 PCA | ✅ | ✅ | ✅ | ✅ |
+| DBSCAN baseline | ✅ | ✅ | ✅ exp_008, 021, 023, 029, 035, 041 | ✅ |
+| M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ exp_004 (planned) | ⬜ |
+| ONNX export | 🟡 | ⬜ | ⬜ | ⬜ |
+| Notebooks (S7–8) | 🟡 | — | — | — |
+
+### Current Sprint
+
+| Sprint | Status | Focus |
+|--------|:------:|-------|
+| Sprints 1–5 | ✅ | Infrastructure + M1/M2/M3 + unsupervised baselines |
+| Sprint 6 | ✅ | Extended scenarios (pump_by_id, pump_temporal, monitoring_by_location) |
+| Sprints 7–8 | 🟡 | Granular notebooks (monitoring + pump, 14 notebooks planned) |
+| Sprint 9 | ⬜ | Extension + final comparison notebook |
+| Sprint 10 | ⬜ | MCU portage — STM32N6 environment + ONNX export |
 
 ## Evaluation Metrics
 
@@ -156,8 +194,9 @@ For every CL experiment:
 |--------|-------------|
 | `aa` | Average Accuracy across all tasks |
 | `af` | Average Forgetting (0 = no forgetting) |
-| `bwt` | Backward Transfer |
+| `bwt` | Backward Transfer (negative = forgetting) |
 | `ram_peak_bytes` | Peak RAM measured via tracemalloc |
+| `inference_latency_ms` | Forward pass latency (mean over 100 runs) |
 | `n_params` | Total trainable parameters |
 
 ## Hardware Target

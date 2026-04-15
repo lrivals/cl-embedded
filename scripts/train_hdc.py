@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 import yaml
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
 from src.models.hdc import HDCClassifier
@@ -73,6 +74,33 @@ def _get_tasks(cfg: dict) -> list[dict]:
                 window_size=cfg["data"]["window_size"],
                 step_size=cfg["data"]["step_size"],
             )
+        elif task_split == "by_temporal_window":
+            from src.data.pump_dataset import get_pump_dataloaders_by_temporal_window
+            return get_pump_dataloaders_by_temporal_window(
+                csv_path=str(csv_path),
+                normalizer_path=str(normalizer_path),
+                n_tasks=cfg["data"].get("n_tasks", 4),
+                entries_per_task=cfg["data"].get("entries_per_task", 5000),
+                batch_size=batch_size,
+                val_ratio=val_ratio,
+                seed=seed,
+                window_size=cfg["data"]["window_size"],
+                step_size=cfg["data"]["step_size"],
+            )
+        elif task_split == "no_split":
+            from src.data.pump_dataset import get_pump_dataloaders_single_task
+            st = get_pump_dataloaders_single_task(
+                csv_path=csv_path,
+                normalizer_path=normalizer_path,
+                batch_size=batch_size,
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=seed,
+                window_size=cfg["data"]["window_size"],
+                step_size=cfg["data"]["step_size"],
+            )
+            st["_single_task_mode"] = True
+            return [st]
         from src.data.pump_dataset import get_pump_dataloaders
         return get_pump_dataloaders(
             csv_path=csv_path,
@@ -85,6 +113,17 @@ def _get_tasks(cfg: dict) -> list[dict]:
         )
     else:
         task_split = cfg["data"].get("task_split", "by_equipment")
+        if task_split == "no_split":
+            from src.data.monitoring_dataset import get_monitoring_dataloaders_single_task
+            st = get_monitoring_dataloaders_single_task(
+                csv_path=csv_path,
+                batch_size=batch_size,
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=seed,
+            )
+            st["_single_task_mode"] = True
+            return [st]
         if task_split == "by_location":
             from src.data.monitoring_dataset import get_cl_dataloaders_by_location
             return get_cl_dataloaders_by_location(
@@ -348,6 +387,106 @@ def _profile_hdc_memory(model: HDCClassifier, n_features: int, n_runs: int = 100
     return report
 
 
+def _run_single_task_hdc(
+    data: dict,
+    cfg: dict,
+    results_dir: Path,
+    exp_dir: Path,
+) -> None:
+    """
+    Entraîne et évalue HDC sur une seule tâche (tout le dataset monitoring fusionné).
+
+    Sortie : ``results/metrics_single_task.json`` avec les 6 métriques obligatoires.
+
+    Parameters
+    ----------
+    data : dict
+        Sortie de get_monitoring_dataloaders_single_task().
+    cfg : dict
+        Config complète.
+    results_dir : Path
+    exp_dir : Path
+    """
+    print(f"\n{'=' * 40}")
+    print(f"  HDC Single-Task — {cfg['exp_id']}")
+    print(f"  {data['n_train']} train | {data['n_val']} val | {data['n_test']} test")
+    print(f"{'=' * 40}")
+
+    # Extraire numpy pour les bornes et le fit
+    all_x_train = []
+    for x_batch, _ in data["train_loader"]:
+        all_x_train.append(x_batch.numpy())
+    X_train = np.concatenate(all_x_train, axis=0)
+
+    # Calculer feature_bounds depuis X_train (pas de Task 1 en mode single-task)
+    # Noms dérivés dynamiquement selon le dataset (pump : 25 features, monitoring : 4 features)
+    dataset_name = cfg.get("data", {}).get("dataset", "equipment_monitoring")
+    if dataset_name == "pump_maintenance":
+        from src.data.pump_dataset import FEATURE_NAMES as _PUMP_FEATURE_NAMES
+        feature_names = _PUMP_FEATURE_NAMES
+    else:
+        feature_names = ["temperature", "pressure", "vibration", "humidity"]
+    bounds: dict = {}
+    for i, name in enumerate(feature_names):
+        bounds[name] = [float(X_train[:, i].min()), float(X_train[:, i].max())]
+
+    cfg_single = dict(cfg)
+    cfg_single["feature_bounds"] = bounds
+
+    model = HDCClassifier(cfg_single)
+    n_features: int = cfg["data"].get("n_features", 4)
+    print(f"\nHDCClassifier : D={model.D}, n_features={n_features}")
+
+    # Entraînement (online, 1 pass)
+    batch_errors = []
+    for x_batch, y_batch in data["train_loader"]:
+        err_rate = model.update(x_batch.numpy(), y_batch.numpy().ravel())
+        batch_errors.append(err_rate)
+    model.on_task_end(task_id=0, dataloader=data["train_loader"])
+    print(f"  Taux d'erreur moyen (train) : {np.mean(batch_errors):.4f}")
+
+    # Évaluation sur test
+    test_preds, test_true = [], []
+    for x_batch, y_batch in data["test_loader"]:
+        preds = model.predict(x_batch.numpy())
+        test_preds.extend(preds.tolist())
+        test_true.extend(y_batch.numpy().ravel().astype(int).tolist())
+
+    y_true = np.array(test_true)
+    y_pred = np.array(test_preds)
+
+    acc = float(accuracy_score(y_true, y_pred))
+    f1 = float(f1_score(y_true, y_pred, zero_division=0))
+    # HDC : pas de score de probabilité natif — AUC-ROC sur prédictions binaires
+    try:
+        auc = float(roc_auc_score(y_true, y_pred))
+    except ValueError:
+        auc = float("nan")
+
+    print(f"\n  Test → accuracy={acc:.4f} | f1={f1:.4f} | auc_roc={auc:.4f}")
+
+    # Profiling mémoire
+    print("\n  Profiling mémoire...")
+    memory_report = _profile_hdc_memory(model, n_features=n_features)
+    fwd = memory_report["forward"]
+
+    metrics: dict = {
+        "exp_id": cfg["exp_id"],
+        "accuracy": acc,
+        "f1": f1,
+        "auc_roc": auc,
+        "ram_peak_bytes": fwd["ram_peak_bytes"],
+        "inference_latency_ms": fwd["inference_latency_ms"],
+        "n_params": model.count_parameters(),
+    }
+
+    metrics_path = results_dir / "metrics_single_task.json"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(metrics, f, indent=2)
+    print(f"\n  Résultats → {metrics_path}")
+    print(f"✅ HDC single-task terminé → {exp_dir}")
+
+
 def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
@@ -356,8 +495,8 @@ def main() -> None:
     if args.data_config:
         data_cfg = load_config(args.data_config)
         cfg["data"].update(data_cfg.get("data", {}))
-        # Forcer recalcul des feature_bounds si scénario by_pump_id
-        if cfg["data"].get("task_split") == "by_pump_id":
+        # Forcer recalcul des feature_bounds si scénario avec nouvelles données
+        if cfg["data"].get("task_split") in ("by_pump_id", "by_temporal_window"):
             cfg["feature_bounds"] = None
 
     # Override répertoire expérience depuis --exp_dir
@@ -386,7 +525,6 @@ def main() -> None:
 
     # --- Chargement données ---
     csv_path = Path(cfg["data"]["csv_path"])
-    normalizer_path = Path(cfg["data"]["normalizer_path"])
 
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV introuvable : {csv_path}")
@@ -394,6 +532,17 @@ def main() -> None:
 
     tasks = _get_tasks(cfg)
     n_tasks = len(tasks)
+
+    # Mode single-task (task_split: no_split) — baseline hors-CL
+    if tasks[0].get("_single_task_mode"):
+        _run_single_task_hdc(
+            data=tasks[0],
+            cfg=cfg,
+            results_dir=results_dir,
+            exp_dir=exp_dir,
+        )
+        return
+
     labels = [t.get("domain", f"T{t['task_id']}") for t in tasks]
     print(f"Tâches chargées : {labels} ({n_tasks} tâches)\n")
 

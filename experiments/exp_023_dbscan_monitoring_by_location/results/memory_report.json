@@ -1,0 +1,11 @@
+{
+  "dbscan": {
+    "inference_latency_ms": 0.2276399299876175,
+    "inference_latency_std_ms": 0.018492239813685855,
+    "ram_peak_bytes": 41500,
+    "n_params": 2476,
+    "ram_fp32_bytes": 9904,
+    "ram_int8_bytes": 2476,
+    "within_budget_64ko": true
+  }
+}

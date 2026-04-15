@@ -1,0 +1,8 @@
+{
+  "aa": 0.5120967741935484,
+  "af": 0.0,
+  "bwt": 0.0,
+  "ram_peak_bytes": 61398,
+  "inference_latency_ms": 0.4183498699990196,
+  "n_params": 6225
+}

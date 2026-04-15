@@ -1,26 +1,131 @@
-# pump_by_id_config.yaml — Scénario CL domain-incremental par Pump_ID (5 tâches)
-#
-# Chaque tâche correspond à un identifiant de pompe distinct (Pump_ID ∈ {1,2,3,4,5}).
-# Ce fichier override la section "data" des configs modèles via --data_config.
-#
-# Usage :
-#   python scripts/train_ewc.py \
-#     --config configs/ewc_pump_config.yaml \
-#     --data_config configs/pump_by_id_config.yaml \
-#     --exp_dir experiments/exp_013_ewc_pump_by_id
-
 data:
-  csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
-  normalizer_path: "configs/pump_normalizer.yaml"
-  task_split: by_pump_id          # nouveau mode : un Pump_ID par tâche (5 tâches)
-  pump_id_col: Pump_ID
-  label_col: Maintenance_Flag
-  feature_cols: [temperature, vibration, pressure, rpm]
-  feature_columns: [temperature, vibration, pressure, rpm]  # alias pour compatibilité scripts
-  features_per_channel: [mean, std, rms, kurtosis, peak, crest_factor]
-  window_size: 32
-  step_size: 16
-  val_ratio: 0.2
-  test_split: 0.2                  # alias val_ratio pour compatibilité EWC/HDC
+  csv_path: data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv
   dataset: pump_maintenance
+  feature_cols:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  feature_columns:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  features_per_channel:
+  - mean
+  - std
+  - rms
+  - kurtosis
+  - peak
+  - crest_factor
+  label_col: Maintenance_Flag
   label_column: maintenance_required
+  n_classes: 2
+  n_features: 25
+  normalizer_path: configs/pump_normalizer.yaml
+  pump_id_col: Pump_ID
+  step_size: 16
+  task_split: by_pump_id
+  test_split: 0.2
+  val_ratio: 0.2
+  window_size: 32
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_014_hdc_pump_by_id/results
+  seed: 42
+exp_id: exp_014_hdc_pump_by_id
+feature_bounds:
+  crest_factor_pressure:
+  - -2.0919647216796875
+  - 2.6213250160217285
+  crest_factor_rpm:
+  - -1.9958702325820923
+  - 2.6029727458953857
+  crest_factor_temperature:
+  - -2.0859830379486084
+  - 2.7564761638641357
+  crest_factor_vibration:
+  - -2.2734482288360596
+  - 4.805039882659912
+  kurtosis_pressure:
+  - -1.9469317197799683
+  - 2.2493996620178223
+  kurtosis_rpm:
+  - -1.9470754861831665
+  - 3.799492120742798
+  kurtosis_temperature:
+  - -1.6989470720291138
+  - 3.167471170425415
+  kurtosis_vibration:
+  - -1.9138444662094116
+  - 3.8440966606140137
+  mean_pressure:
+  - -1.9893608093261719
+  - 2.371004819869995
+  mean_rpm:
+  - -2.6893062591552734
+  - 2.3815832138061523
+  mean_temperature:
+  - -2.3294055461883545
+  - 1.9959572553634644
+  mean_vibration:
+  - -3.60272216796875
+  - 2.501140832901001
+  peak_pressure:
+  - -3.8569254875183105
+  - 1.0372021198272705
+  peak_rpm:
+  - -4.995542526245117
+  - 1.0499236583709717
+  peak_temperature:
+  - -3.5187551975250244
+  - 1.0161291360855103
+  peak_vibration:
+  - -5.003080368041992
+  - 1.1223795413970947
+  rms_pressure:
+  - -2.016869068145752
+  - 2.4851818084716797
+  rms_rpm:
+  - -2.826542377471924
+  - 2.321079969406128
+  rms_temperature:
+  - -2.4279682636260986
+  - 2.038301467895508
+  rms_vibration:
+  - -3.7135915756225586
+  - 2.2151529788970947
+  std_pressure:
+  - -2.051058292388916
+  - 2.4589996337890625
+  std_rpm:
+  - -2.819520950317383
+  - 2.479736566543579
+  std_temperature:
+  - -2.9234893321990967
+  - 2.948590040206909
+  std_vibration:
+  - -2.817164421081543
+  - 2.050623655319214
+  temporal_position:
+  - -1.727892279624939
+  - 8.645689010620117
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_pump_base_vectors.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 14344
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42

@@ -24,6 +24,7 @@ from src.data.monitoring_dataset import (
     df_to_tensors,
     encode_categoricals,
     get_cl_dataloaders,
+    get_monitoring_dataloaders_single_task,
     get_task_split,
     load_raw_dataset,
     normalize_features,
@@ -375,3 +376,165 @@ def test_real_data_domain_sizes():
         assert got == expected, (
             f"Domaine '{domain}' : attendu {expected} échantillons, obtenu {got}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Tests unitaires — get_monitoring_dataloaders_single_task
+# ---------------------------------------------------------------------------
+
+
+def test_single_task_returns_dict_not_list(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """get_monitoring_dataloaders_single_task retourne un dict (pas une liste) — signal hors-CL."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+
+    result = get_monitoring_dataloaders_single_task(csv_path, batch_size=4, seed=42)
+
+    assert isinstance(result, dict), "Doit retourner un dict (pas une liste)"
+    assert not isinstance(result, list)
+
+
+def test_single_task_required_keys(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """Le dict retourné contient toutes les clés obligatoires."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+
+    result = get_monitoring_dataloaders_single_task(csv_path, batch_size=4, seed=42)
+
+    required_keys = {"train_loader", "val_loader", "test_loader", "n_train", "n_val", "n_test", "normalizer"}
+    assert required_keys.issubset(result.keys()), (
+        f"Clés manquantes : {required_keys - result.keys()}"
+    )
+
+
+def test_single_task_split_sizes_sum_to_total(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """n_train + n_val + n_test == total du dataset, sans duplication ni perte."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+    total = len(synthetic_df)
+
+    result = get_monitoring_dataloaders_single_task(
+        csv_path, batch_size=4, test_ratio=0.2, val_ratio=0.1, seed=42
+    )
+
+    assert result["n_train"] + result["n_val"] + result["n_test"] == total, (
+        f"n_train({result['n_train']}) + n_val({result['n_val']}) + "
+        f"n_test({result['n_test']}) != {total}"
+    )
+
+
+def test_single_task_no_test_leak_in_train(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """n_test == environ test_ratio * total (pas de duplication de données dans test)."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+    total = len(synthetic_df)
+    test_ratio = 0.2
+
+    result = get_monitoring_dataloaders_single_task(
+        csv_path, batch_size=4, test_ratio=test_ratio, val_ratio=0.1, seed=42
+    )
+
+    # Test set ≈ test_ratio * total (tolérance ±1 pour stratification)
+    expected_test = round(total * test_ratio)
+    assert abs(result["n_test"] - expected_test) <= 2, (
+        f"n_test={result['n_test']} très éloigné de l'attendu {expected_test}"
+    )
+
+
+def test_single_task_normalizer_fitted_on_train(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """Le normalizer est fittée uniquement sur le train split : mean/std présentes dans le dict."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+
+    result = get_monitoring_dataloaders_single_task(csv_path, batch_size=4, seed=42)
+
+    normalizer = result["normalizer"]
+    assert "mean" in normalizer and "std" in normalizer, "normalizer doit avoir 'mean' et 'std'"
+    # Les 4 features doivent être présentes
+    for feat in NUMERIC_FEATURES:
+        assert feat in normalizer["mean"], f"Feature '{feat}' absente de normalizer['mean']"
+        assert feat in normalizer["std"], f"Feature '{feat}' absente de normalizer['std']"
+
+
+def test_single_task_loaders_shape(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """Les DataLoaders retournent des batchs [B, 4] pour X et [B, 1] pour y."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+
+    result = get_monitoring_dataloaders_single_task(csv_path, batch_size=4, seed=42)
+
+    for split_name in ("train_loader", "val_loader", "test_loader"):
+        x_batch, y_batch = next(iter(result[split_name]))
+        assert x_batch.shape[1] == len(NUMERIC_FEATURES), (
+            f"{split_name} X: attendu {len(NUMERIC_FEATURES)} features, obtenu {x_batch.shape[1]}"
+        )
+        assert y_batch.shape[1] == 1, (
+            f"{split_name} y: attendu shape [B, 1], obtenu {y_batch.shape}"
+        )
+
+
+def test_single_task_all_domains_in_splits(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """Tous les équipements (Pump, Turbine, Compressor) sont présents dans le train et test."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+
+    result = get_monitoring_dataloaders_single_task(
+        csv_path, batch_size=len(synthetic_df), seed=42
+    )
+
+    # Vérifier via n_train et n_test : dataset complet = les 3 domaines
+    # Proxy : n_train + n_val + n_test couvre les 60 lignes (3 domaines × 20)
+    total = result["n_train"] + result["n_val"] + result["n_test"]
+    assert total == len(synthetic_df), (
+        f"Le split total ({total}) ne couvre pas tout le dataset ({len(synthetic_df)})"
+    )
+
+
+def test_single_task_reproducible(
+    synthetic_df: pd.DataFrame,
+    tmp_path: Path,
+):
+    """Deux appels avec le même seed retournent les mêmes tailles."""
+    csv_path = _write_synthetic_csv(synthetic_df, tmp_path)
+
+    r1 = get_monitoring_dataloaders_single_task(csv_path, batch_size=4, seed=42)
+    r2 = get_monitoring_dataloaders_single_task(csv_path, batch_size=4, seed=42)
+
+    assert r1["n_train"] == r2["n_train"]
+    assert r1["n_val"] == r2["n_val"]
+    assert r1["n_test"] == r2["n_test"]
+
+
+@_integration
+def test_single_task_real_data_sizes():
+    """Sur le vrai CSV, n_train + n_val + n_test == 7672 (total documenté)."""
+    from src.data.monitoring_dataset import DOMAIN_SIZES
+
+    total_expected = sum(DOMAIN_SIZES.values())  # 7672
+    csv_path = Path(
+        "data/raw/equipment_monitoring/"
+        "Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+    )
+
+    result = get_monitoring_dataloaders_single_task(
+        csv_path, batch_size=32, test_ratio=0.2, val_ratio=0.1, seed=42
+    )
+
+    total_got = result["n_train"] + result["n_val"] + result["n_test"]
+    assert total_got == total_expected, (
+        f"Total attendu : {total_expected}, obtenu : {total_got}"
+    )

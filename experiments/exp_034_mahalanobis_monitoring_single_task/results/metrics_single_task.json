@@ -1,0 +1,10 @@
+{
+  "exp_id": "exp_034_mahalanobis_monitoring_single_task",
+  "model": "mahalanobis",
+  "accuracy": 0.9570032573289903,
+  "f1": 0.725,
+  "auc_roc": 0.9873017224255838,
+  "ram_peak_bytes": 1504,
+  "inference_latency_ms": 0.007111650338629261,
+  "n_params": 20
+}

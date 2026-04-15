@@ -184,8 +184,8 @@
 | ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
 |----|-------|:-----:|:---:|:----:|---------------|------------|
 | S6-01 | Vérifier/corriger `save_figure()` pour sous-dossiers auto | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 1h |
-| S6-02 | `get_pump_dataloaders_by_temporal_window()` — 4 quartiles 5 000 entrées | ⬜ | ✅ | N/A | `src/data/pump_dataset.py` | 3h |
-| S6-03 | `configs/pump_by_temporal_window_config.yaml` | ⬜ | ✅ | N/A | `configs/pump_by_temporal_window_config.yaml` | 1h |
+| S6-02 | `get_pump_dataloaders_by_temporal_window()` — 4 quartiles 5 000 entrées | ✅ | ✅ | N/A | `src/data/pump_dataset.py` | 3h |
+| S6-03 | `configs/pump_by_temporal_window_config.yaml` | ✅ | ✅ | N/A | `configs/pump_by_temporal_window_config.yaml` | 1h |
 | S6-04 | `plot_performance_by_pump_id_bar()` | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
 | S6-05 | `plot_performance_heatmap_equipment_location()` | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
 | S6-06 | Run exp_012–015 : pump_by_id (TinyOL, EWC, HDC, Mahalanobis) | ⬜ | ✅ | ⬜ | `experiments/exp_012–015/` | 2h |
@@ -193,7 +193,7 @@
 | S6-08 | Run exp_020–021 : pump_by_id (KMeans, DBSCAN) | ⬜ | ✅ | ⬜ | `experiments/exp_020–021/` | 1h |
 | S6-09 | Run exp_022–023 : monitoring_by_location (KMeans, DBSCAN) | ⬜ | ✅ | ⬜ | `experiments/exp_022–023/` | 1h |
 | S6-10 | Run exp_024–029 : pump_by_temporal_window (6 modèles) | ⬜ | ✅ | ⬜ | `experiments/exp_024–029/` | 3h |
-| S6-11 | Tests unitaires `get_pump_dataloaders_by_temporal_window()` | ⬜ | ✅ | ⬜ | `tests/test_pump_dataset.py` | 2h |
+| S6-11 | Tests unitaires `get_pump_dataloaders_by_temporal_window()` | ✅ | ✅ | ✅ | `tests/test_pump_dataset.py` | 2h |
 
 **Livrable sprint 6** : 18 expériences (exp_012–029) exécutées, infrastructure figures sous-dossiers opérationnelle, loader temporel validé.
 
@@ -221,8 +221,10 @@
 | S7-12 | Notebook DBSCAN — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/dbscan.ipynb` | 2h |
 | S7-13 | Notebook Comparaison — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` | 3h |
 | S7-14 | Notebook Comparaison — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/comparison.ipynb` | 3h |
+| S7-15 | Infrastructure & expériences baseline single-task monitoring (exp_030–035) | ⬜ | ✅ | ⬜ | `configs/monitoring_single_task_config.yaml`, `src/data/monitoring_dataset.py`, `experiments/exp_030–035/` | 3h |
+| S7-16 | Notebook baseline monitoring single-task | ✅ | ✅ | ✅ | `notebooks/cl_eval/baselines/monitoring_single_task.ipynb` | 2h |
 
-**Livrable sprint 7** : 14 notebooks Dataset 2 prêts pour présentation encadrants. Figures dans `notebooks/figures/cl_evaluation/{model}/monitoring/{scenario}/`.
+**Livrable sprint 7** : 14 notebooks CL Dataset 2 + 1 notebook baseline hors-CL (`baselines/monitoring_single_task.ipynb`) prêts pour présentation encadrants. Figures dans `notebooks/figures/cl_evaluation/{model}/monitoring/{scenario}/` et `notebooks/figures/cl_evaluation/baseline/monitoring/single_task/`.
 
 ---
 
@@ -248,8 +250,10 @@
 | S8-12 | Notebook DBSCAN — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/dbscan.ipynb` | 2h |
 | S8-13 | Notebook Comparaison — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/comparison.ipynb` | 3h |
 | S8-14 | Notebook Comparaison — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/comparison.ipynb` | 3h |
+| S8-15 | Infrastructure & expériences baseline single-task pump (exp_036–041) | ⬜ | ✅ | ⬜ | `configs/pump_single_task_config.yaml`, `src/data/pump_dataset.py`, `experiments/exp_036–041/` | 3h |
+| S8-16 | Notebook baseline pump single-task | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/baselines/pump_single_task.ipynb` | 2h |
 
-**Livrable sprint 8** : 14 notebooks Dataset 1 prêts pour présentation encadrants. Figures dans `notebooks/figures/cl_evaluation/{model}/pump/{scenario}/`.
+**Livrable sprint 8** : 14 notebooks CL Dataset 1 + 1 notebook baseline hors-CL (`baselines/pump_single_task.ipynb`) prêts pour présentation encadrants. Diagnostic structurel sur les AA ≈ 0.50 observées (problème dataset vs. contrainte CL). Figures dans `notebooks/figures/cl_evaluation/{model}/pump/{scenario}/` et `notebooks/figures/cl_evaluation/baseline/pump/single_task/`.
 
 ---
 
@@ -268,7 +272,7 @@
 | S9-05 | MAJ table indicateurs de progression dans `roadmap.md` | ⬜ | ✅ | N/A | `docs/roadmap.md` | 30min |
 | S9-06 | MAJ README.md : section "Notebooks d'évaluation" | ⬜ | ✅ | N/A | `README.md` | 1h |
 
-**Livrable sprint 9** : Phase 1 complète et documentée — 9 sprints, 29 expériences, 28 notebooks, 6 modèles, 4 scénarios, 2 datasets.
+**Livrable sprint 9** : Phase 1 complète et documentée — 9 sprints, 41 expériences (29 CL + 12 single-task), 30 notebooks (28 CL + 2 baselines), 6 modèles, 5 scénarios (4 CL + 1 no_split), 2 datasets.
 
 ---
 
@@ -425,3 +429,34 @@ Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compresso
 > Dataset 2 (Equipment Monitoring) — T1=2 027 (Pump), T2=2 052 (Turbine), T3=2 058 (Compressor) exemples train. AA = 0.912 : excellente performance sur ce dataset tabulaire statique — le backbone (4→8→8→8) pré-entraîné sur données normales Pump encode efficacement les 4 features numériques. Oubli très faible (AF=0.0079), similaire à exp_003 sur Dataset 1. RAM 4 379 B (tracemalloc) inférieure à exp_003 (6 425 B) grâce à l'encodeur plus petit (184 vs 1 496 params).  
 > RAM analytique encodeur = 184 × 4 B = 736 B + OtO = 40 B = 776 B (1.2% de 64 Ko).  
 > `FIXME(gap2)` : overhead tracemalloc ×5.6 vs analytique (4 379 B vs 776 B) — non représentatif MCU.
+
+---
+
+## Expériences baseline single-task (exp_030–041) — planifiées
+
+> Ces expériences constituent la **référence hors-CL** du projet.  
+> Elles permettent de mesurer l'écart entre performance maximale (sans contrainte CL) et performance incrémentale, et de diagnostiquer si les AA ≈ 0.50 observées sur Dataset 1 sont structurelles ou liées à la contrainte CL.  
+> Métriques reportées : accuracy, f1, auc_roc, ram_peak_bytes, inference_latency_ms, n_params.  
+> Pas de métriques CL (AF/BWT) — une seule tâche, split train/test global stratifié.
+
+### Dataset 2 (Monitoring) — scénario `no_split` (Sprint 7 — S7-15)
+
+| Exp | Modèle | Config | Statut |
+|-----|--------|--------|--------|
+| exp_030 | EWC | `monitoring_single_task_config.yaml` | ⬜ |
+| exp_031 | HDC | `monitoring_single_task_config.yaml` | ⬜ |
+| exp_032 | TinyOL | `monitoring_single_task_config.yaml` | ⬜ |
+| exp_033 | KMeans | `monitoring_single_task_config.yaml` | ⬜ |
+| exp_034 | Mahalanobis | `monitoring_single_task_config.yaml` | ⬜ |
+| exp_035 | DBSCAN | `monitoring_single_task_config.yaml` | ⬜ |
+
+### Dataset 1 (Pump) — scénario `no_split` (Sprint 8 — S8-15)
+
+| Exp | Modèle | Config | Statut |
+|-----|--------|--------|--------|
+| exp_036 | EWC | `pump_single_task_config.yaml` | ⬜ |
+| exp_037 | HDC | `pump_single_task_config.yaml` | ⬜ |
+| exp_038 | TinyOL | `pump_single_task_config.yaml` | ⬜ |
+| exp_039 | KMeans | `pump_single_task_config.yaml` | ⬜ |
+| exp_040 | Mahalanobis | `pump_single_task_config.yaml` | ⬜ |
+| exp_041 | DBSCAN | `pump_single_task_config.yaml` | ⬜ |

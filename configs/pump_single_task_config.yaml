@@ -1,0 +1,38 @@
+# Baseline single-task — Dataset 1 Pump Maintenance
+# MEM: pas de tâches séquentielles, split train/test global uniquement
+# Usage : --data_config configs/pump_single_task_config.yaml
+#
+# Toutes les données (Pump_ID 1-5, toutes périodes) sont fusionnées en un seul split
+# train/val/test stratifié. La normalisation Z-score est fittée sur le train split.
+# Sortie : experiments/exp_03X_*/results/metrics_single_task.json
+
+dataset:
+  name: pump
+  task_split: "no_split"          # pas de découpage temporel ou par pump_id
+  test_ratio: 0.2
+  val_ratio: 0.1                  # sur le train uniquement
+  seed: 42
+  window_size: 32                 # identique aux scénarios CL
+  step_size: 16
+
+paths:
+  csv_path: "data/raw/pump_maintenance/pump_maintenance.csv"
+  normalizer_path: "configs/pump_normalizer.yaml"
+
+data:
+  dataset: pump_maintenance
+  task_split: "no_split"
+  csv_path: "data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv"
+  normalizer_path: "configs/pump_normalizer.yaml"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 32
+  step_size: 16
+  seed: 42
+  n_features: 25
+  n_classes: 2
+  feature_columns:
+    - temperature
+    - vibration
+    - pressure
+    - rpm

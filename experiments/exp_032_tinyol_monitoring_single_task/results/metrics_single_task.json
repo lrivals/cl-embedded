@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_032_tinyol_monitoring_single_task",
+  "accuracy": 0.9446254071661238,
+  "f1": 0.6255506607929515,
+  "auc_roc": 0.838010650473407,
+  "ram_peak_bytes": 944,
+  "inference_latency_ms": 0.008875780076778028,
+  "n_params": 90
+}

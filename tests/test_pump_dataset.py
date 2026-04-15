@@ -30,6 +30,7 @@ from src.data.pump_dataset import (
     WINDOW_SIZE,
     CLStreamSplitter,
     PumpMaintenanceDataset,
+    get_pump_dataloaders_by_temporal_window,
     load_pump_normalizer,
 )
 
@@ -348,6 +349,184 @@ def test_task_n_train_n_val(normalized_splitter: CLStreamSplitter):
 
 
 # ---------------------------------------------------------------------------
+# Tests unitaires — get_pump_dataloaders_by_temporal_window  (S6-11)
+# ---------------------------------------------------------------------------
+
+# Paramètres synthétiques : 4 tâches de 100 entrées chacune (400 lignes total)
+# → (100 - 32) // 16 + 1 = 6 fenêtres par tâche, n_val=1, n_train=5 (>1)
+_N_TEMPORAL_TASKS = 4
+_ENTRIES_PER_TASK_SYNTHETIC = 100
+
+
+@pytest.fixture
+def synthetic_pump_csv_temporal(tmp_path: Path) -> Path:
+    """CSV synthétique de 400 lignes (4 tâches × 100 entrées) pour les tests temporels."""
+    rng = np.random.default_rng(42)
+    n = _N_TEMPORAL_TASKS * _ENTRIES_PER_TASK_SYNTHETIC  # 400
+    df = pd.DataFrame(
+        {
+            "Pump_ID": (np.arange(n) % 4 + 1).astype(int),
+            "Temperature": rng.normal(75.0, 10.0, n).astype(np.float32),
+            "Vibration": rng.normal(1.5, 0.5, n).astype(np.float32),
+            "Pressure": rng.normal(40.0, 8.0, n).astype(np.float32),
+            "Flow_Rate": rng.normal(100.0, 15.0, n).astype(np.float32),
+            "RPM": rng.normal(1500.0, 100.0, n).astype(np.float32),
+            "Operational_Hours": np.arange(n, dtype=np.float32),
+            "Maintenance_Flag": np.where(np.arange(n) > 340, 1, 0),
+        }
+    )
+    csv_path = tmp_path / "pump_temporal.csv"
+    df.to_csv(csv_path, index=False)
+    return csv_path
+
+
+@pytest.fixture
+def synthetic_normalizer_path(
+    synthetic_pump_csv_temporal: Path,
+    tmp_path: Path,
+) -> Path:
+    """Normalizer YAML calculé sur le CSV synthétique temporel (Task 1 chronologique)."""
+    ds = PumpMaintenanceDataset(synthetic_pump_csv_temporal)
+    ds.load()
+    features, labels = ds.extract_features()
+    sp = CLStreamSplitter(features, labels)
+    normalizer = sp.fit_normalizer(task_id=0)
+    norm_path = tmp_path / "pump_normalizer.yaml"
+    sp.save_normalizer(norm_path, normalizer)
+    return norm_path
+
+
+def test_temporal_window_n_tasks(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """get_pump_dataloaders_by_temporal_window() retourne exactement n_tasks dicts."""
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+    )
+    assert len(tasks) == _N_TEMPORAL_TASKS, (
+        f"Attendu {_N_TEMPORAL_TASKS} tâches, obtenu {len(tasks)}"
+    )
+
+
+def test_temporal_window_key_temporal_window(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """Chaque dict doit contenir 'temporal_window' == task_id (1-indexé)."""
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+    )
+    for i, t in enumerate(tasks):
+        assert "temporal_window" in t, (
+            f"Clé 'temporal_window' manquante dans la tâche {i}"
+        )
+        assert t["temporal_window"] == i + 1, (
+            f"temporal_window {t['temporal_window']} != {i + 1}"
+        )
+
+
+def test_temporal_window_keys_complete(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """Chaque dict doit contenir les 6 clés requises."""
+    required_keys = {"task_id", "temporal_window", "train_loader", "val_loader", "n_train", "n_val"}
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+    )
+    for i, t in enumerate(tasks):
+        missing = required_keys - t.keys()
+        assert not missing, f"Tâche {i} — clés manquantes : {missing}"
+
+
+def test_temporal_window_task_id_sequential(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """task_id doit être séquentiel et 1-indexé."""
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+    )
+    for i, t in enumerate(tasks):
+        assert t["task_id"] == i + 1, (
+            f"task_id {t['task_id']} != {i + 1} pour la tâche {i}"
+        )
+
+
+def test_temporal_window_no_data_leakage(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """n_train + n_val couvre toutes les fenêtres de la tranche (pas de perte)."""
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+    )
+    for t in tasks:
+        total = t["n_train"] + t["n_val"]
+        assert total > 0, f"Tâche {t['temporal_window']} vide"
+
+
+def test_temporal_window_train_before_val(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """Split temporel : n_train > n_val (les dernières fenêtres vont en val)."""
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+    )
+    for t in tasks:
+        assert t["n_val"] > 0, f"n_val nul sur la tâche {t['temporal_window']}"
+        assert t["n_train"] > t["n_val"], (
+            f"Tâche {t['temporal_window']} : n_train ({t['n_train']}) <= n_val ({t['n_val']})"
+        )
+
+
+def test_temporal_window_loader_shapes(
+    synthetic_pump_csv_temporal: Path,
+    synthetic_normalizer_path: Path,
+):
+    """Les DataLoaders retournent des tenseurs X:[B, 25] float32 et y:[B, 1] float32."""
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=synthetic_pump_csv_temporal,
+        normalizer_path=synthetic_normalizer_path,
+        n_tasks=_N_TEMPORAL_TASKS,
+        entries_per_task=_ENTRIES_PER_TASK_SYNTHETIC,
+        batch_size=4,
+    )
+    for t in tasks:
+        x_batch, y_batch = next(iter(t["train_loader"]))
+        assert x_batch.shape[1] == N_FEATURES, (
+            f"Tâche {t['temporal_window']}: X doit avoir {N_FEATURES} features, "
+            f"obtenu {x_batch.shape[1]}"
+        )
+        assert y_batch.shape[1] == 1, (
+            f"Tâche {t['temporal_window']}: y doit avoir shape [B, 1], "
+            f"obtenu {y_batch.shape}"
+        )
+        assert x_batch.dtype == torch.float32
+        assert y_batch.dtype == torch.float32
+
+
+# ---------------------------------------------------------------------------
 # Tests d'intégration — vrai CSV
 # ---------------------------------------------------------------------------
 
@@ -397,3 +576,23 @@ def test_real_n_windows_positive():
     n_windows = features.shape[0]
     # (20000 - 32) // 16 + 1 = 1249
     assert n_windows > 1000, f"Nombre de fenêtres trop faible : {n_windows}"
+
+
+@_integration
+def test_real_temporal_window_n_tasks():
+    """Sur le vrai CSV (20 000 lignes), retourne 4 tâches avec des fenêtres non vides."""
+    if not _NORMALIZER_PATH.exists():
+        pytest.skip(f"Normalizer absent : {_NORMALIZER_PATH}")
+
+    tasks = get_pump_dataloaders_by_temporal_window(
+        csv_path=_CSV_PATH,
+        normalizer_path=_NORMALIZER_PATH,
+    )
+    assert len(tasks) == 4, f"Attendu 4 tâches, obtenu {len(tasks)}"
+    for t in tasks:
+        total = t["n_train"] + t["n_val"]
+        # Chaque tranche de 5000 lignes → ~312 fenêtres (window=32, step=16)
+        assert total > 200, (
+            f"Window {t['temporal_window']}: trop peu de fenêtres ({total})"
+        )
+        print(f"Window {t['temporal_window']}: {t['n_train']} train, {t['n_val']} val")

@@ -1,0 +1,59 @@
+_snapshot_timestamp: '2026-04-14T21:56:00.397839'
+data:
+  csv_path: data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv
+  dataset: pump_maintenance
+  entries_per_task: 5000
+  feature_cols:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  feature_columns:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  features_per_channel:
+  - mean
+  - std
+  - rms
+  - kurtosis
+  - peak
+  - crest_factor
+  label_col: Maintenance_Flag
+  label_column: maintenance_required
+  n_classes: 2
+  n_features: 25
+  n_tasks: 4
+  normalizer_path: configs/pump_normalizer.yaml
+  step_size: 16
+  task_split: by_temporal_window
+  temporal_col: Operational_Hours
+  test_split: 0.2
+  val_ratio: 0.2
+  window_size: 32
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_026_hdc_pump_temporal/results
+  seed: 42
+exp_id: exp_026_hdc_pump_temporal
+feature_bounds: null
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_pump_base_vectors.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 14344
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42
