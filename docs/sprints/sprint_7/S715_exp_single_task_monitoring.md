@@ -2,7 +2,7 @@
 
 > **Sprint 7 — Pré-requis obligatoire à S7-16**  
 > Durée estimée : 3h  
-> Statut : 🔴 À faire
+> Statut : 🟢 Terminé — exp_030–035 exécutées, `metrics_single_task.json` présent pour chaque modèle
 
 ---
 

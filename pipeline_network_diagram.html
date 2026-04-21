@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CL-Embedded — Pipeline Architecture</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    h1 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f8fafc;
+      z-index: 40;
+      letter-spacing: 0.02em;
+    }
+
+    h1 span {
+      color: #38bdf8;
+      margin-left: 6px;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: #64748b;
+      font-size: 0.8rem;
+      margin-left: 12px;
+      font-weight: 400;
+    }
+
+    svg {
+      display: block;
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: calc(100vh - 50px);
+      background: radial-gradient(ellipse at 50% 40%, #1e293b 0%, #0f172a 70%);
+    }
+
+    /* ── Controls ──────────────────────────────── */
+    .controls {
+      position: fixed;
+      top: 62px;
+      left: 14px;
+      background: rgba(15, 23, 42, 0.93);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      padding: 12px 14px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 180px;
+    }
+
+    .controls-section-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+      margin-top: 4px;
+    }
+
+    .controls-section-label:first-child {
+      margin-top: 0;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .btn {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      padding: 4px 9px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: #38bdf8;
+      color: #e2e8f0;
+    }
+
+    .btn.active {
+      background: #0ea5e9;
+      border-color: #38bdf8;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .btn-sm {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #94a3b8;
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-sm:hover {
+      background: rgba(56, 189, 248, 0.12);
+      color: #e2e8f0;
+    }
+
+    /* ── Collapsible controls ──────────────────── */
+    .controls-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .controls-toggle {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .controls-toggle:hover {
+      color: #94a3b8;
+    }
+
+    .controls-body {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .controls-body.collapsed {
+      display: none;
+    }
+
+    /* ── Experiment filter badges ──────────────── */
+    .exp-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      font-size: 0.6rem;
+      padding: 0 5px;
+      margin-left: 4px;
+      font-weight: 700;
+      vertical-align: middle;
+    }
+
+    .exp-subcats {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      padding-left: 2px;
+    }
+
+    .subcat-pill {
+      font-size: 0.62rem;
+      color: #64748b;
+      background: rgba(100, 116, 139, 0.10);
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 1px 7px;
+    }
+
+    /* ── Legend ────────────────────────────────── */
+    .legend {
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(15, 23, 42, 0.93);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      z-index: 50;
+      font-size: 0.72rem;
+    }
+
+    .legend-title {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .legend-section {
+      margin-bottom: 10px;
+    }
+
+    .legend-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 4px;
+      color: #cbd5e1;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-line {
+      width: 22px;
+      height: 2px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ── Info Panel ────────────────────────────── */
+    .info-panel {
+      position: fixed;
+      top: 62px;
+      right: 14px;
+      max-width: 300px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid #0ea5e9;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      padding: 16px 18px;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .info-panel.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .info-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f8fafc;
+      word-break: break-all;
+    }
+
+    .info-close {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 0;
+      line-height: 1;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+
+    .info-close:hover {
+      color: #e2e8f0;
+    }
+
+    .info-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .info-row {
+      font-size: 0.73rem;
+      color: #94a3b8;
+      margin-bottom: 5px;
+      word-break: break-all;
+    }
+
+    .info-row strong {
+      color: #cbd5e1;
+    }
+
+    .info-desc {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 8px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .info-connections {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #1e293b;
+      font-size: 0.72rem;
+      color: #64748b;
+    }
+
+    .info-connections span {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    /* ── Tooltip ───────────────────────────────── */
+    .tooltip {
+      position: fixed;
+      background: rgba(15, 23, 42, 0.97);
+      border: 1px solid #38bdf8;
+      border-radius: 9px;
+      padding: 10px 14px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      max-width: 280px;
+      z-index: 100;
+      font-size: 0.8rem;
+    }
+
+    .tt-name {
+      font-weight: 600;
+      color: #f8fafc;
+      margin-bottom: 3px;
+    }
+
+    .tt-type {
+      font-size: 0.68rem;
+      padding: 1px 7px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+
+    .tt-file {
+      font-size: 0.68rem;
+      color: #64748b;
+      word-break: break-all;
+      font-family: 'Consolas', monospace;
+    }
+
+    /* ── D3 elements ───────────────────────────── */
+    .node circle {
+      stroke-width: 2;
+      stroke: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+    }
+
+    .node circle:hover {
+      stroke: rgba(255, 255, 255, 0.5);
+      stroke-width: 2.5;
+    }
+
+    .node-label {
+      font-size: 10px;
+      fill: #94a3b8;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .link {
+      fill: none;
+      stroke-opacity: 0.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>CL-Embedded <span>— Pipeline Architecture</span> <em>D3.js · Force simulation</em></h1>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="controls-header" onclick="toggleControls()">
+      <span style="font-size:0.7rem;color:#94a3b8;font-weight:600;letter-spacing:0.05em">CONTRÔLES</span>
+      <button class="controls-toggle" id="controlsToggleBtn">▾</button>
+    </div>
+    <div class="controls-body" id="controlsBody">
+
+      <div class="controls-section-label">Filtre par catégorie</div>
+      <div class="btn-row" id="filterBtns">
+        <button class="btn active" onclick="filterByCategory('all')">Complet</button>
+        <button class="btn" onclick="filterByCategory('data_eda')">DataExploration / Preprocessing</button>
+        <button class="btn" onclick="filterByCategory('memory')">Surveillance RAM</button>
+        <button class="btn" onclick="filterByCategory('eval_exp')">Évaluation expérience</button>
+        <button class="btn" onclick="filterByCategory('plot')">Système de plot</button>
+        <button class="btn" onclick="filterByCategory('ml_cl')">Modèles ML et CL</button>
+        <button class="btn" onclick="filterByCategory('ml_unsup')">Modèles Non Supervisés</button>
+      </div>
+
+      <div class="controls-section-label">Filtre par expérience</div>
+      <div class="btn-row" id="expFilterBtns">
+        <button class="btn active" onclick="filterByExperiment('all', event)">Toutes</button>
+        <button class="btn" onclick="filterByExperiment('single_task', event)">SingleTask <span class="exp-badge">12</span></button>
+        <button class="btn" onclick="filterByExperiment('industrial_pump', event)">IndustrialPump <span class="exp-badge">12</span></button>
+        <button class="btn" onclick="filterByExperiment('equipment_monitoring', event)">EquipmentMonitoring <span class="exp-badge">13</span></button>
+      </div>
+      <div class="exp-subcats" id="subcat-industrial_pump" style="display:none">
+        <span class="subcat-pill">by ID · 6</span>
+        <span class="subcat-pill">temporal · 6</span>
+      </div>
+      <div class="exp-subcats" id="subcat-equipment_monitoring" style="display:none">
+        <span class="subcat-pill">by equipment · 7</span>
+        <span class="subcat-pill">by location · 6</span>
+      </div>
+
+      <div class="controls-section-label">Vue</div>
+      <div class="btn-row" id="viewBtns">
+        <button class="btn active" id="btnSimplified" onclick="setViewMode('simplified')">Simplifié</button>
+        <button class="btn" id="btnFull" onclick="setViewMode('full')">Complet</button>
+      </div>
+
+      <div class="controls-section-label">Actions</div>
+      <div class="btn-row">
+        <button class="btn-sm" onclick="resetView()">⟳ Centrer</button>
+        <button class="btn-sm" id="btnLabels" onclick="toggleLabels()">Étiquettes</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-title">Nœuds</div>
+    <div class="legend-section">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ef4444"></div>Données brutes
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f59e0b"></div>Data loaders
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#64748b"></div>Configs
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#22c55e"></div>Modèles ML
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#3b82f6"></div>Training
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#a855f7"></div>Évaluation
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#06b6d4"></div>Utils
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#f97316"></div>Scripts
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#14b8a6"></div>Outputs
+      </div>
+    </div>
+    <div class="legend-title" style="margin-top:8px">Liens</div>
+    <div class="legend-section">
+      <div class="legend-item">
+        <div class="legend-line" style="background:#3b82f6"></div>import
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#ef4444"></div>reads
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#22c55e"></div>output
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#f59e0b"></div>generates
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#64748b"></div>uses_config
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Panel -->
+  <div class="info-panel" id="infoPanel">
+    <div class="info-header">
+      <div class="info-name" id="infoTitle"></div>
+      <button class="info-close" onclick="closeInfo()">✕</button>
+    </div>
+    <div id="infoBadge" class="info-badge"></div>
+    <div class="info-row"><strong>Fichier :</strong> <span id="infoFile"></span></div>
+    <div class="info-desc" id="infoDesc"></div>
+    <div class="info-connections" id="infoConnections"></div>
+  </div>
+
+  <!-- Tooltip -->
+  <div class="tooltip" id="tooltip">
+    <div class="tt-name" id="ttName"></div>
+    <div id="ttType" class="tt-type"></div>
+    <div class="tt-file" id="ttFile"></div>
+  </div>
+
+  <svg id="network"></svg>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────────────────
+    // DONNÉES
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    const typeColors = {
+      data: "#ef4444",
+      config: "#64748b",
+      data_loader: "#f59e0b",
+      ml: "#22c55e",
+      training: "#3b82f6",
+      evaluation: "#a855f7",
+      utils: "#06b6d4",
+      main: "#f97316",
+      output: "#14b8a6",
+    };
+
+    const linkColors = {
+      import: "#3b82f6",
+      reads: "#ef4444",
+      output: "#22c55e",
+      generates: "#f59e0b",
+      uses_config: "#64748b",
+    };
+
+    const nodes = [
+      // ── Données brutes ──────────────────────────────────────────────────────────
+      {
+        id: "pump_csv", name: "Pump CSV", type: "data", category: "data_eda", experiment: "industrial_pump", importance: 1,
+        file: "data/raw/pump_maintenance/Large_Industrial_Pump_Maintenance_Dataset.csv",
+        description: "Dataset 1 — Large Industrial Pump\n20 000 lignes, 4 canaux (temp, vibration, pression, RPM)\nLabel : maintenance_required (binaire)\nScénario CL : domain-incremental (drift temporel)"
+      },
+      {
+        id: "equipment_csv", name: "Equipment CSV", type: "data", category: "data_eda", experiment: "equipment_monitoring", importance: 1,
+        file: "data/raw/equipment_monitoring/equipment_anomaly_data.csv",
+        description: "Dataset 2 — Industrial Equipment Monitoring\n7 672 lignes, 4 features (temp, pression, vibration, humidité)\nLabel : faulty (0/1 binaire)\nScénario CL : domain-incremental (pump → turbine → compressor)"
+      },
+
+      // ── Configs ─────────────────────────────────────────────────────────────────
+      {
+        id: "hdc_config", name: "hdc_config.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/hdc_config.yaml",
+        description: "HDC — Dataset 2 (Equipment Monitoring)\nD=1024, n_levels=10, 4 features\nby_equipment task split"
+      },
+      {
+        id: "hdc_pump_config", name: "hdc_pump_config.yaml", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/hdc_pump_config.yaml",
+        description: "HDC — Dataset 1 (Pump)\nD=1024, n_levels=10, 25 features"
+      },
+      {
+        id: "ewc_config", name: "ewc_config.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/ewc_config.yaml",
+        description: "EWC — Dataset 2\nMLP 4→32→32→1\nλ=0.4, γ=0.99"
+      },
+      {
+        id: "ewc_pump_config", name: "ewc_pump_config.yaml", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/ewc_pump_config.yaml",
+        description: "EWC — Dataset 1 (Pump)\nMLP 25→64→32→1"
+      },
+      {
+        id: "tinyol_config", name: "tinyol_config.yaml", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/tinyol_config.yaml",
+        description: "TinyOL — Dataset 1 (Pump)\nBackbone: 25→32→16→8\nOtO head: 9→1"
+      },
+      {
+        id: "tinyol_monitoring_config", name: "tinyol_monitoring.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/tinyol_monitoring_config.yaml",
+        description: "TinyOL — Dataset 2 (Monitoring)\nBackbone: 4→8→4→2"
+      },
+      {
+        id: "unsupervised_config", name: "unsupervised_config.yaml", type: "config", category: "ml_unsup", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/unsupervised_config.yaml",
+        description: "Unsupervised baselines\nHyperparams : K-Means, KNN, PCA,\nMahalanobis, DBSCAN"
+      },
+      {
+        id: "pump_normalizer", name: "pump_normalizer.yaml", type: "config", category: "data_eda", experiment: "industrial_pump", importance: 0,
+        file: "configs/pump_normalizer.yaml",
+        description: "Z-score mean/std pour Dataset 1\nFitté sur Task 1 uniquement"
+      },
+      {
+        id: "monitoring_normalizer", name: "monitoring_normalizer.yaml", type: "config", category: "data_eda", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/monitoring_normalizer.yaml",
+        description: "Z-score mean/std pour Dataset 2\nFitté sur Task 1 (Pump) uniquement"
+      },
+      {
+        id: "hdc_base_vectors", name: "hdc_base_vectors.npz", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/hdc_base_vectors.npz",
+        description: "Vecteurs de base HDC aléatoires ±1\nD × (n_levels + n_features)\n~10 Ko, généré une fois"
+      },
+
+      // ── Data loaders ─────────────────────────────────────────────────────────────
+      {
+        id: "pump_dataset", name: "pump_dataset.py", type: "data_loader", category: "data_eda", experiment: "industrial_pump", importance: 1,
+        file: "src/data/pump_dataset.py",
+        description: "PumpMaintenanceDataset, CLStreamSplitter\nSplits: chronological (3 tasks), by_pump_id (5), by_temporal_window (4)\n25 features (6 stats × 4 canaux + position temporelle)\nNormalisation Z-score sur Task 1"
+      },
+      {
+        id: "monitoring_dataset", name: "monitoring_dataset.py", type: "data_loader", category: "data_eda", experiment: "equipment_monitoring", importance: 1,
+        file: "src/data/monitoring_dataset.py",
+        description: "Splits: by_equipment (pump/turbine/compressor),\nby_location (5 zones), no_split\n4 features (temp, pression, vibration, humidité)\nNormalisation Z-score sur Task 1"
+      },
+
+      // ── Modèles ──────────────────────────────────────────────────────────────────
+      {
+        id: "base_cl_model", name: "base_cl_model.py", type: "ml", category: "ml_cl", experiment: "all", importance: 0,
+        file: "src/models/base_cl_model.py",
+        description: "Classe abstraite pour tous les modèles CL\nInterface: update(), predict(), save(), load()"
+      },
+      {
+        id: "hdc_classifier", name: "HDCClassifier", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/hdc/hdc_classifier.py",
+        description: "Hyperdimensional Computing (M3)\nD=1024 dims, binaire online learning\nPrototypes INT32 → binarisation INT8\nBudget STM32N6 : ~6 Ko @ INT8"
+      },
+      {
+        id: "hdc_base_vectors_mod", name: "base_vectors.py", type: "ml", category: "ml_cl", experiment: "all", importance: 0,
+        file: "src/models/hdc/base_vectors.py",
+        description: "Génération/gestion des hypervecteurs de base\ngenerate_base_hvectors(), save/load en .npz"
+      },
+      {
+        id: "ewc_mlp", name: "EWCMlpClassifier", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/ewc/ewc_mlp.py",
+        description: "Elastic Weight Consolidation (M2)\nMLP 2-3 couches cachées, BCEWithLogitsLoss\nPénalité EWC sur les poids importants\nSGD/Adam trainable"
+      },
+      {
+        id: "fisher", name: "fisher.py", type: "ml", category: "ml_cl", experiment: "all", importance: 0,
+        file: "src/models/ewc/fisher.py",
+        description: "Estimation diagonale de la matrice de Fisher\ncompute_fisher_diagonal(), update_fisher_online()\nUtilisé aux frontières de tâches"
+      },
+      {
+        id: "tinyol_autoencoder", name: "TinyOLAutoencoder", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/tinyol/autoencoder.py",
+        description: "MLP autoencoder (encodeur + décodeur)\nGelé après le pré-entraînement\nPerte MSE reconstruction\nEncodeur : ~1-5 Ko"
+      },
+      {
+        id: "oto_head", name: "OtOHead", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/tinyol/oto_head.py",
+        description: "One-to-One classification head (M1)\nSGD-trainable, BCEWithLogitsLoss\nTinyOLOnlineTrainer: gère autoencoder + tête\n~500 B (poids de la tête)"
+      },
+      {
+        id: "kmeans_detector", name: "KMeansDetector", type: "ml", category: "ml_unsup", experiment: "single_task", importance: 0,
+        file: "src/models/unsupervised/kmeans_detector.py",
+        description: "K-Means non supervisé\nSélection K via silhouette/elbow\nfit_task() sur données non étiquetées"
+      },
+      {
+        id: "knn_detector", name: "KNNDetector", type: "ml", category: "ml_unsup", experiment: "single_task", importance: 0,
+        file: "src/models/unsupervised/knn_detector.py",
+        description: "Détection d'anomalie par KNN\nScore = distance au voisin le plus proche"
+      },
+      {
+        id: "pca_baseline", name: "PCABaseline", type: "ml", category: "ml_unsup", experiment: "single_task", importance: 0,
+        file: "src/models/unsupervised/pca_baseline.py",
+        description: "Erreur de reconstruction PCA\nScore anomalie = erreur de reconstruction"
+      },
+      {
+        id: "mahalanobis", name: "MahalanobisDetector", type: "ml", category: "ml_unsup", experiment: "single_task", importance: 0,
+        file: "src/models/unsupervised/mahalanobis_detector.py",
+        description: "Distance de Mahalanobis (ajustement gaussien)\nμ + Σ⁻¹ offline\n~80 B pour d=4 features"
+      },
+      {
+        id: "dbscan_detector", name: "DBSCANDetector", type: "ml", category: "ml_unsup", experiment: "single_task", importance: 0,
+        file: "src/models/unsupervised/dbscan_detector.py",
+        description: "Clustering DBSCAN\nPoints en cluster = normaux\nPoints bruit = anomalies"
+      },
+
+      // ── Training ─────────────────────────────────────────────────────────────────
+      {
+        id: "baselines", name: "baselines.py", type: "training", category: "ml_cl", experiment: "single_task", importance: 0,
+        file: "src/training/baselines.py",
+        description: "Baselines EWC :\n• train_naive_sequential() — catastrophic forgetting\n• train_joint() — offline sur toutes les tâches\n• evaluate_task()"
+      },
+
+      // ── Évaluation ───────────────────────────────────────────────────────────────
+      {
+        id: "metrics", name: "metrics.py", type: "evaluation", category: "eval_exp", experiment: "all", importance: 0,
+        file: "src/evaluation/metrics.py",
+        description: "Métriques CL obligatoires :\n• acc_final, avg_forgetting (AF)\n• backward_transfer (BWT)\n• forward_transfer (FWT)\ncompute_cl_metrics(), format_metrics_report()"
+      },
+      {
+        id: "memory_profiler", name: "memory_profiler.py", type: "evaluation", category: "memory", experiment: "all", importance: 0,
+        file: "src/evaluation/memory_profiler.py",
+        description: "Profiling RAM et latence :\n• ram_peak_bytes (tracemalloc)\n• inference_latency_ms (moyenne 100 runs)\n• n_params"
+      },
+      {
+        id: "eda_plots", name: "eda_plots.py", type: "evaluation", category: "data_eda", experiment: "all", importance: 0,
+        file: "src/evaluation/eda_plots.py",
+        description: "Plots EDA :\nboxplots, histogrammes, violins, KDE,\npairplots, distribution labels\nVariantes *_by_group_and_label"
+      },
+      {
+        id: "feature_space_plots", name: "feature_space_plots.py", type: "evaluation", category: "plot", experiment: "all", importance: 0,
+        file: "src/evaluation/feature_space_plots.py",
+        description: "Visualisation de l'espace features :\nPCA, KPCA, Voronoi K-Means\nEllipses Mahalanobis, heatmaps PCA\nÉvolution CL"
+      },
+
+      // ── Utils ────────────────────────────────────────────────────────────────────
+      {
+        id: "config_loader", name: "config_loader.py", type: "utils", category: "eval_exp", experiment: "all", importance: 0,
+        file: "src/utils/config_loader.py",
+        description: "load_config(), save_config_snapshot()\nget_exp_dir() — résolution du répertoire expérience"
+      },
+      {
+        id: "reproducibility", name: "reproducibility.py", type: "utils", category: "eval_exp", experiment: "all", importance: 0,
+        file: "src/utils/reproducibility.py",
+        description: "set_seed(42)\nFix seeds numpy/torch/python\nReproductibilité garantie"
+      },
+
+      // ── Scripts ──────────────────────────────────────────────────────────────────
+      {
+        id: "train_hdc", name: "train_hdc.py", type: "main", category: "eval_exp", experiment: "all", importance: 1,
+        file: "scripts/train_hdc.py",
+        description: "Entraînement HDC online (M3)\nDataset 2 : pump → turbine → compressor\nProduit : metrics.json, acc_matrix_hdc.npy,\nmemory_report.json"
+      },
+      {
+        id: "train_ewc", name: "train_ewc.py", type: "main", category: "eval_exp", experiment: "all", importance: 1,
+        file: "scripts/train_ewc.py",
+        description: "Entraînement EWC + baselines naive/joint (M2)\nSupporté : Dataset 1 et Dataset 2\nProduit : metrics.json, acc_matrix_*.npy"
+      },
+      {
+        id: "train_tinyol", name: "train_tinyol.py", type: "main", category: "eval_exp", experiment: "all", importance: 1,
+        file: "scripts/train_tinyol.py",
+        description: "Entraînement TinyOL online (M1)\nBackbone gelé + tête OtO\nSupporté : Dataset 1 et Dataset 2\nProduit : metrics.json, cl_accuracy_matrix.png"
+      },
+      {
+        id: "pretrain_tinyol", name: "pretrain_tinyol.py", type: "main", category: "eval_exp", experiment: "industrial_pump", importance: 1,
+        file: "scripts/pretrain_tinyol.py",
+        description: "Pré-entraînement autoencoder offline\nPerte MSE reconstruction\nProduit : backbone.pt, pretrain_loss_curve.png\nSauvegarde configs/pump_normalizer.yaml"
+      },
+      {
+        id: "train_unsupervised", name: "train_unsupervised.py", type: "main", category: "eval_exp", experiment: "all", importance: 1,
+        file: "scripts/train_unsupervised.py",
+        description: "5 baselines non supervisés\nKMeans, KNN, PCA, Mahalanobis, DBSCAN\nDomain-incremental CL\nProduit : metrics_{model}_{dataset}.json, matrices .npy"
+      },
+      {
+        id: "explore_eda", name: "explore_eda.py", type: "main", category: "data_eda", experiment: "all", importance: 0,
+        file: "scripts/explore_eda.py",
+        description: "Génère tous les plots EDA :\nboxplots, histogrammes, violins, KDE, pairplots\npour les 2 datasets"
+      },
+      {
+        id: "visualize_features", name: "visualize_feature_space.py", type: "main", category: "plot", experiment: "all", importance: 0,
+        file: "scripts/visualize_feature_space.py",
+        description: "Visualisation de l'espace features :\nPCA, Voronoi K-Means, ellipses Mahalanobis\nheatmaps reconstruction\nProduit : 05_feature_space_*.png"
+      },
+
+      // ── Outputs ──────────────────────────────────────────────────────────────────
+      {
+        id: "exp_hdc", name: "experiments/hdc/", type: "output", category: "eval_exp", experiment: "equipment_monitoring", importance: 1,
+        file: "experiments/exp_002_hdc_dataset2/",
+        description: "Résultats HDC\nmetrics.json, acc_matrix_hdc.npy\nmemory_report.json, checkpoints/"
+      },
+      {
+        id: "exp_ewc", name: "experiments/ewc/", type: "output", category: "eval_exp", experiment: "equipment_monitoring", importance: 1,
+        file: "experiments/exp_013_ewc_dataset2/",
+        description: "Résultats EWC + baselines\nmetrics.json, acc_matrix_ewc/naive/joint.npy"
+      },
+      {
+        id: "exp_tinyol", name: "experiments/tinyol/", type: "output", category: "eval_exp", experiment: "industrial_pump", importance: 1,
+        file: "experiments/exp_003_tinyol_dataset1/",
+        description: "Résultats TinyOL\nmetrics.json, backbone.pt\npretrain_loss_curve.png"
+      },
+      {
+        id: "exp_unsupervised", name: "experiments/unsup/", type: "output", category: "eval_exp", experiment: "equipment_monitoring", importance: 1,
+        file: "experiments/exp_005_unsupervised_dataset2/",
+        description: "Résultats baselines non supervisés\nmetrics_{model}_{dataset}.json\nacc_matrix_*.npy, auroc_matrix_*.npy"
+      },
+      {
+        id: "fig_eda", name: "figures/eda/", type: "output", category: "data_eda", experiment: "all", importance: 0,
+        file: "notebooks/figures/eda/",
+        description: "Figures EDA\n*.png dans equipment_monitoring/\net pump_maintenance/"
+      },
+      {
+        id: "fig_feature_space", name: "figures/feature_space/", type: "output", category: "plot", experiment: "all", importance: 0,
+        file: "notebooks/figures/feature_space/",
+        description: "Visualisations espace features\n05_feature_space_*.png"
+      },
+    ];
+
+    const links = [
+      // Scripts → configs
+      { source: "train_hdc", target: "hdc_config", type: "uses_config" },
+      { source: "train_hdc", target: "hdc_pump_config", type: "uses_config" },
+      { source: "train_ewc", target: "ewc_config", type: "uses_config" },
+      { source: "train_ewc", target: "ewc_pump_config", type: "uses_config" },
+      { source: "train_tinyol", target: "tinyol_config", type: "uses_config" },
+      { source: "train_tinyol", target: "tinyol_monitoring_config", type: "uses_config" },
+      { source: "pretrain_tinyol", target: "tinyol_config", type: "uses_config" },
+      { source: "train_unsupervised", target: "unsupervised_config", type: "uses_config" },
+
+      // Scripts → data loaders
+      { source: "train_hdc", target: "pump_dataset", type: "import" },
+      { source: "train_hdc", target: "monitoring_dataset", type: "import" },
+      { source: "train_ewc", target: "pump_dataset", type: "import" },
+      { source: "train_ewc", target: "monitoring_dataset", type: "import" },
+      { source: "train_tinyol", target: "pump_dataset", type: "import" },
+      { source: "train_tinyol", target: "monitoring_dataset", type: "import" },
+      { source: "pretrain_tinyol", target: "pump_dataset", type: "import" },
+      { source: "train_unsupervised", target: "pump_dataset", type: "import" },
+      { source: "train_unsupervised", target: "monitoring_dataset", type: "import" },
+      { source: "explore_eda", target: "pump_dataset", type: "import" },
+      { source: "explore_eda", target: "monitoring_dataset", type: "import" },
+      { source: "visualize_features", target: "monitoring_dataset", type: "import" },
+
+      // Scripts → modèles
+      { source: "train_hdc", target: "hdc_classifier", type: "import" },
+      { source: "train_ewc", target: "ewc_mlp", type: "import" },
+      { source: "train_ewc", target: "baselines", type: "import" },
+      { source: "train_tinyol", target: "tinyol_autoencoder", type: "import" },
+      { source: "train_tinyol", target: "oto_head", type: "import" },
+      { source: "pretrain_tinyol", target: "tinyol_autoencoder", type: "import" },
+      { source: "train_unsupervised", target: "kmeans_detector", type: "import" },
+      { source: "train_unsupervised", target: "knn_detector", type: "import" },
+      { source: "train_unsupervised", target: "pca_baseline", type: "import" },
+      { source: "train_unsupervised", target: "mahalanobis", type: "import" },
+      { source: "train_unsupervised", target: "dbscan_detector", type: "import" },
+      { source: "visualize_features", target: "mahalanobis", type: "import" },
+
+      // Scripts → évaluation
+      { source: "train_hdc", target: "metrics", type: "import" },
+      { source: "train_hdc", target: "memory_profiler", type: "import" },
+      { source: "train_ewc", target: "metrics", type: "import" },
+      { source: "train_ewc", target: "memory_profiler", type: "import" },
+      { source: "train_tinyol", target: "metrics", type: "import" },
+      { source: "train_tinyol", target: "memory_profiler", type: "import" },
+      { source: "train_unsupervised", target: "metrics", type: "import" },
+      { source: "train_unsupervised", target: "memory_profiler", type: "import" },
+      { source: "explore_eda", target: "eda_plots", type: "import" },
+      { source: "visualize_features", target: "feature_space_plots", type: "import" },
+
+      // Scripts → outputs
+      { source: "train_hdc", target: "exp_hdc", type: "output" },
+      { source: "train_ewc", target: "exp_ewc", type: "output" },
+      { source: "train_tinyol", target: "exp_tinyol", type: "output" },
+      { source: "pretrain_tinyol", target: "exp_tinyol", type: "output" },
+      { source: "train_unsupervised", target: "exp_unsupervised", type: "output" },
+      { source: "explore_eda", target: "fig_eda", type: "output" },
+      { source: "visualize_features", target: "fig_feature_space", type: "output" },
+
+      // Data loaders → données brutes
+      { source: "pump_dataset", target: "pump_csv", type: "reads" },
+      { source: "monitoring_dataset", target: "equipment_csv", type: "reads" },
+
+      // Data loaders → normalizers
+      { source: "pump_dataset", target: "pump_normalizer", type: "generates" },
+      { source: "monitoring_dataset", target: "monitoring_normalizer", type: "generates" },
+
+      // Modules internes
+      { source: "hdc_classifier", target: "base_cl_model", type: "import" },
+      { source: "hdc_classifier", target: "hdc_base_vectors_mod", type: "import" },
+      { source: "hdc_base_vectors_mod", target: "hdc_base_vectors", type: "generates" },
+      { source: "ewc_mlp", target: "base_cl_model", type: "import" },
+      { source: "ewc_mlp", target: "fisher", type: "import" },
+      { source: "baselines", target: "ewc_mlp", type: "import" },
+      { source: "baselines", target: "metrics", type: "import" },
+      { source: "pump_dataset", target: "config_loader", type: "import" },
+      { source: "pump_dataset", target: "reproducibility", type: "import" },
+      { source: "monitoring_dataset", target: "config_loader", type: "import" },
+      { source: "monitoring_dataset", target: "reproducibility", type: "import" },
+    ];
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // D3 SETUP
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    const svgEl = document.getElementById("network");
+    const width = () => svgEl.clientWidth;
+    const height = () => svgEl.clientHeight;
+
+    const svg = d3.select("#network");
+    const g = svg.append("g");
+
+    // Flèches directionnelles
+    const defs = svg.append("defs");
+    Object.entries(linkColors).forEach(([type, color]) => {
+      defs.append("marker")
+        .attr("id", `arrow-${type}-high`)
+        .attr("viewBox", "0 -4 10 8")
+        .attr("refX", 22)
+        .attr("refY", 0)
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-4L10,0L0,4")
+        .attr("fill", color)
+        .attr("opacity", 0.7);
+
+      defs.append("marker")
+        .attr("id", `arrow-${type}-low`)
+        .attr("viewBox", "0 -4 10 8")
+        .attr("refX", 22)
+        .attr("refY", 0)
+        .attr("markerWidth", 5)
+        .attr("markerHeight", 5)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-4L10,0L0,4")
+        .attr("fill", color)
+        .attr("opacity", 0.2);
+    });
+
+    // Zoom / pan
+    const zoom = d3.zoom()
+      .scaleExtent([0.1, 6])
+      .on("zoom", e => g.attr("transform", e.transform));
+    svg.call(zoom);
+
+    // Force simulation
+    const simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id(d => d.id).distance(150).strength(0.35))
+      .force("charge", d3.forceManyBody().strength(-380))
+      .force("center", d3.forceCenter(width() / 2, height() / 2))
+      .force("collision", d3.forceCollide().radius(d => nodeRadius(d) + 12));
+
+    // Liens
+    const link = g.selectAll(".link")
+      .data(links).enter().append("line")
+      .attr("class", "link")
+      .attr("stroke", d => linkColors[d.type])
+      .attr("stroke-width", d => d.type === "reads" ? 2 : 1.5)
+      .attr("marker-end", d => `url(#arrow-${d.type}-high)`);
+
+    // Nœuds
+    const node = g.selectAll(".node")
+      .data(nodes).enter().append("g")
+      .attr("class", "node")
+      .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+    node.append("circle")
+      .attr("r", d => nodeRadius(d))
+      .attr("fill", d => typeColors[d.type] || "#64748b");
+
+    node.append("text")
+      .attr("class", "node-label")
+      .attr("dy", d => nodeRadius(d) + 13)
+      .text(d => d.name);
+
+    // Tick
+    simulation.on("tick", () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+      node.attr("transform", d => `translate(${d.x},${d.y})`);
+    });
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // INTERACTION : TOOLTIP + INFO PANEL
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    const tooltip = document.getElementById("tooltip");
+
+    node
+      .on("mouseover", (event, d) => {
+        tooltip.style.opacity = "1";
+        document.getElementById("ttName").textContent = d.name;
+        const badge = document.getElementById("ttType");
+        badge.textContent = d.type;
+        badge.style.background = (typeColors[d.type] || "#64748b") + "33";
+        badge.style.color = typeColors[d.type] || "#64748b";
+        badge.style.border = `1px solid ${typeColors[d.type] || "#64748b"}55`;
+        document.getElementById("ttFile").textContent = d.file || "";
+      })
+      .on("mousemove", event => {
+        tooltip.style.left = (event.clientX + 16) + "px";
+        tooltip.style.top = (event.clientY - 12) + "px";
+      })
+      .on("mouseout", () => { tooltip.style.opacity = "0"; })
+      .on("click", (event, d) => {
+        event.stopPropagation();
+        showInfo(d);
+      });
+
+    svg.on("click", () => closeInfo());
+
+    function showInfo(d) {
+      document.getElementById("infoTitle").textContent = d.name;
+      const badge = document.getElementById("infoBadge");
+      badge.textContent = d.type;
+      badge.style.background = (typeColors[d.type] || "#64748b") + "22";
+      badge.style.color = typeColors[d.type] || "#64748b";
+      badge.style.border = `1px solid ${typeColors[d.type] || "#64748b"}55`;
+      document.getElementById("infoFile").textContent = d.file || "—";
+      document.getElementById("infoDesc").textContent = d.description || "";
+      const incoming = links.filter(l => (l.target.id || l.target) === d.id);
+      const outgoing = links.filter(l => (l.source.id || l.source) === d.id);
+      document.getElementById("infoConnections").innerHTML =
+        `Entrants : <span>${incoming.length}</span> &nbsp;|&nbsp; Sortants : <span>${outgoing.length}</span>`;
+      document.getElementById("infoPanel").classList.add("visible");
+    }
+
+    function closeInfo() {
+      document.getElementById("infoPanel").classList.remove("visible");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // CONTRÔLES : FILTRE / VUE / LABELS
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    let currentMode = "simplified";
+    let showLabels = true;
+    let currentCategory = "all";
+    let currentExperiment = "all";
+
+    function nodeRadius(d) {
+      return d.importance === 1 ? 22 : 14;
+    }
+
+    function toggleControls() {
+      const body = document.getElementById("controlsBody");
+      const btn = document.getElementById("controlsToggleBtn");
+      const collapsed = body.classList.toggle("collapsed");
+      btn.textContent = collapsed ? "▸" : "▾";
+    }
+
+    function filterByCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll("#filterBtns .btn").forEach(b => b.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+      applyVisibility();
+    }
+
+    function filterByExperiment(exp, ev) {
+      currentExperiment = exp;
+      document.querySelectorAll("#expFilterBtns .btn").forEach(b => b.classList.remove("active"));
+      ev.currentTarget.classList.add("active");
+      ["industrial_pump", "equipment_monitoring"].forEach(key => {
+        const el = document.getElementById(`subcat-${key}`);
+        if (el) el.style.display = (exp === key) ? "flex" : "none";
+      });
+      applyVisibility();
+    }
+
+    function setViewMode(mode) {
+      currentMode = mode;
+      document.getElementById("btnSimplified").classList.toggle("active", mode === "simplified");
+      document.getElementById("btnFull").classList.toggle("active", mode === "full");
+      applyVisibility();
+    }
+
+    function applyVisibility() {
+      const isHighlighted = d => {
+        if (currentCategory !== "all" && d.category !== currentCategory) return false;
+        if (currentExperiment !== "all") {
+          if (d.experiment !== currentExperiment && d.experiment !== "all") return false;
+        }
+        if (currentMode === "simplified" && !d.importance) return false;
+        return true;
+      };
+
+      node.style("opacity", d => isHighlighted(d) ? 1 : 0.08);
+
+      link.style("opacity", d => {
+        const srcHigh = isHighlighted(d.source);
+        const tgtHigh = isHighlighted(d.target);
+
+        if (srcHigh && tgtHigh) return 0.45;
+        if (srcHigh || tgtHigh) return 0.15;
+        return 0.02;
+      })
+        .attr("marker-end", d => {
+          const srcHigh = isHighlighted(d.source);
+          const tgtHigh = isHighlighted(d.target);
+
+          if (srcHigh && tgtHigh) return `url(#arrow-${d.type}-high)`;
+          if (srcHigh || tgtHigh) return `url(#arrow-${d.type}-low)`;
+          return null;
+        });
+    }
+
+    // Init view
+    applyVisibility();
+
+    function toggleLabels() {
+      showLabels = !showLabels;
+      d3.selectAll(".node-label").style("opacity", showLabels ? 1 : 0);
+      document.getElementById("btnLabels").textContent = showLabels ? "Étiquettes" : "Étiquettes ✗";
+      document.getElementById("btnLabels").classList.toggle("active", !showLabels);
+    }
+
+    function resetView() {
+      svg.transition().duration(600)
+        .call(zoom.transform, d3.zoomIdentity.translate(width() / 2, height() / 2).scale(0.75).translate(-width() / 2, -height() / 2));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // DRAG
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x; d.fy = d.y;
+    }
+    function dragged(event, d) {
+      d.fx = event.x; d.fy = event.y;
+    }
+    function dragended(event, d) {
+      if (!event.active) simulation.alphaTarget(0);
+      d.fx = null; d.fy = null;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────────
+    // RESIZE
+    // ─────────────────────────────────────────────────────────────────────────────
+
+    window.addEventListener("resize", () => {
+      simulation.force("center", d3.forceCenter(width() / 2, height() / 2));
+      simulation.alpha(0.1).restart();
+    });
+  </script>
+</body>
+
+</html>

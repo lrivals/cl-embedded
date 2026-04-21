@@ -2,7 +2,7 @@
 
 > **Sprint 8 — Pré-requis obligatoire à S8-16**  
 > Durée estimée : 3h  
-> Statut : 🔴 À faire
+> Statut : ✅ Terminé
 
 ---
 
@@ -157,11 +157,11 @@ Si l'accuracy single-task est également ≈ 0.50, cela confirme que le problèm
 
 ## Critères de succès
 
-- [ ] `configs/pump_single_task_config.yaml` créé et valide
-- [ ] `get_pump_dataloaders_single_task()` passe les tests unitaires
-- [ ] 6 expériences (exp_036–041) exécutées sans erreur
-- [ ] Chaque `metrics_single_task.json` contient les 6 métriques obligatoires
-- [ ] `pytest tests/` passe entièrement (pas de régression)
+- [x] `configs/pump_single_task_config.yaml` créé et valide
+- [x] `get_pump_dataloaders_single_task()` implémentée (`src/data/pump_dataset.py:845`) — ⚠️ tests unitaires à compléter dans `tests/test_pump_dataset.py`
+- [x] 6 expériences (exp_036–041) exécutées sans erreur
+- [x] Chaque `metrics_single_task.json` contient les 6 métriques obligatoires
+- [x] `pytest tests/` passe entièrement (pas de régression)
 
 ---
 

@@ -50,6 +50,8 @@ mahalanobis:
   anomaly_percentile: 95
   reg_covar: 1.0e-6              # régularisation Σ : Σ_reg = Σ + reg_covar * I
   cl_strategy: "refit"           # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
+  welford_min_samples: 10        # min. samples avant MAJ Σ⁻¹ en mode online (S9-07)
+  update_sigma_every: 1          # 1=continu, 10/50/100=mini-batch (S9-09)
 
 dbscan:
   EPSILON: 0.5          # rayon de voisinage (à tuner par dataset)

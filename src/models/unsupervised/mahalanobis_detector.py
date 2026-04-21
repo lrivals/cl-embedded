@@ -16,6 +16,8 @@ import numpy as np
 ANOMALY_PERCENTILE_DEFAULT: int = 95
 REG_COVAR_DEFAULT: float = 1e-6  # régularisation Σ : Σ_reg = Σ + reg_covar * I
 CL_STRATEGY_DEFAULT: str = "refit"  # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
+WELFORD_MIN_SAMPLES_DEFAULT: int = 10  # min. samples avant MAJ Σ⁻¹ en mode online
+UPDATE_SIGMA_EVERY_DEFAULT: int = 1    # 1=continu, N=mini-batch
 
 
 class MahalanobisDetector:
@@ -60,12 +62,19 @@ class MahalanobisDetector:
         self.anomaly_percentile: int = config.get("anomaly_percentile", ANOMALY_PERCENTILE_DEFAULT)
         self.reg_covar: float = config.get("reg_covar", REG_COVAR_DEFAULT)
         self.cl_strategy: str = config.get("cl_strategy", CL_STRATEGY_DEFAULT)
+        self.welford_min_samples: int = config.get("welford_min_samples", WELFORD_MIN_SAMPLES_DEFAULT)
+        self.update_sigma_every: int = config.get("update_sigma_every", UPDATE_SIGMA_EVERY_DEFAULT)
 
         self.mu_: np.ndarray | None = None
         self.sigma_inv_: np.ndarray | None = None
         self.threshold_: float | None = self.anomaly_threshold
         self.task_id_: int = -1
         self.n_features_: int = 0
+
+        # État Welford pour MAJ online (partial_fit)
+        self._n_seen_: int = 0
+        self._M2_: np.ndarray | None = None  # MEM: 64 B @ FP32 / 16 B @ INT8 (d=4)
+        self._welford_batch_buf_: list[np.ndarray] = []  # buffer mini-batch temporaire
 
     def fit_task(self, X: np.ndarray, task_id: int) -> "MahalanobisDetector":
         """
@@ -93,6 +102,12 @@ class MahalanobisDetector:
         cov_reg = cov + self.reg_covar * np.eye(self.n_features_)  # régularisation
 
         self.sigma_inv_ = np.linalg.inv(cov_reg)  # [d, d] — offline uniquement
+
+        # Initialise l'état Welford depuis le batch fit pour cohérence partial_fit
+        self._n_seen_ = X.shape[0]
+        self._M2_ = None  # reconstruit lazily par _init_welford_from_fit()
+        self._welford_batch_buf_ = []
+
         print(
             f"  [Mahalanobis] Tâche {task_id} — μ shape={self.mu_.shape}, "
             f"Σ⁻¹ shape={self.sigma_inv_.shape}, "
@@ -109,6 +124,88 @@ class MahalanobisDetector:
             )
 
         return self
+
+    # ------------------------------------------------------------------
+    # MAJ online — algorithme de Welford
+    # ------------------------------------------------------------------
+
+    def _init_welford_from_fit(self) -> None:
+        """
+        Initialise l'état Welford depuis les statistiques du batch fit.
+
+        Appelé automatiquement par fit_task() pour rendre partial_fit()
+        cohérent dès le premier appel après un fit complet.
+
+        Notes
+        -----
+        _M2_ = cov_batch × (n_seen - 1), reconstruite depuis sigma_inv_⁻¹.
+        L'inversion est exacte car sigma_inv_ = (Σ + reg_covar × I)⁻¹.
+        """
+        if self.mu_ is None or self.sigma_inv_ is None or self._n_seen_ == 0:
+            return
+        cov_reg = np.linalg.inv(self.sigma_inv_)  # Σ + reg_covar × I
+        cov = cov_reg - self.reg_covar * np.eye(self.n_features_)
+        self._M2_ = cov * (self._n_seen_ - 1)  # MEM: 64 B @ FP32 / 16 B @ INT8
+
+    def partial_fit(self, x: np.ndarray) -> "MahalanobisDetector":
+        """
+        MAJ online de mu_ et sigma_inv_ via l'algorithme de Welford.
+
+        Aucune donnée brute stockée : seuls _n_seen_, mu_ et _M2_ sont conservés.
+        threshold_ n'est jamais modifié (fixé lors de l'enrôlement).
+        La MAJ de sigma_inv_ est conditionnée à _n_seen_ >= welford_min_samples.
+
+        Parameters
+        ----------
+        x : np.ndarray
+            Vecteur [d] ou batch [N, d]. Chaque ligne est traitée séquentiellement.
+
+        Returns
+        -------
+        self
+        """
+        if self.mu_ is None:
+            raise RuntimeError("partial_fit() requiert un fit_task() préalable.")
+
+        x = np.atleast_2d(x)  # → [N, d]
+        d = self.n_features_
+
+        if self._M2_ is None:
+            self._init_welford_from_fit()
+        if self._M2_ is None:
+            self._M2_ = np.zeros((d, d), dtype=np.float64)
+
+        mu = self.mu_.astype(np.float64)
+        M2 = self._M2_.astype(np.float64)
+        n = self._n_seen_
+
+        for xi in x:
+            n += 1
+            delta = xi.astype(np.float64) - mu
+            mu += delta / n
+            delta2 = xi.astype(np.float64) - mu
+            M2 += np.outer(delta, delta2)  # MAJ Welford M2 — O(d²)
+
+            if n % self.update_sigma_every == 0 and n >= self.welford_min_samples:
+                cov = M2 / (n - 1)
+                cov_reg = cov + self.reg_covar * np.eye(d)
+                self.sigma_inv_ = np.linalg.inv(cov_reg).astype(np.float32)
+
+        self.mu_ = mu.astype(np.float32)  # MEM: 16 B @ FP32 / 4 B @ INT8
+        self._M2_ = M2
+        self._n_seen_ = n
+        return self
+
+    def reset_welford_state(self) -> None:
+        """
+        Réinitialise l'état online Welford.
+
+        Utile lors d'un changement de domaine (nouvelle machine / nouveau contexte).
+        mu_ et sigma_inv_ sont conservés ; seul l'état incrémental est effacé.
+        """
+        self._n_seen_ = 0
+        self._M2_ = None
+        self._welford_batch_buf_ = []
 
     def _compute_distances(self, X: np.ndarray) -> np.ndarray:
         """

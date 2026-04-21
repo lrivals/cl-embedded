@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | `experiments/exp_008_dbscan/` (complété) |
 | **Fichier cible** | `notebooks/cl_eval/monitoring_by_equipment/dbscan.ipynb` |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Notebook exécuté bout-en-bout (2026-04-19), outputs embarqués, 5 figures régénérées. `FIXME(gap2)` toujours actif : RAM = 71.9 Ko dépasse budget 64 Ko |
 
 ---
 

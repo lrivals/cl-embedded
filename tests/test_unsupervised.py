@@ -9,6 +9,7 @@ Critère : pytest tests/test_unsupervised.py -v → ≥ 12 tests, 0 skip, < 5 s.
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from src.models.unsupervised import DBSCANDetector, KMeansDetector, KNNDetector, MahalanobisDetector, PCABaseline
 
@@ -321,6 +322,161 @@ class TestMahalanobisDetector:
         model.fit_task(unsupervised_data["X_train"], task_id=0)
         assert model._estimate_ram_bytes() == 80, (
             f"Attendu 80 B pour d=4, obtenu {model._estimate_ram_bytes()} B"
+        )
+
+
+# ===========================================================================
+# MahalanobisDetector — partial_fit / Welford (S9-07)
+# ===========================================================================
+
+
+class TestMahalanobisPartialFit:
+
+    def test_partial_fit_same_mu_as_fit_task(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """partial_fit() sur N samples donne le même mu_ que fit_task() sur les mêmes N samples.
+
+        Tolérance : 1e-5 (différence d'ordre de calcul FP32 vs FP64).
+        """
+        X = unsupervised_data["X_train"]
+
+        model_batch = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model_batch.fit_task(X, task_id=0)
+
+        # partial_fit depuis zéro sur les mêmes données
+        model_online = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        # Simuler un fit initial sur le premier échantillon pour initialiser l'état
+        model_online.fit_task(X[:1], task_id=0)
+        model_online.reset_welford_state()
+        # Réinitialiser mu_ et sigma_inv_ manuellement via partial_fit pur
+        # → on repart d'un état vierge mais avec n_features_ connu
+        model_online._n_seen_ = 0
+        model_online.mu_ = np.zeros(X.shape[1], dtype=np.float32)
+        model_online._M2_ = np.zeros((X.shape[1], X.shape[1]), dtype=np.float64)
+        for xi in X:
+            model_online.partial_fit(xi)
+
+        np.testing.assert_allclose(
+            model_online.mu_, model_batch.mu_, atol=1e-5,
+            err_msg="mu_ partial_fit diverge de fit_task()"
+        )
+
+    def test_partial_fit_same_sigma_inv_as_fit_task(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """partial_fit() sur N ≥ welford_min_samples donne sigma_inv_ proche de fit_task().
+
+        Tolérance : 1e-4 (accumulation d'erreur FP32/FP64 sur le produit extérieur).
+        """
+        X = unsupervised_data["X_train"]
+
+        model_batch = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model_batch.fit_task(X, task_id=0)
+
+        model_online = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model_online.fit_task(X[:1], task_id=0)
+        model_online._n_seen_ = 0
+        model_online.mu_ = np.zeros(X.shape[1], dtype=np.float32)
+        model_online._M2_ = np.zeros((X.shape[1], X.shape[1]), dtype=np.float64)
+        for xi in X:
+            model_online.partial_fit(xi)
+
+        np.testing.assert_allclose(
+            model_online.sigma_inv_, model_batch.sigma_inv_, atol=1e-4,
+            err_msg="sigma_inv_ partial_fit diverge de fit_task()"
+        )
+
+    def test_partial_fit_batch_input(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """partial_fit() accepte un batch [N, d] et produit le même résultat que N appels [d]."""
+        X = unsupervised_data["X_train"]
+
+        cfg = dict(mahalanobis_config["mahalanobis"])
+
+        def _fresh_online(X_data: np.ndarray) -> MahalanobisDetector:
+            m = MahalanobisDetector(cfg)
+            m.fit_task(X_data[:1], task_id=0)
+            m._n_seen_ = 0
+            m.mu_ = np.zeros(X_data.shape[1], dtype=np.float32)
+            m._M2_ = np.zeros((X_data.shape[1], X_data.shape[1]), dtype=np.float64)
+            return m
+
+        m_batch = _fresh_online(X)
+        m_batch.partial_fit(X)  # batch [N, d]
+
+        m_seq = _fresh_online(X)
+        for xi in X:
+            m_seq.partial_fit(xi)  # séquentiel [d]
+
+        np.testing.assert_allclose(m_batch.mu_, m_seq.mu_, atol=1e-6)
+        np.testing.assert_allclose(m_batch.sigma_inv_, m_seq.sigma_inv_, atol=1e-6)
+
+    def test_partial_fit_does_not_update_threshold(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """partial_fit() ne modifie jamais threshold_ (fixé à l'enrôlement)."""
+        X = unsupervised_data["X_train"]
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(X, task_id=0)
+        threshold_before = model.threshold_
+        for xi in X[:20]:
+            model.partial_fit(xi)
+        assert model.threshold_ == threshold_before
+
+    def test_partial_fit_n_seen_increments(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """_n_seen_ augmente du bon nombre d'échantillons après partial_fit."""
+        X = unsupervised_data["X_train"]
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(X, task_id=0)
+        n_before = model._n_seen_
+        model.partial_fit(X[:10])
+        assert model._n_seen_ == n_before + 10
+
+    def test_reset_welford_state_clears_n_seen(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """reset_welford_state() remet _n_seen_ à 0 et _M2_ à None."""
+        X = unsupervised_data["X_train"]
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        model.fit_task(X, task_id=0)
+        model.partial_fit(X[:5])
+        model.reset_welford_state()
+        assert model._n_seen_ == 0
+        assert model._M2_ is None
+
+    def test_partial_fit_raises_before_fit_task(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """partial_fit() lève RuntimeError si fit_task() n'a pas été appelé."""
+        model = MahalanobisDetector(mahalanobis_config["mahalanobis"])
+        with pytest.raises(RuntimeError):
+            model.partial_fit(unsupervised_data["X_train"][:5])
+
+    def test_welford_min_samples_guard(
+        self, mahalanobis_config: dict, unsupervised_data: dict
+    ) -> None:
+        """sigma_inv_ n'est pas mis à jour avant welford_min_samples échantillons."""
+        cfg = dict(mahalanobis_config["mahalanobis"])
+        cfg["welford_min_samples"] = 20
+        X = unsupervised_data["X_train"]
+        model = MahalanobisDetector(cfg)
+        model.fit_task(X, task_id=0)
+        sigma_before = model.sigma_inv_.copy()
+        # Réinitialiser état pour tester le guard depuis zéro
+        model._n_seen_ = 0
+        model.mu_ = np.zeros(X.shape[1], dtype=np.float32)
+        model._M2_ = np.zeros((X.shape[1], X.shape[1]), dtype=np.float64)
+        # Envoyer 5 samples seulement (< welford_min_samples=20)
+        for xi in X[:5]:
+            model.partial_fit(xi)
+        # sigma_inv_ ne doit pas avoir été mis à jour
+        np.testing.assert_array_equal(
+            model.sigma_inv_, sigma_before,
+            err_msg="sigma_inv_ ne doit pas être mis à jour avant welford_min_samples"
         )
 
 

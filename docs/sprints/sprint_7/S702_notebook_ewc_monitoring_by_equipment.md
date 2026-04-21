@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | `experiments/exp_001_ewc_dataset2/` (complété) |
 | **Fichier cible** | `notebooks/cl_eval/monitoring_by_equipment/ewc.ipynb` |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Fait (2026-04-17) |
 
 ---
 

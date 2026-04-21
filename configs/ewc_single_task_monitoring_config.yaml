@@ -1,0 +1,64 @@
+# configs/ewc_single_task_monitoring_config.yaml
+# EWC MLP — Baseline single-task Dataset 2 (Equipment Monitoring).
+#
+# Architecture IDENTIQUE à ewc_config.yaml (n_params, couches) — seule la
+# procédure d'entraînement change pour donner au modèle une chance équitable.
+#
+# Différences vs ewc_config.yaml :
+#   - pos_weight: 9.0  → correction déséquilibre (~10% faulty, ~90% non-faulty)
+#   - learning_rate: 0.001  → convergence stable sur dataset complet
+#   - epochs_per_task: 20  → × 3 = 60 epochs total en mode single-task
+#   - ewc.lambda sans effet (une seule tâche → pénalité = 0)
+#
+# Usage :
+#   python scripts/train_ewc.py \
+#     --config configs/ewc_single_task_monitoring_config.yaml \
+#     --data_config configs/monitoring_single_task_config.yaml \
+#     --exp_dir experiments/exp_030_ewc_monitoring_single_task \
+#     --skip-baselines
+
+exp_id: "exp_030_ewc_monitoring_single_task"
+
+model:
+  architecture: "mlp"
+  input_dim: 4           # identique à ewc_config.yaml — même architecture
+  hidden_dims: [32, 16]
+  output_dim: 1
+  activation: "relu"
+  dropout: 0.2
+
+training:
+  optimizer: "sgd"
+  learning_rate: 0.001   # plus faible que CL — convergence stable sur dataset complet
+  momentum: 0.9
+  epochs_per_task: 20    # × 3 = 60 epochs en mode single-task (_run_single_task_ewc)
+  batch_size: 32
+  seed: 42
+  pos_weight: 9.0        # ratio non-faulty/faulty ≈ 90%/10% = 9
+                         # corrige le biais vers la classe majoritaire
+
+ewc:
+  lambda: 1000           # sans effet en single-task (pénalité Fisher = 0) — conservé pour cohérence
+  gamma: 0.9
+  n_fisher_samples: 200
+
+data:
+  dataset: "equipment_monitoring"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+  domain_column: "equipment"
+  domain_order: ["pump", "turbine", "compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+  categorical_columns: ["equipment"]
+  test_split: 0.2
+  normalizer_path: "configs/monitoring_normalizer.yaml"
+
+evaluation:
+  seed: 42
+  metrics: ["accuracy", "f1", "auc_roc", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_030_ewc_monitoring_single_task/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 9356
+  warn_if_above_bytes: 52000

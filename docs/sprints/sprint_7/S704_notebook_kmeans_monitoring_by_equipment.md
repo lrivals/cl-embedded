@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | `experiments/exp_005_unsupervised_dataset2/` (complété) |
 | **Fichier cible** | `notebooks/cl_eval/monitoring_by_equipment/kmeans.ipynb` |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Fait (2026-04-17) |
 
 ---
 

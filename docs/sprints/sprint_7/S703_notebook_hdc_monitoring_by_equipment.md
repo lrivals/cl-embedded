@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | `experiments/exp_002_hdc_dataset2/` (complété) |
 | **Fichier cible** | `notebooks/cl_eval/monitoring_by_equipment/hdc.ipynb` |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Notebook exécuté bout-en-bout (2026-04-19), outputs embarqués, 5 figures régénérées |
 
 ---
 

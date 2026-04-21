@@ -6,6 +6,7 @@
 | **Priorité globale** | 🔴 Critique — notebooks support présentation encadrants |
 | **Durée estimée totale** | ~33h (+5h baselines single-task) |
 | **Dépendances** | Sprint 6 terminé (exp_016–023 exécutées, `save_figure()` corrigé) |
+| **Avancement (19 avr. 2026)** | 5 ✅ / 4 🟡 / 7 ⬜ — voir section [État d'avancement](#état-davancement-19-avril-2026) |
 
 ---
 
@@ -261,14 +262,51 @@ Cellule Markdown structurée avec :
 
 ## Critères d'acceptation
 
-- [ ] S7-15 : exp_030–035 exécutées, `metrics_single_task.json` présent pour chaque modèle
-- [ ] S7-16 : notebook `baselines/monitoring_single_task.ipynb` exécuté sans erreur, 4 figures sauvegardées
-- [ ] 14 notebooks CL créés dans `notebooks/cl_eval/monitoring_*/`
-- [ ] Chaque notebook s'exécute sans erreur (kernel restart + run all)
-- [ ] Toutes les figures sauvegardées dans `notebooks/figures/cl_evaluation/{model}/monitoring/{scenario}/`
-- [ ] Les notebooks de comparaison chargent bien les 6 modèles
-- [ ] Chaque notebook se termine par un tableau récapitulatif AA/AF/BWT/RAM
+- [x] S7-15 : exp_030–035 exécutées, `metrics_single_task.json` présent pour chaque modèle
+- [x] S7-16 : notebook `baselines/monitoring_single_task.ipynb` exécuté sans erreur, figures sauvegardées
+- [~] 14 notebooks CL créés dans `notebooks/cl_eval/monitoring_*/` — **7/14** (by_equipment complet, by_location à démarrer)
+- [~] Chaque notebook s'exécute sans erreur (kernel restart + run all) — **3/14** (EWC, KMeans, Mahalanobis)
+- [~] Toutes les figures sauvegardées dans `notebooks/figures/cl_evaluation/{model}/monitoring/{scenario}/` — **by_equipment 7/7**, **by_location 0/7**
+- [~] Les notebooks de comparaison chargent bien les 6 modèles — comparison.ipynb by_equipment créé (figures OK, cellules non exécutées)
+- [~] Chaque notebook se termine par un tableau récapitulatif AA/AF/BWT/RAM — 3/14 validés
 - [ ] Le fallback mock est fonctionnel pour les expériences non encore exécutées
+
+---
+
+## État d'avancement (19 avril 2026)
+
+### ✅ Terminé (5/16)
+
+| ID | Tâche | Preuve |
+|----|-------|--------|
+| S7-02 | EWC by_equipment | 9/9 cellules exécutées + 5 figures + statut `✅ Fait (2026-04-17)` |
+| S7-04 | KMeans by_equipment | 9/9 cellules exécutées + 5 figures + statut `✅ Fait (2026-04-17)` |
+| S7-05 | Mahalanobis by_equipment | 9/9 cellules exécutées + 5 figures (acc_matrix, forgetting_curve, confusion_matrix_grid, auroc_curve, feature_space_pca) |
+| S7-15 | Infra + exp_030–035 | 6 × `metrics_single_task.json` (EWC, HDC, TinyOL, KMeans, Mahalanobis, DBSCAN) |
+| S7-16 | Baseline monitoring_single_task | Notebook exécuté + 7 figures (bar accuracy, ROC, scatter RAM/FLOPs/latency, confusion matrices ± normalisée) |
+
+### 🟡 Notebook + figures présents, cellules non ré-exécutées (4/16)
+
+| ID | Tâche | Action restante |
+|----|-------|-----------------|
+| S7-01 | TinyOL by_equipment | Kernel restart + run all (structure OK, 5 figures sauvegardées) |
+| S7-03 | HDC by_equipment | Kernel restart + run all (structure OK, 5 figures sauvegardées) |
+| S7-06 | DBSCAN by_equipment | Kernel restart + run all + documenter `FIXME(gap2)` RAM 71.9 Ko > 64 Ko |
+| S7-13 | Comparaison by_equipment | Kernel restart + run all (structure OK, 6 figures: radar, barplot_aa, acc_matrix_grid, scatter RAM/FLOPs/latency) |
+
+### ⬜ À démarrer (7/16)
+
+| ID | Tâche | Dépendance (prête) |
+|----|-------|--------------------|
+| S7-07 | TinyOL by_location | exp_018 ✅ |
+| S7-08 | EWC by_location | exp_016 ✅ |
+| S7-09 | HDC by_location | exp_017 ✅ |
+| S7-10 | KMeans by_location | exp_022 ✅ |
+| S7-11 | Mahalanobis by_location | exp_019 ✅ |
+| S7-12 | DBSCAN by_location | exp_023 ✅ + `FIXME(gap2)` RAM |
+| S7-14 | Comparaison by_location | S7-07 à S7-12 |
+
+**Note** : le dossier `notebooks/cl_eval/monitoring_by_location/` **n'existe pas encore** — à créer lors du démarrage de S7-07.
 
 ---
 

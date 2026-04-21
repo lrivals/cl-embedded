@@ -1,4 +1,4 @@
-_snapshot_timestamp: '2026-04-15T13:44:49.270996'
+_snapshot_timestamp: '2026-04-16T09:51:44.919798'
 data:
   categorical_columns:
   - equipment
@@ -23,9 +23,9 @@ data:
   val_ratio: 0.1
 evaluation:
   metrics:
-  - aa
-  - af
-  - bwt
+  - accuracy
+  - f1
+  - auc_roc
   - ram_peak_bytes
   - n_params
   - inference_latency_ms
@@ -51,8 +51,9 @@ model:
   output_dim: 1
 training:
   batch_size: 32
-  epochs_per_task: 10
-  learning_rate: 0.01
+  epochs_per_task: 20
+  learning_rate: 0.001
   momentum: 0.9
   optimizer: sgd
+  pos_weight: 9.0
   seed: 42

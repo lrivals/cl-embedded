@@ -8,7 +8,7 @@
 | **Durée estimée** | 3h |
 | **Dépendances** | S7-01 (TinyOL), S7-02 (EWC), S7-03 (HDC), S7-04 (KMeans), S7-05 (Mahalanobis), S7-06 (DBSCAN) |
 | **Fichier cible** | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` |
-| **Statut** | ⬜ À faire |
+| **Statut** | 🟡 Structure notebook + 6 figures présentes (radar, barplot_aa, acc_matrix_grid, scatter RAM/FLOPs/latency), cellules à ré-exécuter (Restart Kernel & Run All) |
 
 ---
 
@@ -29,8 +29,23 @@ notebooks/cl_eval/monitoring_by_equipment/
 notebooks/figures/cl_evaluation/comparison/monitoring/by_equipment/
 ├── radar_comparison.png
 ├── barplot_aa_comparison.png
-└── acc_matrix_grid.png
+├── acc_matrix_grid.png
+├── scatter_ram_vs_accuracy.png          ← cohérence baseline (Gap 2)
+├── scatter_flops_vs_accuracy.png        ← cohérence baseline (coût portable)
+└── scatter_latency_vs_accuracy.png      ← cohérence baseline (latence PC)
 ```
+
+---
+
+## Figures requises (cohérence avec baseline)
+
+En plus des trois figures comparatives classiques (radar, barplot, matrice), ce notebook **doit** produire les trois scatters `accuracy vs <ressource>` **au même format que `pump_single_task.ipynb`** (cellules `cell-6` RAM, `cell-6b` FLOPs, `cell-6c` latence) pour permettre la comparaison directe avec la baseline hors-CL :
+
+- `scatter_ram_vs_accuracy.png` — trade-off RAM (Gap 2, budget STM32 ≤ 64 Ko)
+- `scatter_flops_vs_accuracy.png` — coût de calcul portable (MACs via `src.evaluation.compute_macs`, indépendant de la machine)
+- `scatter_latency_vs_accuracy.png` — latence PC (budget 100 ms, ⚠ non transférable au MCU)
+
+Les trois scatters utilisent le même dict `SCATTER_MARKERS` que la baseline pour que les 6 modèles soient identifiables d'un notebook à l'autre.
 
 ---
 

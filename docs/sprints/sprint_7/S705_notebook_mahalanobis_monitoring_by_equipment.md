@@ -8,7 +8,7 @@
 | **Durée estimée** | 2h |
 | **Dépendances** | `experiments/exp_007_mahalanobis/` (complété) |
 | **Fichier cible** | `notebooks/cl_eval/monitoring_by_equipment/mahalanobis.ipynb` |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Fait (2026-04-17) — 9/9 cellules exécutées, 5 figures sauvegardées |
 
 ---
 

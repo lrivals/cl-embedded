@@ -63,12 +63,30 @@ notebooks/figures/cl_evaluation/
 │   ├── radar_comparison.png
 │   ├── barplot_aa_comparison.png
 │   ├── acc_matrix_grid.png
-│   └── performance_by_pump_id_bar.png  ← plot spécifique à ce scénario
+│   ├── performance_by_pump_id_bar.png  ← plot spécifique à ce scénario
+│   ├── scatter_ram_vs_accuracy.png          ← cohérence baseline (Gap 2)
+│   ├── scatter_flops_vs_accuracy.png        ← cohérence baseline (coût portable)
+│   └── scatter_latency_vs_accuracy.png      ← cohérence baseline (latence PC)
 ├── comparison/pump/by_temporal_window/
 │   ├── radar_comparison.png
 │   ├── barplot_aa_comparison.png
-│   └── acc_matrix_grid.png
+│   ├── acc_matrix_grid.png
+│   ├── scatter_ram_vs_accuracy.png          ← cohérence baseline (Gap 2)
+│   ├── scatter_flops_vs_accuracy.png        ← cohérence baseline (coût portable)
+│   └── scatter_latency_vs_accuracy.png      ← cohérence baseline (latence PC)
 ```
+
+---
+
+## Figures requises pour les 2 notebooks de comparaison (cohérence avec baseline)
+
+Les deux notebooks `comparison.ipynb` (S8-13 et S8-14) **doivent** produire les trois scatters `accuracy vs <ressource>` **au même format que `pump_single_task.ipynb`** (cellules `cell-6` RAM, `cell-6b` FLOPs, `cell-6c` latence) pour permettre la comparaison directe avec la baseline hors-CL :
+
+- `scatter_ram_vs_accuracy.png` — trade-off RAM (Gap 2, budget STM32 ≤ 64 Ko)
+- `scatter_flops_vs_accuracy.png` — coût de calcul portable (MACs via `src.evaluation.compute_macs`, indépendant de la machine)
+- `scatter_latency_vs_accuracy.png` — latence PC (budget 100 ms, ⚠ non transférable au MCU)
+
+Les trois scatters utilisent le même dict `SCATTER_MARKERS` que la baseline pour que les 6 modèles soient identifiables d'un notebook à l'autre.
 
 ---
 

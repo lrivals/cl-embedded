@@ -309,7 +309,13 @@ def _run_single_task_ewc(
     momentum = cfg["training"]["momentum"]
 
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
-    criterion = nn.BCEWithLogitsLoss()
+    # pos_weight corrige le déséquilibre de classes (ex. 9.0 si ~10% faulty)
+    pos_weight_val = cfg["training"].get("pos_weight", None)
+    if pos_weight_val is not None:
+        criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([pos_weight_val]))
+        print(f"  pos_weight={pos_weight_val:.1f} (correction déséquilibre de classes)")
+    else:
+        criterion = nn.BCEWithLogitsLoss()
     model.to(device)
 
     print(f"\n{'=' * 40}")
@@ -318,7 +324,6 @@ def _run_single_task_ewc(
     print(f"  {epochs} epochs | lr={lr} | momentum={momentum}")
     print(f"{'=' * 40}")
 
-    best_val_acc = 0.0
     for epoch in range(epochs):
         model.train()
         for x, y in data["train_loader"]:
@@ -329,40 +334,51 @@ def _run_single_task_ewc(
             loss.backward()
             optimizer.step()
 
-        # Validation (early stopping léger)
-        model.eval()
-        val_preds, val_true = [], []
-        with torch.no_grad():
-            for x, y in data["val_loader"]:
-                x = x.to(device)
-                logits = model(x)
-                probs = torch.sigmoid(logits).cpu().numpy()
-                val_preds.extend(probs.ravel())
-                val_true.extend(y.numpy().ravel())
-        val_acc = accuracy_score(
-            np.array(val_true), (np.array(val_preds) > 0.5).astype(int)
-        )
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
         if (epoch + 1) % max(1, epochs // 5) == 0:
-            print(f"  Epoch {epoch + 1:3d}/{epochs} | val_acc={val_acc:.4f}")
+            model.eval()
+            val_probs_ep, val_true_ep = [], []
+            with torch.no_grad():
+                for x, y in data["val_loader"]:
+                    logits = model(x.to(device))
+                    val_probs_ep.extend(torch.sigmoid(logits).cpu().numpy().ravel())
+                    val_true_ep.extend(y.numpy().ravel())
+            # F1 sur val (seuil 0.5) — indicateur de progression
+            val_pred_ep = (np.array(val_probs_ep) > 0.5).astype(int)
+            val_f1 = f1_score(np.array(val_true_ep), val_pred_ep, zero_division=0)
+            print(f"  Epoch {epoch + 1:3d}/{epochs} | val_f1={val_f1:.4f}")
 
-    # Évaluation finale sur test
+    # Seuil optimal sur val : maximise F1 (important avec pos_weight ou déséquilibre)
     model.eval()
-    test_preds, test_probs, test_true = [], [], []
+    val_probs_all, val_true_all = [], []
+    with torch.no_grad():
+        for x, y in data["val_loader"]:
+            logits = model(x.to(device))
+            val_probs_all.extend(torch.sigmoid(logits).cpu().numpy().ravel())
+            val_true_all.extend(y.numpy().ravel().astype(int))
+
+    val_probs_arr = np.array(val_probs_all)
+    val_true_arr = np.array(val_true_all)
+    # Cherche le seuil qui maximise F1 sur 50 candidats
+    thresholds = np.linspace(0.01, 0.99, 50)
+    best_thresh = 0.5
+    best_f1_val = 0.0
+    for t in thresholds:
+        f1_t = f1_score(val_true_arr, (val_probs_arr > t).astype(int), zero_division=0)
+        if f1_t > best_f1_val:
+            best_f1_val, best_thresh = f1_t, t
+    print(f"\n  Seuil optimal (val F1={best_f1_val:.4f}) : {best_thresh:.3f}")
+
+    # Évaluation finale sur test avec seuil optimal
+    test_probs, test_true = [], []
     with torch.no_grad():
         for x, y in data["test_loader"]:
-            x = x.to(device)
-            logits = model(x)
-            probs = torch.sigmoid(logits).cpu().numpy().ravel()
-            preds = (probs > 0.5).astype(int)
-            test_probs.extend(probs)
-            test_preds.extend(preds)
+            logits = model(x.to(device))
+            test_probs.extend(torch.sigmoid(logits).cpu().numpy().ravel())
             test_true.extend(y.numpy().ravel().astype(int))
 
     y_true = np.array(test_true)
-    y_pred = np.array(test_preds)
     y_scores = np.array(test_probs)
+    y_pred = (y_scores > best_thresh).astype(int)
 
     acc = float(accuracy_score(y_true, y_pred))
     f1 = float(f1_score(y_true, y_pred, zero_division=0))
@@ -386,6 +402,7 @@ def _run_single_task_ewc(
         "ram_peak_bytes": memory_report.get("forward", {}).get("ram_peak_bytes", 0),
         "inference_latency_ms": memory_report.get("forward", {}).get("inference_latency_ms", 0.0),
         "n_params": n_params,
+        "threshold": float(best_thresh),  # seuil optimal calculé sur val
     }
 
     metrics_path = results_dir / "metrics_single_task.json"

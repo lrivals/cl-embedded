@@ -1,6 +1,6 @@
 # Roadmap Phase 1 — Implémentation Python
 
-> Mise à jour : 14 avril 2026  
+> Mise à jour : 21 avril 2026  
 > Horizon : 15 avril – 20 mai 2026 (étendu avec Sprints 6–9 notebooks)  
 > ← [Index roadmap](roadmap.md)
 
@@ -188,11 +188,11 @@
 | S6-03 | `configs/pump_by_temporal_window_config.yaml` | ✅ | ✅ | N/A | `configs/pump_by_temporal_window_config.yaml` | 1h |
 | S6-04 | `plot_performance_by_pump_id_bar()` | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
 | S6-05 | `plot_performance_heatmap_equipment_location()` | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
-| S6-06 | Run exp_012–015 : pump_by_id (TinyOL, EWC, HDC, Mahalanobis) | ⬜ | ✅ | ⬜ | `experiments/exp_012–015/` | 2h |
-| S6-07 | Run exp_016–019 : monitoring_by_location (EWC, HDC, TinyOL, Mahalanobis) | ⬜ | ✅ | ⬜ | `experiments/exp_016–019/` | 2h |
-| S6-08 | Run exp_020–021 : pump_by_id (KMeans, DBSCAN) | ⬜ | ✅ | ⬜ | `experiments/exp_020–021/` | 1h |
-| S6-09 | Run exp_022–023 : monitoring_by_location (KMeans, DBSCAN) | ⬜ | ✅ | ⬜ | `experiments/exp_022–023/` | 1h |
-| S6-10 | Run exp_024–029 : pump_by_temporal_window (6 modèles) | ⬜ | ✅ | ⬜ | `experiments/exp_024–029/` | 3h |
+| S6-06 | Run exp_012–015 : pump_by_id (TinyOL, EWC, HDC, Mahalanobis) | ✅ | ✅ | ✅ | `experiments/exp_012–015/` | 2h |
+| S6-07 | Run exp_016–019 : monitoring_by_location (EWC, HDC, TinyOL, Mahalanobis) | ✅ | ✅ | ✅ | `experiments/exp_016–019/` | 2h |
+| S6-08 | Run exp_020–021 : pump_by_id (KMeans, DBSCAN) | ✅ | ✅ | ✅ | `experiments/exp_020–021/` | 1h |
+| S6-09 | Run exp_022–023 : monitoring_by_location (KMeans, DBSCAN) | ✅ | ✅ | ✅ | `experiments/exp_022–023/` | 1h |
+| S6-10 | Run exp_024–029 : pump_by_temporal_window (6 modèles) | ✅ | ✅ | ✅ | `experiments/exp_024–029/` | 3h |
 | S6-11 | Tests unitaires `get_pump_dataloaders_by_temporal_window()` | ✅ | ✅ | ✅ | `tests/test_pump_dataset.py` | 2h |
 
 **Livrable sprint 6** : 18 expériences (exp_012–029) exécutées, infrastructure figures sous-dossiers opérationnelle, loader temporel validé.
@@ -207,24 +207,30 @@
 
 | ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
 |----|-------|:-----:|:---:|:----:|---------------|------------|
-| S7-01 | Notebook TinyOL — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/tinyol.ipynb` | 2h |
-| S7-02 | Notebook EWC — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/ewc.ipynb` | 2h |
-| S7-03 | Notebook HDC — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/hdc.ipynb` | 2h |
-| S7-04 | Notebook KMeans — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/kmeans.ipynb` | 2h |
-| S7-05 | Notebook Mahalanobis — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/mahalanobis.ipynb` | 2h |
-| S7-06 | Notebook DBSCAN — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/dbscan.ipynb` | 2h |
-| S7-07 | Notebook TinyOL — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/tinyol.ipynb` | 2h |
-| S7-08 | Notebook EWC — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/ewc.ipynb` | 2h |
-| S7-09 | Notebook HDC — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/hdc.ipynb` | 2h |
+| S7-01 | Notebook TinyOL — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/tinyol.ipynb` | 2h |
+| S7-02 | Notebook EWC — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/ewc.ipynb` | 2h |
+| S7-03 | Notebook HDC — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/hdc.ipynb` | 2h |
+| S7-04 | Notebook KMeans — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/kmeans.ipynb` | 2h |
+| S7-05 | Notebook Mahalanobis — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/mahalanobis.ipynb` | 2h |
+| S7-06 | Notebook DBSCAN — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/dbscan.ipynb` | 2h |
+| S7-07 | Notebook TinyOL — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/tinyol.ipynb` | 2h |
+| S7-08 | Notebook EWC — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/ewc.ipynb` | 2h |
+| S7-09 | Notebook HDC — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/hdc.ipynb` | 2h |
 | S7-10 | Notebook KMeans — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/kmeans.ipynb` | 2h |
 | S7-11 | Notebook Mahalanobis — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/mahalanobis.ipynb` | 2h |
 | S7-12 | Notebook DBSCAN — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/dbscan.ipynb` | 2h |
-| S7-13 | Notebook Comparaison — monitoring_by_equipment | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` | 3h |
+| S7-13 | Notebook Comparaison — monitoring_by_equipment | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` | 3h |
 | S7-14 | Notebook Comparaison — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/comparison.ipynb` | 3h |
-| S7-15 | Infrastructure & expériences baseline single-task monitoring (exp_030–035) | ⬜ | ✅ | ⬜ | `configs/monitoring_single_task_config.yaml`, `src/data/monitoring_dataset.py`, `experiments/exp_030–035/` | 3h |
+| S7-15 | Infrastructure & expériences baseline single-task monitoring (exp_030–035) | ✅ | ✅ | ✅ | `configs/monitoring_single_task_config.yaml`, `src/data/monitoring_dataset.py`, `experiments/exp_030–035/` | 3h |
 | S7-16 | Notebook baseline monitoring single-task | ✅ | ✅ | ✅ | `notebooks/cl_eval/baselines/monitoring_single_task.ipynb` | 2h |
 
 **Livrable sprint 7** : 14 notebooks CL Dataset 2 + 1 notebook baseline hors-CL (`baselines/monitoring_single_task.ipynb`) prêts pour présentation encadrants. Figures dans `notebooks/figures/cl_evaluation/{model}/monitoring/{scenario}/` et `notebooks/figures/cl_evaluation/baseline/monitoring/single_task/`.
+
+**État d'avancement au 21 avril 2026** :
+
+- ✅ Terminé (11/16) : S7-01–S7-06 (6/6 notebooks by_equipment, 9/9 cellules chacun), S7-08 EWC by_location (9/9), S7-09 HDC by_location (9/9), S7-13 Comparaison by_equipment (structure ✅, 0/8 cellules exécutées), S7-15 exp_030–035, S7-16 baseline notebook
+- ⬜ À terminer (5) : S7-07 TinyOL by_location (0/9 cellules), S7-10 KMeans by_location, S7-11 Mahalanobis by_location, S7-12 DBSCAN by_location (3 notebooks à créer), S7-14 Comparaison by_location
+- ⚠️ `FIXME(gap2)` documenté dans S7-06 : DBSCAN RAM = 71.9 Ko (dépasse budget 64 Ko). S7-13 Comparaison by_equipment : notebook créé, à ré-exécuter ("Run All Cells")
 
 ---
 
@@ -248,12 +254,33 @@
 | S8-10 | Notebook KMeans — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/kmeans.ipynb` | 2h |
 | S8-11 | Notebook Mahalanobis — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/mahalanobis.ipynb` | 2h |
 | S8-12 | Notebook DBSCAN — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/dbscan.ipynb` | 2h |
-| S8-13 | Notebook Comparaison — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/comparison.ipynb` | 3h |
-| S8-14 | Notebook Comparaison — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/comparison.ipynb` | 3h |
-| S8-15 | Infrastructure & expériences baseline single-task pump (exp_036–041) | ⬜ | ✅ | ⬜ | `configs/pump_single_task_config.yaml`, `src/data/pump_dataset.py`, `experiments/exp_036–041/` | 3h |
-| S8-16 | Notebook baseline pump single-task | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/baselines/pump_single_task.ipynb` | 2h |
+| S8-13 | Notebook Comparaison — pump_by_pump_id | ✅ | ✅ | ✅ | `notebooks/cl_eval/pump_by_pump_id/comparison.ipynb` | 3h |
+| S8-14 | Notebook Comparaison — pump_by_temporal_window | ✅ | ✅ | ✅ | `notebooks/cl_eval/pump_by_temporal_window/comparison.ipynb` | 3h |
+| S8-15 | Infrastructure & expériences baseline single-task pump (exp_036–041) | ✅ | ✅ | ✅ | `configs/pump_single_task_config.yaml`, `src/data/pump_dataset.py`, `experiments/exp_036–041/` | 3h |
+| S8-16 | Notebook baseline pump single-task | ✅ | ✅ | ✅ | `notebooks/cl_eval/baselines/pump_single_task.ipynb` | 2h |
 
 **Livrable sprint 8** : 14 notebooks CL Dataset 1 + 1 notebook baseline hors-CL (`baselines/pump_single_task.ipynb`) prêts pour présentation encadrants. Diagnostic structurel sur les AA ≈ 0.50 observées (problème dataset vs. contrainte CL). Figures dans `notebooks/figures/cl_evaluation/{model}/pump/{scenario}/` et `notebooks/figures/cl_evaluation/baseline/pump/single_task/`.
+
+---
+
+## Sprint 9 (Phase 1) — Extension : Use Case Déploiement Embarqué
+
+**Objectif** : Modéliser et étudier le scénario de déploiement réaliste d'un modèle non supervisé sur machine industrielle — enrôlement sur données saines, inférence continue, alertes FAULT/DRIFT.
+
+> Détail complet : [`docs/sprints/sprint_9/S907_deployment_scenario_use_case.md`](sprints/sprint_9/S907_deployment_scenario_use_case.md)
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S9-07 | `MahalanobisDetector.partial_fit()` — algorithme de Welford (MAJ μ + Σ⁻¹ sans stocker les données) | ✅ | ✅ | N/A | `src/models/unsupervised/mahalanobis_detector.py` | 3h |
+| S9-08 | Expérience learning curve (exp_042) — AUROC vs N d'enrôlement, 4 modèles, n_repeats=5 | ✅ | ✅ | ⬜ | `scripts/learning_curve_study.py`, `experiments/exp_042_learning_curve/` | 3h |
+| S9-09 | Expérience online update (exp_043) — batch vs mini-batch vs Welford sur stream 1 000 samples | ✅ | ✅ | ⬜ | `scripts/online_update_study.py`, `experiments/exp_043_online_update/` | 3h |
+| S9-10 | `SlidingWindowDriftDetector` + notebook `deployment_scenario.ipynb` (3 sections : learning curve, MAJ, FAULT/DRIFT) | ✅ | ✅ | ✅ | `src/evaluation/drift_detector.py`, `notebooks/cl_eval/deployment_scenario.ipynb` | 5h |
+
+**Questions de recherche adressées** : Combien de données d'enrôlement pour AUROC ≥ 0.85 ? (exp_042) · MAJ continue ou mini-batch ? (exp_043 — Welford vs mini-batch 10/50/100) · Comment distinguer une panne d'une dérive à partir du score d'anomalie seul ? (drift_detector)
+
+**Liens Gap 1/2** : learning curve → valeur industrielle directe (Edge Spectrum) · `partial_fit()` Mahalanobis = 144 B RAM pendant MAJ → argument Gap 2 manuscrit.
+
+**Livrable sprint 9 — extension** : 2 expériences (exp_042, exp_043), 1 nouveau module (`drift_detector.py`), 1 notebook synthèse déploiement, `partial_fit()` validé sur Mahalanobis.
 
 ---
 
@@ -266,13 +293,106 @@
 | ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
 |----|-------|:-----:|:---:|:----:|---------------|------------|
 | S9-01 | MAJ `03_cl_evaluation.ipynb` : note d'intro + liens vers `cl_eval/` | ⬜ | ✅ | ⬜ | `notebooks/03_cl_evaluation.ipynb` | 1h |
-| S9-02 | MAJ `roadmap_phase1.md` : Sprints 6–9 avec résultats réels | ⬜ | ✅ | N/A | `docs/roadmap_phase1.md` | 2h |
+| S9-02 | MAJ `roadmap_phase1.md` : Sprints 6–9 avec résultats réels | ✅ | ✅ | N/A | `docs/roadmap_phase1.md` | 2h |
 | S9-03 | MAJ `roadmap.md` : Phase 1 = Sprints 1–9, Phase 2 = Sprint 10 | ✅ | ✅ | N/A | `docs/roadmap.md` | 30min |
 | S9-04 | Renommer Sprint 6 → Sprint 10 dans `roadmap_phase2.md` | ✅ | ✅ | N/A | `docs/roadmap_phase2.md` | 30min |
 | S9-05 | MAJ table indicateurs de progression dans `roadmap.md` | ⬜ | ✅ | N/A | `docs/roadmap.md` | 30min |
 | S9-06 | MAJ README.md : section "Notebooks d'évaluation" | ⬜ | ✅ | N/A | `README.md` | 1h |
 
 **Livrable sprint 9** : Phase 1 complète et documentée — 9 sprints, 41 expériences (29 CL + 12 single-task), 30 notebooks (28 CL + 2 baselines), 6 modèles, 5 scénarios (4 CL + 1 no_split), 2 datasets.
+
+---
+
+## Sprint 10 (Phase 1) — Dataset 3 : FEMTO PRONOSTIA (Bearing Degradation)
+
+**Objectif** : Intégrer le dataset IEEE PHM 2012 FEMTO PRONOSTIA comme Dataset 3 — résoudre les `FIXME(gap1)` présents dans exp_003, exp_007, exp_009, exp_010 et valider les modèles sur des données industrielles de roulements réels.
+
+> Détail complet : [`docs/sprints/sprint_10/S1000_pronostia_sprint.md`](sprints/sprint_10/S1000_pronostia_sprint.md)
+>
+> **Dataset** : `data/raw/Pronostia dataset/` — 6 roulements (Learning Set), 3 conditions opératoires, ~7,5 M points d'accélérométrie (2 canaux : horizontal + vertical).  
+> **Scénario CL retenu** : Domain-incremental par condition opératoire (3 tâches) :
+> - Condition 1 (1 800 rpm, 4 000 N) : Bearing1_1 + Bearing1_2 → ~3 674 fenêtres
+> - Condition 2 (1 650 rpm, 4 200 N) : Bearing2_1 + Bearing2_2 → ~1 708 fenêtres
+> - Condition 3 (1 500 rpm, 5 000 N) : Bearing3_1 + Bearing3_2 → ~2 152 fenêtres  
+> **Label** : binaire — derniers 10% du signal = pré-défaillance (1), reste = normal (0). Dérivé du temps-à-la-panne.  
+> **Features** : 6 stats × 2 canaux + position temporelle = **13 features** (WINDOW_SIZE=2560, STEP_SIZE=2560 — une fenêtre = un epoch de mesure conforme au protocole PRONOSTIA).
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S10-01 | `pronostia_dataset.py` — loader `.npy` + fenêtrage 2560 + label TTF binaire (derniers 10%) | ⬜ | ✅ | N/A | `src/data/pronostia_dataset.py` | 4h |
+| S10-02 | Configs YAML Pronostia : `pronostia_config.yaml` (CL 3 conditions) + `pronostia_single_task_config.yaml` | ⬜ | ✅ | N/A | `configs/pronostia_config.yaml`, `configs/pronostia_single_task_config.yaml` | 1h |
+| S10-03 | EDA Pronostia — section 3 dans `01_data_exploration.ipynb` (vibrométrie, distribution label, comparaison conditions) | ⬜ | ✅ | ⬜ | `notebooks/01_data_exploration.ipynb` | 2h |
+| S10-04 | Run exp_044–049 — 6 modèles × scénario `no_split` (single-task baseline Pronostia) | ⬜ | ✅ | ⬜ | `experiments/exp_044–049/` | 2h |
+| S10-05 | Run exp_050–055 — 6 modèles × 3 conditions domain-incremental (résout FIXME(gap1)) | ⬜ | ✅ | ⬜ | `experiments/exp_050–055/` | 2h |
+| S10-06 | Notebooks individuels `pronostia_by_condition/` — 6 modèles | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pronostia_by_condition/{ewc,hdc,tinyol,kmeans,mahalanobis,dbscan}.ipynb` | 6h |
+| S10-07 | Notebook comparaison Pronostia + notebook baseline single-task | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pronostia_by_condition/comparison.ipynb`, `notebooks/cl_eval/baselines/pronostia_single_task.ipynb` | 3h |
+| S10-08 | Tests unitaires `pronostia_dataset.py` | ⬜ | ✅ | ⬜ | `tests/test_pronostia_dataset.py` | 2h |
+| S10-09 | MAJ roadmap : `FIXME(gap1)` → ✅ résolu dans tous les notebooks et `roadmap_phase1.md` | ⬜ | ✅ | N/A | `docs/roadmap_phase1.md` | 1h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Scénario | Statut |
+|-----|--------|----------|--------|
+| exp_044 | EWC | Pronostia no_split | ⬜ |
+| exp_045 | HDC | Pronostia no_split | ⬜ |
+| exp_046 | TinyOL | Pronostia no_split | ⬜ |
+| exp_047 | KMeans | Pronostia no_split | ⬜ |
+| exp_048 | Mahalanobis | Pronostia no_split | ⬜ |
+| exp_049 | DBSCAN | Pronostia no_split | ⬜ |
+| exp_050 | EWC | Pronostia by_condition (3 tâches) | ⬜ |
+| exp_051 | HDC | Pronostia by_condition (3 tâches) | ⬜ |
+| exp_052 | TinyOL | Pronostia by_condition (3 tâches) | ⬜ |
+| exp_053 | KMeans | Pronostia by_condition (3 tâches) | ⬜ |
+| exp_054 | Mahalanobis | Pronostia by_condition (3 tâches) | ⬜ |
+| exp_055 | DBSCAN | Pronostia by_condition (3 tâches) | ⬜ |
+
+**Livrable sprint 10** : 12 expériences Pronostia (exp_044–055), `FIXME(gap1)` résolu ✅, 8 notebooks `cl_eval/` (6 individuels + 1 comparaison + 1 baseline), loader `pronostia_dataset.py` validé par 9 tests unitaires. Gap 1 comblé : premier résultat CL publié sur données industrielles réelles de roulements (FEMTO PRONOSTIA IEEE PHM 2012).
+
+---
+
+## Sprint 11 (Phase 1) — Dataset 4 : Battery Remaining Useful Life (Degradation Binaire)
+
+**Objectif** : Intégrer le dataset Battery RUL comme Dataset 4 — scénario de dégradation temporelle d'accumulateurs avec label binaire (RUL < 200 cycles = dégradé). Étend la couverture applicative du projet à l'électrochimique embarqué (drones, EVs, capteurs autonomes).
+
+> **Dataset** : `data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv` — 15 064 cycles, 8 features électrochimiques + cible RUL.  
+> **Label retenu** : binaire — `RUL < 200` → dégradé (1), sinon normal (0). Même protocole que les 3 datasets existants.  
+> **Scénario CL retenu** : Domain-incremental par fenêtres temporelles de cycles (3 tâches) :
+> - Task 1 : cycles 1–370 (début de vie, batterie neuve)
+> - Task 2 : cycles 371–740 (mi-vie, vieillissement progressif)
+> - Task 3 : cycles 741–1 112 (fin de vie, dégradation accélérée)  
+> **Features** : 7 features électrochimiques (Discharge Time, Decrement 3.6-3.4V, Max/Min Voltage, Time at 4.15V, Time constant current, Charging time) — tabulaires statiques, compatible avec les modèles existants sans modification.
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S11-01 | `battery_dataset.py` — loader CSV + binarisation `RUL < 200` + split par fenêtres de cycles | ⬜ | ⬜ | N/A | `src/data/battery_dataset.py` | 3h |
+| S11-02 | Configs YAML Battery : `battery_config.yaml` (CL 3 tâches) + `battery_single_task_config.yaml` | ⬜ | ⬜ | N/A | `configs/battery_config.yaml`, `configs/battery_single_task_config.yaml` | 1h |
+| S11-03 | EDA Battery RUL — section 4 dans `01_data_exploration.ipynb` (distribution RUL, label balance, corrélations) | ⬜ | ⬜ | ⬜ | `notebooks/01_data_exploration.ipynb` | 1h |
+| S11-04 | Run exp_056–061 — 6 modèles × scénario `no_split` (single-task baseline Battery) | ⬜ | ⬜ | ⬜ | `experiments/exp_056–061/` | 2h |
+| S11-05 | Run exp_062–067 — 6 modèles × 3 fenêtres temporelles (CL domain-incremental Battery) | ⬜ | ⬜ | ⬜ | `experiments/exp_062–067/` | 2h |
+| S11-06 | Notebooks individuels `battery_by_temporal_window/` — 6 modèles | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/battery_by_temporal_window/{ewc,hdc,tinyol,kmeans,mahalanobis,dbscan}.ipynb` | 6h |
+| S11-07 | Notebook comparaison Battery + notebook baseline single-task | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/battery_by_temporal_window/comparison.ipynb`, `notebooks/cl_eval/baselines/battery_single_task.ipynb` | 3h |
+| S11-08 | Tests unitaires `battery_dataset.py` | ⬜ | ⬜ | ⬜ | `tests/test_battery_dataset.py` | 2h |
+| S11-09 | Notebook synthèse croisée 4 datasets — comparaison modèles × datasets (AA, AF, BWT, RAM) | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/cross_dataset_comparison.ipynb` | 3h |
+| S11-10 | MAJ `roadmap_phase1.md` + README : Phase 1 étendue à 4 datasets, 67 expériences totales | ⬜ | ⬜ | N/A | `docs/roadmap_phase1.md`, `README.md` | 1h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Scénario | Statut |
+|-----|--------|----------|--------|
+| exp_056 | EWC | Battery no_split | ⬜ |
+| exp_057 | HDC | Battery no_split | ⬜ |
+| exp_058 | TinyOL | Battery no_split | ⬜ |
+| exp_059 | KMeans | Battery no_split | ⬜ |
+| exp_060 | Mahalanobis | Battery no_split | ⬜ |
+| exp_061 | DBSCAN | Battery no_split | ⬜ |
+| exp_062 | EWC | Battery by_temporal_window (3 tâches) | ⬜ |
+| exp_063 | HDC | Battery by_temporal_window (3 tâches) | ⬜ |
+| exp_064 | TinyOL | Battery by_temporal_window (3 tâches) | ⬜ |
+| exp_065 | KMeans | Battery by_temporal_window (3 tâches) | ⬜ |
+| exp_066 | Mahalanobis | Battery by_temporal_window (3 tâches) | ⬜ |
+| exp_067 | DBSCAN | Battery by_temporal_window (3 tâches) | ⬜ |
+
+**Livrable sprint 11** : 12 expériences Battery (exp_056–067), 8 notebooks `cl_eval/`, 1 notebook synthèse croisée 4 datasets, loader `battery_dataset.py` validé. Phase 1 étendue : 67 expériences, 4 datasets, 6 modèles, 6 scénarios.
 
 ---
 
@@ -443,20 +563,20 @@ Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compresso
 
 | Exp | Modèle | Config | Statut |
 |-----|--------|--------|--------|
-| exp_030 | EWC | `monitoring_single_task_config.yaml` | ⬜ |
-| exp_031 | HDC | `monitoring_single_task_config.yaml` | ⬜ |
-| exp_032 | TinyOL | `monitoring_single_task_config.yaml` | ⬜ |
-| exp_033 | KMeans | `monitoring_single_task_config.yaml` | ⬜ |
-| exp_034 | Mahalanobis | `monitoring_single_task_config.yaml` | ⬜ |
-| exp_035 | DBSCAN | `monitoring_single_task_config.yaml` | ⬜ |
+| exp_030 | EWC | `monitoring_single_task_config.yaml` | ✅ |
+| exp_031 | HDC | `monitoring_single_task_config.yaml` | ✅ |
+| exp_032 | TinyOL | `monitoring_single_task_config.yaml` | ✅ |
+| exp_033 | KMeans | `monitoring_single_task_config.yaml` | ✅ |
+| exp_034 | Mahalanobis | `monitoring_single_task_config.yaml` | ✅ |
+| exp_035 | DBSCAN | `monitoring_single_task_config.yaml` | ✅ |
 
 ### Dataset 1 (Pump) — scénario `no_split` (Sprint 8 — S8-15)
 
 | Exp | Modèle | Config | Statut |
 |-----|--------|--------|--------|
-| exp_036 | EWC | `pump_single_task_config.yaml` | ⬜ |
-| exp_037 | HDC | `pump_single_task_config.yaml` | ⬜ |
-| exp_038 | TinyOL | `pump_single_task_config.yaml` | ⬜ |
-| exp_039 | KMeans | `pump_single_task_config.yaml` | ⬜ |
-| exp_040 | Mahalanobis | `pump_single_task_config.yaml` | ⬜ |
-| exp_041 | DBSCAN | `pump_single_task_config.yaml` | ⬜ |
+| exp_036 | EWC | `pump_single_task_config.yaml` | ✅ |
+| exp_037 | HDC | `pump_single_task_config.yaml` | ✅ |
+| exp_038 | TinyOL | `pump_single_task_config.yaml` | ✅ |
+| exp_039 | KMeans | `pump_single_task_config.yaml` | ✅ |
+| exp_040 | Mahalanobis | `pump_single_task_config.yaml` | ✅ |
+| exp_041 | DBSCAN | `pump_single_task_config.yaml` | ✅ |

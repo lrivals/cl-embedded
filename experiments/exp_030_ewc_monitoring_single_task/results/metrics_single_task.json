@@ -1,9 +1,10 @@
 {
   "exp_id": "exp_030_ewc_monitoring_single_task",
-  "accuracy": 0.09185667752442997,
-  "f1": 0.14583333333333334,
-  "auc_roc": 0.3140943787066201,
+  "accuracy": 0.9824104234527687,
+  "f1": 0.9052631578947369,
+  "auc_roc": 0.9910662769690607,
   "ram_peak_bytes": 1171,
-  "inference_latency_ms": 0.04816255001060199,
-  "n_params": 705
+  "inference_latency_ms": 0.039479820034102886,
+  "n_params": 705,
+  "threshold": 0.6900000000000001
 }
