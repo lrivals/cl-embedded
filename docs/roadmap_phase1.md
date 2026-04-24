@@ -1,6 +1,6 @@
 # Roadmap Phase 1 — Implémentation Python
 
-> Mise à jour : 21 avril 2026  
+> Mise à jour : 23 avril 2026  
 > Horizon : 15 avril – 20 mai 2026 (étendu avec Sprints 6–9 notebooks)  
 > ← [Index roadmap](roadmap.md)
 
@@ -216,11 +216,11 @@
 | S7-07 | Notebook TinyOL — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/tinyol.ipynb` | 2h |
 | S7-08 | Notebook EWC — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/ewc.ipynb` | 2h |
 | S7-09 | Notebook HDC — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/hdc.ipynb` | 2h |
-| S7-10 | Notebook KMeans — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/kmeans.ipynb` | 2h |
-| S7-11 | Notebook Mahalanobis — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/mahalanobis.ipynb` | 2h |
-| S7-12 | Notebook DBSCAN — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/dbscan.ipynb` | 2h |
+| S7-10 | Notebook KMeans — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/kmeans.ipynb` | 2h |
+| S7-11 | Notebook Mahalanobis — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/mahalanobis.ipynb` | 2h |
+| S7-12 | Notebook DBSCAN — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/dbscan.ipynb` | 2h |
 | S7-13 | Notebook Comparaison — monitoring_by_equipment | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` | 3h |
-| S7-14 | Notebook Comparaison — monitoring_by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/comparison.ipynb` | 3h |
+| S7-14 | Notebook Comparaison — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/comparison.ipynb` | 3h |
 | S7-15 | Infrastructure & expériences baseline single-task monitoring (exp_030–035) | ✅ | ✅ | ✅ | `configs/monitoring_single_task_config.yaml`, `src/data/monitoring_dataset.py`, `experiments/exp_030–035/` | 3h |
 | S7-16 | Notebook baseline monitoring single-task | ✅ | ✅ | ✅ | `notebooks/cl_eval/baselines/monitoring_single_task.ipynb` | 2h |
 
@@ -228,9 +228,10 @@
 
 **État d'avancement au 21 avril 2026** :
 
-- ✅ Terminé (11/16) : S7-01–S7-06 (6/6 notebooks by_equipment, 9/9 cellules chacun), S7-08 EWC by_location (9/9), S7-09 HDC by_location (9/9), S7-13 Comparaison by_equipment (structure ✅, 0/8 cellules exécutées), S7-15 exp_030–035, S7-16 baseline notebook
-- ⬜ À terminer (5) : S7-07 TinyOL by_location (0/9 cellules), S7-10 KMeans by_location, S7-11 Mahalanobis by_location, S7-12 DBSCAN by_location (3 notebooks à créer), S7-14 Comparaison by_location
-- ⚠️ `FIXME(gap2)` documenté dans S7-06 : DBSCAN RAM = 71.9 Ko (dépasse budget 64 Ko). S7-13 Comparaison by_equipment : notebook créé, à ré-exécuter ("Run All Cells")
+- ✅ Terminé (15/16) : S7-01–S7-14 (tous les notebooks monitoring créés), S7-15 exp_030–035, S7-16 baseline notebook
+- ⬜ À terminer (1) : S7-07 TinyOL by_location (notebook existe, 0/9 cellules exécutées)
+- ⚠️ Tous les notebooks sont créés mais pas encore exécutés ("Run All Cells" à lancer) — S7-07 à S7-14 by_location créés le 21/04/2026
+- 💡 `FIXME(gap2)` partiellement comblé : DBSCAN RAM = 40.5 Ko ✅ en by_location (vs. 71.9 Ko ❌ en by_equipment)
 
 ---
 
@@ -303,7 +304,7 @@
 
 ---
 
-## Sprint 10 (Phase 1) — Dataset 3 : FEMTO PRONOSTIA (Bearing Degradation)
+## Sprint 10 (Phase 1) — Dataset 3 : FEMTO PRONOSTIA (Bearing Degradation) ✅ TERMINÉ — 24 avril 2026
 
 **Objectif** : Intégrer le dataset IEEE PHM 2012 FEMTO PRONOSTIA comme Dataset 3 — résoudre les `FIXME(gap1)` présents dans exp_003, exp_007, exp_009, exp_010 et valider les modèles sur des données industrielles de roulements réels.
 
@@ -319,32 +320,32 @@
 
 | ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
 |----|-------|:-----:|:---:|:----:|---------------|------------|
-| S10-01 | `pronostia_dataset.py` — loader `.npy` + fenêtrage 2560 + label TTF binaire (derniers 10%) | ⬜ | ✅ | N/A | `src/data/pronostia_dataset.py` | 4h |
-| S10-02 | Configs YAML Pronostia : `pronostia_config.yaml` (CL 3 conditions) + `pronostia_single_task_config.yaml` | ⬜ | ✅ | N/A | `configs/pronostia_config.yaml`, `configs/pronostia_single_task_config.yaml` | 1h |
-| S10-03 | EDA Pronostia — section 3 dans `01_data_exploration.ipynb` (vibrométrie, distribution label, comparaison conditions) | ⬜ | ✅ | ⬜ | `notebooks/01_data_exploration.ipynb` | 2h |
-| S10-04 | Run exp_044–049 — 6 modèles × scénario `no_split` (single-task baseline Pronostia) | ⬜ | ✅ | ⬜ | `experiments/exp_044–049/` | 2h |
-| S10-05 | Run exp_050–055 — 6 modèles × 3 conditions domain-incremental (résout FIXME(gap1)) | ⬜ | ✅ | ⬜ | `experiments/exp_050–055/` | 2h |
-| S10-06 | Notebooks individuels `pronostia_by_condition/` — 6 modèles | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pronostia_by_condition/{ewc,hdc,tinyol,kmeans,mahalanobis,dbscan}.ipynb` | 6h |
-| S10-07 | Notebook comparaison Pronostia + notebook baseline single-task | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pronostia_by_condition/comparison.ipynb`, `notebooks/cl_eval/baselines/pronostia_single_task.ipynb` | 3h |
-| S10-08 | Tests unitaires `pronostia_dataset.py` | ⬜ | ✅ | ⬜ | `tests/test_pronostia_dataset.py` | 2h |
-| S10-09 | MAJ roadmap : `FIXME(gap1)` → ✅ résolu dans tous les notebooks et `roadmap_phase1.md` | ⬜ | ✅ | N/A | `docs/roadmap_phase1.md` | 1h |
+| S10-01 | `pronostia_dataset.py` — loader `.npy` + fenêtrage 2560 + label TTF binaire (derniers 10%) | ✅ | ✅ | N/A | `src/data/pronostia_dataset.py` | 4h |
+| S10-02 | Configs YAML Pronostia : `pronostia_config.yaml` (CL 3 conditions) + `pronostia_single_task_config.yaml` | ✅ | ✅ | N/A | `configs/pronostia_config.yaml`, `configs/pronostia_single_task_config.yaml` | 1h |
+| S10-03 | EDA Pronostia — notebook dédié `01C_data_exploration_pronostia.ipynb` (7 sections : signal brut, trajectoires dégradation, features, domain shift, PCA) | ✅ | ✅ | ✅ | `notebooks/01C_data_exploration_pronostia.ipynb`, `notebooks/figures/eda/pronostia/` | 2h |
+| S10-04 | Run exp_044–049 — 6 modèles × scénario `no_split` (single-task baseline Pronostia) | ✅ | ✅ | ✅ | `experiments/exp_044–049/` | 2h |
+| S10-05 | Run exp_050–055 — 6 modèles × 3 conditions domain-incremental (résout FIXME(gap1)) | ✅ | ✅ | ✅ | `experiments/exp_050–055/` | 2h |
+| S10-06 | Notebooks individuels `pronostia_by_condition/` — 6 modèles | ✅ | ✅ | ✅ | `notebooks/cl_eval/pronostia_by_condition/{ewc,hdc,tinyol,kmeans,mahalanobis,dbscan}.ipynb` | 6h |
+| S10-07 | Notebook comparaison Pronostia + notebook baseline single-task | ✅ | ✅ | ✅ | `notebooks/cl_eval/pronostia_by_condition/comparison.ipynb`, `notebooks/cl_eval/baselines/pronostia_single_task.ipynb` | 3h |
+| S10-08 | Tests unitaires `pronostia_dataset.py` | ✅ | ✅ | ✅ | `tests/test_pronostia_dataset.py` | 2h |
+| S10-09 | MAJ roadmap : `FIXME(gap1)` → ✅ résolu dans tous les notebooks et `roadmap_phase1.md` | ✅ | ✅ | N/A | `docs/roadmap_phase1.md` | 1h |
 
 **Numérotation expériences** :
 
 | Exp | Modèle | Scénario | Statut |
 |-----|--------|----------|--------|
-| exp_044 | EWC | Pronostia no_split | ⬜ |
-| exp_045 | HDC | Pronostia no_split | ⬜ |
-| exp_046 | TinyOL | Pronostia no_split | ⬜ |
-| exp_047 | KMeans | Pronostia no_split | ⬜ |
-| exp_048 | Mahalanobis | Pronostia no_split | ⬜ |
-| exp_049 | DBSCAN | Pronostia no_split | ⬜ |
-| exp_050 | EWC | Pronostia by_condition (3 tâches) | ⬜ |
-| exp_051 | HDC | Pronostia by_condition (3 tâches) | ⬜ |
-| exp_052 | TinyOL | Pronostia by_condition (3 tâches) | ⬜ |
-| exp_053 | KMeans | Pronostia by_condition (3 tâches) | ⬜ |
-| exp_054 | Mahalanobis | Pronostia by_condition (3 tâches) | ⬜ |
-| exp_055 | DBSCAN | Pronostia by_condition (3 tâches) | ⬜ |
+| exp_044 | EWC | Pronostia no_split | ✅ AUC=0.90 F1=0.76 |
+| exp_045 | HDC | Pronostia no_split | ✅ AUC=0.67 F1=0.28 |
+| exp_046 | TinyOL | Pronostia no_split | ✅ AUC=0.97 F1=0.67 |
+| exp_047 | KMeans | Pronostia no_split | ✅ AUC=0.90 F1=0.38 |
+| exp_048 | Mahalanobis | Pronostia no_split | ✅ AUC=0.89 F1=0.28 |
+| exp_049 | DBSCAN | Pronostia no_split | ✅ AUC=0.84 F1=0.26 ⚠️RAM |
+| exp_050 | EWC | Pronostia by_condition (3 tâches) | ✅ AA=0.982 AF=0.000 BWT=+0.005 RAM=1.1 Ko |
+| exp_051 | HDC | Pronostia by_condition (3 tâches) | ✅ AA=0.805 AF=0.045 BWT=-0.045 RAM=14.2 Ko |
+| exp_052 | TinyOL | Pronostia by_condition (3 tâches) | ✅ AA=0.930 AF=0.020 BWT=-0.020 RAM=3.7 Ko |
+| exp_053 | KMeans | Pronostia by_condition (3 tâches) | ✅ AA=0.890 AF=0.031 AUROC=0.855 RAM=5.4 Ko |
+| exp_054 | Mahalanobis | Pronostia by_condition (3 tâches) | ✅ AA=0.793 AF=0.169 AUROC=0.782 RAM=1.7 Ko |
+| exp_055 | DBSCAN | Pronostia by_condition (3 tâches) | ✅ AA=0.901 AF=0.000 AUROC=0.825 RAM=118 Ko ⚠️ |
 
 **Livrable sprint 10** : 12 expériences Pronostia (exp_044–055), `FIXME(gap1)` résolu ✅, 8 notebooks `cl_eval/` (6 individuels + 1 comparaison + 1 baseline), loader `pronostia_dataset.py` validé par 9 tests unitaires. Gap 1 comblé : premier résultat CL publié sur données industrielles réelles de roulements (FEMTO PRONOSTIA IEEE PHM 2012).
 
@@ -463,7 +464,7 @@ Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compresso
 
 > **Meilleur modèle embarqué** : Mahalanobis domine sur tous les critères embarqués. AA = KNN (0.9524), AUROC proche de KNN (0.9718 vs 0.9728), oubli AF quasi-nul (0.0010), latence ×22 plus rapide que K-Means, RAM analytique = 80 B @ FP32 (0.12% du budget 64 Ko STM32N6).  
 > RAM tracemalloc = 1504 B (overhead Python ×18.8 vs analytique — non représentatif du MCU). n_params = 20 (d + d² pour d=4). cl_strategy=refit : μ et Σ⁻¹ recalculés à chaque tâche, oubli structurel volontaire.  
-> Dataset 1 (Pump) non exécuté : données Kaggle non disponibles localement. `FIXME(gap1)` : valider sur FEMTO PRONOSTIA.
+> Dataset 1 (Pump) non exécuté : données Kaggle non disponibles localement. ✅ Gap 1 résolu : exp_050–055 (FEMTO PRONOSTIA by_condition, 3 tâches domain-incremental, 2026-04-23).
 
 ---
 
@@ -483,7 +484,7 @@ Dataset 1 (Pump Maintenance) — 3 tâches chronologiques : sain → usure → p
 | Budget 64 Ko | ✅ 9.8% utilisés |
 
 > Dataset 1 (Pump Maintenance) — 3 tâches : T1=415, T2=415, T3=416 fenêtres (window=32, step=16).  
-> AA ≈ 0.56 : performance proche du hasard — le backbone figé (pré-entraîné uniquement sur données normales T1) génère des embeddings peu discriminants pour les tâches d'usure/pré-panne. Limitation documentée : `FIXME(gap1)`.  
+> AA ≈ 0.56 : performance proche du hasard — le backbone figé (pré-entraîné uniquement sur données normales T1) génère des embeddings peu discriminants pour les tâches d'usure/pré-panne. ✅ Gap 1 résolu : exp_052 (TinyOL PRONOSTIA by_condition, AA=0.930).  
 > `FIXME(gap2)` : RAM 6 425 B mesurée via tracemalloc (overhead Python) — non représentative du MCU. RAM analytique encodeur = 5 984 B + OtO = 40 B = 6 024 B (9.2% de 64 Ko).
 
 ---
@@ -505,7 +506,7 @@ Dataset 1 (Pump Maintenance) — 3 tâches chronologiques : sain → usure → p
 
 > Dataset 1 (Pump Maintenance) — T1=415, T2=415, T3=416 fenêtres. AA ≈ 0.50 : performances proches du hasard, identiques au fine-tuning naïf (aa_naive=0.498). La régularisation EWC ne suffit pas à discriminer des fenêtres peu séparables après normalisation Z-score (features de rang 25 sans drift temporel fort). AF très faible (0.006) : l'oubli est contenu mais la performance de base est déjà basse.  
 > `FIXME(gap2)` : RAM mesurée via tracemalloc (overhead Python). RAM analytique MLP = 5 508 B @ FP32 + Fisher ≈ 3× (5 508 B) = 16.5 Ko @ FP32 (26% de 64 Ko).  
-> `FIXME(gap1)` : Dataset 1 (Pump) non validé sur FEMTO PRONOSTIA — données Kaggle uniquement.
+> ✅ Gap 1 résolu : exp_050 (EWC PRONOSTIA by_condition, AA=0.982, AF=0.000, BWT=+0.005).
 
 ---
 
@@ -527,7 +528,7 @@ Dataset 1 (Pump Maintenance) — 3 tâches chronologiques : sain → usure → p
 
 > Dataset 1 (Pump Maintenance) — T1=416, T2=416, T3=417 exemples. AA ≈ 0.51 : légèrement supérieur à EWC (0.498) et au hasard. BWT légèrement positif (+0.006) : signe que l'apprentissage des tâches suivantes bénéficie aux précédentes, caractéristique de l'additivité des prototypes HDC. AF=0.042 plus élevé qu'EWC : l'hypervecteur moyen de classe se déplace significativement avec les nouvelles tâches.  
 > `FIXME(gap2)` : RAM analytique = 2 × D × 4 B (2 classes × 1 024 × FP32) = 8 192 B + base vectors ≈ 14 344 B FP32 / 6 152 B INT8. Mesure tracemalloc = 14 504 B (1.01× analytique — overhead quasi-nul).  
-> `FIXME(gap1)` : Dataset 1 (Pump) non validé sur FEMTO PRONOSTIA — données Kaggle uniquement.
+> ✅ Gap 1 résolu : exp_051 (HDC PRONOSTIA by_condition, AA=0.805, AF=0.045, BWT=-0.045).
 
 ---
 

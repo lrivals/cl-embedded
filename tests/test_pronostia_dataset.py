@@ -123,6 +123,24 @@ def test_compute_channel_features_zero_window():
     assert np.isfinite(feats).all()
 
 
+def test_temporal_position_bounds(synthetic_npy_dir: Path):
+    """La feature temporal_position (index 12) doit être dans [0, 1] pour toutes les fenêtres."""
+    npy_path = synthetic_npy_dir / "0.npy"
+    feats, _ = load_bearing_features(npy_path)
+    temporal_pos = feats[:, -1]  # index 12
+    assert temporal_pos.min() >= 0.0, f"temporal_position min hors bornes : {temporal_pos.min()}"
+    assert temporal_pos.max() <= 1.0, f"temporal_position max hors bornes : {temporal_pos.max()}"
+
+
+def test_feature_ram_footprint(synthetic_npy_dir: Path):
+    """Un vecteur de 13 features FP32 doit peser exactement 52 octets (Gap 2 — RAM embarquée)."""
+    npy_path = synthetic_npy_dir / "0.npy"
+    feats, _ = load_bearing_features(npy_path)
+    bytes_per_sample = feats.itemsize * feats.shape[1]  # 4 B × 13 = 52 B
+    assert bytes_per_sample == 13 * 4, \
+        f"RAM features : attendu 52 B, obtenu {bytes_per_sample} B"
+
+
 # ---------------------------------------------------------------------------
 # Tests unitaires : load_bearing_features
 # ---------------------------------------------------------------------------

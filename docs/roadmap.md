@@ -30,6 +30,16 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 ---
 
+## Triple Gap — Statut de contribution
+
+| Gap | Critère | Statut |
+|-----|---------|--------|
+| **Gap 1** | Validation sur données industrielles réelles | ✅ exp_050–055 PRONOSTIA (Sprint 10, 24 avril 2026) |
+| **Gap 2** | CL complet sous 100 Ko RAM avec chiffres précis | 🔄 Partiellement — Mahalanobis 80 B ✅, DBSCAN 118 Ko ❌ |
+| **Gap 3** | Quantification INT8 pendant entraînement incrémental | ⬜ Non adressé (Phase 2+) |
+
+---
+
 ## Indicateurs de progression
 
 > Légende colonnes : **Impl.** = code livré · **Testé** = tests unitaires verts · **Exp.** = expérience exécutée · **ONNX** = export validé · **RAM** = mesurée

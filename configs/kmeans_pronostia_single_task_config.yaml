@@ -1,0 +1,55 @@
+# configs/kmeans_pronostia_single_task_config.yaml
+# Baseline single-task KMeans — Dataset 3 FEMTO PRONOSTIA (toutes conditions fusionnées)
+# Exp : exp_047_kmeans_pronostia_no_split
+# NE PAS modifier directement : créer une copie pour chaque variante expérimentale.
+
+exp_id: "exp_047_kmeans_pronostia_no_split"
+
+kmeans:
+  k_method: "silhouette"  # "silhouette" | "elbow" | "fixed"
+  k_fixed: 3
+  k_min: 2
+  k_max: 10
+  anomaly_threshold: null   # null → calculé automatiquement (percentile sur train)
+  anomaly_percentile: 95
+  n_init: 10
+  max_iter: 300
+  cl_strategy: "refit"     # TODO(arnaud): "refit" | "accumulate"
+
+dataset:
+  name: pronostia
+  task_split: "no_split"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  seed: 42
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+
+paths:
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+
+data:
+  dataset: pronostia
+  task_split: "no_split"
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+  seed: 42
+  n_features: 13
+  n_classes: 2
+  feature_columns:
+    - acc_horiz
+    - acc_vert
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "auroc", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_047_kmeans_pronostia_no_split/results/"
+
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000

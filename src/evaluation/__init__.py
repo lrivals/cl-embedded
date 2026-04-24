@@ -1,4 +1,11 @@
 from src.evaluation.compute_cost import compute_macs
+from src.evaluation.feature_importance import (
+    feature_masking_importance,
+    gradient_saliency,
+    permutation_importance,
+    plot_feature_importance,
+    plot_feature_importance_comparison,
+)
 from src.evaluation.drift_detector import SlidingWindowDriftDetector
 from src.evaluation.memory_profiler import (
     compare_models_memory,
@@ -14,6 +21,11 @@ from src.evaluation.metrics import (
 )
 
 __all__ = [
+    "permutation_importance",
+    "gradient_saliency",
+    "feature_masking_importance",
+    "plot_feature_importance",
+    "plot_feature_importance_comparison",
     "compute_cl_metrics",
     "format_metrics_report",
     "save_metrics",

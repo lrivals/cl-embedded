@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_046_tinyol_pronostia_no_split",
+  "accuracy": 0.949535192563081,
+  "f1": 0.6695652173913044,
+  "auc_roc": 0.9678209232423449,
+  "ram_peak_bytes": 944,
+  "inference_latency_ms": 0.008979410013125744,
+  "n_params": 807
+}

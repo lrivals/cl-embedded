@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_049_dbscan_pronostia_no_split",
+  "model": "dbscan",
+  "dataset": "pronostia",
+  "scenario": "no_split",
+  "accuracy": 0.8851261620185923,
+  "f1_score": 0.2575107296137339,
+  "auc_roc": 0.8435668727548202,
+  "ram_peak_bytes": 267416,
+  "inference_latency_ms": 0.3620161101571284,
+  "n_params": 31096
+}

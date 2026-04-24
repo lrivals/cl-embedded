@@ -1,0 +1,53 @@
+# configs/ewc_pronostia_single_task_config.yaml
+# Baseline single-task EWC/MLP — Dataset 3 FEMTO PRONOSTIA (toutes conditions fusionnées)
+# Exp : exp_044_ewc_pronostia_no_split
+# NE PAS modifier directement : créer une copie pour chaque variante expérimentale.
+
+exp_id: "exp_044_ewc_pronostia_no_split"
+
+model:
+  architecture: "mlp"
+  input_dim: 13          # 13 features Pronostia
+  hidden_dims: [32, 16]
+  output_dim: 1
+  activation: "relu"
+  dropout: 0.2
+
+training:
+  optimizer: "sgd"
+  learning_rate: 0.01
+  momentum: 0.9
+  epochs_per_task: 10
+  batch_size: 32
+  seed: 42
+
+ewc:
+  lambda: 1000
+  gamma: 0.9
+  n_fisher_samples: 200
+
+data:
+  dataset: "pronostia"
+  task_split: "no_split"
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+  seed: 42
+  n_features: 13
+  n_classes: 2
+  feature_columns:
+    - acc_horiz
+    - acc_vert
+
+evaluation:
+  seed: 42
+  metrics: ["accuracy", "f1", "auc_roc", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_044_ewc_pronostia_no_split/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 9356
+  warn_if_above_bytes: 52000

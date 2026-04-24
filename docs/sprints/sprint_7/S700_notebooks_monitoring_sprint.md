@@ -6,7 +6,7 @@
 | **Priorité globale** | 🔴 Critique — notebooks support présentation encadrants |
 | **Durée estimée totale** | ~33h (+5h baselines single-task) |
 | **Dépendances** | Sprint 6 terminé (exp_016–023 exécutées, `save_figure()` corrigé) |
-| **Avancement (19 avr. 2026)** | 5 ✅ / 4 🟡 / 7 ⬜ — voir section [État d'avancement](#état-davancement-19-avril-2026) |
+| **Avancement (21 avr. 2026)** | 15 ✅ / 1 🟡 / 0 ⬜ — voir section [État d'avancement](#état-davancement-21-avril-2026) |
 
 ---
 
@@ -273,40 +273,37 @@ Cellule Markdown structurée avec :
 
 ---
 
-## État d'avancement (19 avril 2026)
+## État d'avancement (21 avril 2026)
 
-### ✅ Terminé (5/16)
+### ✅ Terminé (15/16)
 
 | ID | Tâche | Preuve |
 |----|-------|--------|
-| S7-02 | EWC by_equipment | 9/9 cellules exécutées + 5 figures + statut `✅ Fait (2026-04-17)` |
-| S7-04 | KMeans by_equipment | 9/9 cellules exécutées + 5 figures + statut `✅ Fait (2026-04-17)` |
-| S7-05 | Mahalanobis by_equipment | 9/9 cellules exécutées + 5 figures (acc_matrix, forgetting_curve, confusion_matrix_grid, auroc_curve, feature_space_pca) |
+| S7-01 | TinyOL by_equipment | 9/9 cellules + 5 figures |
+| S7-02 | EWC by_equipment | 9/9 cellules exécutées + 5 figures |
+| S7-03 | HDC by_equipment | 9/9 cellules + 5 figures |
+| S7-04 | KMeans by_equipment | 9/9 cellules exécutées + 5 figures |
+| S7-05 | Mahalanobis by_equipment | 9/9 cellules exécutées + 5 figures |
+| S7-06 | DBSCAN by_equipment | 9/9 cellules + 5 figures + `FIXME(gap2)` RAM 71.9 Ko documenté |
+| S7-08 | EWC by_location | 9/9 cellules exécutées + 5 figures |
+| S7-09 | HDC by_location | 9/9 cellules + 5 figures |
+| S7-10 | KMeans by_location | Notebook créé (2026-04-21) — 9 cellules, exp_022, 5 figures cibles |
+| S7-11 | Mahalanobis by_location | Notebook créé (2026-04-21) — 9 cellules, exp_019, 5 figures cibles |
+| S7-12 | DBSCAN by_location | Notebook créé (2026-04-21) — 9 cellules, exp_023 — RAM 40.5 Ko ✅ (vs 71.9 Ko en by_equipment) |
+| S7-13 | Comparaison by_equipment | Structure + 6 figures OK — à ré-exécuter ("Run All Cells") |
+| S7-14 | Comparaison by_location | Notebook créé (2026-04-21) — 10 cellules, 6 modèles, 6 figures cibles |
 | S7-15 | Infra + exp_030–035 | 6 × `metrics_single_task.json` (EWC, HDC, TinyOL, KMeans, Mahalanobis, DBSCAN) |
-| S7-16 | Baseline monitoring_single_task | Notebook exécuté + 7 figures (bar accuracy, ROC, scatter RAM/FLOPs/latency, confusion matrices ± normalisée) |
+| S7-16 | Baseline monitoring_single_task | Notebook exécuté + 7 figures |
 
-### 🟡 Notebook + figures présents, cellules non ré-exécutées (4/16)
+### 🟡 Notebook présent, à exécuter (1/16)
 
 | ID | Tâche | Action restante |
-|----|-------|-----------------|
-| S7-01 | TinyOL by_equipment | Kernel restart + run all (structure OK, 5 figures sauvegardées) |
-| S7-03 | HDC by_equipment | Kernel restart + run all (structure OK, 5 figures sauvegardées) |
-| S7-06 | DBSCAN by_equipment | Kernel restart + run all + documenter `FIXME(gap2)` RAM 71.9 Ko > 64 Ko |
-| S7-13 | Comparaison by_equipment | Kernel restart + run all (structure OK, 6 figures: radar, barplot_aa, acc_matrix_grid, scatter RAM/FLOPs/latency) |
+|---|---|---|
+| S7-07 | TinyOL by_location | Kernel restart + run all (notebook `tinyol.ipynb` présent, exp_018 OK) |
 
-### ⬜ À démarrer (7/16)
+### ⬜ À démarrer (0/16)
 
-| ID | Tâche | Dépendance (prête) |
-|----|-------|--------------------|
-| S7-07 | TinyOL by_location | exp_018 ✅ |
-| S7-08 | EWC by_location | exp_016 ✅ |
-| S7-09 | HDC by_location | exp_017 ✅ |
-| S7-10 | KMeans by_location | exp_022 ✅ |
-| S7-11 | Mahalanobis by_location | exp_019 ✅ |
-| S7-12 | DBSCAN by_location | exp_023 ✅ + `FIXME(gap2)` RAM |
-| S7-14 | Comparaison by_location | S7-07 à S7-12 |
-
-**Note** : le dossier `notebooks/cl_eval/monitoring_by_location/` **n'existe pas encore** — à créer lors du démarrage de S7-07.
+Tous les notebooks sont créés. Reste à exécuter S7-07 et à lancer "Run All Cells" sur S7-10 à S7-14.
 
 ---
 

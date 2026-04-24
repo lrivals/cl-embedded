@@ -1,0 +1,23 @@
+{
+  "model": "TinyOL",
+  "backbone_architecture": "4\u21928\u21924 (MonitoringAutoencoder)",
+  "dataset": "equipment_monitoring",
+  "scenario": "single_task_online",
+  "n_params_backbone": 76,
+  "n_params_oto": 10,
+  "test_accuracy": 0.9433224755700326,
+  "test_auc_roc": 0.7809795408756846,
+  "prequential_accuracy": 0.9297483251855876,
+  "permutation_importance": {
+    "vibration": 0.06612377850162854,
+    "temperature": 0.004560260586319198,
+    "pressure": 0.002931596091205191,
+    "humidity": 0.0006514657980456473
+  },
+  "encoder_weight_norms": {
+    "humidity": 1.3145607709884644,
+    "temperature": 1.2809529304504395,
+    "vibration": 1.2452304363250732,
+    "pressure": 1.1200816631317139
+  }
+}

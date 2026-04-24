@@ -1,0 +1,57 @@
+{
+  "dbscan": {
+    "model": "dbscan",
+    "acc_final": 0.9014275736481482,
+    "avg_forgetting": 0.0,
+    "backward_transfer": 0.0050662370211242425,
+    "auroc_final": 0.8249745689942708,
+    "ram_peak_bytes": 121024,
+    "inference_latency_ms": 0.27145779993588803,
+    "n_params": 11479,
+    "aa": 0.9014275736481482,
+    "af": 0.0,
+    "bwt": 0.0050662370211242425,
+    "fwt": 0.0,
+    "forgetting_per_task": [
+      0.0,
+      0.0
+    ],
+    "bwt_per_task": [
+      0.0013605442176870541,
+      0.00877192982456143
+    ],
+    "acc_matrix": [
+      [
+        0.8734693877551021,
+        null,
+        null
+      ],
+      [
+        0.8721088435374149,
+        0.9181286549707602,
+        null
+      ],
+      [
+        0.8748299319727891,
+        0.9269005847953217,
+        0.9025522041763341
+      ]
+    ],
+    "n_tasks": 3,
+    "auroc_avg": 0.8249745689942708,
+    "auroc_per_task": [
+      0.8826716277548351,
+      0.7593582887700535,
+      0.8328937904579238
+    ],
+    "memory": {
+      "inference_latency_ms": 0.27145779993588803,
+      "inference_latency_std_ms": 0.028768918318270657,
+      "ram_peak_bytes": 121024,
+      "n_params": 11479,
+      "ram_fp32_bytes": 45916,
+      "ram_int8_bytes": 11479,
+      "within_budget_64ko": true
+    }
+  }
+}

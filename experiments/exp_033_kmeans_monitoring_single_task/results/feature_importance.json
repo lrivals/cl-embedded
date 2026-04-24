@@ -1,0 +1,20 @@
+{
+  "model": "KMeans",
+  "dataset": "equipment_monitoring",
+  "scenario": "single_task_batch",
+  "test_accuracy": 0.9550488599348534,
+  "test_auc_roc": 0.9820616138399402,
+  "train_stream_accuracy": 0.9496650371175086,
+  "permutation_importance": {
+    "temperature": 0.03192182410423461,
+    "pressure": 0.022475570032573278,
+    "vibration": 0.02084690553745927,
+    "humidity": 0.012117263843648196
+  },
+  "feature_masking_importance": {
+    "temperature": 0.019543973941368087,
+    "pressure": 0.01693811074918572,
+    "humidity": 0.015635179153094536,
+    "vibration": 0.014983713355048889
+  }
+}

@@ -49,12 +49,49 @@ def _get_feature_names(cfg: dict) -> list[str]:
         cols = cfg["data"]["feature_columns"]
         stats = cfg["data"]["features_per_channel"]
         return [f"{s}_{c}" for c in cols for s in stats] + ["temporal_position"]
+    if dataset == "pronostia":
+        from src.data.pronostia_dataset import FEATURE_NAMES
+        return list(FEATURE_NAMES)
     return cfg["data"]["feature_columns"]
 
 
 def _get_tasks(cfg: dict) -> list[dict]:
     """Charge les tâches CL selon le dataset spécifié dans config."""
     dataset = cfg["data"].get("dataset", "equipment_monitoring")
+
+    if dataset == "pronostia":
+        from src.data.pronostia_dataset import (
+            get_pronostia_dataloaders,
+            get_pronostia_dataloaders_single_task,
+        )
+        npy_dir = Path(cfg["data"]["npy_dir"])
+        batch_size = cfg["training"]["batch_size"]
+        seed = cfg["training"]["seed"]
+        task_split = cfg["data"].get("task_split", "by_condition")
+        if task_split == "no_split":
+            st = get_pronostia_dataloaders_single_task(
+                npy_dir=npy_dir,
+                batch_size=batch_size,
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=seed,
+                window_size=cfg["data"].get("window_size", 2560),
+                step_size=cfg["data"].get("step_size", 2560),
+                failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+            )
+            st["_single_task_mode"] = True
+            return [st]
+        return get_pronostia_dataloaders(
+            npy_dir=npy_dir,
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=batch_size,
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=seed,
+            window_size=cfg["data"].get("window_size", 2560),
+            step_size=cfg["data"].get("step_size", 2560),
+            failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+        )
+
     csv_path = Path(cfg["data"]["csv_path"])
     normalizer_path = Path(cfg["data"]["normalizer_path"])
     batch_size = cfg["training"]["batch_size"]
@@ -524,11 +561,14 @@ def main() -> None:
     print("Config snapshot sauvegardé.")
 
     # --- Chargement données ---
-    csv_path = Path(cfg["data"]["csv_path"])
-
-    if not csv_path.exists():
-        raise FileNotFoundError(f"CSV introuvable : {csv_path}")
-    print(f"Dataset : {csv_path}")
+    dataset_name = cfg.get("data", {}).get("dataset", "equipment_monitoring")
+    if dataset_name != "pronostia":
+        csv_path = Path(cfg["data"]["csv_path"])
+        if not csv_path.exists():
+            raise FileNotFoundError(f"CSV introuvable : {csv_path}")
+        print(f"Dataset : {csv_path}")
+    else:
+        print(f"Dataset : {cfg['data']['npy_dir']} (FEMTO PRONOSTIA .npy)")
 
     tasks = _get_tasks(cfg)
     n_tasks = len(tasks)

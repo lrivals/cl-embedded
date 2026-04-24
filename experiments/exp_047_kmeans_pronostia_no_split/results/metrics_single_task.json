@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_047_kmeans_pronostia_no_split",
+  "model": "kmeans",
+  "dataset": "pronostia",
+  "scenario": "no_split",
+  "accuracy": 0.900398406374502,
+  "f1_score": 0.375,
+  "auc_roc": 0.9009359497568485,
+  "ram_peak_bytes": 5620,
+  "inference_latency_ms": 0.5156832900320296,
+  "n_params": 26
+}

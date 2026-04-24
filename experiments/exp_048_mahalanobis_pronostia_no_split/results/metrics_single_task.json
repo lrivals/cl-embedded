@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_048_mahalanobis_pronostia_no_split",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "scenario": "no_split",
+  "accuracy": 0.8871181938911022,
+  "f1_score": 0.2796610169491525,
+  "auc_roc": 0.8853938075804599,
+  "ram_peak_bytes": 1756,
+  "inference_latency_ms": 0.0075239398938720115,
+  "n_params": 182
+}

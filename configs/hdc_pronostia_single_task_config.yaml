@@ -1,0 +1,76 @@
+# configs/hdc_pronostia_single_task_config.yaml
+# Baseline single-task HDC — Dataset 3 FEMTO PRONOSTIA (toutes conditions fusionnées)
+# Exp : exp_045_hdc_pronostia_no_split
+# NE PAS modifier directement : créer une copie pour chaque variante expérimentale.
+
+exp_id: "exp_045_hdc_pronostia_no_split"
+
+hdc:
+  D: 1024            # Dimension des hypervecteurs (puissance de 2 pour SIMD)
+                     # MEM: D × N_LEVELS × 1 B = 10 Ko @ INT8 (H_level)
+                     #      D × N_FEATURES × 1 B = 13 Ko @ INT8 (H_pos, 13 features)
+  n_levels: 10       # Niveaux de quantification par feature
+  seed: 42
+  base_vectors_path: "configs/hdc_base_vectors_pronostia.npz"  # à générer sur 13 features
+
+training:
+  optimizer: null        # HDC : pas de gradient
+  epochs_per_task: 1     # 1 passe par tâche (online learning strict)
+  batch_size: 1          # update sample-by-sample
+  seed: 42
+
+# Bornes pour quantification — à calculer sur le train set (toutes conditions)
+# TODO(arnaud) : calculer feature_bounds depuis Condition 1 après normalisation
+feature_bounds:
+  mean_acc_horiz:     null
+  std_acc_horiz:      null
+  rms_acc_horiz:      null
+  kurtosis_acc_horiz: null
+  peak_acc_horiz:     null
+  crest_factor_acc_horiz: null
+  mean_acc_vert:      null
+  std_acc_vert:       null
+  rms_acc_vert:       null
+  kurtosis_acc_vert:  null
+  peak_acc_vert:      null
+  crest_factor_acc_vert: null
+  temporal_position:  null
+
+dataset:
+  name: pronostia
+  task_split: "no_split"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  seed: 42
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+
+paths:
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+
+data:
+  dataset: pronostia
+  task_split: "no_split"
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+  seed: 42
+  n_features: 13
+  n_classes: 2
+  feature_columns:
+    - acc_horiz
+    - acc_vert
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_045_hdc_pronostia_no_split/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 15360  # ~15 Ko estimé (13 features × D × 1B + prototypes)
+  warn_if_above_bytes: 52000

@@ -1,0 +1,51 @@
+_snapshot_timestamp: '2026-04-23T14:33:52.013112'
+data:
+  dataset: pronostia
+  failure_ratio: 0.1
+  feature_columns:
+  - acc_horiz
+  - acc_vert
+  n_classes: 2
+  n_features: 13
+  npy_dir: data/raw/Pronostia dataset/binaries
+  seed: 42
+  step_size: 2560
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+evaluation:
+  metrics:
+  - accuracy
+  - f1
+  - auc_roc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_044_ewc_pronostia_no_split/results/
+  seed: 42
+ewc:
+  gamma: 0.9
+  lambda: 1000
+  n_fisher_samples: 200
+exp_id: exp_044_ewc_pronostia_no_split
+memory:
+  expected_ram_bytes: 9356
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+model:
+  activation: relu
+  architecture: mlp
+  dropout: 0.2
+  hidden_dims:
+  - 32
+  - 16
+  input_dim: 13
+  output_dim: 1
+training:
+  batch_size: 32
+  epochs_per_task: 10
+  learning_rate: 0.01
+  momentum: 0.9
+  optimizer: sgd
+  seed: 42

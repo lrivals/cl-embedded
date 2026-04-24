@@ -169,7 +169,12 @@ def plot_forgetting_curve(
     ax.set_xticklabels([f"After T{i + 1}" for i in range(n_tasks)], fontsize=FIGURE_FONT_SIZE - 1)
     ax.set_xlabel("Training Step", fontsize=FIGURE_FONT_SIZE)
     ax.set_ylabel("Accuracy", fontsize=FIGURE_FONT_SIZE)
-    ax.set_ylim(0.0, 1.05)
+    all_vals = acc_matrix[~np.isnan(acc_matrix)]
+    if all_vals.size > 0:
+        margin = max((all_vals.max() - all_vals.min()) * 0.15, 0.02)
+        ax.set_ylim(max(0.0, all_vals.min() - margin), min(1.0, all_vals.max() + margin))
+    else:
+        ax.set_ylim(0.0, 1.05)
     ax.set_title(title, fontsize=FIGURE_FONT_SIZE + 1)
     ax.legend(title="Task", fontsize=FIGURE_FONT_SIZE - 1)
     ax.grid(True, alpha=0.3)
@@ -245,13 +250,13 @@ def plot_confusion_matrix_grid(
     model_name: str = "Modèle",
     figsize: tuple[float, float] | None = None,
     threshold: float = 0.5,
+    normalize: bool = True,
 ) -> plt.Figure:
     """
     Grille de matrices de confusion — une colonne par tâche évaluée, une ligne par step d'entraînement.
 
     Visualise comment la performance de classification évolue tâche par tâche.
     Cases (i, j) avec j > i sont affichées grisées ("N/A" — tâche pas encore vue).
-    Chaque matrice est normalisée par ligne (recall par classe).
 
     Parameters
     ----------
@@ -266,6 +271,8 @@ def plot_confusion_matrix_grid(
         Taille de la figure. Défaut : (4*T, 3.5*T).
     threshold : float
         Seuil de binarisation si y_pred est en probabilités. Défaut : 0.5.
+    normalize : bool
+        Si True (défaut), normalise chaque ligne (recall par classe). Si False, affiche les comptes bruts.
 
     Returns
     -------
@@ -284,21 +291,30 @@ def plot_confusion_matrix_grid(
     if task_names is None:
         task_names = [f"T{t + 1}" for t in range(T)]
 
-    if figsize is None:
-        figsize = (4.0 * T, 3.5 * T)
+    # Si un seul step d'entraînement est présent (ex. modèle final uniquement),
+    # afficher une grille 1×T au lieu de T×T pour éviter les lignes entièrement N/A.
+    unique_i = sorted(set(all_i))
+    single_step_mode = len(unique_i) == 1
+    n_rows = 1 if single_step_mode else T
+    row_indices = unique_i if single_step_mode else list(range(T))
 
-    fig, axes = plt.subplots(T, T, figsize=figsize)
-    if T == 1:
+    if figsize is None:
+        figsize = (4.0 * T, 3.5 * n_rows)
+
+    fig, axes = plt.subplots(n_rows, T, figsize=figsize)
+    if n_rows == 1 and T == 1:
         axes = np.array([[axes]])
-    elif axes.ndim == 1:
-        axes = axes.reshape(T, T)
+    elif n_rows == 1:
+        axes = axes.reshape(1, T)
+    elif T == 1:
+        axes = axes.reshape(n_rows, 1)
 
     class_labels = ["Normal", "Faulty"]
 
-    for i in range(T):
+    for row_idx, i in enumerate(row_indices):
         for j in range(T):
-            ax = axes[i, j]
-            if j > i or (i, j) not in preds_dict:
+            ax = axes[row_idx, j]
+            if (not single_step_mode and j > i) or (i, j) not in preds_dict:
                 # Tâche pas encore vue — cellule grisée
                 ax.set_facecolor("#EEEEEE")
                 ax.text(0.5, 0.5, "N/A", ha="center", va="center",
@@ -311,30 +327,39 @@ def plot_confusion_matrix_grid(
             y_pred = (y_pred_raw >= threshold).astype(int)
 
             cm = confusion_matrix(y_true.astype(int), y_pred, labels=[0, 1])
-            # Normalisation par ligne (recall par classe)
-            row_sums = cm.sum(axis=1, keepdims=True)
-            row_sums = np.where(row_sums == 0, 1, row_sums)
-            cm_norm = cm / row_sums
+
+            if normalize:
+                row_sums = cm.sum(axis=1, keepdims=True)
+                row_sums = np.where(row_sums == 0, 1, row_sums)
+                cm_display = cm / row_sums
+                fmt = ".2f"
+                vmin, vmax = 0.0, 1.0
+            else:
+                cm_display = cm.astype(float)
+                fmt = ".0f"
+                vmin, vmax = 0.0, float(cm.max()) if cm.max() > 0 else 1.0
 
             if _HAS_SEABORN:
                 sns.heatmap(
-                    cm_norm,
+                    cm_display,
                     ax=ax,
                     annot=True,
-                    fmt=".2f",
+                    fmt=fmt,
                     cmap="Blues",
-                    vmin=0.0,
-                    vmax=1.0,
+                    vmin=vmin,
+                    vmax=vmax,
                     xticklabels=class_labels,
                     yticklabels=class_labels,
                     cbar=False,
                     linewidths=0.5,
                 )
             else:
-                im = ax.imshow(cm_norm, cmap="Blues", vmin=0.0, vmax=1.0, aspect="auto")
+                im = ax.imshow(cm_display, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
                 for ri in range(2):
                     for ci in range(2):
-                        ax.text(ci, ri, f"{cm_norm[ri, ci]:.2f}", ha="center", va="center", fontsize=9)
+                        val = cm_display[ri, ci]
+                        txt = f"{val:.2f}" if normalize else f"{int(val)}"
+                        ax.text(ci, ri, txt, ha="center", va="center", fontsize=9)
                 ax.set_xticks([0, 1])
                 ax.set_xticklabels(class_labels, fontsize=8)
                 ax.set_yticks([0, 1])
@@ -351,8 +376,9 @@ def plot_confusion_matrix_grid(
             ax.set_ylabel("Réel", fontsize=FIGURE_FONT_SIZE - 2)
             ax.tick_params(labelsize=8)
 
+    norm_label = "normalisées par ligne" if normalize else "comptes bruts"
     fig.suptitle(
-        f"Matrices de confusion — {model_name}\n(normalisées par ligne | seuil={threshold})",
+        f"Matrices de confusion — {model_name}\n({norm_label} | seuil={threshold})",
         fontsize=FIGURE_FONT_SIZE + 1,
         fontweight="bold",
     )
@@ -674,6 +700,72 @@ def plot_performance_by_pump_id_bar(
 
     ax.set_xticks(x)
     ax.set_xticklabels([f"Pump {pid}" for pid in pump_ids], fontsize=FIGURE_FONT_SIZE - 1)
+    ax.set_ylabel("Accuracy finale", fontsize=FIGURE_FONT_SIZE)
+    ax.set_ylim(0.0, 1.05)
+    ax.set_title(title, fontsize=FIGURE_FONT_SIZE + 1, fontweight="bold")
+    ax.legend(fontsize=FIGURE_FONT_SIZE - 1, loc="lower right")
+    ax.yaxis.grid(True, alpha=0.3, linestyle="--")
+    ax.set_axisbelow(True)
+
+    fig.tight_layout()
+    return fig
+
+
+def plot_performance_by_task_bar(
+    results: dict[str, dict],
+    task_names: list[str],
+    title: str = "Accuracy finale par tâche",
+    ax: plt.Axes | None = None,
+) -> plt.Figure:
+    """
+    Barplot groupé : accuracy finale par tâche, une barre par modèle.
+
+    Parameters
+    ----------
+    results : dict[str, dict]
+        Clés = noms de modèles, valeurs = dict ``{task_name (str): accuracy (float)}``.
+    task_names : list[str]
+        Liste ordonnée des noms de tâches à afficher.
+    title : str
+        Titre de la figure.
+    ax : plt.Axes | None
+        Axes existants (si None, une nouvelle figure est créée).
+
+    Returns
+    -------
+    plt.Figure
+        Figure matplotlib prête pour ``save_figure()``.
+    """
+    model_names = list(results.keys())
+    n_models = len(model_names)
+    n_tasks = len(task_names)
+
+    bar_width = 0.8 / max(n_models, 1)
+    x = np.arange(n_tasks)
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(max(6, n_tasks * 1.4), 4), dpi=FIGURE_DPI)
+    else:
+        fig = ax.get_figure()
+
+    colors = plt.cm.tab10(np.linspace(0, 1, max(n_models, 1)))
+
+    for i, (model_name, task_accs) in enumerate(results.items()):
+        offsets = x + (i - n_models / 2 + 0.5) * bar_width
+        heights = [task_accs.get(name, 0.0) for name in task_names]
+        ax.bar(
+            offsets,
+            heights,
+            width=bar_width,
+            label=model_name,
+            color=colors[i],
+            alpha=0.85,
+            edgecolor="white",
+            linewidth=0.5,
+        )
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(task_names, fontsize=FIGURE_FONT_SIZE - 1)
     ax.set_ylabel("Accuracy finale", fontsize=FIGURE_FONT_SIZE)
     ax.set_ylim(0.0, 1.05)
     ax.set_title(title, fontsize=FIGURE_FONT_SIZE + 1, fontweight="bold")

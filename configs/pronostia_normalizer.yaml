@@ -1,0 +1,44 @@
+fit_condition: condition_1_1800rpm_4000N
+normalization: zscore
+feature_names:
+- mean_acc_horiz
+- std_acc_horiz
+- rms_acc_horiz
+- kurtosis_acc_horiz
+- peak_acc_horiz
+- crest_factor_acc_horiz
+- mean_acc_vert
+- std_acc_vert
+- rms_acc_vert
+- kurtosis_acc_vert
+- peak_acc_vert
+- crest_factor_acc_vert
+- temporal_position
+mean:
+  mean_acc_horiz: 0.0010455194860696793
+  std_acc_horiz: 0.6089931726455688
+  rms_acc_horiz: 0.6093921065330505
+  kurtosis_acc_horiz: 3.398179292678833
+  peak_acc_horiz: 3.3234939575195312
+  crest_factor_acc_horiz: 5.145400047302246
+  mean_acc_vert: 0.0012953677214682102
+  std_acc_vert: 0.5177472829818726
+  rms_acc_vert: 0.5182482600212097
+  kurtosis_acc_vert: 9.76373291015625
+  peak_acc_vert: 3.277306079864502
+  crest_factor_acc_vert: 5.444462776184082
+  temporal_position: 0.5
+std:
+  mean_acc_horiz: 0.017621181905269623
+  std_acc_horiz: 0.5203012824058533
+  rms_acc_horiz: 0.5201343297958374
+  kurtosis_acc_horiz: 11.94119930267334
+  peak_acc_horiz: 4.014873504638672
+  crest_factor_acc_horiz: 2.617680311203003
+  mean_acc_vert: 0.02340889908373356
+  std_acc_vert: 0.3397306501865387
+  rms_acc_vert: 0.33977529406547546
+  kurtosis_acc_vert: 37.87489700317383
+  peak_acc_vert: 4.615050315856934
+  crest_factor_acc_vert: 3.8633360862731934
+  temporal_position: 0.2888321876525879

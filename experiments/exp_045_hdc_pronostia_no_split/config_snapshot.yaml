@@ -1,0 +1,66 @@
+_snapshot_timestamp: '2026-04-23T14:42:40.368519'
+data:
+  dataset: pronostia
+  failure_ratio: 0.1
+  feature_columns:
+  - acc_horiz
+  - acc_vert
+  n_classes: 2
+  n_features: 13
+  npy_dir: data/raw/Pronostia dataset/binaries
+  seed: 42
+  step_size: 2560
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+dataset:
+  failure_ratio: 0.1
+  name: pronostia
+  seed: 42
+  step_size: 2560
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_045_hdc_pronostia_no_split/results/
+  seed: 42
+exp_id: exp_045_hdc_pronostia_no_split
+feature_bounds:
+  crest_factor_acc_horiz: null
+  crest_factor_acc_vert: null
+  kurtosis_acc_horiz: null
+  kurtosis_acc_vert: null
+  mean_acc_horiz: null
+  mean_acc_vert: null
+  peak_acc_horiz: null
+  peak_acc_vert: null
+  rms_acc_horiz: null
+  rms_acc_vert: null
+  std_acc_horiz: null
+  std_acc_vert: null
+  temporal_position: null
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors_pronostia.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 15360
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+paths:
+  npy_dir: data/raw/Pronostia dataset/binaries
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42

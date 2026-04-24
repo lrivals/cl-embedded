@@ -1,0 +1,11 @@
+{
+  "mahalanobis": {
+    "inference_latency_ms": 0.008160769830283243,
+    "inference_latency_std_ms": 0.005159089518462354,
+    "ram_peak_bytes": 1756,
+    "n_params": 182,
+    "ram_fp32_bytes": 728,
+    "ram_int8_bytes": 182,
+    "within_budget_64ko": true
+  }
+}

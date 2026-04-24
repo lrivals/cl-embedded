@@ -1,0 +1,52 @@
+# configs/mahalanobis_pronostia_single_task_config.yaml
+# Baseline single-task Mahalanobis — Dataset 3 FEMTO PRONOSTIA (toutes conditions fusionnées)
+# Exp : exp_048_mahalanobis_pronostia_no_split
+# NE PAS modifier directement : créer une copie pour chaque variante expérimentale.
+
+exp_id: "exp_048_mahalanobis_pronostia_no_split"
+
+mahalanobis:
+  anomaly_threshold: null       # null → calculé automatiquement (percentile sur train)
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6             # régularisation Σ : Σ_reg = Σ + reg_covar * I
+  cl_strategy: "refit"          # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
+  welford_min_samples: 10       # min. samples avant MAJ Σ⁻¹ en mode online
+  update_sigma_every: 1         # 1=continu, 10/50/100=mini-batch
+
+dataset:
+  name: pronostia
+  task_split: "no_split"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  seed: 42
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+
+paths:
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+
+data:
+  dataset: pronostia
+  task_split: "no_split"
+  npy_dir: "data/raw/Pronostia dataset/binaries"
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.10
+  seed: 42
+  n_features: 13
+  n_classes: 2
+  feature_columns:
+    - acc_horiz
+    - acc_vert
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "auroc", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_048_mahalanobis_pronostia_no_split/results/"
+
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000

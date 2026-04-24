@@ -1,0 +1,28 @@
+{
+  "exp_id": "exp_052_tinyol_pronostia_by_condition",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "timestamp": "2026-04-23T15:40:26.957715",
+  "seed": 42,
+  "acc_final": 0.9297033743102157,
+  "avg_forgetting": 0.01983261903706257,
+  "backward_transfer": -0.01983261903706257,
+  "acc_matrix": [
+    [
+      0.9605307927866621
+    ],
+    [
+      0.9557672677781558,
+      0.9443631039531479
+    ],
+    [
+      0.9333106498809118,
+      0.931918008784773,
+      0.9238814642649622
+    ]
+  ],
+  "ram_peak_bytes": 3698,
+  "inference_latency_ms": 0.009060099946509581,
+  "n_params_oto": 10,
+  "n_params_encoder": 532
+}

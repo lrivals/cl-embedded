@@ -7,15 +7,15 @@
 | **Priorité** | 🟡 Important |
 | **Durée estimée** | 2h |
 | **Dépendances** | S10-01 (`PronostiaDataset` opérationnel) |
-| **Fichiers cibles** | `notebooks/01_data_exploration.ipynb`, `notebooks/figures/eda/pronostia/` |
+| **Fichiers cibles** | `notebooks/01C_data_exploration_pronostia.ipynb`, `notebooks/figures/eda/pronostia/` |
 
 ---
 
 ## Objectif
 
-Ajouter une **section 3** dans le notebook d'exploration existant `01_data_exploration.ipynb` pour documenter le dataset FEMTO PRONOSTIA. Cette section est le support visuel de la description du Dataset 3 dans le manuscrit.
+Créer un **notebook EDA dédié** `01C_data_exploration_pronostia.ipynb` pour documenter le dataset FEMTO PRONOSTIA. Ce notebook est le support visuel de la description du Dataset 3 dans le manuscrit.
 
-Les sections 1 et 2 couvrent déjà les datasets Monitoring (tabulaire) et Pump Maintenance (temporel). La section 3 documente la vibrométrie industrielle réelle de PRONOSTIA.
+> **Choix d'implémentation** : notebook dédié plutôt que section dans `01_data_exploration.ipynb`, car la nature temporelle du dataset (signal brut + trajectoires de dégradation) justifie un traitement séparé et plus développé (7 sections, ~14 figures).
 
 ---
 
@@ -113,11 +113,24 @@ notebooks/figures/eda/pronostia/
 
 ## Critères d'acceptation
 
-- [ ] Section 3 ajoutée dans `01_data_exploration.ipynb` (après les sections Monitoring et Pump)
+- [x] Notebook `01C_data_exploration_pronostia.ipynb` créé (7 sections, ~14 figures)
 - [ ] Notebook exécutable sans erreur après "Restart Kernel & Run All Cells"
-- [ ] 3 figures sauvegardées dans `notebooks/figures/eda/pronostia/`
-- [ ] Tableau récapitulatif présent avec n_epochs, durée de vie et proportion label=1 par roulement
-- [ ] La cellule 3.0 référence `FIXME(gap1)` et pointe vers exp_050–055
+- [x] Figures cibles dans `notebooks/figures/eda/pronostia/` (dossier créé à l'exécution)
+- [x] Tableau récapitulatif présent (Section 1) avec n_epochs, durée de vie et proportion label=1 par roulement
+- [x] Trajectoires de dégradation (Section 3 : RMS, crest_factor, kurtosis sur 6 roulements)
+- [x] Domain shift visualisé (Section 5 : KDE + boxplots par condition)
+- [x] PCA 2D colorée par label et par condition (Section 7)
+
+**Sections livrées** :
+
+- S0 : Setup + chargement 6 `.npy` + DataFrame global
+- S1 : Vue d'ensemble (bar charts epochs, durées de vie, tableau)
+- S2 : Signal brut — 3 epochs (début / milieu / fin de vie)
+- S3 : Trajectoires de dégradation (RMS, crest_factor, kurtosis) × 6 roulements
+- S4 : Distributions features normal vs pré-failure (label_distribution, KDE, boxplots, sorted scatter)
+- S5 : Domain shift inter-conditions (KDE + boxplots by_group, table quantitative)
+- S6 : Corrélations (heatmaps : horiz / vert / complet)
+- S7 : PCA 2D (colorée par label puis par condition)
 
 ---
 
@@ -127,4 +140,4 @@ notebooks/figures/eda/pronostia/
 
 ---
 
-**Complété le** : _(à renseigner)_
+**Complété le** : 2026-04-23

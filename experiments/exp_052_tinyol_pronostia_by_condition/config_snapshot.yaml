@@ -1,0 +1,72 @@
+exp_id: exp_052_tinyol_pronostia_by_condition
+backbone:
+  input_dim: 13
+  encoder_dims:
+  - 16
+  - 12
+  - 8
+  activation: relu
+  checkpoint_path: experiments/exp_052_tinyol_pronostia_by_condition/backbone.pt
+  decoder_dims:
+  - 12
+  - 16
+  - 13
+pretrain:
+  optimizer: adam
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 64
+  loss: mse
+  seed: 42
+  pretrain_fraction: 0.3
+  val_fraction: 0.1
+oto_head:
+  input_dim: 9
+  output_dim: 1
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.0
+  loss: bce
+data:
+  dataset: pronostia
+  task_split: by_condition
+  npy_dir: data/raw/Pronostia dataset/binaries
+  normalizer_path: configs/pronostia_normalizer.yaml
+  n_conditions: 3
+  window_size: 2560
+  step_size: 2560
+  failure_ratio: 0.1
+  val_ratio: 0.2
+  n_features: 13
+  n_classes: 2
+  feature_columns:
+  - acc_horiz
+  - acc_vert
+  condition_map:
+    1:
+    - 0
+    - 1
+    2:
+    - 2
+    - 3
+    3:
+    - 4
+    - 5
+uint8_buffer:
+  enabled: false
+  size: 50
+  embed_dim: 8
+evaluation:
+  seed: 42
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_052_tinyol_pronostia_by_condition/results/
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 7168
+  warn_if_above_bytes: 52000

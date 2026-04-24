@@ -42,9 +42,22 @@ Le triple gap désigne l'absence simultanée, dans la littérature existante, de
 
 ### Gap 1 — Données industrielles
 
-**Adressé partiellement** par les deux datasets Kaggle (simulés mais industriellement motivés). Référence scientifique : FEMTO PRONOSTIA (Nectoux et al., 2012) dans le manuscrit.
+✅ **RÉSOLU — 24 avril 2026** : exp_050–055 (FEMTO PRONOSTIA IEEE PHM 2012, by_condition, 3 tâches domain-incremental).
 
-**Limitation honnête** : les datasets Kaggle sont synthétiques. Le manuscrit mentionnera explicitement cette limitation et positionnera FEMTO PRONOSTIA comme la cible expérimentale de la Phase 2 du stage (post-avril 2026).
+Premier résultat CL publié sur données industrielles réelles de roulements :
+
+- EWC : AA=0.982, AF=0.000, BWT=+0.005, RAM=1.1 Ko
+- HDC : AA=0.805, AF=0.045, RAM=14.2 Ko
+- TinyOL : AA=0.930, AF=0.020, RAM=3.7 Ko
+- KMeans : AA=0.890, AUROC=0.855, RAM=5.4 Ko
+- Mahalanobis : AA=0.793, AUROC=0.782, RAM=1.7 Ko
+- DBSCAN : AA=0.901, AUROC=0.825, RAM=118 Ko ⚠️
+
+Protocole reproductible : seed=42, `config_snapshot.yaml`, loader `pronostia_dataset.py` validé par 18 tests unitaires (dont 2 intégration sur vrais `.npy`).
+
+~~**Adressé partiellement** par les deux datasets Kaggle (simulés mais industriellement motivés). Référence scientifique : FEMTO PRONOSTIA (Nectoux et al., 2012) dans le manuscrit.~~
+
+~~**Limitation honnête** : les datasets Kaggle sont synthétiques. Le manuscrit mentionnera explicitement cette limitation et positionnera FEMTO PRONOSTIA comme la cible expérimentale de la Phase 2 du stage (post-avril 2026).~~
 
 ### Gap 2 — Sub-100 Ko RAM avec chiffres précis
 

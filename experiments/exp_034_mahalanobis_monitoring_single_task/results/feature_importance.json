@@ -1,0 +1,20 @@
+{
+  "model": "Mahalanobis",
+  "dataset": "equipment_monitoring",
+  "scenario": "single_task_batch",
+  "test_accuracy": 0.9570032573289903,
+  "test_auc_roc": 0.9873017224255838,
+  "train_stream_accuracy": 0.9500271591526345,
+  "permutation_importance": {
+    "temperature": 0.03381107491856672,
+    "vibration": 0.031596091205211896,
+    "pressure": 0.013224755700325774,
+    "humidity": 0.01042345276872969
+  },
+  "feature_masking_importance": {
+    "temperature": 0.028013029315960947,
+    "vibration": 0.02736156351791541,
+    "pressure": 0.014983713355048889,
+    "humidity": 0.013029315960912058
+  }
+}

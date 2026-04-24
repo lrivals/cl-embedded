@@ -72,8 +72,8 @@ def parse_args() -> argparse.Namespace:
         "--dataset",
         type=str,
         default="monitoring",
-        choices=["monitoring", "pump"],
-        help="Dataset : monitoring (Dataset 2) | pump (Dataset 1)",
+        choices=["monitoring", "pump", "pronostia"],
+        help="Dataset : monitoring (Dataset 2) | pump (Dataset 1) | pronostia (Dataset 3)",
     )
     parser.add_argument(
         "--exp_id",
@@ -252,6 +252,9 @@ def extract_numpy(loader) -> tuple[np.ndarray, np.ndarray]:
 def train_unsupervised(
     model: KMeansDetector | KNNDetector | PCABaseline,
     tasks: list[dict],
+    checkpoints_dir: Path | None = None,
+    model_name: str = "model",
+    dataset_tag: str = "dataset",
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Boucle domain-incremental : entraîne le modèle sur T tâches successives
@@ -264,6 +267,13 @@ def train_unsupervised(
     model : détecteur non supervisé (KMeans / KNN / PCA).
     tasks : list[dict]
         Sortie de get_cl_dataloaders() — clés : task_id, domain, train_loader, val_loader.
+    checkpoints_dir : Path | None
+        Si fourni, sauvegarde le modèle après chaque tâche i sous
+        ``{checkpoints_dir}/{model_name}_{dataset_tag}_task{i}.pkl``.
+    model_name : str
+        Nom du modèle, utilisé pour nommer les checkpoints.
+    dataset_tag : str
+        Tag du dataset, utilisé pour nommer les checkpoints.
 
     Returns
     -------
@@ -277,6 +287,9 @@ def train_unsupervised(
     acc_matrix = np.full((T, T), np.nan)
     auroc_matrix = np.full((T, T), np.nan)
 
+    if checkpoints_dir is not None:
+        checkpoints_dir.mkdir(parents=True, exist_ok=True)
+
     # Pré-extraction des données de validation (évite de répéter l'itération)
     val_data = [extract_numpy(task["val_loader"]) for task in tasks]
 
@@ -287,6 +300,10 @@ def train_unsupervised(
         # Entraînement non supervisé (pas de labels)
         X_train, _ = extract_numpy(task["train_loader"])
         model.fit_task(X_train, task_id=i)
+
+        # Checkpoint intermédiaire — permet de reconstruire preds_dict complet en notebook
+        if checkpoints_dir is not None:
+            model.save(checkpoints_dir / f"{model_name}_{dataset_tag}_task{i}.pkl")
 
         # Évaluation sur toutes les tâches vues jusqu'à i
         for j in range(i + 1):
@@ -406,8 +423,14 @@ def run_model(
 
     model = build_model(model_name, config)
 
-    # --- Entraînement CL ---
-    acc_matrix, auroc_matrix = train_unsupervised(model, tasks)
+    # --- Entraînement CL avec checkpoints intermédiaires ---
+    checkpoints_dir = results_dir.parent / "checkpoints"
+    acc_matrix, auroc_matrix = train_unsupervised(
+        model, tasks,
+        checkpoints_dir=checkpoints_dir,
+        model_name=model_name,
+        dataset_tag=dataset_tag,
+    )
 
     # --- Métriques CL ---
     cl_metrics = compute_cl_metrics(acc_matrix)
@@ -431,9 +454,8 @@ def run_model(
     np.save(results_dir / f"acc_matrix_{model_name}_{dataset_tag}.npy", acc_matrix)
     np.save(results_dir / f"auroc_matrix_{model_name}_{dataset_tag}.npy", auroc_matrix)
 
-    checkpoints_dir = results_dir.parent / "checkpoints"
-    checkpoints_dir.mkdir(parents=True, exist_ok=True)
-    model.save(checkpoints_dir / f"{model_name}_{dataset_tag}_task{T - 1}_final.pkl")
+    # Compat notebooks existants — modèle final dans results/
+    model.save(results_dir / f"model_{model_name}.pkl")
 
     # Clés plates requises par S511 + clés détaillées existantes
     result = {
@@ -560,6 +582,76 @@ def _run_single_task_unsupervised(
         print(f"✅ {model_name.upper()} single-task terminé → {exp_dir}")
 
 
+def _run_single_task_unsupervised_pronostia(
+    model_names: list[str],
+    data: dict,
+    cfg: dict,
+    results_dir: Path,
+    exp_dir: Path,
+    dataset_tag: str,
+) -> None:
+    """
+    Entraîne et évalue les modèles non supervisés en mode single-task sur Dataset 3 Pronostia.
+
+    Utilise les données pré-chargées par get_pronostia_dataloaders_single_task().
+    Sortie : ``metrics_single_task.json`` par modèle.
+    """
+    from sklearn.metrics import accuracy_score, f1_score
+
+    X_train, _ = extract_numpy(data["train_loader"])
+    X_test, y_test = extract_numpy(data["test_loader"])
+
+    print(f"\n  Single-task Pronostia : {X_train.shape[0]} train | {X_test.shape[0]} test")
+
+    for model_name in model_names:
+        print(f"\n{'=' * 60}")
+        print(f"  Modèle : {model_name.upper()} (single-task Pronostia)")
+        print(f"{'=' * 60}")
+
+        model = build_model(model_name, cfg)
+        model.fit_task(X_train, task_id=0)
+
+        test_scores = model.anomaly_score(X_test)
+        train_scores = model.anomaly_score(X_train)
+        percentile_val = cfg.get(model_name, {}).get("anomaly_percentile", 95)
+        threshold = float(np.percentile(train_scores, percentile_val))
+        y_pred = (test_scores > threshold).astype(int)
+
+        acc = float(accuracy_score(y_test, y_pred))
+        f1 = float(f1_score(y_test, y_pred, zero_division=0))
+        try:
+            auc = float(roc_auc_score(y_test, test_scores))
+        except ValueError:
+            auc = float("nan")
+
+        print(f"  Test → accuracy={acc:.4f} | f1={f1:.4f} | auc_roc={auc:.4f}")
+
+        n_latency_runs = cfg.get("evaluation", {}).get("n_latency_runs", 100)
+        mem = profile_model(model, X_test[:1], n_runs=n_latency_runs)
+        print(f"  RAM peak: {mem['ram_peak_bytes'] / 1024:.1f} Ko  |  "
+              f"Latence: {mem['inference_latency_ms']:.3f} ms  |  "
+              f"n_params: {mem['n_params']}")
+
+        metrics: dict = {
+            "exp_id": exp_dir.name,
+            "model": model_name,
+            "dataset": "pronostia",
+            "scenario": "no_split",
+            "accuracy": acc,
+            "f1_score": f1,
+            "auc_roc": auc,
+            "ram_peak_bytes": mem["ram_peak_bytes"],
+            "inference_latency_ms": mem["inference_latency_ms"],
+            "n_params": mem["n_params"],
+        }
+
+        metrics_path = results_dir / "metrics_single_task.json"
+        with open(metrics_path, "w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+        print(f"  Résultats → {metrics_path}")
+        print(f"✅ {model_name.upper()} single-task Pronostia terminé → {exp_dir}")
+
+
 def _run_single_task_unsupervised_pump(
     model_names: list[str],
     data: dict,
@@ -663,7 +755,12 @@ def main() -> None:
             cfg["data_pump"].update(data_cfg.get("data", {}))
 
     # --- Override exp_id depuis CLI ---
-    dataset_tag = "dataset1" if args.dataset == "pump" else "dataset2"
+    if args.dataset == "pump":
+        dataset_tag = "dataset1"
+    elif args.dataset == "pronostia":
+        dataset_tag = "dataset3"
+    else:
+        dataset_tag = "dataset2"
     if args.exp_id:
         if args.dataset == "pump":
             cfg["exp_id_pump"] = args.exp_id
@@ -675,6 +772,10 @@ def main() -> None:
         exp_id = cfg.get("exp_id_pump", "exp_006_unsupervised_dataset1")
         results_dir = Path(f"experiments/{exp_id}/results")
         cfg["_dataset"] = "pump"
+    elif args.dataset == "pronostia":
+        exp_id = cfg.get("exp_id", "exp_047_kmeans_pronostia_no_split")
+        results_dir = Path(f"experiments/{exp_id}/results")
+        cfg["_dataset"] = "pronostia"
     else:
         exp_id = cfg.get("exp_id", "exp_005_unsupervised_dataset2")
         results_dir = Path(f"experiments/{exp_id}/results")
@@ -706,6 +807,37 @@ def main() -> None:
         if tasks[0].get("_single_task_mode"):
             _run_single_task_unsupervised_pump(model_names, tasks[0], cfg, results_dir, exp_dir, dataset_tag)
             return
+    elif args.dataset == "pronostia":
+        from src.data.pronostia_dataset import (
+            get_pronostia_dataloaders,
+            get_pronostia_dataloaders_single_task,
+        )
+        npy_dir = Path(cfg["data"]["npy_dir"])
+        task_split = cfg["data"].get("task_split", "no_split")
+        print(f"\nChargement Dataset 3 (FEMTO PRONOSTIA) — {task_split} ...")
+        if task_split == "no_split":
+            data_st = get_pronostia_dataloaders_single_task(
+                npy_dir=npy_dir,
+                batch_size=cfg["data"].get("batch_size", 32),
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=cfg.get("seed", 42),
+                window_size=cfg["data"].get("window_size", 2560),
+                step_size=cfg["data"].get("step_size", 2560),
+                failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+            )
+            _run_single_task_unsupervised_pronostia(model_names, data_st, cfg, results_dir, exp_dir, dataset_tag)
+            return
+        tasks = get_pronostia_dataloaders(
+            npy_dir=npy_dir,
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("seed", 42),
+            window_size=cfg["data"].get("window_size", 2560),
+            step_size=cfg["data"].get("step_size", 2560),
+            failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+        )
     else:
         csv_path = Path(cfg["data"]["csv_path"])
         if not csv_path.exists():

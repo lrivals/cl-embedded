@@ -120,10 +120,10 @@ Les modèles supervisés (EWC, TinyOL) devraient obtenir une AUC-ROC > 0.75 sur 
 
 ## Critères d'acceptation
 
-- [ ] 6 dossiers `experiments/exp_044–049/` créés avec `config_snapshot.yaml`
-- [ ] 6 fichiers `metrics_single_task.json` présents et non vides
-- [ ] Les métriques `ram_peak_bytes` et `inference_latency_ms` sont mesurées (non nulles)
-- [ ] `exp_044` (EWC) sert de référence pour valider le loader avant de lancer les 5 autres
+- [x] 6 dossiers `experiments/exp_044–049/` créés avec `config_snapshot.yaml`
+- [x] 6 fichiers `metrics_single_task.json` présents et non vides
+- [x] Les métriques `ram_peak_bytes` et `inference_latency_ms` sont mesurées (non nulles)
+- [x] `exp_044` (EWC) sert de référence pour valider le loader avant de lancer les 5 autres
 
 ---
 
@@ -134,4 +134,19 @@ Les modèles supervisés (EWC, TinyOL) devraient obtenir une AUC-ROC > 0.75 sur 
 
 ---
 
-**Complété le** : _(à renseigner)_
+---
+
+## Résultats obtenus (2026-04-23)
+
+| Exp | Modèle | Accuracy | F1 | AUC-ROC | RAM peak | Latence |
+| --- | --- | --- | --- | --- | --- | --- |
+| exp_044 | EWC | 0.9443 | 0.7595 | 0.9040 | — | — |
+| exp_045 | HDC | 0.6361 | 0.2846 | 0.6742 | 14.3 Ko | 0.046 ms |
+| exp_046 | TinyOL | 0.9495 | 0.6696 | 0.9678 | — | — |
+| exp_047 | KMeans | 0.9004 | 0.3750 | 0.9009 | 5.5 Ko | 0.516 ms |
+| exp_048 | Mahalanobis | 0.8871 | 0.2797 | 0.8854 | 1.7 Ko | 0.008 ms |
+| exp_049 | DBSCAN | 0.8851 | 0.2575 | 0.8436 | 261.1 Ko ⚠️ | 0.362 ms |
+
+> **Note** : DBSCAN dépasse le budget RAM 64 Ko (261 Ko). HDC performe en dessous des autres modèles (AUC=0.67) — investiguer la qualité des feature bounds et le taux d'erreur d'entraînement élevé (38%). TinyOL est le meilleur modèle (AUC=0.97).
+
+**Complété le** : 2026-04-23

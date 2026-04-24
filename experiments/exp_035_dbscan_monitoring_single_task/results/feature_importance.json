@@ -1,0 +1,20 @@
+{
+  "model": "DBSCAN",
+  "dataset": "equipment_monitoring",
+  "scenario": "single_task_batch",
+  "test_accuracy": 0.9550488599348534,
+  "test_auc_roc": 0.990640636379974,
+  "train_stream_accuracy": 0.9500271591526345,
+  "permutation_importance": {
+    "temperature": 0.03433224755700337,
+    "vibration": 0.030553745928338927,
+    "pressure": 0.012247557003257303,
+    "humidity": 0.005732899022801274
+  },
+  "feature_masking_importance": {
+    "temperature": 0.026710097719869763,
+    "vibration": 0.024755700325732932,
+    "pressure": 0.013680781758957705,
+    "humidity": 0.007166123778501676
+  }
+}

@@ -120,6 +120,49 @@ def _get_pretrain_data_monitoring(config: dict) -> tuple[torch.Tensor, torch.Ten
     return x_train, x_val
 
 
+def _get_pretrain_data_pronostia(config: dict) -> tuple[torch.Tensor, torch.Tensor]:
+    """Charge les données saines de la Condition 1 PRONOSTIA pour le pré-entraînement."""
+    import numpy as np
+
+    from src.data.pronostia_dataset import (
+        fit_normalizer,
+        load_condition_features,
+        load_pronostia_normalizer,
+        save_normalizer,
+    )
+
+    npy_dir = Path(config["data"]["npy_dir"])
+    normalizer_path = Path(config["data"]["normalizer_path"])
+
+    # Condition 1 = données de référence (1 800 rpm, 4 000 N)
+    features, labels = load_condition_features(npy_dir, condition=1)
+
+    # Générer le normaliseur si absent
+    if not normalizer_path.exists():
+        normalizer = fit_normalizer(features)
+        save_normalizer(normalizer_path, normalizer)
+        print(f"[Pretrain] Normalizer généré → {normalizer_path}")
+
+    normalizer = load_pronostia_normalizer(normalizer_path)
+    features = (features - normalizer["mean"]) / normalizer["std"]
+
+    # Données saines uniquement (label=0 = premières 90% des fenêtres)
+    healthy_mask = labels == 0
+    x_healthy = features[healthy_mask].astype(np.float32)
+
+    n_total = len(x_healthy)
+    n_pretrain = int(n_total * config["pretrain"]["pretrain_fraction"])
+    n_val = int(n_total * config["pretrain"]["val_fraction"])
+
+    x_train = torch.from_numpy(x_healthy[:n_pretrain].copy())
+    x_val = torch.from_numpy(x_healthy[-n_val:].copy())
+
+    print(f"[Pretrain] Données saines Cond.1 : {n_pretrain} fenêtres (total sain : {n_total})")
+    print(f"[Pretrain] Validation             : {n_val} fenêtres")
+
+    return x_train, x_val
+
+
 def get_pretrain_data(config: dict) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Charge et filtre les données normales pour le pré-entraînement.
@@ -139,6 +182,8 @@ def get_pretrain_data(config: dict) -> tuple[torch.Tensor, torch.Tensor]:
     dataset = config["data"].get("dataset", "pump_maintenance")
     if dataset == "equipment_monitoring":
         return _get_pretrain_data_monitoring(config)
+    if dataset == "pronostia":
+        return _get_pretrain_data_pronostia(config)
     return _get_pretrain_data_pump(config)
 
 

@@ -1,0 +1,11 @@
+{
+  "kmeans": {
+    "inference_latency_ms": 0.33223709997400874,
+    "inference_latency_std_ms": 0.11015254910041275,
+    "ram_peak_bytes": 5450,
+    "n_params": 8,
+    "ram_fp32_bytes": 32,
+    "ram_int8_bytes": 8,
+    "within_budget_64ko": true
+  }
+}

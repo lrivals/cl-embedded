@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_045_hdc_pronostia_no_split",
+  "accuracy": 0.6361221779548473,
+  "f1": 0.2845953002610966,
+  "auc_roc": 0.6742112851592091,
+  "ram_peak_bytes": 14640,
+  "inference_latency_ms": 0.046214649810281117,
+  "n_params": 2048
+}

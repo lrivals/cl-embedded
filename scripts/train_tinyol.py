@@ -102,6 +102,36 @@ def _save_config_snapshot(config: dict, path: Path, exp_id: str = "exp") -> None
 def _load_tasks(config: dict, seed: int) -> list[dict]:
     """Charge les tâches CL selon config["data"]["dataset"]."""
     dataset = config["data"].get("dataset", "pump_maintenance")
+    if dataset == "pronostia":
+        from src.data.pronostia_dataset import (
+            get_pronostia_dataloaders,
+            get_pronostia_dataloaders_single_task,
+        )
+        npy_dir = Path(config["data"]["npy_dir"])
+        task_split = config["data"].get("task_split", "by_condition")
+        if task_split == "no_split":
+            st = get_pronostia_dataloaders_single_task(
+                npy_dir=npy_dir,
+                batch_size=1,  # TinyOL : online, un échantillon à la fois
+                test_ratio=config["data"].get("test_ratio", 0.2),
+                val_ratio=config["data"].get("val_ratio", 0.1),
+                seed=seed,
+                window_size=config["data"].get("window_size", 2560),
+                step_size=config["data"].get("step_size", 2560),
+                failure_ratio=config["data"].get("failure_ratio", 0.10),
+            )
+            st["_single_task_mode"] = True
+            return [st]
+        return get_pronostia_dataloaders(
+            npy_dir=npy_dir,
+            normalizer_path=Path(config["data"]["normalizer_path"]),
+            batch_size=1,
+            val_ratio=config["data"].get("val_ratio", 0.2),
+            seed=seed,
+            window_size=config["data"].get("window_size", 2560),
+            step_size=config["data"].get("step_size", 2560),
+            failure_ratio=config["data"].get("failure_ratio", 0.10),
+        )
     if dataset == "equipment_monitoring":
         task_split = config["data"].get("task_split", "by_equipment")
         if task_split == "no_split":

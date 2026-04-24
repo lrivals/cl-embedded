@@ -1,0 +1,20 @@
+{
+  "model": "EWC+MLP",
+  "dataset": "equipment_monitoring",
+  "scenario": "single_task_online",
+  "test_accuracy": 0.9758957654723127,
+  "test_auc_roc": 0.9910473596095457,
+  "prequential_accuracy": 0.9422415353974289,
+  "permutation_importance": {
+    "temperature": 0.061889250814332164,
+    "vibration": 0.04677524429967439,
+    "pressure": 0.017524429967426758,
+    "humidity": 0.004495114006514589
+  },
+  "gradient_saliency": {
+    "temperature": 0.034354884177446365,
+    "pressure": 0.018826622515916824,
+    "vibration": 0.020146824419498444,
+    "humidity": 0.015956705436110497
+  }
+}

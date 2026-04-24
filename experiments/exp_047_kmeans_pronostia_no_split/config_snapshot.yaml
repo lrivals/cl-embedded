@@ -1,0 +1,53 @@
+_dataset: pronostia
+_snapshot_timestamp: '2026-04-23T14:50:15.915699'
+data:
+  dataset: pronostia
+  failure_ratio: 0.1
+  feature_columns:
+  - acc_horiz
+  - acc_vert
+  n_classes: 2
+  n_features: 13
+  npy_dir: data/raw/Pronostia dataset/binaries
+  seed: 42
+  step_size: 2560
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+dataset:
+  failure_ratio: 0.1
+  name: pronostia
+  seed: 42
+  step_size: 2560
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+  window_size: 2560
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - auroc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_047_kmeans_pronostia_no_split/results/
+  seed: 42
+exp_id: exp_047_kmeans_pronostia_no_split
+kmeans:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  k_fixed: 3
+  k_max: 10
+  k_method: silhouette
+  k_min: 2
+  max_iter: 300
+  n_init: 10
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+paths:
+  npy_dir: data/raw/Pronostia dataset/binaries

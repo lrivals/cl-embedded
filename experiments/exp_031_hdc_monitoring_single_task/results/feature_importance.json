@@ -1,0 +1,20 @@
+{
+  "model": "HDC",
+  "dataset": "equipment_monitoring",
+  "scenario": "single_task_online",
+  "test_accuracy": 0.857328990228013,
+  "test_auc_roc": 0.9512026711311635,
+  "prequential_accuracy": 0.8622125656346189,
+  "permutation_importance": {
+    "temperature": 0.040521172638436465,
+    "vibration": 0.029641693811074843,
+    "humidity": 0.025016286644951036,
+    "pressure": 0.02338762214983714
+  },
+  "feature_masking_importance": {
+    "temperature": 0.03713355048859934,
+    "humidity": -0.0228013029315961,
+    "vibration": -0.07231270358306185,
+    "pressure": -0.08078175895765471
+  }
+}

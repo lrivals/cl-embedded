@@ -1776,6 +1776,89 @@ def plot_correlation_by_equipment(
     return fig
 
 
+def plot_sorted_scatter_by_label(
+    df: pd.DataFrame,
+    feature_cols: list[str],
+    label_col: str,
+    label_name: str = "Label",
+    alpha: float = 0.5,
+    s: float = 6,
+    title: str | None = None,
+    save_path: "Path | None" = None,
+) -> plt.Figure:
+    """Sorted scatter : valeurs triées croissantes, colorées par label.
+
+    Pour chaque feature, trie les valeurs dans l'ordre croissant (X = rang,
+    Y = valeur) et colore chaque point selon son label. Révèle dans quelle
+    plage de valeurs les échantillons faulty se concentrent.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+    feature_cols : list[str]
+    label_col : str
+    label_name : str
+    alpha : float
+        Transparence des points.
+    s : float
+        Taille des points.
+    title : str | None
+    save_path : Path | None
+
+    Returns
+    -------
+    plt.Figure
+    """
+    from matplotlib.patches import Patch  # local import — visualisation uniquement
+
+    n = len(feature_cols)
+    fig, axes = plt.subplots(1, n, figsize=(max(5 * n, 16), 5))
+    if n == 1:
+        axes = [axes]
+
+    label_vals = sorted(df[label_col].dropna().unique())
+
+    for ax, feat in zip(axes, feature_cols):
+        valid = df[[feat, label_col]].dropna()
+        sorted_idx = valid[feat].argsort().values
+        sorted_vals = valid[feat].values[sorted_idx]
+        sorted_labels = valid[label_col].values[sorted_idx].astype(int)
+        colors = [COLORS_LABEL.get(v, "#999999") for v in sorted_labels]
+
+        ax.scatter(
+            range(len(sorted_vals)),
+            sorted_vals,
+            c=colors,
+            alpha=alpha,
+            s=s,
+            linewidths=0,
+        )
+        ax.set_title(feat, fontsize=FIGURE_FONT_SIZE)
+        ax.set_xlabel("Rang (ordre croissant)", fontsize=FIGURE_FONT_SIZE - 2)
+        ax.set_ylabel(feat if feat == feature_cols[0] else "", fontsize=FIGURE_FONT_SIZE - 1)
+        ax.grid(True, alpha=0.25)
+
+    legend_handles = [
+        Patch(facecolor=COLORS_LABEL.get(int(v), "#999999"),
+              label=f"{label_name}={int(v)} ({'Normal' if int(v) == 0 else 'Faulty'})")
+        for v in label_vals
+    ]
+    fig.legend(
+        handles=legend_handles,
+        loc="upper right",
+        fontsize=FIGURE_FONT_SIZE - 1,
+        framealpha=0.9,
+    )
+    fig.suptitle(
+        title or f"Valeurs triées par {label_name}",
+        fontsize=FIGURE_FONT_SIZE + 2,
+        fontweight="bold",
+    )
+    fig.tight_layout()
+    _save_fig(fig, save_path)
+    return fig
+
+
 def plot_pairplot_by_equipment(
     df: pd.DataFrame,
     feature_cols: list[str],

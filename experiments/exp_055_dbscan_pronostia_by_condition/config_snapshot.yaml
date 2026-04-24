@@ -1,0 +1,50 @@
+_dataset: pronostia
+_snapshot_timestamp: '2026-04-23T15:43:24.892280'
+data:
+  condition_map:
+    1:
+    - 0
+    - 1
+    2:
+    - 2
+    - 3
+    3:
+    - 4
+    - 5
+  dataset: pronostia
+  failure_ratio: 0.1
+  feature_columns:
+  - acc_horiz
+  - acc_vert
+  n_classes: 2
+  n_conditions: 3
+  n_features: 13
+  normalizer_path: configs/pronostia_normalizer.yaml
+  npy_dir: data/raw/Pronostia dataset/binaries
+  step_size: 2560
+  task_split: by_condition
+  val_ratio: 0.2
+  window_size: 2560
+dbscan:
+  EPSILON: 0.5
+  MIN_SAMPLES: 5
+  algorithm: auto
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  metric: euclidean
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - auroc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_055_dbscan_pronostia_by_condition/results/
+  seed: 42
+exp_id: exp_055_dbscan_pronostia_by_condition
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
