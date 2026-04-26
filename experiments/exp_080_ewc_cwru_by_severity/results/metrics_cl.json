@@ -1,0 +1,34 @@
+{
+  "exp_id": "exp_080_ewc_cwru_by_severity",
+  "model": "ewc",
+  "dataset": "cwru",
+  "scenario": "by_severity",
+  "acc_final": 0.9523809523809522,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.006493506493506496,
+  "per_task_acc": [
+    0.974025974025974,
+    0.9090909090909091,
+    0.974025974025974
+  ],
+  "ram_peak_bytes": 1171,
+  "inference_latency_ms": 0.03809008001553593,
+  "n_params": 865,
+  "acc_matrix": [
+    [
+      0.974025974025974,
+      NaN,
+      NaN
+    ],
+    [
+      0.961038961038961,
+      0.8961038961038961,
+      NaN
+    ],
+    [
+      0.974025974025974,
+      0.9090909090909091,
+      0.974025974025974
+    ]
+  ]
+}

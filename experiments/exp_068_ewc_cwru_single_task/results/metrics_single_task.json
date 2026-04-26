@@ -1,0 +1,10 @@
+{
+  "exp_id": "exp_068_ewc_cwru_single_task",
+  "accuracy": 0.9782608695652174,
+  "f1": 0.9879518072289156,
+  "auc_roc": 0.9956941818945599,
+  "ram_peak_bytes": 1171,
+  "inference_latency_ms": 0.01965633009604062,
+  "n_params": 865,
+  "threshold": 0.5700000000000001
+}

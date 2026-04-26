@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_070_tinyol_cwru_single_task",
+  "accuracy": 0.9,
+  "f1": 0.9473684210526315,
+  "auc_roc": 0.8773366939718548,
+  "ram_peak_bytes": 944,
+  "inference_latency_ms": 0.005154890004632762,
+  "n_params": 397
+}

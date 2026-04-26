@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_069_hdc_cwru_single_task",
+  "accuracy": 0.8869565217391304,
+  "f1": 0.9329896907216495,
+  "auc_roc": 0.9371980676328502,
+  "ram_peak_bytes": 7920,
+  "inference_latency_ms": 0.04755570002089371,
+  "n_params": 1024
+}

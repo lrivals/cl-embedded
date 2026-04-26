@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_071_kmeans_cwru_single_task",
+  "model": "kmeans",
+  "dataset": "cwru",
+  "scenario": "no_split",
+  "acc_final": 0.15869565217391304,
+  "f1_score": 0.12244897959183673,
+  "auc_roc": 0.6015017853392145,
+  "ram_peak_bytes": 5386,
+  "inference_latency_ms": 0.19377222008188255,
+  "n_params": 18
+}

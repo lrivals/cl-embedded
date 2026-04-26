@@ -1,6 +1,6 @@
 # Roadmap Phase 1 — Implémentation Python
 
-> Mise à jour : 23 avril 2026  
+> Mise à jour : 24 avril 2026  
 > Horizon : 15 avril – 20 mai 2026 (étendu avec Sprints 6–9 notebooks)  
 > ← [Index roadmap](roadmap.md)
 
@@ -186,8 +186,8 @@
 | S6-01 | Vérifier/corriger `save_figure()` pour sous-dossiers auto | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 1h |
 | S6-02 | `get_pump_dataloaders_by_temporal_window()` — 4 quartiles 5 000 entrées | ✅ | ✅ | N/A | `src/data/pump_dataset.py` | 3h |
 | S6-03 | `configs/pump_by_temporal_window_config.yaml` | ✅ | ✅ | N/A | `configs/pump_by_temporal_window_config.yaml` | 1h |
-| S6-04 | `plot_performance_by_pump_id_bar()` | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
-| S6-05 | `plot_performance_heatmap_equipment_location()` | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
+| S6-04 | `plot_performance_by_pump_id_bar()` *(pas prioritaire)* | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
+| S6-05 | `plot_performance_heatmap_equipment_location()` *(pas prioritaire)* | ⬜ | ✅ | N/A | `src/evaluation/plots.py` | 2h |
 | S6-06 | Run exp_012–015 : pump_by_id (TinyOL, EWC, HDC, Mahalanobis) | ✅ | ✅ | ✅ | `experiments/exp_012–015/` | 2h |
 | S6-07 | Run exp_016–019 : monitoring_by_location (EWC, HDC, TinyOL, Mahalanobis) | ✅ | ✅ | ✅ | `experiments/exp_016–019/` | 2h |
 | S6-08 | Run exp_020–021 : pump_by_id (KMeans, DBSCAN) | ✅ | ✅ | ✅ | `experiments/exp_020–021/` | 1h |
@@ -213,14 +213,14 @@
 | S7-04 | Notebook KMeans — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/kmeans.ipynb` | 2h |
 | S7-05 | Notebook Mahalanobis — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/mahalanobis.ipynb` | 2h |
 | S7-06 | Notebook DBSCAN — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/dbscan.ipynb` | 2h |
-| S7-07 | Notebook TinyOL — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/tinyol.ipynb` | 2h |
+| S7-07 | Notebook TinyOL — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/tinyol.ipynb` | 2h |
 | S7-08 | Notebook EWC — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/ewc.ipynb` | 2h |
 | S7-09 | Notebook HDC — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/hdc.ipynb` | 2h |
-| S7-10 | Notebook KMeans — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/kmeans.ipynb` | 2h |
-| S7-11 | Notebook Mahalanobis — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/mahalanobis.ipynb` | 2h |
-| S7-12 | Notebook DBSCAN — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/dbscan.ipynb` | 2h |
-| S7-13 | Notebook Comparaison — monitoring_by_equipment | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` | 3h |
-| S7-14 | Notebook Comparaison — monitoring_by_location | ✅ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_by_location/comparison.ipynb` | 3h |
+| S7-10 | Notebook KMeans — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/kmeans.ipynb` | 2h |
+| S7-11 | Notebook Mahalanobis — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/mahalanobis.ipynb` | 2h |
+| S7-12 | Notebook DBSCAN — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/dbscan.ipynb` | 2h |
+| S7-13 | Notebook Comparaison — monitoring_by_equipment | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_equipment/comparison.ipynb` | 3h |
+| S7-14 | Notebook Comparaison — monitoring_by_location | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_by_location/comparison.ipynb` | 3h |
 | S7-15 | Infrastructure & expériences baseline single-task monitoring (exp_030–035) | ✅ | ✅ | ✅ | `configs/monitoring_single_task_config.yaml`, `src/data/monitoring_dataset.py`, `experiments/exp_030–035/` | 3h |
 | S7-16 | Notebook baseline monitoring single-task | ✅ | ✅ | ✅ | `notebooks/cl_eval/baselines/monitoring_single_task.ipynb` | 2h |
 
@@ -241,20 +241,22 @@
 
 > Détail complet : [`docs/sprints/sprint_8/S800_notebooks_pump_sprint.md`](sprints/sprint_8/S800_notebooks_pump_sprint.md)
 
+> ⚠️ Résultats Dataset 1 (AA ≈ 0.50) peu informatifs — notebooks individuels déprioritisés. Seules les `comparison.ipynb` sont maintenues.
+
 | ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
 |----|-------|:-----:|:---:|:----:|---------------|------------|
-| S8-01 | Notebook TinyOL — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/tinyol.ipynb` | 2h |
-| S8-02 | Notebook EWC — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/ewc.ipynb` | 2h |
-| S8-03 | Notebook HDC — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/hdc.ipynb` | 2h |
-| S8-04 | Notebook KMeans — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/kmeans.ipynb` | 2h |
-| S8-05 | Notebook Mahalanobis — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/mahalanobis.ipynb` | 2h |
-| S8-06 | Notebook DBSCAN — pump_by_pump_id | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/dbscan.ipynb` | 2h |
-| S8-07 | Notebook TinyOL — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/tinyol.ipynb` | 2h |
-| S8-08 | Notebook EWC — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/ewc.ipynb` | 2h |
-| S8-09 | Notebook HDC — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/hdc.ipynb` | 2h |
-| S8-10 | Notebook KMeans — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/kmeans.ipynb` | 2h |
-| S8-11 | Notebook Mahalanobis — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/mahalanobis.ipynb` | 2h |
-| S8-12 | Notebook DBSCAN — pump_by_temporal_window | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/dbscan.ipynb` | 2h |
+| S8-01 | Notebook TinyOL — pump_by_pump_id *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/tinyol.ipynb` | 2h |
+| S8-02 | Notebook EWC — pump_by_pump_id *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/ewc.ipynb` | 2h |
+| S8-03 | Notebook HDC — pump_by_pump_id *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/hdc.ipynb` | 2h |
+| S8-04 | Notebook KMeans — pump_by_pump_id *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/kmeans.ipynb` | 2h |
+| S8-05 | Notebook Mahalanobis — pump_by_pump_id *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/mahalanobis.ipynb` | 2h |
+| S8-06 | Notebook DBSCAN — pump_by_pump_id *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_pump_id/dbscan.ipynb` | 2h |
+| S8-07 | Notebook TinyOL — pump_by_temporal_window *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/tinyol.ipynb` | 2h |
+| S8-08 | Notebook EWC — pump_by_temporal_window *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/ewc.ipynb` | 2h |
+| S8-09 | Notebook HDC — pump_by_temporal_window *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/hdc.ipynb` | 2h |
+| S8-10 | Notebook KMeans — pump_by_temporal_window *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/kmeans.ipynb` | 2h |
+| S8-11 | Notebook Mahalanobis — pump_by_temporal_window *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/mahalanobis.ipynb` | 2h |
+| S8-12 | Notebook DBSCAN — pump_by_temporal_window *(déprioritisé)* | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pump_by_temporal_window/dbscan.ipynb` | 2h |
 | S8-13 | Notebook Comparaison — pump_by_pump_id | ✅ | ✅ | ✅ | `notebooks/cl_eval/pump_by_pump_id/comparison.ipynb` | 3h |
 | S8-14 | Notebook Comparaison — pump_by_temporal_window | ✅ | ✅ | ✅ | `notebooks/cl_eval/pump_by_temporal_window/comparison.ipynb` | 3h |
 | S8-15 | Infrastructure & expériences baseline single-task pump (exp_036–041) | ✅ | ✅ | ✅ | `configs/pump_single_task_config.yaml`, `src/data/pump_dataset.py`, `experiments/exp_036–041/` | 3h |
@@ -394,6 +396,62 @@
 | exp_067 | DBSCAN | Battery by_temporal_window (3 tâches) | ⬜ |
 
 **Livrable sprint 11** : 12 expériences Battery (exp_056–067), 8 notebooks `cl_eval/`, 1 notebook synthèse croisée 4 datasets, loader `battery_dataset.py` validé. Phase 1 étendue : 67 expériences, 4 datasets, 6 modèles, 6 scénarios.
+
+---
+
+## Sprint 12 (Phase 1) — Dataset 5 : CWRU Bearing Dataset (Fault Classification)
+
+**Objectif** : Intégrer le CWRU Bearing Dataset (Case Western Reserve University) comme cinquième source de validation — benchmark industriel de référence pour la classification de défauts de roulements. Deux scénarios CL domain-incremental : par type de défaut (Ball → Inner Race → Outer Race) et par sévérité (0.007" → 0.014" → 0.021").
+
+**État d'avancement au 26 avril 2026** :
+
+- ✅ Terminé (6/11) : S12-01 (`cwru_dataset.py`), S12-02 (3 configs YAML), S12-03 (EDA notebook 01D + 10 figures), S12-04 (exp_068–073 single-task baseline), S12-05 (exp_074–079 by_fault_type), S12-06 (exp_080–085 by_severity)
+- ⬜ À faire (5/11) : S12-07 à S12-11 (notebooks, tests, MAJ roadmap)
+
+> Détail complet : [`docs/sprints/sprint_12/S1200_cwru_sprint.md`](sprints/sprint_12/S1200_cwru_sprint.md)
+>
+> **Dataset** : `data/raw/CWRU Bearing Dataset/` — 10 fichiers MAT + CSV pré-traité (2 300 fenêtres, 48 kHz, 2 048 pts/fenêtre).
+> **Label** : binaire — Normal (0) vs Défaillant (1). 9 features temporelles (max, min, mean, sd, rms, skewness, kurtosis, crest, form).
+> **Scénarios CL retenus** : `by_fault_type` (Ball → Inner Race → Outer Race, 3 tâches) et `by_severity` (0.007" → 0.014" → 0.021", 3 tâches).
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S12-01 | `cwru_dataset.py` — loader CSV/MAT, 9 features, label binaire, streams by_fault_type + by_severity | ✅ | ✅ | N/A | `src/data/cwru_dataset.py` | 5h |
+| S12-02 | Créer 3 configs YAML CWRU | ✅ | ✅ | N/A | `configs/cwru_single_task_config.yaml`, `configs/cwru_by_fault_config.yaml`, `configs/cwru_by_severity_config.yaml` | 1h |
+| S12-03 | EDA CWRU — notebook dédié `01D_data_exploration_cwru.ipynb` | ✅ | ✅ | ✅ | `notebooks/01D_data_exploration_cwru.ipynb`, `notebooks/figures/eda/cwru/` | 2h |
+| S12-04 | Run exp_068–073 — 6 modèles × `no_split` (single-task baseline) | ✅ | ✅ | ✅ | `experiments/exp_068–073/` | 2h |
+| S12-05 | Run exp_074–079 — 6 modèles × by_fault_type (3 tâches) | ✅ | ✅ | ✅ | `experiments/exp_074–079/` | 2h |
+| S12-06 | Run exp_080–085 — 6 modèles × by_severity (3 tâches) | ✅ | ✅ | ✅ | `experiments/exp_080–085/` | 2h |
+| S12-07 | Notebooks `cwru_by_fault_type/` — 6 modèles + comparison | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/cwru_by_fault_type/` | 4h |
+| S12-08 | Notebooks `cwru_by_severity/` — 6 modèles + comparison | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/cwru_by_severity/` | 4h |
+| S12-09 | Notebook baseline single-task CWRU | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/baselines/cwru_single_task.ipynb` | 1h |
+| S12-10 | Tests unitaires `cwru_dataset.py` | ⬜ | ⬜ | ⬜ | `tests/test_cwru_dataset.py` | 2h |
+| S12-11 | MAJ roadmap + table cross-dataset CWRU vs PRONOSTIA | ⬜ | ⬜ | N/A | `docs/roadmap_phase1.md` | 1h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Scénario | Statut |
+|-----|--------|----------|--------|
+| exp_068 | EWC | CWRU no_split | ✅ acc=0.978 AUC=0.996 RAM=1.1 Ko |
+| exp_069 | HDC | CWRU no_split | ✅ acc=0.887 AUC=0.937 RAM=7.7 Ko |
+| exp_070 | TinyOL | CWRU no_split | ✅ acc=0.900 AUC=0.877 RAM=0.9 Ko |
+| exp_071 | KMeans | CWRU no_split | ✅ acc=0.159 AUC=0.601 RAM=5.3 Ko |
+| exp_072 | Mahalanobis | CWRU no_split | ✅ acc=0.139 AUC=0.548 RAM=1.6 Ko |
+| exp_073 | DBSCAN | CWRU no_split | ✅ acc=0.146 AUC=0.842 RAM=115 Ko ⚠️ |
+| exp_074 | EWC | CWRU by_fault_type (3 tâches) | ✅ AA=1.000 AF=0.000 BWT=0.000 RAM=1.1 Ko |
+| exp_075 | HDC | CWRU by_fault_type (3 tâches) | ✅ AA=0.935 AF=0.045 BWT=-0.039 RAM=7.7 Ko |
+| exp_076 | TinyOL | CWRU by_fault_type (3 tâches) | ✅ AA=0.966 AF=0.002 BWT=+0.007 RAM=4.0 Ko |
+| exp_077 | KMeans | CWRU by_fault_type (3 tâches) | ✅ AA=0.152 AF=0.019 BWT=+0.039 RAM=5.3 Ko |
+| exp_078 | Mahalanobis | CWRU by_fault_type (3 tâches) | ✅ AA=0.316 AF=0.013 BWT=+0.286 RAM=1.6 Ko |
+| exp_079 | DBSCAN | CWRU by_fault_type (3 tâches) | ✅ AA=0.126 AF=0.045 BWT=-0.045 RAM=16.4 Ko |
+| exp_080 | EWC | CWRU by_severity (3 tâches) | ✅ AA=0.952 AF=0.000 BWT=+0.007 RAM=1.1 Ko |
+| exp_081 | HDC | CWRU by_severity (3 tâches) | ✅ AA=0.892 AF=0.020 BWT=-0.007 RAM=7.7 Ko |
+| exp_082 | TinyOL | CWRU by_severity (3 tâches) | ✅ AA=0.900 AF=0.000 BWT=+0.013 RAM=4.0 Ko |
+| exp_083 | KMeans | CWRU by_severity (3 tâches) | ✅ AA=0.303 AF=0.065 BWT=+0.286 RAM=5.3 Ko |
+| exp_084 | Mahalanobis | CWRU by_severity (3 tâches) | ✅ AA=0.394 AF=0.091 BWT=+0.396 RAM=1.6 Ko |
+| exp_085 | DBSCAN | CWRU by_severity (3 tâches) | ✅ AA=0.121 AF=0.292 BWT=-0.013 RAM=30.7 Ko |
+
+**Livrable sprint 12** : 18 expériences CWRU (exp_068–085), 15 notebooks `cl_eval/` (7 by_fault_type + 7 by_severity + 1 baseline), loader `cwru_dataset.py` validé. Phase 1 étendue : 85 expériences, 5 datasets, 6 modèles, 8 scénarios.
 
 ---
 
@@ -581,3 +639,18 @@ Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compresso
 | exp_039 | KMeans | `pump_single_task_config.yaml` | ✅ |
 | exp_040 | Mahalanobis | `pump_single_task_config.yaml` | ✅ |
 | exp_041 | DBSCAN | `pump_single_task_config.yaml` | ✅ |
+
+### Dataset 5 (CWRU) — scénario `no_split` (Sprint 12 — S12-04)
+
+| Exp | Modèle | Config | acc | AUC-ROC | RAM | Statut |
+|-----|--------|--------|-----|---------|-----|--------|
+| exp_068 | EWC | `cwru_single_task_config.yaml` | 0.978 | 0.996 | 1.1 Ko | ✅ |
+| exp_069 | HDC | `cwru_single_task_config.yaml` | 0.887 | 0.937 | 7.7 Ko | ✅ |
+| exp_070 | TinyOL | `cwru_single_task_config.yaml` | 0.900 | 0.877 | 0.9 Ko | ✅ |
+| exp_071 | KMeans | `cwru_single_task_config.yaml` | 0.159 | 0.601 | 5.3 Ko | ✅ |
+| exp_072 | Mahalanobis | `cwru_single_task_config.yaml` | 0.139 | 0.548 | 1.6 Ko | ✅ |
+| exp_073 | DBSCAN | `cwru_single_task_config.yaml` | 0.146 | 0.842 | 115 Ko | ✅ ⚠️RAM |
+
+> **Supervisés (EWC/HDC/TinyOL)** : excellentes performances sur CWRU (acc ≥ 0.88), toutes dans le budget 64 Ko.  
+> **Non supervisés (KMeans/Mahalanobis/DBSCAN)** : accuracy ~15% en raison d'un training set à 90% défauts (CWRU est un benchmark de classification, pas d'anomalie-detection). L'indicateur pertinent est l'AUC-ROC (DBSCAN=0.84 ✅). DBSCAN dépasse 64 Ko tracemalloc (core points stockés, ~45 Ko analytique) — même pattern que Pronostia exp_049/055.  
+> Nouveaux scripts créés : `scripts/train_kmeans.py`, `scripts/train_mahalanobis.py`, `scripts/train_dbscan.py` (réutilisables pour datasets futurs). `get_cwru_dataloaders_single_task()` ajouté dans `cwru_dataset.py`.

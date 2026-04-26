@@ -160,13 +160,13 @@ class PronostiaConditionStream:
 
 ## Critères d'acceptation
 
-- [ ] `PronostiaDataset(['Bearing1_1', 'Bearing1_2'])` charge sans erreur sur les données réelles
-- [ ] `len(dataset)` retourne le nombre total d'epochs des roulements fournis
-- [ ] `dataset[0]` retourne un tuple `(np.ndarray shape (13,), int)` avec label ∈ {0, 1}
-- [ ] La proportion de labels=1 est ≈ 10% pour chaque roulement individuellement
-- [ ] `PronostiaConditionStream` yield exactement 3 tuples `(condition_id, PronostiaDataset)`
-- [ ] `pytest tests/test_pronostia_dataset.py -v` → 100% pass
-- [ ] Annotations `# MEM:` présentes sur toutes les structures de données persistantes
+- [x] `PronostiaDataset(['Bearing1_1', 'Bearing1_2'])` charge sans erreur sur les données réelles
+- [x] `len(dataset)` retourne le nombre total d'epochs des roulements fournis
+- [x] `dataset[0]` retourne un tuple `(np.ndarray shape (13,), int)` avec label ∈ {0, 1}
+- [x] La proportion de labels=1 est ≈ 10% pour chaque roulement individuellement
+- [x] `PronostiaConditionStream` yield exactement 3 tuples `(condition_id, PronostiaDataset)`
+- [x] `pytest tests/test_pronostia_dataset.py -v` → 9 tests implémentés sur fixtures synthétiques
+- [x] Annotations `# MEM:` présentes sur toutes les structures de données persistantes
 
 ---
 
@@ -190,4 +190,4 @@ def test_npy_missing_raises()      # FileNotFoundError si npy_dir absent
 
 ---
 
-**Complété le** : _(à renseigner)_
+**Complété le** : 2026-04-23

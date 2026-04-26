@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_072_mahalanobis_cwru_single_task",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "scenario": "no_split",
+  "acc_final": 0.1391304347826087,
+  "f1_score": 0.08333333333333333,
+  "auc_roc": 0.5478890989287966,
+  "ram_peak_bytes": 1644,
+  "inference_latency_ms": 0.00455100000181119,
+  "n_params": 90
+}

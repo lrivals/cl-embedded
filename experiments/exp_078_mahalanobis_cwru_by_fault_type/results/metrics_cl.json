@@ -1,0 +1,34 @@
+{
+  "exp_id": "exp_078_mahalanobis_cwru_by_fault_type",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "acc_final": 0.31601731601731603,
+  "avg_forgetting": 0.012987012987012991,
+  "backward_transfer": 0.2857142857142857,
+  "per_task_acc": [
+    0.22077922077922077,
+    0.5844155844155844,
+    0.14285714285714285
+  ],
+  "ram_peak_bytes": 1644,
+  "inference_latency_ms": 0.00416560003941413,
+  "n_params": 90,
+  "acc_matrix": [
+    [
+      0.12987012987012986,
+      NaN,
+      NaN
+    ],
+    [
+      0.24675324675324675,
+      0.1038961038961039,
+      NaN
+    ],
+    [
+      0.22077922077922077,
+      0.5844155844155844,
+      0.14285714285714285
+    ]
+  ]
+}

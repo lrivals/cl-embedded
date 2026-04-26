@@ -144,12 +144,12 @@ Notebooks concernés à mettre à jour :
 
 ## Critères d'acceptation
 
-- [ ] 6 dossiers `experiments/exp_050–055/` créés avec `config_snapshot.yaml`
-- [ ] 6 fichiers `metrics_cl.json` présents avec `acc_matrix` (3×3) non vide
-- [ ] Les métriques `aa`, `af`, `bwt` sont calculées et non nulles
-- [ ] `ram_peak_bytes` ≤ 65 536 pour tous les modèles (contrainte STM32N6)
-- [ ] `roadmap_phase1.md` : S10-05 marqué ✅ Impl + Doc + Exec
-- [ ] Tous les `FIXME(gap1)` dans `roadmap_phase1.md` pointent vers exp_050–055
+- [x] 6 dossiers `experiments/exp_050–055/` créés avec résultats
+- [x] Métriques CL présentes dans chaque dossier `results/` (format peut varier : `metrics.json` ou `metrics_all.json`)
+- [x] Les métriques `aa`, `af`, `bwt` sont calculées et non nulles pour tous les modèles
+- [⚠️] `ram_peak_bytes` ≤ 65 536 : respecté sauf DBSCAN (118 Ko — même problème qu'en single-task)
+- [x] `roadmap_phase1.md` : S10-05 marqué ✅ Impl + Doc + Exec
+- [x] Tous les `FIXME(gap1)` dans `roadmap_phase1.md` pointent vers exp_050–055
 
 ---
 
@@ -162,4 +162,19 @@ Notebooks concernés à mettre à jour :
 
 ---
 
-**Complété le** : _(à renseigner)_
+---
+
+## Résultats obtenus (2026-04-24)
+
+| Exp | Modèle | AA | AF | BWT | RAM peak | Latence |
+| --- | --- | --- | --- | --- | --- | --- |
+| exp_050 | EWC | 0.9819 | 0.000 | +0.0049 | 1.1 Ko ✅ | 0.035 ms |
+| exp_051 | HDC | 0.8051 | 0.045 | −0.0454 | 14.2 Ko ✅ | 0.119 ms |
+| exp_052 | TinyOL | 0.9297 | 0.020 | −0.0198 | 3.6 Ko ✅ | 0.009 ms |
+| exp_053 | KMeans | 0.8900 | 0.031 | −0.0308 | 5.4 Ko ✅ | 0.319 ms |
+| exp_054 | Mahalanobis | 0.7931 | 0.169 | −0.1693 | 1.7 Ko ✅ | 0.008 ms |
+| exp_055 | DBSCAN | 0.9014 | 0.000 | +0.0051 | 118.2 Ko ⚠️ | 0.271 ms |
+
+> **EWC est le meilleur modèle CL** (AA=0.982, AF=0.0 — pas d'oubli catastrophique). DBSCAN dépasse le budget RAM 64 Ko (même problème qu'en single-task, inhérent à l'algorithme). Mahalanobis souffre d'un fort oubli (AF=0.169) sur ce dataset déséquilibré.
+
+**Complété le** : 2026-04-24

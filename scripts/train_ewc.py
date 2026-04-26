@@ -69,6 +69,37 @@ def _get_tasks(cfg: dict) -> list[dict]:
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
         )
 
+    if dataset == "cwru":
+        task_split = cfg["data"].get("task_split", "no_split")
+        if task_split == "by_fault_type":
+            from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_fault_type
+            return get_cwru_cl_dataloaders_by_fault_type(
+                csv_path=Path(cfg["data"]["csv_path"]),
+                batch_size=cfg["data"].get("batch_size", 1),
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=cfg["training"]["seed"],
+            )
+        elif task_split == "by_severity":
+            from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_severity
+            return get_cwru_cl_dataloaders_by_severity(
+                csv_path=Path(cfg["data"]["csv_path"]),
+                batch_size=cfg["data"].get("batch_size", 1),
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=cfg["training"]["seed"],
+            )
+        from src.data.cwru_dataset import get_cwru_dataloaders_single_task
+        st = get_cwru_dataloaders_single_task(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            batch_size=cfg["data"].get("batch_size", 1),
+            test_ratio=cfg["data"].get("test_ratio", 0.2),
+            val_ratio=cfg["data"].get("val_ratio", 0.1),
+            seed=cfg["training"]["seed"],
+        )
+        st["_single_task_mode"] = True
+        return [st]
+
     csv_path = Path(cfg["data"]["csv_path"])
     normalizer_path = Path(cfg["data"]["normalizer_path"])
     batch_size = cfg["training"]["batch_size"]
@@ -176,6 +207,11 @@ def parse_args() -> argparse.Namespace:
         "--exp_dir",
         default=None,
         help="Répertoire expérience override (ex. experiments/exp_013_ewc_pump_by_id)",
+    )
+    parser.add_argument(
+        "--exp_id",
+        default=None,
+        help="Override exp_id (ex. exp_068_ewc_cwru_single_task)",
     )
     return parser.parse_args()
 
@@ -455,6 +491,11 @@ def main() -> None:
         data_cfg = load_config(args.data_config)
         cfg["data"].update(data_cfg.get("data", {}))
 
+    # Override exp_id depuis --exp_id
+    if args.exp_id:
+        cfg["exp_id"] = args.exp_id
+        cfg["evaluation"]["output_dir"] = f"experiments/{args.exp_id}/results/"
+
     # Override répertoire expérience depuis --exp_dir
     if args.exp_dir:
         cfg["evaluation"]["output_dir"] = str(Path(args.exp_dir) / "results")
@@ -563,6 +604,26 @@ def main() -> None:
         str(results_dir / "metrics.json"),
         extra_info={"exp_id": cfg["exp_id"]},
     )
+
+    # metrics_cl.json — format unifié S12-05 (même structure que les autres modèles)
+    n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    metrics_cl = {
+        "exp_id": cfg["exp_id"],
+        "model": "ewc",
+        "dataset": cfg["data"].get("dataset", "cwru"),
+        "scenario": cfg["data"].get("task_split", "by_fault_type"),
+        "acc_final": metrics_ewc.get("aa", float("nan")),
+        "avg_forgetting": metrics_ewc.get("af", float("nan")),
+        "backward_transfer": metrics_ewc.get("bwt", float("nan")),
+        "per_task_acc": [float(acc_matrix_ewc[len(tasks) - 1, j]) for j in range(len(tasks))],
+        "ram_peak_bytes": memory_report.get("forward", {}).get("ram_peak_bytes", 0),
+        "inference_latency_ms": memory_report.get("forward", {}).get("inference_latency_ms", 0.0),
+        "n_params": n_params,
+        "acc_matrix": acc_matrix_ewc.tolist(),
+    }
+    import json as _json
+    with open(results_dir / "metrics_cl.json", "w", encoding="utf-8") as _f:
+        _json.dump(metrics_cl, _f, indent=2)
 
     # Checkpoint modèle EWC final
     model.save_state(str(checkpoints_dir / "ewc_task3_final.pt"))

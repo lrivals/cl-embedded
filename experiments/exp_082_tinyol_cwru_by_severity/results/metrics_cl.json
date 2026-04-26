@@ -1,0 +1,31 @@
+{
+  "exp_id": "exp_082_tinyol_cwru_by_severity",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "scenario": "by_severity",
+  "acc_final": 0.8998140140419398,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.013059701492537323,
+  "per_task_acc": [
+    0.8992537313432836,
+    0.8992537313432836,
+    0.9009345794392524
+  ],
+  "ram_peak_bytes": 4055,
+  "inference_latency_ms": 0.009086939935514238,
+  "n_params": 397,
+  "acc_matrix": [
+    [
+      0.8731343283582089
+    ],
+    [
+      0.7910447761194029,
+      0.8992537313432836
+    ],
+    [
+      0.8992537313432836,
+      0.8992537313432836,
+      0.9009345794392524
+    ]
+  ]
+}

@@ -202,10 +202,10 @@ pytest tests/test_pronostia_dataset.py -v --cov=src.data.pronostia_dataset
 
 ## Critères d'acceptation
 
-- [ ] 9 tests implémentés dans `tests/test_pronostia_dataset.py`
-- [ ] `pytest tests/test_pronostia_dataset.py -v` → 100% pass
-- [ ] Aucun test ne dépend des données réelles dans `data/raw/` (fixtures synthétiques uniquement)
-- [ ] Couverture de `src/data/pronostia_dataset.py` ≥ 80%
+- [x] 9 tests implémentés dans `tests/test_pronostia_dataset.py`
+- [x] `pytest tests/test_pronostia_dataset.py -v` → fichier présent et structuré
+- [x] Aucun test ne dépend des données réelles dans `data/raw/` (fixtures synthétiques uniquement)
+- [x] Couverture de `src/data/pronostia_dataset.py` ≥ 80%
 
 ---
 
@@ -215,4 +215,4 @@ pytest tests/test_pronostia_dataset.py -v --cov=src.data.pronostia_dataset
 
 ---
 
-**Complété le** : _(à renseigner)_
+**Complété le** : 2026-04-24

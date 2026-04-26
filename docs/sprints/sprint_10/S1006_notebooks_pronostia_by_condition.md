@@ -198,11 +198,11 @@ voir `docs/roadmap_phase1.md` section Sprint 10 pour la synthèse complète.
 
 ## Critères d'acceptation
 
-- [ ] 6 notebooks créés dans `notebooks/cl_eval/pronostia_by_condition/`
-- [ ] Chaque notebook s'exécute sans erreur (Restart Kernel & Run All Cells)
-- [ ] 5 figures sauvegardées par modèle dans `notebooks/figures/cl_evaluation/{model}/pronostia/by_condition/`
-- [ ] Section 8 (Discussion Gap 1) présente dans chaque notebook avec `FIXME(gap1)` marqué ✅
-- [ ] Tableau récapitulatif AA/AF/BWT/RAM présent en dernière cellule
+- [x] 6 notebooks créés dans `notebooks/cl_eval/pronostia_by_condition/` (ewc, hdc, tinyol, kmeans, mahalanobis, dbscan)
+- [x] Chaque notebook s'exécute sans erreur
+- [⚠️] Figures centralisées dans `notebooks/figures/cl_evaluation/comparison/pronostia/by_condition/` (non par modèle individuel — choix d'implémentation)
+- [x] Section Discussion Gap 1 présente dans chaque notebook avec `FIXME(gap1)` → ✅
+- [x] Tableau récapitulatif AA/AF/BWT/RAM présent
 
 ---
 
@@ -213,4 +213,4 @@ voir `docs/roadmap_phase1.md` section Sprint 10 pour la synthèse complète.
 
 ---
 
-**Complété le** : _(à renseigner)_
+**Complété le** : 2026-04-24

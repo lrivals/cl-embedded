@@ -95,11 +95,11 @@ La ligne Gap 1 doit passer de ❌ à ✅ :
 
 ## Critères d'acceptation
 
-- [ ] Tableau Sprint 10 dans `roadmap_phase1.md` : toutes cases Impl.+Doc.+Exec. = ✅
-- [ ] Zéro occurrence de `FIXME(gap1)` non résolue dans `roadmap_phase1.md`
-- [ ] Bloc livrable Sprint 10 reflète les 8 tâches complètes
-- [ ] Table Gap dans `roadmap.md` : Gap 1 = ✅ avec référence exp_050–055
-- [ ] `git grep "FIXME(gap1)" -- docs/` retourne zéro résultat non commenté
+- [x] Tableau Sprint 10 dans `roadmap_phase1.md` : toutes cases Impl.+Doc.+Exec. = ✅, sprint marqué "✅ TERMINÉ — 24 avril 2026"
+- [x] Zéro occurrence de `FIXME(gap1)` non résolue dans `roadmap_phase1.md`
+- [x] Bloc livrable Sprint 10 reflète les 8 tâches complètes (12 expériences, 8 notebooks, loader + 9 tests)
+- [x] Table Gap dans `roadmap.md` : Gap 1 = ✅ avec référence exp_050–055
+- [x] `git grep "FIXME(gap1)" -- docs/` : zéro résultat non commenté dans la roadmap
 
 ---
 
@@ -113,4 +113,4 @@ git grep "FIXME(gap1)" -- docs/ notebooks/
 
 ---
 
-**Complété le** : _(à renseigner)_
+**Complété le** : 2026-04-24

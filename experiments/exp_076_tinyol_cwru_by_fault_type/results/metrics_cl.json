@@ -1,0 +1,31 @@
+{
+  "exp_id": "exp_076_tinyol_cwru_by_fault_type",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "acc_final": 0.9664179104477612,
+  "avg_forgetting": 0.0018656716417910224,
+  "backward_transfer": 0.006529850746268717,
+  "per_task_acc": [
+    0.9029850746268657,
+    0.996268656716418,
+    1.0
+  ],
+  "ram_peak_bytes": 4055,
+  "inference_latency_ms": 0.005239119927864522,
+  "n_params": 397,
+  "acc_matrix": [
+    [
+      0.8861940298507462
+    ],
+    [
+      0.8451492537313433,
+      1.0
+    ],
+    [
+      0.9029850746268657,
+      0.996268656716418,
+      1.0
+    ]
+  ]
+}

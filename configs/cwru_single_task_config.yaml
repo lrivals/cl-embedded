@@ -1,0 +1,118 @@
+# configs/cwru_single_task_config.yaml
+# Baseline single-task CWRU — toutes les fenêtres, pas de split CL
+# Utilisé par exp_068 (EWC) à exp_073 (DBSCAN)
+# NE PAS modifier directement : passer --exp_id via CLI pour surcharger exp_id.
+
+exp_id: "exp_068_ewc_cwru_single_task"
+
+# ---------------------------------------------------------------------------
+# Données
+# ---------------------------------------------------------------------------
+data:
+  dataset: cwru
+  task_split: no_split
+  csv_path: "data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv"
+  n_features: 9            # max, min, mean, sd, rms, skewness, kurtosis, crest, form
+  n_classes: 2
+  test_ratio: 0.2
+  val_ratio: 0.1
+  batch_size: 1            # online strict (MCU)
+  random_state: 42
+
+# ---------------------------------------------------------------------------
+# Modèle EWC (train_ewc.py)
+# ---------------------------------------------------------------------------
+model:
+  architecture: mlp
+  input_dim: 9
+  hidden_dims: [32, 16]   # MEM: (9×32 + 32×16) × 4 B = ~3.2 Ko @ FP32
+  output_dim: 1
+  dropout: 0.2
+
+training:
+  optimizer: sgd
+  learning_rate: 0.001
+  momentum: 0.9
+  epochs_per_task: 10
+  batch_size: 1
+  seed: 42
+  pos_weight: null         # pas de déséquilibre marqué sur CWRU
+
+ewc:
+  lambda: 400
+  gamma: 0.9
+  n_fisher_samples: 200
+
+# ---------------------------------------------------------------------------
+# Modèle HDC (train_hdc.py)
+# ---------------------------------------------------------------------------
+hdc:
+  D: 512                   # MEM: 512 × 9 × 4 B = 18 Ko @ FP32 / 4.5 Ko @ INT8
+  n_levels: 10
+  seed: 42
+  base_vectors_path: "configs/hdc_base_vectors_cwru.npz"
+
+# feature_bounds sera calculé automatiquement depuis le train set
+feature_bounds:
+  max: null
+  min: null
+  mean: null
+  sd: null
+  rms: null
+  skewness: null
+  kurtosis: null
+  crest: null
+  form: null
+
+# ---------------------------------------------------------------------------
+# Modèle TinyOL (train_tinyol.py)
+# ---------------------------------------------------------------------------
+pretrain:
+  epochs: 20
+  batch_size: 64
+  learning_rate: 0.001
+
+oto_head:
+  input_dim: null          # calculé dynamiquement (embedding_dim + 1)
+  learning_rate: 0.01
+  momentum: 0.0
+  loss: bce
+
+# ---------------------------------------------------------------------------
+# Modèles non supervisés (train_kmeans/mahalanobis/dbscan.py)
+# ---------------------------------------------------------------------------
+kmeans:
+  k_method: fixed
+  k_fixed: 2
+  k_min: 2
+  k_max: 8
+  anomaly_threshold: null
+  anomaly_percentile: 95
+  n_init: 10
+  max_iter: 300
+  cl_strategy: refit
+
+mahalanobis:
+  anomaly_threshold: null
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6
+  cl_strategy: refit
+
+dbscan:
+  eps: null                # null → auto via nearest-neighbors (k=5)
+  min_samples: 5
+  anomaly_percentile: 95
+  cl_strategy: refit
+
+# ---------------------------------------------------------------------------
+# Évaluation + mémoire
+# ---------------------------------------------------------------------------
+evaluation:
+  seed: 42
+  metrics: ["accuracy", "f1", "auc_roc", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_068_ewc_cwru_single_task/results/"
+  n_latency_runs: 100
+
+memory:
+  target_ram_bytes: 65536   # 64 Ko — contrainte STM32N6
+  warn_if_above_bytes: 52000

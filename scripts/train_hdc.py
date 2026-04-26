@@ -52,6 +52,9 @@ def _get_feature_names(cfg: dict) -> list[str]:
     if dataset == "pronostia":
         from src.data.pronostia_dataset import FEATURE_NAMES
         return list(FEATURE_NAMES)
+    if dataset == "cwru":
+        from src.data.cwru_dataset import FEATURE_COLS
+        return list(FEATURE_COLS)
     return cfg["data"]["feature_columns"]
 
 
@@ -91,6 +94,40 @@ def _get_tasks(cfg: dict) -> list[dict]:
             step_size=cfg["data"].get("step_size", 2560),
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
         )
+
+    if dataset == "cwru":
+        task_split = cfg["data"].get("task_split", "no_split")
+        if task_split == "by_fault_type":
+            from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_fault_type
+            # Forcer recalcul des feature_bounds depuis Task 1
+            cfg["feature_bounds"] = None
+            return get_cwru_cl_dataloaders_by_fault_type(
+                csv_path=Path(cfg["data"]["csv_path"]),
+                batch_size=cfg["data"].get("batch_size", 1),
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=cfg["training"]["seed"],
+            )
+        elif task_split == "by_severity":
+            from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_severity
+            cfg["feature_bounds"] = None
+            return get_cwru_cl_dataloaders_by_severity(
+                csv_path=Path(cfg["data"]["csv_path"]),
+                batch_size=cfg["data"].get("batch_size", 1),
+                test_ratio=cfg["data"].get("test_ratio", 0.2),
+                val_ratio=cfg["data"].get("val_ratio", 0.1),
+                seed=cfg["training"]["seed"],
+            )
+        from src.data.cwru_dataset import get_cwru_dataloaders_single_task
+        st = get_cwru_dataloaders_single_task(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            batch_size=cfg["data"].get("batch_size", 1),
+            test_ratio=cfg["data"].get("test_ratio", 0.2),
+            val_ratio=cfg["data"].get("val_ratio", 0.1),
+            seed=cfg["training"]["seed"],
+        )
+        st["_single_task_mode"] = True
+        return [st]
 
     csv_path = Path(cfg["data"]["csv_path"])
     normalizer_path = Path(cfg["data"]["normalizer_path"])
@@ -203,6 +240,11 @@ def parse_args() -> argparse.Namespace:
         "--exp_dir",
         default=None,
         help="Répertoire expérience override (ex. experiments/exp_014_hdc_pump_by_id)",
+    )
+    parser.add_argument(
+        "--exp_id",
+        default=None,
+        help="Override exp_id (ex. exp_069_hdc_cwru_single_task)",
     )
     return parser.parse_args()
 
@@ -461,6 +503,9 @@ def _run_single_task_hdc(
     if dataset_name == "pump_maintenance":
         from src.data.pump_dataset import FEATURE_NAMES as _PUMP_FEATURE_NAMES
         feature_names = _PUMP_FEATURE_NAMES
+    elif dataset_name == "cwru":
+        from src.data.cwru_dataset import FEATURE_COLS
+        feature_names = list(FEATURE_COLS)
     else:
         feature_names = ["temperature", "pressure", "vibration", "humidity"]
     bounds: dict = {}
@@ -535,6 +580,11 @@ def main() -> None:
         # Forcer recalcul des feature_bounds si scénario avec nouvelles données
         if cfg["data"].get("task_split") in ("by_pump_id", "by_temporal_window"):
             cfg["feature_bounds"] = None
+
+    # Override exp_id depuis --exp_id
+    if args.exp_id:
+        cfg["exp_id"] = args.exp_id
+        cfg["evaluation"]["output_dir"] = f"experiments/{args.exp_id}/results/"
 
     # Override répertoire expérience depuis --exp_dir
     if args.exp_dir:
@@ -629,6 +679,25 @@ def main() -> None:
     save_metrics(
         full_metrics, str(results_dir / "metrics.json"), extra_info={"exp_id": cfg["exp_id"]}
     )
+
+    # metrics_cl.json — format unifié S12-05
+    import json as _json
+    metrics_cl = {
+        "exp_id": cfg["exp_id"],
+        "model": "hdc",
+        "dataset": cfg["data"].get("dataset", "cwru"),
+        "scenario": cfg["data"].get("task_split", "by_fault_type"),
+        "acc_final": metrics_hdc.get("aa", float("nan")),
+        "avg_forgetting": metrics_hdc.get("af", float("nan")),
+        "backward_transfer": metrics_hdc.get("bwt", float("nan")),
+        "per_task_acc": [float(acc_matrix_hdc[n_tasks - 1, j]) for j in range(n_tasks)],
+        "ram_peak_bytes": fwd["ram_peak_bytes"],
+        "inference_latency_ms": fwd["inference_latency_ms"],
+        "n_params": model.count_parameters(),
+        "acc_matrix": acc_matrix_hdc.tolist(),
+    }
+    with open(results_dir / "metrics_cl.json", "w", encoding="utf-8") as _f:
+        _json.dump(metrics_cl, _f, indent=2)
 
     # --- Rapport stdout ---
     print("\n" + "=" * 60)

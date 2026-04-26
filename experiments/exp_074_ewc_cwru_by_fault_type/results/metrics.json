@@ -1,0 +1,60 @@
+{
+  "exp_id": "exp_074_ewc_cwru_by_fault_type",
+  "cl_metrics": {
+    "ewc": {
+      "aa": 1.0,
+      "af": 0.0,
+      "bwt": 0.0,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        0.0,
+        0.0
+      ],
+      "acc_matrix": [
+        [
+          1.0,
+          null,
+          null
+        ],
+        [
+          1.0,
+          1.0,
+          null
+        ],
+        [
+          1.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "n_tasks": 3
+    },
+    "memory": {
+      "model": "EWCMlpClassifier",
+      "input_shape": [
+        1,
+        9
+      ],
+      "forward": {
+        "ram_peak_bytes": 1171,
+        "ram_current_bytes": 72,
+        "inference_latency_ms": 0.020327520069258753,
+        "inference_latency_std_ms": 0.0012537558244502464,
+        "n_params": 865,
+        "params_fp32_bytes": 3460,
+        "params_int8_bytes": 865,
+        "within_budget_64ko": true
+      },
+      "update": {
+        "ram_peak_bytes_update": 7653,
+        "update_latency_ms": 0.38713798003300326,
+        "update_latency_std_ms": 0.04339515826688414,
+        "within_budget_64ko_update": true
+      }
+    }
+  }
+}

@@ -60,6 +60,11 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Répertoire expérience override (ex. experiments/exp_012_tinyol_pump_by_id)",
     )
+    parser.add_argument(
+        "--exp_id",
+        default=None,
+        help="Override exp_id (ex. exp_070_tinyol_cwru_single_task)",
+    )
     return parser.parse_args()
 
 
@@ -102,6 +107,36 @@ def _save_config_snapshot(config: dict, path: Path, exp_id: str = "exp") -> None
 def _load_tasks(config: dict, seed: int) -> list[dict]:
     """Charge les tâches CL selon config["data"]["dataset"]."""
     dataset = config["data"].get("dataset", "pump_maintenance")
+    if dataset == "cwru":
+        task_split = config["data"].get("task_split", "no_split")
+        if task_split == "by_fault_type":
+            from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_fault_type
+            return get_cwru_cl_dataloaders_by_fault_type(
+                csv_path=Path(config["data"]["csv_path"]),
+                batch_size=1,  # TinyOL : online, un échantillon à la fois
+                test_ratio=config["data"].get("test_ratio", 0.2),
+                val_ratio=config["data"].get("val_ratio", 0.1),
+                seed=seed,
+            )
+        elif task_split == "by_severity":
+            from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_severity
+            return get_cwru_cl_dataloaders_by_severity(
+                csv_path=Path(config["data"]["csv_path"]),
+                batch_size=1,  # TinyOL : online, un échantillon à la fois
+                test_ratio=config["data"].get("test_ratio", 0.2),
+                val_ratio=config["data"].get("val_ratio", 0.1),
+                seed=seed,
+            )
+        from src.data.cwru_dataset import get_cwru_dataloaders_single_task
+        st = get_cwru_dataloaders_single_task(
+            csv_path=Path(config["data"]["csv_path"]),
+            batch_size=1,  # TinyOL : online, un échantillon à la fois
+            test_ratio=config["data"].get("test_ratio", 0.2),
+            val_ratio=config["data"].get("val_ratio", 0.1),
+            seed=seed,
+        )
+        st["_single_task_mode"] = True
+        return [st]
     if dataset == "pronostia":
         from src.data.pronostia_dataset import (
             get_pronostia_dataloaders,
@@ -358,10 +393,33 @@ def run_experiment(config: dict) -> None:
     # --- Prérequis : backbone.pt ---
     checkpoint_path = Path(config["backbone"]["checkpoint_path"])
     if not checkpoint_path.exists():
-        raise FileNotFoundError(
-            f"Backbone introuvable : {checkpoint_path}\n"
-            f"Lancer d'abord : python scripts/pretrain_tinyol.py --config <config>"
+        # Pré-entraîner le backbone inline sur le train set de Task 1 (offline phase)
+        print(f"[{exp_id}] Backbone absent — pré-entraînement inline sur Task 1...")
+        n_features_bb = config["backbone"]["input_dim"]
+        enc_dims_bb = tuple(config["backbone"]["encoder_dims"])
+        dec_dims_bb = tuple(config["backbone"]["decoder_dims"])
+        bb_autoencoder = TinyOLAutoencoder(
+            input_dim=n_features_bb, encoder_dims=enc_dims_bb, decoder_dims=dec_dims_bb
         )
+        bb_opt = torch.optim.Adam(bb_autoencoder.parameters(), lr=1e-3)
+        n_pretrain_ep = config.get("pretrain", {}).get("epochs", 20)
+        bb_autoencoder.train()
+        for ep in range(n_pretrain_ep):
+            ep_losses = []
+            for x_batch, _ in task_loaders[0]["train_loader"]:
+                x = x_batch.squeeze(0)
+                bb_opt.zero_grad()
+                _, x_hat = bb_autoencoder(x.unsqueeze(0))
+                loss = nn.functional.mse_loss(x_hat, x.unsqueeze(0))
+                loss.backward()
+                bb_opt.step()
+                ep_losses.append(loss.item())
+            if (ep + 1) % max(1, n_pretrain_ep // 5) == 0:
+                print(f"    Backbone pretrain {ep + 1:3d}/{n_pretrain_ep} | MSE={np.mean(ep_losses):.6f}")
+        bb_autoencoder.eval()
+        checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+        torch.save(bb_autoencoder.state_dict(), checkpoint_path)
+        print(f"[{exp_id}] Backbone sauvegardé → {checkpoint_path}")
 
     n_tasks = len(task_loaders)  # dynamique : 3 tâches (chronologique) ou 5 (by_pump_id)
     print(f"[{exp_id}] Stream CL : {n_tasks} tâches")
@@ -479,6 +537,25 @@ def run_experiment(config: dict) -> None:
         json.dump(results, f, indent=2)
     print(f"[{exp_id}] Résultats sauvegardés → {metrics_path}")
 
+    # metrics_cl.json — format unifié S12-05
+    metrics_cl = {
+        "exp_id": exp_id,
+        "model": "tinyol",
+        "dataset": config["data"].get("dataset", "cwru"),
+        "scenario": config["data"].get("task_split", "by_fault_type"),
+        "acc_final": cl_metrics["aa"],
+        "avg_forgetting": cl_metrics["af"],
+        "backward_transfer": cl_metrics["bwt"],
+        "per_task_acc": [float(mat_np[n_tasks - 1, j]) for j in range(n_tasks)],
+        "ram_peak_bytes": ram_update_bytes,
+        "inference_latency_ms": latency_ms,
+        "n_params": oto_head.n_params() + autoencoder.n_encoder_params(),
+        "acc_matrix": acc_matrix,
+    }
+    with open(output_dir / "metrics_cl.json", "w") as f:
+        json.dump(metrics_cl, f, indent=2)
+    print(f"[{exp_id}] metrics_cl.json → {output_dir / 'metrics_cl.json'}")
+
     _save_accuracy_matrix(acc_matrix, output_dir / "cl_accuracy_matrix.png", exp_id=exp_id)
     _save_config_snapshot(config, output_dir.parent / "config_snapshot.yaml", exp_id=exp_id)
 
@@ -494,6 +571,11 @@ def main() -> None:
     if args.data_config:
         data_cfg = load_config(args.data_config)
         config["data"].update(data_cfg.get("data", {}))
+
+    # Override exp_id depuis --exp_id
+    if args.exp_id:
+        config["exp_id"] = args.exp_id
+        config["evaluation"]["output_dir"] = f"experiments/{args.exp_id}/results/"
 
     # Override répertoire expérience depuis --exp_dir
     if args.exp_dir:

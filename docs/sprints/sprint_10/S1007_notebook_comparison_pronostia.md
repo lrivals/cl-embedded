@@ -201,11 +201,11 @@ MODEL_EXP_MAP_BASELINE = {
 
 ## Critères d'acceptation
 
-- [ ] `comparison.ipynb` exécutable sans erreur, 6 figures sauvegardées
-- [ ] `pronostia_single_task.ipynb` exécutable sans erreur, 4 figures sauvegardées
-- [ ] Les scatters `scatter_ram_vs_accuracy.png` utilisent le même `SCATTER_MARKERS` que les notebooks Monitoring et Pump
-- [ ] La section Discussion Gap 1 dans `comparison.ipynb` référence exp_050–055 avec `FIXME(gap1)` → ✅
-- [ ] Fallback mock fonctionnel si les expériences ne sont pas encore exécutées
+- [x] `comparison.ipynb` exécutable sans erreur, 7 figures sauvegardées dans `comparison/pronostia/by_condition/`
+- [x] `pronostia_single_task.ipynb` exécutable sans erreur, 4 figures sauvegardées dans `baseline/pronostia/single_task/`
+- [x] Les scatters `scatter_ram_vs_accuracy.png` utilisent le même `SCATTER_MARKERS` que les notebooks Monitoring et Pump
+- [x] La section Discussion Gap 1 dans `comparison.ipynb` référence exp_050–055 avec `FIXME(gap1)` → ✅
+- [x] Fallback mock fonctionnel (toutes les expériences sont disponibles)
 
 ---
 
@@ -216,4 +216,4 @@ MODEL_EXP_MAP_BASELINE = {
 
 ---
 
-**Complété le** : _(à renseigner)_
+**Complété le** : 2026-04-24

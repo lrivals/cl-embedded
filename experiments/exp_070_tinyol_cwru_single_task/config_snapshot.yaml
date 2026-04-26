@@ -1,0 +1,89 @@
+exp_id: exp_070_tinyol_cwru_single_task
+data:
+  dataset: cwru
+  task_split: no_split
+  csv_path: data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv
+  n_features: 9
+  n_classes: 2
+  test_ratio: 0.2
+  val_ratio: 0.1
+  batch_size: 1
+  random_state: 42
+model:
+  architecture: mlp
+  input_dim: 9
+  hidden_dims:
+  - 32
+  - 16
+  output_dim: 1
+  dropout: 0.2
+training:
+  optimizer: sgd
+  learning_rate: 0.001
+  momentum: 0.9
+  epochs_per_task: 10
+  batch_size: 1
+  seed: 42
+  pos_weight: null
+ewc:
+  lambda: 400
+  gamma: 0.9
+  n_fisher_samples: 200
+hdc:
+  D: 512
+  n_levels: 10
+  seed: 42
+  base_vectors_path: configs/hdc_base_vectors_cwru.npz
+feature_bounds:
+  max: null
+  min: null
+  mean: null
+  sd: null
+  rms: null
+  skewness: null
+  kurtosis: null
+  crest: null
+  form: null
+pretrain:
+  epochs: 20
+  batch_size: 64
+  learning_rate: 0.001
+oto_head:
+  input_dim: null
+  learning_rate: 0.01
+  momentum: 0.0
+  loss: bce
+kmeans:
+  k_method: fixed
+  k_fixed: 2
+  k_min: 2
+  k_max: 8
+  anomaly_threshold: null
+  anomaly_percentile: 95
+  n_init: 10
+  max_iter: 300
+  cl_strategy: refit
+mahalanobis:
+  anomaly_threshold: null
+  anomaly_percentile: 95
+  reg_covar: 1.0e-06
+  cl_strategy: refit
+dbscan:
+  eps: null
+  min_samples: 5
+  anomaly_percentile: 95
+  cl_strategy: refit
+evaluation:
+  seed: 42
+  metrics:
+  - accuracy
+  - f1
+  - auc_roc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_070_tinyol_cwru_single_task/results/
+  n_latency_runs: 100
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000

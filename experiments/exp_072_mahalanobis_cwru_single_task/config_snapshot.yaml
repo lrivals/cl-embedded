@@ -1,0 +1,90 @@
+_snapshot_timestamp: '2026-04-24T16:10:47.119129'
+data:
+  batch_size: 1
+  csv_path: data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv
+  dataset: cwru
+  n_classes: 2
+  n_features: 9
+  random_state: 42
+  task_split: no_split
+  test_ratio: 0.2
+  val_ratio: 0.1
+dbscan:
+  anomaly_percentile: 95
+  cl_strategy: refit
+  eps: null
+  min_samples: 5
+evaluation:
+  metrics:
+  - accuracy
+  - f1
+  - auc_roc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  n_latency_runs: 100
+  output_dir: experiments/exp_072_mahalanobis_cwru_single_task/results/
+  seed: 42
+ewc:
+  gamma: 0.9
+  lambda: 400
+  n_fisher_samples: 200
+exp_id: exp_072_mahalanobis_cwru_single_task
+feature_bounds:
+  crest: null
+  form: null
+  kurtosis: null
+  max: null
+  mean: null
+  min: null
+  rms: null
+  sd: null
+  skewness: null
+hdc:
+  D: 512
+  base_vectors_path: configs/hdc_base_vectors_cwru.npz
+  n_levels: 10
+  seed: 42
+kmeans:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  k_fixed: 2
+  k_max: 8
+  k_method: fixed
+  k_min: 2
+  max_iter: 300
+  n_init: 10
+mahalanobis:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  reg_covar: 1.0e-06
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+model:
+  architecture: mlp
+  dropout: 0.2
+  hidden_dims:
+  - 32
+  - 16
+  input_dim: 9
+  output_dim: 1
+oto_head:
+  input_dim: null
+  learning_rate: 0.01
+  loss: bce
+  momentum: 0.0
+pretrain:
+  batch_size: 64
+  epochs: 20
+  learning_rate: 0.001
+training:
+  batch_size: 1
+  epochs_per_task: 10
+  learning_rate: 0.001
+  momentum: 0.9
+  optimizer: sgd
+  pos_weight: null
+  seed: 42
