@@ -1,0 +1,18 @@
+features:
+- temperature
+- pressure
+- vibration
+- humidity
+fit_domain: Pump
+fit_filter: faulty==0
+mean:
+  humidity: 49.92485885224465
+  pressure: 34.89734507968168
+  temperature: 69.78966716104283
+  vibration: 1.5096387120636632
+normalization: zscore
+std:
+  humidity: 9.88107592035757
+  pressure: 8.100785000028008
+  temperature: 9.966979759886568
+  vibration: 0.5019099176276408

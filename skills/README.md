@@ -18,6 +18,7 @@
 | `embedded_portability.md` | Vérifier la portabilité MCU d'un modèle | "Ce code est-il compatible STM32N6 ?" |
 | `latex_manuscript.md` | Rédiger des sections du manuscrit | "Rédige la section 3.2 en LaTeX" |
 | `code_review.md` | Réviser du code existant | "Révise ce fichier Python" |
+| `update_pipeline_diagram.md` | Synchroniser le diagramme pipeline avec le dépôt | "Mets à jour le diagramme pipeline" |
 
 ---
 

@@ -580,6 +580,21 @@
         file: "data/raw/equipment_monitoring/equipment_anomaly_data.csv",
         description: "Dataset 2 — Industrial Equipment Monitoring\n7 672 lignes, 4 features (temp, pression, vibration, humidité)\nLabel : faulty (0/1 binaire)\nScénario CL : domain-incremental (pump → turbine → compressor)"
       },
+      {
+        id: "pronostia_csv", name: "Pronostia CSV", type: "data", category: "data_eda", experiment: "all", importance: 1,
+        file: "data/raw/Pronostia dataset/",
+        description: "Dataset 3 — PRONOSTIA (FEMTO Bearing)\nDonnées vibration roulements jusqu'à défaillance\nLabel : RUL (pronostia) / condition de dégradation\nScénario CL : by_condition (no_split, by_condition)"
+      },
+      {
+        id: "cwru_csv", name: "CWRU CSV", type: "data", category: "data_eda", experiment: "all", importance: 1,
+        file: "data/raw/CWRU Bearing Dataset/",
+        description: "Dataset 4 — CWRU Bearing Dataset\nDonnées vibration roulements avec défauts artificiels\nLabel : type de défaut + sévérité\nScénario CL : by_fault_type, by_severity, single_task"
+      },
+      {
+        id: "battery_csv", name: "Battery RUL CSV", type: "data", category: "data_eda", experiment: "all", importance: 0,
+        file: "data/raw/Battery Remaining Useful Life (RUL)/",
+        description: "Dataset 5 — Battery Remaining Useful Life\nDonnées de dégradation batterie\nLabel : RUL (régression)\nEn cours d'intégration"
+      },
 
       // ── Configs ─────────────────────────────────────────────────────────────────
       {
@@ -628,9 +643,98 @@
         description: "Z-score mean/std pour Dataset 2\nFitté sur Task 1 (Pump) uniquement"
       },
       {
-        id: "hdc_base_vectors", name: "hdc_base_vectors.npz", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        id: "hdc_base_vectors", name: "hdc_base_vectors.npz", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
         file: "configs/hdc_base_vectors.npz",
-        description: "Vecteurs de base HDC aléatoires ±1\nD × (n_levels + n_features)\n~10 Ko, généré une fois"
+        description: "Vecteurs de base HDC aléatoires ±1 — Monitoring\nD × (n_levels + n_features)\n~10 Ko, généré une fois"
+      },
+      {
+        id: "hdc_pump_base_vectors", name: "hdc_pump_base_vectors.npz", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/hdc_pump_base_vectors.npz",
+        description: "Vecteurs de base HDC — Dataset Pump\nD=1024, 25 features\n~10 Ko, généré une fois"
+      },
+      {
+        id: "hdc_base_vectors_pronostia", name: "hdc_base_vectors_pronostia.npz", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/hdc_base_vectors_pronostia.npz",
+        description: "Vecteurs de base HDC — Pronostia\nD=1024, adapté aux features temporelles"
+      },
+      {
+        id: "hdc_base_vectors_cwru", name: "hdc_base_vectors_cwru.npz", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/hdc_base_vectors_cwru.npz",
+        description: "Vecteurs de base HDC — CWRU\nD=1024, adapté aux features vibration"
+      },
+      // ── Configs — Scénarios datasets existants ──────────────────────────────────
+      {
+        id: "pump_by_id_config", name: "pump_by_id_config.yaml", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/pump_by_id_config.yaml",
+        description: "Pump — scénario by_pump_id\n5 tâches (pump_001…pump_005)\nSplit par identifiant de pompe"
+      },
+      {
+        id: "pump_by_temporal_window_config", name: "pump_by_temporal.yaml", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/pump_by_temporal_window_config.yaml",
+        description: "Pump — scénario by_temporal_window\n4 tâches temporelles chronologiques"
+      },
+      {
+        id: "pump_single_task_config", name: "pump_single_task.yaml", type: "config", category: "ml_cl", experiment: "industrial_pump", importance: 0,
+        file: "configs/pump_single_task_config.yaml",
+        description: "Pump — single task (baseline)\nPas de split CL, entraînement complet"
+      },
+      {
+        id: "monitoring_by_location_config", name: "monitoring_by_location.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/monitoring_by_location_config.yaml",
+        description: "Monitoring — scénario by_location\n5 zones géographiques\nSplit par localisation équipement"
+      },
+      {
+        id: "monitoring_single_task_config", name: "monitoring_single_task.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/monitoring_single_task_config.yaml",
+        description: "Monitoring — single task (baseline)\nPas de split CL"
+      },
+      // ── Configs — Pronostia ──────────────────────────────────────────────────────
+      {
+        id: "pronostia_config", name: "pronostia_config.yaml", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/pronostia_config.yaml",
+        description: "Pronostia — config principale\nScénarios : no_split, by_condition\nCouvre HDC, EWC, TinyOL, baselines"
+      },
+      {
+        id: "pronostia_normalizer", name: "pronostia_normalizer.yaml", type: "config", category: "data_eda", experiment: "all", importance: 0,
+        file: "configs/pronostia_normalizer.yaml",
+        description: "Z-score mean/std pour Pronostia\nFitté sur la première condition"
+      },
+      // ── Configs — CWRU ───────────────────────────────────────────────────────────
+      {
+        id: "cwru_by_fault_config", name: "cwru_by_fault.yaml", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/cwru_by_fault_config.yaml",
+        description: "CWRU — scénario by_fault_type\nTâches : normal, inner, outer, ball\nSplit par type de défaut"
+      },
+      {
+        id: "cwru_by_severity_config", name: "cwru_by_severity.yaml", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/cwru_by_severity_config.yaml",
+        description: "CWRU — scénario by_severity\nTâches : 0.007\", 0.014\", 0.021\"\nSplit par taille de défaut"
+      },
+      {
+        id: "cwru_single_task_config", name: "cwru_single_task.yaml", type: "config", category: "ml_cl", experiment: "all", importance: 0,
+        file: "configs/cwru_single_task_config.yaml",
+        description: "CWRU — single task (baseline)\nPas de split CL"
+      },
+      // ── Configs — Anomaly detection ──────────────────────────────────────────────
+      {
+        id: "hdc_anomaly_config", name: "hdc_anomaly_detection.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/hdc_anomaly_detection_config.yaml",
+        description: "HDC — détection d'anomalie non supervisée\nSeuil adaptatif sur score HDC"
+      },
+      {
+        id: "tinyol_anomaly_config", name: "tinyol_anomaly_detection.yaml", type: "config", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/tinyol_anomaly_detection_config.yaml",
+        description: "TinyOL — détection d'anomalie\nErreur de reconstruction autoencoder comme score"
+      },
+      {
+        id: "unsupervised_anomaly_config", name: "unsupervised_anomaly.yaml", type: "config", category: "ml_unsup", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/unsupervised_anomaly_detection_config.yaml",
+        description: "Baselines unsup — anomaly detection\nKMeans, Mahalanobis, thresholds adaptatives"
+      },
+      {
+        id: "monitoring_normalizer_anomaly", name: "monitoring_normalizer_anomaly.yaml", type: "config", category: "data_eda", experiment: "equipment_monitoring", importance: 0,
+        file: "configs/monitoring_normalizer_anomaly.yaml",
+        description: "Z-score pour le scénario anomaly detection\nFitté sur données normales uniquement"
       },
 
       // ── Data loaders ─────────────────────────────────────────────────────────────
@@ -643,6 +747,21 @@
         id: "monitoring_dataset", name: "monitoring_dataset.py", type: "data_loader", category: "data_eda", experiment: "equipment_monitoring", importance: 1,
         file: "src/data/monitoring_dataset.py",
         description: "Splits: by_equipment (pump/turbine/compressor),\nby_location (5 zones), no_split\n4 features (temp, pression, vibration, humidité)\nNormalisation Z-score sur Task 1"
+      },
+      {
+        id: "pronostia_dataset", name: "pronostia_dataset.py", type: "data_loader", category: "data_eda", experiment: "all", importance: 1,
+        file: "src/data/pronostia_dataset.py",
+        description: "PronostiaDataset, CLStreamSplitter\nSplits: no_split, by_condition\nFeatures vibration temporelles\nNormalisation Z-score sur première condition"
+      },
+      {
+        id: "cwru_dataset", name: "cwru_dataset.py", type: "data_loader", category: "data_eda", experiment: "all", importance: 1,
+        file: "src/data/cwru_dataset.py",
+        description: "CWRUDataset\nSplits: by_fault_type, by_severity, single_task\nFeatures FFT + statistiques temporelles\nLabel : type de défaut"
+      },
+      {
+        id: "battery_dataset", name: "battery_dataset.py", type: "data_loader", category: "data_eda", experiment: "all", importance: 0,
+        file: "src/data/battery_dataset.py",
+        description: "BatteryDataset (en cours)\nRUL estimation — régression\nDonnées de cycles de charge/décharge"
       },
 
       // ── Modèles ──────────────────────────────────────────────────────────────────
@@ -706,12 +825,22 @@
         file: "src/models/unsupervised/dbscan_detector.py",
         description: "Clustering DBSCAN\nPoints en cluster = normaux\nPoints bruit = anomalies"
       },
+      {
+        id: "tinyol_anomaly", name: "TinyOLAnomalyDetector", type: "ml", category: "ml_cl", experiment: "equipment_monitoring", importance: 0,
+        file: "src/models/tinyol/tinyol_anomaly_detector.py",
+        description: "Détection d'anomalie TinyOL\nScore = erreur de reconstruction autoencoder\nSeuil adaptatif online\nExtend TinyOLAutoencoder"
+      },
 
       // ── Training ─────────────────────────────────────────────────────────────────
       {
         id: "baselines", name: "baselines.py", type: "training", category: "ml_cl", experiment: "single_task", importance: 0,
         file: "src/training/baselines.py",
         description: "Baselines EWC :\n• train_naive_sequential() — catastrophic forgetting\n• train_joint() — offline sur toutes les tâches\n• evaluate_task()"
+      },
+      {
+        id: "scenarios", name: "scenarios.py", type: "training", category: "ml_cl", experiment: "all", importance: 0,
+        file: "src/training/scenarios.py",
+        description: "Scénarios CL multi-datasets :\n• build_cl_stream() — construction des tâches\n• run_scenario() — orchestration entraînement CL\nSupporte tous datasets + splits"
       },
 
       // ── Évaluation ───────────────────────────────────────────────────────────────
@@ -734,6 +863,31 @@
         id: "feature_space_plots", name: "feature_space_plots.py", type: "evaluation", category: "plot", experiment: "all", importance: 0,
         file: "src/evaluation/feature_space_plots.py",
         description: "Visualisation de l'espace features :\nPCA, KPCA, Voronoi K-Means\nEllipses Mahalanobis, heatmaps PCA\nÉvolution CL"
+      },
+      {
+        id: "anomaly_metrics", name: "anomaly_metrics.py", type: "evaluation", category: "eval_exp", experiment: "equipment_monitoring", importance: 0,
+        file: "src/evaluation/anomaly_metrics.py",
+        description: "Métriques détection d'anomalie :\n• AUROC, AUPR, F1-score, precision, recall\n• compute_anomaly_metrics()\n• Courbes ROC et Precision-Recall"
+      },
+      {
+        id: "compute_cost", name: "compute_cost.py", type: "evaluation", category: "memory", experiment: "all", importance: 0,
+        file: "src/evaluation/compute_cost.py",
+        description: "Coût computationnel :\n• FLOPs par inférence\n• Temps d'update\n• Compatibilité contraintes STM32N6"
+      },
+      {
+        id: "drift_detector", name: "drift_detector.py", type: "evaluation", category: "eval_exp", experiment: "all", importance: 0,
+        file: "src/evaluation/drift_detector.py",
+        description: "Détection de drift de distribution :\n• KL divergence, MMD\n• Alerte changement de domaine\n• Utile pour boundary tasks"
+      },
+      {
+        id: "feature_importance", name: "feature_importance.py", type: "evaluation", category: "eval_exp", experiment: "all", importance: 0,
+        file: "src/evaluation/feature_importance.py",
+        description: "Importance des features :\n• Permutation importance\n• Contribution par tâche CL\n• Analyse du drift de features"
+      },
+      {
+        id: "plots", name: "plots.py", type: "evaluation", category: "plot", experiment: "all", importance: 0,
+        file: "src/evaluation/plots.py",
+        description: "Plots génériques expériences :\n• Matrices de confusion CL\n• Accuracy par tâche\n• Courbes d'apprentissage"
       },
 
       // ── Utils ────────────────────────────────────────────────────────────────────
@@ -784,6 +938,36 @@
         file: "scripts/visualize_feature_space.py",
         description: "Visualisation de l'espace features :\nPCA, Voronoi K-Means, ellipses Mahalanobis\nheatmaps reconstruction\nProduit : 05_feature_space_*.png"
       },
+      {
+        id: "train_kmeans", name: "train_kmeans.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/train_kmeans.py",
+        description: "Entraînement KMeans domain-incremental\nSupporté : tous datasets\nProduit : metrics_kmeans_*.json, acc_matrix.npy"
+      },
+      {
+        id: "train_mahalanobis", name: "train_mahalanobis.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/train_mahalanobis.py",
+        description: "Entraînement Mahalanobis domain-incremental\nSupporté : tous datasets\nProduit : metrics_mahalanobis_*.json"
+      },
+      {
+        id: "train_dbscan", name: "train_dbscan.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/train_dbscan.py",
+        description: "Entraînement DBSCAN domain-incremental\nSupporté : tous datasets\nProduit : metrics_dbscan_*.json"
+      },
+      {
+        id: "learning_curve_study", name: "learning_curve_study.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/learning_curve_study.py",
+        description: "Étude courbes d'apprentissage :\nVariation taille dataset vs performance\nComparaison modèles CL"
+      },
+      {
+        id: "online_update_study", name: "online_update_study.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/online_update_study.py",
+        description: "Étude mise à jour online :\nImpact fréquence d'update\nLatence vs précision\nContraintes STM32N6"
+      },
+      {
+        id: "generate_cwru_notebooks", name: "generate_cwru_*.py", type: "main", category: "data_eda", experiment: "all", importance: 0,
+        file: "scripts/generate_cwru_fault_type_notebooks.py",
+        description: "Génération notebooks CWRU :\n• generate_cwru_fault_type_notebooks.py\n• generate_cwru_severity_notebooks.py\nProduit : notebooks automatisés par scénario"
+      },
 
       // ── Outputs ──────────────────────────────────────────────────────────────────
       {
@@ -815,6 +999,21 @@
         id: "fig_feature_space", name: "figures/feature_space/", type: "output", category: "plot", experiment: "all", importance: 0,
         file: "notebooks/figures/feature_space/",
         description: "Visualisations espace features\n05_feature_space_*.png"
+      },
+      {
+        id: "exp_pronostia", name: "experiments/pronostia/", type: "output", category: "eval_exp", experiment: "all", importance: 1,
+        file: "experiments/exp_044_ewc_pronostia_no_split/",
+        description: "Résultats Pronostia (exp_044–055)\nScénarios : no_split, by_condition\nModèles : EWC, HDC, TinyOL, KMeans, Mahalanobis, DBSCAN\nmetrics.json, acc_matrix.npy par exp"
+      },
+      {
+        id: "exp_cwru", name: "experiments/cwru/", type: "output", category: "eval_exp", experiment: "all", importance: 1,
+        file: "experiments/exp_068_ewc_cwru_single_task/",
+        description: "Résultats CWRU (exp_068–085)\nScénarios : single_task, by_fault_type, by_severity\nModèles : EWC, HDC, TinyOL, KMeans, Mahalanobis, DBSCAN\nmetrics.json, acc_matrix.npy par exp"
+      },
+      {
+        id: "exp_anomaly", name: "experiments/anomaly/", type: "output", category: "eval_exp", experiment: "equipment_monitoring", importance: 1,
+        file: "experiments/exp_086_hdc_monitoring_anomaly_detection/",
+        description: "Résultats anomaly detection monitoring (exp_086–089)\nModèles : HDC, TinyOL AE, KMeans, Mahalanobis\nAUROC, AUPR, F1 par exp"
       },
     ];
 
@@ -881,23 +1080,125 @@
       // Data loaders → données brutes
       { source: "pump_dataset", target: "pump_csv", type: "reads" },
       { source: "monitoring_dataset", target: "equipment_csv", type: "reads" },
+      { source: "pronostia_dataset", target: "pronostia_csv", type: "reads" },
+      { source: "cwru_dataset", target: "cwru_csv", type: "reads" },
+      { source: "battery_dataset", target: "battery_csv", type: "reads" },
 
       // Data loaders → normalizers
       { source: "pump_dataset", target: "pump_normalizer", type: "generates" },
       { source: "monitoring_dataset", target: "monitoring_normalizer", type: "generates" },
+      { source: "pronostia_dataset", target: "pronostia_normalizer", type: "generates" },
+
+      // Data loaders → utils
+      { source: "pronostia_dataset", target: "config_loader", type: "import" },
+      { source: "pronostia_dataset", target: "reproducibility", type: "import" },
+      { source: "cwru_dataset", target: "config_loader", type: "import" },
+      { source: "cwru_dataset", target: "reproducibility", type: "import" },
 
       // Modules internes
       { source: "hdc_classifier", target: "base_cl_model", type: "import" },
       { source: "hdc_classifier", target: "hdc_base_vectors_mod", type: "import" },
       { source: "hdc_base_vectors_mod", target: "hdc_base_vectors", type: "generates" },
+      { source: "hdc_base_vectors_mod", target: "hdc_pump_base_vectors", type: "generates" },
+      { source: "hdc_base_vectors_mod", target: "hdc_base_vectors_pronostia", type: "generates" },
+      { source: "hdc_base_vectors_mod", target: "hdc_base_vectors_cwru", type: "generates" },
       { source: "ewc_mlp", target: "base_cl_model", type: "import" },
       { source: "ewc_mlp", target: "fisher", type: "import" },
+      { source: "tinyol_anomaly", target: "tinyol_autoencoder", type: "import" },
       { source: "baselines", target: "ewc_mlp", type: "import" },
       { source: "baselines", target: "metrics", type: "import" },
       { source: "pump_dataset", target: "config_loader", type: "import" },
       { source: "pump_dataset", target: "reproducibility", type: "import" },
       { source: "monitoring_dataset", target: "config_loader", type: "import" },
       { source: "monitoring_dataset", target: "reproducibility", type: "import" },
+
+      // Scripts Pronostia → datasets + configs + sorties
+      { source: "train_hdc", target: "pronostia_dataset", type: "import" },
+      { source: "train_hdc", target: "cwru_dataset", type: "import" },
+      { source: "train_hdc", target: "pronostia_config", type: "uses_config" },
+      { source: "train_hdc", target: "cwru_by_fault_config", type: "uses_config" },
+      { source: "train_hdc", target: "cwru_by_severity_config", type: "uses_config" },
+      { source: "train_hdc", target: "cwru_single_task_config", type: "uses_config" },
+      { source: "train_hdc", target: "hdc_anomaly_config", type: "uses_config" },
+      { source: "train_hdc", target: "exp_pronostia", type: "output" },
+      { source: "train_hdc", target: "exp_cwru", type: "output" },
+
+      { source: "train_ewc", target: "pronostia_dataset", type: "import" },
+      { source: "train_ewc", target: "cwru_dataset", type: "import" },
+      { source: "train_ewc", target: "pronostia_config", type: "uses_config" },
+      { source: "train_ewc", target: "cwru_by_fault_config", type: "uses_config" },
+      { source: "train_ewc", target: "cwru_by_severity_config", type: "uses_config" },
+      { source: "train_ewc", target: "exp_pronostia", type: "output" },
+      { source: "train_ewc", target: "exp_cwru", type: "output" },
+
+      { source: "train_tinyol", target: "pronostia_dataset", type: "import" },
+      { source: "train_tinyol", target: "cwru_dataset", type: "import" },
+      { source: "train_tinyol", target: "pronostia_config", type: "uses_config" },
+      { source: "train_tinyol", target: "cwru_by_fault_config", type: "uses_config" },
+      { source: "train_tinyol", target: "tinyol_anomaly_config", type: "uses_config" },
+      { source: "train_tinyol", target: "tinyol_anomaly", type: "import" },
+      { source: "train_tinyol", target: "exp_pronostia", type: "output" },
+      { source: "train_tinyol", target: "exp_cwru", type: "output" },
+      { source: "train_tinyol", target: "exp_anomaly", type: "output" },
+
+      // Scripts séparés KMeans / Mahalanobis / DBSCAN
+      { source: "train_kmeans", target: "pump_dataset", type: "import" },
+      { source: "train_kmeans", target: "monitoring_dataset", type: "import" },
+      { source: "train_kmeans", target: "pronostia_dataset", type: "import" },
+      { source: "train_kmeans", target: "cwru_dataset", type: "import" },
+      { source: "train_kmeans", target: "kmeans_detector", type: "import" },
+      { source: "train_kmeans", target: "metrics", type: "import" },
+      { source: "train_kmeans", target: "memory_profiler", type: "import" },
+      { source: "train_kmeans", target: "exp_pronostia", type: "output" },
+      { source: "train_kmeans", target: "exp_cwru", type: "output" },
+
+      { source: "train_mahalanobis", target: "pump_dataset", type: "import" },
+      { source: "train_mahalanobis", target: "monitoring_dataset", type: "import" },
+      { source: "train_mahalanobis", target: "pronostia_dataset", type: "import" },
+      { source: "train_mahalanobis", target: "cwru_dataset", type: "import" },
+      { source: "train_mahalanobis", target: "mahalanobis", type: "import" },
+      { source: "train_mahalanobis", target: "metrics", type: "import" },
+      { source: "train_mahalanobis", target: "memory_profiler", type: "import" },
+      { source: "train_mahalanobis", target: "exp_pronostia", type: "output" },
+      { source: "train_mahalanobis", target: "exp_cwru", type: "output" },
+
+      { source: "train_dbscan", target: "pump_dataset", type: "import" },
+      { source: "train_dbscan", target: "monitoring_dataset", type: "import" },
+      { source: "train_dbscan", target: "pronostia_dataset", type: "import" },
+      { source: "train_dbscan", target: "cwru_dataset", type: "import" },
+      { source: "train_dbscan", target: "dbscan_detector", type: "import" },
+      { source: "train_dbscan", target: "metrics", type: "import" },
+      { source: "train_dbscan", target: "exp_pronostia", type: "output" },
+      { source: "train_dbscan", target: "exp_cwru", type: "output" },
+
+      // Anomaly detection
+      { source: "train_unsupervised", target: "unsupervised_anomaly_config", type: "uses_config" },
+      { source: "train_unsupervised", target: "monitoring_normalizer_anomaly", type: "reads" },
+      { source: "train_unsupervised", target: "exp_anomaly", type: "output" },
+      { source: "train_unsupervised", target: "anomaly_metrics", type: "import" },
+      { source: "train_hdc", target: "anomaly_metrics", type: "import" },
+
+      // scenarios.py utilisé par les scripts d'entraînement
+      { source: "train_hdc", target: "scenarios", type: "import" },
+      { source: "train_ewc", target: "scenarios", type: "import" },
+      { source: "train_tinyol", target: "scenarios", type: "import" },
+      { source: "train_kmeans", target: "scenarios", type: "import" },
+      { source: "train_mahalanobis", target: "scenarios", type: "import" },
+      { source: "train_dbscan", target: "scenarios", type: "import" },
+
+      // Études
+      { source: "learning_curve_study", target: "pump_dataset", type: "import" },
+      { source: "learning_curve_study", target: "monitoring_dataset", type: "import" },
+      { source: "learning_curve_study", target: "metrics", type: "import" },
+      { source: "learning_curve_study", target: "plots", type: "import" },
+      { source: "online_update_study", target: "monitoring_dataset", type: "import" },
+      { source: "online_update_study", target: "compute_cost", type: "import" },
+      { source: "online_update_study", target: "memory_profiler", type: "import" },
+
+      // Notebooks CWRU
+      { source: "generate_cwru_notebooks", target: "cwru_dataset", type: "import" },
+      { source: "generate_cwru_notebooks", target: "cwru_by_fault_config", type: "uses_config" },
+      { source: "generate_cwru_notebooks", target: "cwru_by_severity_config", type: "uses_config" },
     ];
 
     // ─────────────────────────────────────────────────────────────────────────────

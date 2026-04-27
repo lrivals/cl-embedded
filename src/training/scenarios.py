@@ -16,9 +16,12 @@ Références :
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 from torch.utils.data import DataLoader
 
+from src.evaluation.anomaly_metrics import compute_anomaly_metrics
 from src.evaluation.metrics import accuracy_binary
 from src.models.base_cl_model import BaseCLModel
 
@@ -196,3 +199,99 @@ def run_cl_scenario_full(
             preds_dict[(i, j)] = (y_true, y_pred)
 
     return acc_matrix, preds_dict
+
+
+# ---------------------------------------------------------------------------
+# Scénario anomaly detection (one-class CL)
+# ---------------------------------------------------------------------------
+
+
+def run_anomaly_detection_scenario(
+    model: Any,
+    tasks: list[dict],
+    config: dict,
+) -> tuple[np.ndarray, dict[tuple[int, int], tuple[np.ndarray, np.ndarray]]]:
+    """
+    Scénario anomaly detection : entraîner sur données normales, évaluer sur données mixtes.
+
+    Boucle :
+        pour chaque tâche i :
+            1. Entraîner sur task["train_loader"] (faulty==0 uniquement)
+            2. Évaluer sur task["test_loader_mixed"] pour toutes les tâches j ≤ i
+            3. Stocker l'AUROC dans auroc_matrix[i, j]
+
+    Compatible avec :
+        - HDCClassifier (one_class_mode=True)        → interface update()+on_task_end()
+        - TinyOLAnomalyDetector                      → interface update()+on_task_end()
+        - MahalanobisDetector / KMeansDetector       → interface fit_task(X, task_id)
+
+    Parameters
+    ----------
+    model : object
+        Modèle avec anomaly_score(X) → np.ndarray.
+        Interface d'entraînement détectée automatiquement (fit_task ou update/on_task_end).
+    tasks : list[dict]
+        Depuis get_cl_dataloaders_anomaly_detection().
+        Clés requises : task_id, train_loader, test_loader_mixed.
+    config : dict
+        Configuration YAML du modèle (transmis pour compatibilité).
+
+    Returns
+    -------
+    auroc_matrix : np.ndarray [T, T]
+        auroc_matrix[i, j] = AUROC sur la tâche j après entraînement sur les tâches 0..i.
+        NaN pour j > i.
+    scores_dict : dict[tuple[int, int], tuple[np.ndarray, np.ndarray]]
+        scores_dict[(i, j)] = (y_true, scores) — pour courbes ROC post-hoc.
+    """
+    T = len(tasks)
+    auroc_matrix = np.full((T, T), np.nan)
+    scores_dict: dict[tuple[int, int], tuple[np.ndarray, np.ndarray]] = {}
+
+    # Pré-extraction des données de test (une seule fois, hors boucle d'entraînement)
+    X_tests: list[np.ndarray] = []
+    y_tests: list[np.ndarray] = []
+    for task in tasks:
+        X_t = np.concatenate([b[0].numpy() for b in task["test_loader_mixed"]])
+        y_t = np.concatenate([b[1].numpy().flatten() for b in task["test_loader_mixed"]])
+        X_tests.append(X_t)
+        y_tests.append(y_t)
+
+    for i, task in enumerate(tasks):
+        _train_anomaly_model(model, task["train_loader"], task["task_id"])
+
+        for j in range(i + 1):
+            scores = model.anomaly_score(X_tests[j])
+            metrics = compute_anomaly_metrics(y_tests[j], scores)
+            auroc_matrix[i, j] = metrics["auroc"]
+            scores_dict[(i, j)] = (y_tests[j], scores)
+            print(
+                f"  [AD] après tâche {i+1}/{T}, eval tâche {j+1} "
+                f"({tasks[j]['domain']:12s}) — AUROC={metrics['auroc']:.4f} "
+                f"F1={metrics['f1']:.4f}"
+            )
+
+    return auroc_matrix, scores_dict
+
+
+def _train_anomaly_model(
+    model: Any,
+    train_loader: DataLoader,
+    task_id: int,
+) -> None:
+    """
+    Dispatch d'entraînement selon l'interface du modèle.
+
+    - fit_task(X, task_id) : MahalanobisDetector, KMeansDetector (offline batch)
+    - update(x, y) + on_task_end() : HDCClassifier, TinyOLAnomalyDetector (online)
+    """
+    if hasattr(model, "fit_task"):
+        X_train = np.concatenate([b[0].numpy() for b in train_loader])
+        model.fit_task(X_train, task_id=task_id - 1)  # task_id 1-based → 0-based
+    else:
+        y_zeros = np.zeros(1, dtype=np.float32)  # placeholder (ignoré en one-class)
+        for x_batch, y_batch in train_loader:
+            x_np = x_batch.numpy()
+            y_np = y_batch.numpy().flatten()
+            model.update(x_np, y_np)
+        model.on_task_end(task_id, train_loader)

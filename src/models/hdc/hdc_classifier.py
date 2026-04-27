@@ -178,12 +178,21 @@ class HDCClassifier(BaseCLModel):
             )
             save_base_vectors(self.H_level, self.H_pos, bv_path)
 
+        # Mode one-class : entraîner uniquement sur les données normales (faulty=0)
+        # et détecter les anomalies par dissimilarité cosinus depuis le prototype normal.
+        self.one_class_mode: bool = bool(config.get("one_class_mode", False))
+        self.anomaly_percentile: int = int(config.get("anomaly_percentile", 95))
+        self.anomaly_threshold_: float | None = config.get("anomaly_threshold", None)
+
+        # Nombre de prototypes : 1 (one-class) ou n_classes (supervisé)
+        _n_proto = 1 if self.one_class_mode else self.n_classes
+
         # Prototypes de classe (accumulateurs INT32 + version binarisée pour l'inférence)
-        self.prototypes_acc = np.zeros((self.n_classes, self.D), dtype=np.int32)
-        # MEM: 2 × 1024 × 4 B = 8 Ko @ INT32
-        self.prototypes_bin = np.zeros((self.n_classes, self.D), dtype=np.int8)
-        # MEM: 2 × 1024 × 1 B = 2 Ko @ INT8
-        self.class_counts = np.zeros(self.n_classes, dtype=np.int32)
+        self.prototypes_acc = np.zeros((_n_proto, self.D), dtype=np.int32)
+        # MEM: 2 × 1024 × 4 B = 8 Ko @ INT32 (supervisé) / 4 Ko (one-class)
+        self.prototypes_bin = np.zeros((_n_proto, self.D), dtype=np.int8)
+        # MEM: 2 × 1024 × 1 B = 2 Ko @ INT8 (supervisé) / 1 Ko (one-class)
+        self.class_counts = np.zeros(_n_proto, dtype=np.int32)
 
         self._fitted: bool = False  # True après au moins 1 appel à update()
 
@@ -214,6 +223,14 @@ class HDCClassifier(BaseCLModel):
         """
         if not self._fitted:
             raise RuntimeError("HDCClassifier not fitted. Call update() first.")
+
+        if self.one_class_mode:
+            if self.anomaly_threshold_ is None:
+                raise RuntimeError(
+                    "Seuil non calculé. Appeler on_task_end() sur Task 0 d'abord."
+                )
+            scores = self.anomaly_score(x)
+            return (scores >= self.anomaly_threshold_).astype(np.int64)
 
         preds = []
         for sample in x:
@@ -257,11 +274,17 @@ class HDCClassifier(BaseCLModel):
                 self.n_levels,
                 self.D,
             )
-            self.prototypes_acc[int(label)] += H_obs.astype(np.int32)
-            self.class_counts[int(label)] += 1
+            # En one_class_mode : y est ignoré, tout s'accumule dans le prototype 0 (normal)
+            proto_idx = 0 if self.one_class_mode else int(label)
+            self.prototypes_acc[proto_idx] += H_obs.astype(np.int32)
+            self.class_counts[proto_idx] += 1
 
         self._rebinarize_prototypes()
         self._fitted = True
+
+        if self.one_class_mode:
+            # Proxy de loss : dissimilarité moyenne sur le batch
+            return float(np.mean(self.anomaly_score(x)))
 
         preds = self.predict(x)
         errors = int(np.sum(preds != y.astype(np.int64)))
@@ -271,6 +294,7 @@ class HDCClassifier(BaseCLModel):
         """
         Callback fin de tâche. Re-binarise les prototypes pour cohérence.
 
+        En one_class_mode, calcule le seuil d'anomalie sur Task 0 (Pump) uniquement.
         HDC n'a pas de post-processing obligatoire. Optionnel : renormalisation
         des accumulateurs INT32 pour éviter le débordement sur très longues séquences
         (hors scope Sprint 2 — TODO(dorra)).
@@ -278,9 +302,85 @@ class HDCClassifier(BaseCLModel):
         Parameters
         ----------
         task_id : int
-        dataloader : iterable (non utilisé par HDC)
+        dataloader : iterable
+            En one_class_mode sur Task 0, utilisé pour extraire X_train_normal et
+            calculer le seuil d'anomalie au percentile configuré.
         """
         self._rebinarize_prototypes()
+
+        if self.one_class_mode and task_id == 1 and self.anomaly_threshold_ is None:
+            X_train = np.concatenate([b[0].numpy() for b in dataloader])
+            self.set_anomaly_threshold(X_train)
+            print(
+                f"  [HDC one-class] Seuil calculé sur Task {task_id} : "
+                f"{self.anomaly_threshold_:.4f} (percentile {self.anomaly_percentile})"
+            )
+
+    def anomaly_score(self, x: np.ndarray) -> np.ndarray:
+        """
+        Retourne le score d'anomalie : 1 - cosine_similarity(H_obs, C_normal).
+
+        Score ∈ [0, 1] — 0 = identique au prototype normal, ~1 = très différent.
+        Uniquement disponible en one_class_mode=True.
+
+        Parameters
+        ----------
+        x : np.ndarray [batch_size, n_features], dtype=float32
+
+        Returns
+        -------
+        np.ndarray [batch_size], dtype=float32
+
+        Raises
+        ------
+        RuntimeError
+            Si one_class_mode=False ou modèle non entraîné.
+        """
+        if not self.one_class_mode:
+            raise RuntimeError("anomaly_score() n'est disponible qu'en one_class_mode=True.")
+        if not self._fitted:
+            raise RuntimeError("HDCClassifier not fitted. Call update() first.")
+
+        c_normal = self.prototypes_bin[0].astype(np.float32)
+        norm_c = np.linalg.norm(c_normal)
+        scores = []
+        for sample in x:
+            H_obs = encode_observation(
+                sample,
+                self.H_level,
+                self.H_pos,
+                self.feature_bounds,
+                self.n_levels,
+                self.D,
+            ).astype(np.float32)
+            cos_sim = float(np.dot(c_normal, H_obs) / (norm_c * np.linalg.norm(H_obs) + 1e-8))
+            scores.append(1.0 - cos_sim)
+        return np.array(scores, dtype=np.float32)
+
+    def set_anomaly_threshold(
+        self,
+        x_normal: np.ndarray,
+        percentile: int | None = None,
+    ) -> float:
+        """
+        Calcule et fixe le seuil d'anomalie depuis des données normales.
+
+        Parameters
+        ----------
+        x_normal : np.ndarray [N, n_features]
+            Données d'entraînement normales (faulty=0).
+        percentile : int | None
+            Percentile utilisé. Si None, utilise self.anomaly_percentile (depuis config).
+
+        Returns
+        -------
+        float
+            Seuil calculé.
+        """
+        p = percentile if percentile is not None else self.anomaly_percentile
+        scores = self.anomaly_score(x_normal)
+        self.anomaly_threshold_ = float(np.percentile(scores, p))
+        return self.anomaly_threshold_
 
     def count_parameters(self) -> int:
         """
@@ -292,9 +392,9 @@ class HDCClassifier(BaseCLModel):
         Returns
         -------
         int
-            n_classes × D = 2 × 1024 = 2048 éléments.
+            n_proto × D — 1 × 1024 (one-class) ou 2 × 1024 (supervisé).
         """
-        return self.n_classes * self.D  # MEM: 2 × 1024 = 2048 éléments
+        return self.prototypes_acc.shape[0] * self.D
 
     def estimate_ram_bytes(self, dtype: str = "fp32") -> int:
         """

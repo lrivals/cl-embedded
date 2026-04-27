@@ -1,0 +1,47 @@
+# configs/tinyol_anomaly_detection_config.yaml
+# TinyOLAnomalyDetector pour le scénario anomaly detection.
+# Entraînement autoencoder sur données normales (faulty=0) uniquement.
+# NE PAS modifier les valeurs directement dans le code source.
+#
+# Correction vs tinyol_monitoring_config.yaml :
+#   encoder_dims: [4, 4, 2] — bottleneck 2 < input_dim 4 → erreur MSE discriminante
+#   (tinyol_monitoring_config.yaml a encoder_dims [8, 8, 8] : bottleneck > input, inadapté)
+
+exp_id: "exp_087_tinyol_monitoring_anomaly_detection"
+
+backbone:
+  input_dim: 4           # 4 features numériques (temperature, pressure, vibration, humidity)
+  encoder_dims: [4, 4, 2]  # bottleneck 2D < 4D input — compression forcée
+  decoder_dims: [4, 4, 4]  # reconstruction symétrique
+  checkpoint_path: "experiments/exp_087_tinyol_monitoring_anomaly_detection/backbone_task{}.pt"
+
+pretrain:
+  optimizer: "adam"
+  learning_rate: 0.001
+  epochs: 50
+  batch_size: 64
+  seed: 42
+
+# --- Mode anomaly detection ---
+anomaly_percentile: 95
+anomaly_threshold: null  # calculé automatiquement sur Task 1 (Pump faulty=0)
+
+data:
+  dataset: "equipment_monitoring"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+  normalizer_path: "configs/monitoring_normalizer_anomaly.yaml"
+  domain_column: "equipment"
+  domain_order: ["Pump", "Turbine", "Compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+  n_tasks: 3
+
+evaluation:
+  seed: 42
+  metrics: ["avg_auroc", "auroc_forgetting", "auroc_bwt", "ram_peak_bytes", "n_params"]
+  output_dir: "experiments/exp_087_tinyol_monitoring_anomaly_detection/results/"
+
+memory:
+  target_ram_bytes: 65536
+  expected_ram_bytes: 408   # ~102 params × 4 B = 408 B @ FP32 (très confortable)
+  warn_if_above_bytes: 52000

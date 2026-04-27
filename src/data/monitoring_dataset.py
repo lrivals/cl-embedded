@@ -659,3 +659,117 @@ def get_monitoring_dataloaders_single_task(
         "n_test": len(x_test),
         "normalizer": normalizer,
     }
+
+
+# ---------------------------------------------------------------------------
+# 10. Scénario anomaly detection (one-class CL)
+# ---------------------------------------------------------------------------
+
+
+def get_cl_dataloaders_anomaly_detection(
+    csv_path: Path,
+    normalizer_path: Path,
+    batch_size: int = 32,
+    train_ratio: float = 0.8,
+    seed: int = 42,
+) -> list[dict]:
+    """
+    Data loader pour le scénario anomaly detection (one-class CL).
+
+    Différence vs get_cl_dataloaders() :
+        - train_loader : uniquement les échantillons normaux (faulty==0)
+        - test_loader_mixed : tous les échantillons du domaine (faulty==0 + faulty==1)
+          avec shuffle=False pour conserver l'ordre des labels lors du calcul AUROC.
+
+    La normalisation est chargée depuis ``normalizer_path`` (typiquement
+    ``configs/monitoring_normalizer_anomaly.yaml``, fittée sur Pump faulty==0 uniquement).
+
+    Parameters
+    ----------
+    csv_path : Path
+        Chemin vers equipment_anomaly_data.csv.
+    normalizer_path : Path
+        Chemin vers le YAML de normalisation (fittée sur données normales).
+    batch_size : int
+        Taille des mini-batches. Default : 32.
+    train_ratio : float
+        Fraction des échantillons normaux utilisée pour l'entraînement.
+        Le reste est inclus dans test_loader_mixed. Default : 0.8.
+    seed : int
+        Seed global. Default : 42.
+
+    Returns
+    -------
+    list[dict]
+        Liste ordonnée de 3 dicts (Pump → Turbine → Compressor) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,                  # 1, 2 ou 3
+                "domain": str,                   # "Pump", "Turbine" ou "Compressor"
+                "train_loader": DataLoader,      # faulty==0 uniquement, shuffle=True
+                "test_loader_mixed": DataLoader, # tous échantillons, shuffle=False
+                "n_train": int,                  # nb samples normaux d'entraînement
+                "n_test": int,                   # nb total samples dans test_loader_mixed
+                "n_test_normal": int,            # nb faulty==0 dans test
+                "n_test_faulty": int,            # nb faulty==1 dans test
+            }
+
+    Notes
+    -----
+    Le seuil d'anomalie doit être calibré sur Task 0 (Pump) uniquement — ne pas
+    recalculer sur les tâches suivantes pour éviter le leakage inter-tâches.
+    """
+    set_seed(seed)
+
+    df = load_raw_dataset(csv_path)
+    normalizer = load_normalizer(normalizer_path)
+
+    df = normalize_features(df, normalizer)
+    df = encode_categoricals(df)
+
+    tasks: list[dict] = []
+
+    for task_id, domain in enumerate(DOMAIN_ORDER, start=1):
+        df_domain = df[df[DOMAIN_FEATURE] == domain].reset_index(drop=True)
+
+        df_normal = df_domain[df_domain[LABEL_COL] == 0].reset_index(drop=True)
+        df_faulty = df_domain[df_domain[LABEL_COL] == 1].reset_index(drop=True)
+
+        # Séparer les normaux en train (80%) et test-normal (20%)
+        n_train = int(len(df_normal) * train_ratio)
+        df_normal_train = df_normal.iloc[:n_train].reset_index(drop=True)
+        df_normal_test = df_normal.iloc[n_train:].reset_index(drop=True)
+
+        # test_loader_mixed = normaux tenus-en-réserve + tous les faulty
+        df_test = pd.concat([df_normal_test, df_faulty], ignore_index=True)
+
+        x_train, y_train = df_to_tensors(df_normal_train)
+        x_test, y_test = df_to_tensors(df_test)
+
+        train_loader = DataLoader(
+            TensorDataset(x_train, y_train),
+            batch_size=batch_size,
+            shuffle=True,
+        )
+        test_loader_mixed = DataLoader(
+            TensorDataset(x_test, y_test),
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        tasks.append(
+            {
+                "task_id": task_id,
+                "domain": domain,
+                "train_loader": train_loader,
+                "test_loader_mixed": test_loader_mixed,
+                "n_train": len(x_train),
+                "n_test": len(x_test),
+                "n_test_normal": len(df_normal_test),
+                "n_test_faulty": len(df_faulty),
+            }
+        )
+
+    return tasks

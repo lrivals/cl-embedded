@@ -1,0 +1,49 @@
+# configs/unsupervised_anomaly_detection_config.yaml
+# KMeansDetector et MahalanobisDetector pour le scénario anomaly detection.
+# Normalisation sur Pump faulty=0 uniquement (monitoring_normalizer_anomaly.yaml).
+# NE PAS modifier les valeurs directement dans le code source.
+
+seed: 42
+exp_id_kmeans: "exp_088_kmeans_monitoring_anomaly_detection"
+exp_id_mahalanobis: "exp_089_mahalanobis_monitoring_anomaly_detection"
+
+data:
+  dataset: "equipment_monitoring"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+  normalizer_path: "configs/monitoring_normalizer_anomaly.yaml"
+  n_features: 4
+  domain_column: "equipment"
+  domain_order: ["Pump", "Turbine", "Compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+
+kmeans:
+  k_method: "silhouette"
+  k_fixed: 3
+  k_min: 2
+  k_max: 8
+  anomaly_threshold: null  # calculé sur Task 0 (Pump faulty=0)
+  anomaly_percentile: 95
+  n_init: 10
+  max_iter: 300
+  cl_strategy: "refit"
+
+mahalanobis:
+  anomaly_threshold: null  # calculé sur Task 0 (Pump faulty=0)
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6
+  cl_strategy: "refit"
+  welford_min_samples: 10
+  update_sigma_every: 1
+
+evaluation:
+  seed: 42
+  metrics: ["avg_auroc", "auroc_forgetting", "auroc_bwt", "ram_peak_bytes", "n_params"]
+  output_dir_kmeans: "experiments/exp_088_kmeans_monitoring_anomaly_detection/results/"
+  output_dir_mahalanobis: "experiments/exp_089_mahalanobis_monitoring_anomaly_detection/results/"
+
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+  # Mahalanobis d=4 : (4 + 4×4) × 4 = 80 B @ FP32
+  # KMeans k=3, d=4 : 3 × 4 × 4 = 48 B @ FP32 (centroids seulement)
