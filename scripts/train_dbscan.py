@@ -88,6 +88,7 @@ def _run_cl(
 
     acc_matrix = np.full((n_tasks, n_tasks), np.nan)
     X_train_last = None
+    thresholds_per_task: dict[int, float] = {}
 
     for i, task in enumerate(tasks):
         domain = task.get("domain", f"Task {i}")
@@ -98,17 +99,20 @@ def _run_cl(
         model.fit_task(X_train, task_id=i)
 
         train_scores = model.anomaly_score(X_train)
-        threshold = float(np.percentile(train_scores, percentile))
-        print(f"  Seuil (train p{percentile}) : {threshold:.4f}")
+        threshold_i = float(np.percentile(train_scores, percentile))
+        thresholds_per_task[i] = threshold_i
+        print(f"  Seuil Task {i} (train p{percentile}) : {threshold_i:.4f}")
 
         for j in range(i + 1):
             X_val, y_val = _extract_numpy(tasks[j]["val_loader"])
             scores = model.anomaly_score(X_val)
-            y_pred = (scores > threshold).astype(int)
+            # Utiliser le seuil calibré quand la tâche j était courante
+            threshold_j = thresholds_per_task.get(j, threshold_i)
+            y_pred = (scores > threshold_j).astype(int)
             acc = float(accuracy_score(y_val, y_pred))
             acc_matrix[i, j] = acc
             lbl = tasks[j].get("domain", f"T{j + 1}")
-            print(f"  Acc tâche {j + 1} ({lbl}): {acc:.4f}")
+            print(f"  Acc tâche {j + 1} ({lbl}) [seuil={threshold_j:.4f}]: {acc:.4f}")
 
     cl_metrics = compute_cl_metrics(acc_matrix)
     print(f"\nAA={cl_metrics['aa']:.4f} | AF={cl_metrics['af']:.4f} | BWT={cl_metrics['bwt']:.4f}")
@@ -122,7 +126,7 @@ def _run_cl(
         "exp_id": exp_id,
         "model": "dbscan",
         "dataset": "cwru",
-        "scenario": "by_fault_type",
+        "scenario": cfg["data"].get("task_split", "by_fault_type"),
         "acc_final": cl_metrics["aa"],
         "avg_forgetting": cl_metrics["af"],
         "backward_transfer": cl_metrics["bwt"],
@@ -131,6 +135,8 @@ def _run_cl(
         "inference_latency_ms": mem["inference_latency_ms"],
         "n_params": mem["n_params"],
         "acc_matrix": acc_matrix.tolist(),
+        "eps_per_task": model.eps_history_,
+        "thresholds_per_task": thresholds_per_task,
     }
 
     metrics_path = results_dir / "metrics_cl.json"

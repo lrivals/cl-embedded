@@ -1,5 +1,6 @@
+_snapshot_timestamp: '2026-04-27T18:29:23.546662'
 backbone:
-  checkpoint_path: experiments/exp_076_tinyol_cwru_by_fault_type/checkpoints/backbone.pt
+  checkpoint_path: experiments/exp_082_tinyol_cwru_by_severity/checkpoints/backbone.pt
   decoder_dims:
   - 9
   - 18
@@ -16,7 +17,7 @@ data:
   n_classes: 2
   n_features: 9
   random_state: 42
-  task_split: by_fault_type
+  task_split: by_severity
   test_ratio: 0.2
   val_ratio: 0.1
 dbscan:
@@ -34,41 +35,41 @@ evaluation:
   - inference_latency_ms
   - n_params
   n_latency_runs: 100
-  output_dir: experiments/exp_075_hdc_cwru_by_fault_type/results/
+  output_dir: experiments/exp_091_kmeans_cwru_by_severity_v2/results/
   seed: 42
 ewc:
   gamma: 0.9
   lambda: 400
   n_fisher_samples: 200
-exp_id: exp_075_hdc_cwru_by_fault_type
+exp_id: exp_091_kmeans_cwru_by_severity_v2
 feature_bounds:
   crest:
-  - -1.4187079668045044
-  - 4.311003684997559
+  - -1.8889305591583252
+  - 2.0855538845062256
   form:
-  - -1.0872983932495117
-  - 8.649434089660645
+  - -0.7534430027008057
+  - 3.9545319080352783
   kurtosis:
-  - -0.7608376145362854
-  - 6.784101486206055
+  - -1.4308959245681763
+  - 2.3837385177612305
   max:
-  - -1.2466038465499878
-  - 6.455930233001709
+  - -0.9697414636611938
+  - 1.7917441129684448
   mean:
-  - -1.9831773042678833
-  - 2.5201008319854736
+  - -2.7315571308135986
+  - 1.8356356620788574
   min:
-  - -7.285485744476318
-  - 1.1478608846664429
+  - -1.760148525238037
+  - 0.9379531145095825
   rms:
-  - -1.358906626701355
-  - 7.893540859222412
+  - -0.9355301856994629
+  - 1.9783905744552612
   sd:
-  - -1.3586441278457642
-  - 7.877472400665283
+  - -0.9351569414138794
+  - 1.9778556823730469
   skewness:
-  - -5.032320022583008
-  - 7.2616047859191895
+  - -3.192819595336914
+  - 2.1243624687194824
 hdc:
   D: 512
   base_vectors_path: configs/hdc_base_vectors_cwru.npz

@@ -78,9 +78,9 @@ kmeans:
   anomaly_percentile: 95
   anomaly_threshold: null
   cl_strategy: refit
-  k_fixed: 2
+  k_fixed: 4
   k_max: 8
-  k_method: fixed
+  k_method: silhouette
   k_min: 2
   max_iter: 300
   n_init: 10

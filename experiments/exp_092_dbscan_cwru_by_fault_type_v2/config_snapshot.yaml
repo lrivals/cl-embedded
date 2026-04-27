@@ -1,3 +1,4 @@
+_snapshot_timestamp: '2026-04-27T18:29:37.361544'
 backbone:
   checkpoint_path: experiments/exp_076_tinyol_cwru_by_fault_type/checkpoints/backbone.pt
   decoder_dims:
@@ -34,13 +35,13 @@ evaluation:
   - inference_latency_ms
   - n_params
   n_latency_runs: 100
-  output_dir: experiments/exp_075_hdc_cwru_by_fault_type/results/
+  output_dir: experiments/exp_092_dbscan_cwru_by_fault_type_v2/results/
   seed: 42
 ewc:
   gamma: 0.9
   lambda: 400
   n_fisher_samples: 200
-exp_id: exp_075_hdc_cwru_by_fault_type
+exp_id: exp_092_dbscan_cwru_by_fault_type_v2
 feature_bounds:
   crest:
   - -1.4187079668045044

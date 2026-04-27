@@ -14,10 +14,12 @@ from pathlib import Path
 import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.metrics.pairwise import euclidean_distances
+from sklearn.neighbors import NearestNeighbors
 
 # Valeurs par défaut — toujours passer par configs/unsupervised_config.yaml
 EPSILON_DEFAULT: float = 0.5
 MIN_SAMPLES_DEFAULT: int = 5
+EPS_KNN_K_DEFAULT: int = 5
 CL_STRATEGY_DEFAULT: str = "refit"  # "refit" | "accumulate"
 ANOMALY_PERCENTILE_DEFAULT: int = 95
 
@@ -60,8 +62,13 @@ class DBSCANDetector:
     """
 
     def __init__(self, config: dict) -> None:
-        self.eps: float = config.get("EPSILON", EPSILON_DEFAULT)
-        self.min_samples: int = config.get("MIN_SAMPLES", MIN_SAMPLES_DEFAULT)
+        # Support clé "eps" (YAML actuel) et "EPSILON" (legacy) — None → auto-estimation
+        _eps_raw = config.get("eps", config.get("EPSILON", None))
+        self.eps: float | None = _eps_raw
+        self.eps_knn_k: int = config.get("eps_knn_k", EPS_KNN_K_DEFAULT)
+        self.eps_history_: list[float] = []  # eps effectivement utilisé par tâche
+        # Support clé "min_samples" (YAML actuel) et "MIN_SAMPLES" (legacy)
+        self.min_samples: int = config.get("min_samples", config.get("MIN_SAMPLES", MIN_SAMPLES_DEFAULT))
         self.metric: str = config.get("metric", "euclidean")
         self.algorithm: str = config.get("algorithm", "auto")
         self.anomaly_threshold: float | None = config.get("anomaly_threshold", None)
@@ -75,6 +82,34 @@ class DBSCANDetector:
 
         # Pour cl_strategy="accumulate"
         self._X_accumulated: np.ndarray | None = None
+
+    def _estimate_eps(self, X: np.ndarray) -> float:
+        """
+        Estime eps via la méthode k-NN elbow (Ester et al., 1996).
+
+        Trie les distances au k-ième voisin et détecte le coude (maximum de la
+        dérivée seconde discrète) pour trouver le rayon naturel des clusters.
+        """
+        k = min(self.eps_knn_k, len(X) - 1)
+        if k < 1:
+            print(f"  [DBSCAN] _estimate_eps : trop peu de samples ({len(X)}), fallback eps={EPSILON_DEFAULT}")
+            return EPSILON_DEFAULT
+        try:
+            nbrs = NearestNeighbors(n_neighbors=k + 1, metric=self.metric).fit(X)
+            distances, _ = nbrs.kneighbors(X)
+            kth_distances = np.sort(distances[:, k])  # k-ème distance NN, trié croissant
+            if len(kth_distances) >= 3:
+                d2 = np.diff(np.diff(kth_distances))
+                elbow_idx = int(np.argmax(np.abs(d2))) + 1
+                eps_est = float(kth_distances[elbow_idx])
+            else:
+                eps_est = float(np.median(kth_distances))
+            eps_est = max(eps_est, 1e-6)
+            print(f"  [DBSCAN] eps estimé (knn_elbow, k={k}) : {eps_est:.6f}")
+            return eps_est
+        except Exception as exc:
+            print(f"  [DBSCAN] _estimate_eps échoué ({exc}), fallback eps={EPSILON_DEFAULT}")
+            return EPSILON_DEFAULT
 
     def fit_task(self, X: np.ndarray, task_id: int) -> "DBSCANDetector":
         """
@@ -106,9 +141,13 @@ class DBSCANDetector:
         else:
             X_fit = X  # MEM: (n_core_samples × d) @ FP32 pour refit
 
+        # Résolution eps : auto-estimation si eps is None, sinon valeur fixe
+        eps_to_use = self._estimate_eps(X_fit) if self.eps is None else float(self.eps)
+        self.eps_history_.append(eps_to_use)
+
         # Fit DBSCAN
         dbscan = DBSCAN(
-            eps=self.eps,
+            eps=eps_to_use,
             min_samples=self.min_samples,
             metric=self.metric,
             algorithm=self.algorithm,
@@ -135,7 +174,7 @@ class DBSCANDetector:
         n_noise = int((dbscan.labels_ == -1).sum())
         n_core = len(dbscan.core_sample_indices_)
         print(
-            f"  [DBSCAN] Tâche {task_id} — eps={self.eps}, min_samples={self.min_samples}, "
+            f"  [DBSCAN] Tâche {task_id} — eps={eps_to_use:.6f}, min_samples={self.min_samples}, "
             f"n_core={n_core}, n_noise={n_noise}/{len(X_fit)}, "
             f"RAM estimée={self._estimate_ram_bytes()} B"
         )
@@ -255,8 +294,9 @@ class DBSCANDetector:
         n_core = self.core_points_.shape[0] if self.core_points_ is not None else 0
         threshold = f"{self.threshold_:.4f}" if self.threshold_ is not None else "—"
         ram = f"{self._estimate_ram_bytes()} B" if self.core_points_ is not None else "—"
+        eps_display = self.eps_history_[-1] if self.eps_history_ else self.eps
         return (
-            f"DBSCANDetector | eps={self.eps}, min_samples={self.min_samples} | "
+            f"DBSCANDetector | eps={eps_display}, min_samples={self.min_samples} | "
             f"n_core={n_core} | threshold={threshold} | "
             f"strategy={self.cl_strategy} | params={self.count_parameters()} | RAM={ram} @ FP32"
         )

@@ -349,6 +349,24 @@ Chaque dataset a été évalué avec les 6 modèles du projet dans un schéma **
 - Les méthodes non supervisées (KMeans, DBSCAN) échouent sur ce scénario multi-classes car elles ne peuvent pas distinguer 3+ types de défauts avec seulement 2 clusters
 - TinyOL est le plus rapide (0,005 ms) avec seulement 397 paramètres
 
+#### Expériences optimisées (exp_090 — KMeans v2, exp_092 — DBSCAN v2)
+
+Après correction du seuil cross-tâche (seuil recalibré par tâche) et du bug de clé de config DBSCAN ("EPSILON" → "eps" + knn_elbow) :
+
+| Modèle | AA | AF | BWT | RAM peak | Latence | Params | Dans 64 Ko |
+|--------|:--:|:--:|:---:|:--------:|:-------:|:------:|:----------:|
+| KMeans v2 (exp_090) | 27,3% | 20,8% | +22,1% | 5 432 B | 0,305 ms | 18 | ✅ |
+| DBSCAN v2 (exp_092) | **89,6%** ⚠️ | 0,0% | 0,0% | 57 682 B | 0,235 ms | 4 806 | ✅ |
+
+> **⚠️ Résultat DBSCAN artifactuel.** L'eps auto-estimé (knn_elbow) est trop grand sur CWRU
+> (eps ≈ 7,2 / 4,3 / 8,1 selon la tâche) : presque tous les points d'entraînement deviennent
+> des core points → seuil de décision par tâche ≈ 0 → tout point de test est prédit "défaut"
+> → l'accuracy de 89,6% reflète simplement le déséquilibre de classes (9 classes défaut sur 10,
+> soit ~90% des échantillons). AF=0% et BWT=0% sont mécaniques, non informatifs.
+
+KMeans v2 progresse de 15,2% → 27,3% grâce au seuil par tâche, mais reste peu performant sur
+ce scénario multi-type où k=2 ne peut pas discriminer Ball / Inner Race / Outer Race.
+
 ---
 
 ### Résultats — CWRU by_severity
@@ -372,6 +390,21 @@ Chaque dataset a été évalué avec les 6 modèles du projet dans un schéma **
 - Le scénario by_severity est plus difficile que by_fault_type : les features temporelles simples peinent à distinguer différentes sévérités d'un même type de défaut
 - EWC gagne encore nettement, avec 0% d'oubli et un AA supérieur à Naive de +3,4 points
 - Les méthodes non supervisées continuent d'échouer (DBSCAN : 12%, AF=29%) — la séparabilité binaire sain/défaut change avec la sévérité et ces méthodes ne s'adaptent pas
+
+#### Expériences optimisées (exp_091 — KMeans v2, exp_093 — DBSCAN v2)
+
+| Modèle | AA | AF | BWT | RAM peak | Latence | Params | Dans 64 Ko |
+|--------|:--:|:--:|:---:|:--------:|:-------:|:------:|:----------:|
+| KMeans v2 (exp_091) | 45,0% | 0,0% | +50,6% | 5 340 B | 0,363 ms | 18 | ✅ |
+| DBSCAN v2 (exp_093) | **89,6%** ⚠️ | 0,0% | 0,0% | 57 628 B | 0,365 ms | 4 797 | ✅ |
+
+> **⚠️ Résultat DBSCAN artifactuel** — même mécanisme que exp_092 : seuils exactement 0,0 pour
+> les tâches 0 et 1, prédiction systématique "défaut". Non utilisable comme métrique réelle.
+
+KMeans v2 progresse de 30,3% → 45,0% : le seuil par tâche permet une meilleure séparation
+sain/défaut lorsque la sévérité croissante structure l'espace des features (les grands défauts
+sont plus éloignés du cluster "sain"). AF=0% signifie que le seuil par tâche évite l'écrasement
+du seuil précédent — amélioration réelle par rapport à v1.
 
 ---
 
@@ -397,6 +430,12 @@ Chaque dataset a été évalué avec les 6 modèles du projet dans un schéma **
 | CWRU | by_severity | Mahalanobis | 39,4% | 9,1% | 1 644 B | 0,009 ms | ✅ |
 | CWRU | by_severity | KMeans | 30,3% | 6,5% | 5 432 B | 0,300 ms | ✅ |
 | CWRU | by_severity | DBSCAN | 12,1% | 29,2% | 31 474 B | 0,221 ms | ✅ |
+| CWRU | by_fault_type | KMeans v2 (exp_090) | 27,3% | 20,8% | 5 432 B | 0,305 ms | ✅ |
+| CWRU | by_fault_type | DBSCAN v2 ⚠️ (exp_092) | 89,6%* | 0,0% | 57 682 B | 0,235 ms | ✅ |
+| CWRU | by_severity | KMeans v2 (exp_091) | 45,0% | 0,0% | 5 340 B | 0,363 ms | ✅ |
+| CWRU | by_severity | DBSCAN v2 ⚠️ (exp_093) | 89,6%* | 0,0% | 57 628 B | 0,365 ms | ✅ |
+
+*Résultat artifactuel — eps trop grand → seuil ≈ 0 → tout classé "défaut" → exploite le déséquilibre de classes (~90% défauts). Voir analyse dans la section correspondante.
 
 **Budget MCU** : RAM ≤ 65 536 B (64 Ko), latence ≤ 100 ms — contrainte STM32N6
 
@@ -410,8 +449,10 @@ Chaque dataset a été évalué avec les 6 modèles du projet dans un schéma **
 
 3. **HDC est robuste mais consommateur** : bonnes performances (80–93%) et zéro oubli sur certains scénarios, mais 14 Ko de RAM (D=2048) — compatible 64 Ko mais sans marge.
 
-4. **Les méthodes non supervisées (KMeans, Mahalanobis, DBSCAN) peinent sur les scénarios multi-classes** : conçues pour la détection d'anomalie binaire, elles ne peuvent pas discriminer plusieurs types ou sévérités de défauts. KMeans et DBSCAN chutent à 12–30% sur CWRU.
+4. **Les méthodes non supervisées peinent structurellement sur CWRU multi-classe** : KMeans (k=2) ne peut discriminer que sain/défaut, pas les types ou sévérités. Avec seuil par tâche (v2), KMeans atteint 27–45% — utilisable comme **baseline basse performance**, pas comme méthode opérationnelle. Mahalanobis souffre d'un oubli catastrophique sévère sur ce dataset.
 
 5. **DBSCAN est incompatible MCU sur Pronostia** : 121 Ko de RAM pour 11 000+ "paramètres" (vecteurs de support) — dépasse le budget de 64 Ko.
 
 6. **L'oubli catastrophique est réel** : sur Pronostia by_condition, Naive perd 10,8% d'accuracy — EWC le réduit à 0%. Sur CWRU by_severity, Naive perd 3,9% — EWC le réduit à 0%.
+
+7. **DBSCAN est à exclure sur CWRU** : l'auto-estimation eps (knn_elbow) produit des eps trop grands sur ce dataset, rendant le seuil de décision nul et les résultats artificiels (AA=89,6% = proportion de défauts, pas une performance réelle). De plus, avec ~57 Ko de RAM sur un budget de 64 Ko, la marge est insuffisante pour une intégration MCU sécurisée.
