@@ -285,6 +285,81 @@ def training_macs_mahalanobis(n_features: int, n_samples: int) -> int:
     return n_samples * n_features + n_samples * n_features**2 + n_features**3
 
 
+def training_macs_ewc(
+    n_features: int,
+    hidden_dims: list[int] | tuple[int, ...],
+    n_classes: int,
+    n_samples: int,
+    n_epochs: int,
+    batch_size: int,
+) -> int:
+    """MACs d'entraînement EWC MLP (forward + backward ≈ 3× forward).
+
+    Parameters
+    ----------
+    n_features : int
+        Dimension du vecteur d'entrée.
+    hidden_dims : list[int] | tuple[int, ...]
+        Couches cachées du MLP.
+    n_classes : int
+        Nombre de classes en sortie.
+    n_samples : int
+        Nombre d'échantillons d'entraînement.
+    n_epochs : int
+        Nombre d'epochs par tâche.
+    batch_size : int
+        Taille de batch (accepté pour la signature, coût calculé par sample).
+    """
+    per_sample = macs_ewc_mlp(n_features, hidden_dims, n_classes)
+    return n_epochs * n_samples * 3 * per_sample
+
+
+def training_macs_tinyol(
+    n_features: int,
+    encoder_dims: list[int] | tuple[int, ...],
+    n_classes: int,
+    n_samples: int,
+    n_epochs: int = 1,
+) -> int:
+    """MACs d'entraînement TinyOL OtO head (backbone figé, update online SGD).
+
+    Le backbone (encodeur) est pré-entraîné et figé ; seule la tête OtO est
+    mise à jour sample par sample. L'approximation forward+backward = 3× forward
+    s'applique sur le forward pass complet (encodeur + tête).
+
+    Parameters
+    ----------
+    n_features : int
+        Dimension du vecteur d'entrée.
+    encoder_dims : list[int] | tuple[int, ...]
+        Couches de l'encodeur (backbone figé inclus dans le forward).
+    n_classes : int
+        Nombre de classes en sortie de la tête OtO.
+    n_samples : int
+        Nombre d'échantillons d'entraînement.
+    n_epochs : int
+        Nombre d'epochs (1 pour l'update online standard).
+    """
+    per_sample = macs_tinyol(n_features, encoder_dims, n_classes)
+    return n_epochs * n_samples * 3 * per_sample
+
+
+def training_macs_dbscan(n_features: int, n_samples: int) -> int:
+    """MACs d'entraînement DBSCAN (calcul pairwise distances = O(n²·d)).
+
+    DBSCAN construit un graphe de voisinage en calculant toutes les distances
+    pairwise : n_samples² × n_features MACs.
+
+    Parameters
+    ----------
+    n_features : int
+        Dimension du vecteur d'entrée.
+    n_samples : int
+        Nombre d'échantillons d'entraînement.
+    """
+    return n_samples**2 * n_features
+
+
 _DISPATCH = {
     "EWC": macs_ewc_mlp,
     "TinyOL": macs_tinyol,
@@ -296,10 +371,13 @@ _DISPATCH = {
 }
 
 _TRAINING_DISPATCH = {
-    "HDC": training_macs_hdc,
+    "EWC": training_macs_ewc,
+    "TinyOL": training_macs_tinyol,
     "TinyOL_AE": training_macs_tinyol_ae,
+    "HDC": training_macs_hdc,
     "KMeans": training_macs_kmeans,
     "Mahalanobis": training_macs_mahalanobis,
+    "DBSCAN": training_macs_dbscan,
 }
 
 
@@ -339,7 +417,8 @@ def compute_training_macs(model_name: str, **kwargs) -> int:
     Parameters
     ----------
     model_name : str
-        Un parmi : "HDC", "TinyOL_AE", "KMeans", "Mahalanobis".
+        Un parmi : "EWC", "TinyOL", "TinyOL_AE", "HDC", "KMeans",
+        "Mahalanobis", "DBSCAN".
     **kwargs
         Paramètres propres au modèle (cf. fonctions training_macs_*).
 

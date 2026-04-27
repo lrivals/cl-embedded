@@ -29,7 +29,18 @@ The implementations target **PC-first development** with explicit design constra
 | **M5** | PCA reconstruction error | ❌ | Both | ~4 KB |
 | — | DBSCAN | ❌ | Both | — |
 
-All models operate within the 64 KB RAM budget of the STM32N6 target (M6 is the only unsupervised method viable on MCU).
+### One-Class Anomaly Detection (Sprint 13)
+
+| Model | MCU-compatible | Config | Notes |
+|-------|:--------------:|--------|-------|
+| HDC (one_class_mode) | ✅ | `hdc_anomaly_detection_config.yaml` | Seuil au percentile sur données normales |
+| TinyOL Autoencoder | ✅ | `tinyol_anomaly_detection_config.yaml` | Reconstruction MSE comme score d'anomalie |
+| K-Means one-class | ❌ | `unsupervised_anomaly_detection_config.yaml` | Distance au centroïde le plus proche |
+| Mahalanobis one-class | ✅ | `unsupervised_anomaly_detection_config.yaml` | Distance de Mahalanobis depuis données normales |
+
+Tous les modèles s'entraînent sur données normales uniquement et évaluent via matrice AUROC [T×T].
+
+All models operate within the 64 KB RAM budget of the STM32N6 target (M6/HDC are the only methods viable on MCU).
 
 ## Scientific Positioning — Triple Gap
 
@@ -65,6 +76,11 @@ python scripts/train_tinyol.py --config configs/tinyol_config.yaml
 # Train unsupervised baselines (K-Means, Mahalanobis, DBSCAN, PCA, KNN)
 python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml
 
+# Anomaly detection — one-class CL (Sprint 13)
+python scripts/train_hdc.py --config configs/hdc_anomaly_detection_config.yaml
+python scripts/train_tinyol.py --config configs/tinyol_anomaly_detection_config.yaml
+python scripts/train_unsupervised.py --config configs/unsupervised_anomaly_detection_config.yaml
+
 # Run all evaluations
 python scripts/evaluate_all.py --exp_dir experiments/
 
@@ -89,8 +105,12 @@ cl-embedded/
 │   ├── pump_by_id_config.yaml
 │   ├── pump_by_temporal_window_config.yaml
 │   ├── monitoring_by_location_config.yaml
+│   ├── hdc_anomaly_detection_config.yaml       # Sprint 13
+│   ├── tinyol_anomaly_detection_config.yaml    # Sprint 13
+│   ├── unsupervised_anomaly_detection_config.yaml  # Sprint 13
 │   ├── pump_normalizer.yaml    # Fixed Z-score statistics
-│   └── monitoring_normalizer.yaml
+│   ├── monitoring_normalizer.yaml
+│   └── monitoring_normalizer_anomaly.yaml      # Fitted on normal samples only
 ├── data/                       # Raw + processed data (gitignored)
 ├── docs/
 │   ├── models/                 # Detailed implementation specs (3 models + unsupervised)
@@ -102,15 +122,15 @@ cl-embedded/
 │   ├── data/                   # Dataset loaders (pump + monitoring)
 │   ├── models/
 │   │   ├── ewc/                # M2 — EWC Online + MLP
-│   │   ├── hdc/                # M3 — Hyperdimensional Computing
-│   │   ├── tinyol/             # M1 — TinyOL autoencoder + OtO head
+│   │   ├── hdc/                # M3 — HDC (supervisé + one_class_mode)
+│   │   ├── tinyol/             # M1 — TinyOL OtO head + TinyOLAnomalyDetector
 │   │   └── unsupervised/       # K-Means, KNN, PCA, Mahalanobis, DBSCAN
-│   ├── training/               # CL scenarios + baselines
-│   ├── evaluation/             # CL metrics + memory profiler + plots
+│   ├── training/               # CL scenarios + run_anomaly_detection_scenario()
+│   ├── evaluation/             # CL metrics + anomaly_metrics + memory profiler
 │   └── utils/                  # Reproducibility, config loader
-├── experiments/                # 37+ reproducible experiment outputs
+├── experiments/                # 41+ reproducible experiment outputs
 ├── notebooks/                  # Exploration + visualization
-│   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–8)
+│   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–13)
 ├── tests/                      # Unit tests
 └── scripts/                    # CLI entry points
 ```
@@ -132,7 +152,8 @@ All implementations respect MCU portability requirements:
 | [`notebooks/01_data_exploration.ipynb`](notebooks/01_data_exploration.ipynb) | EDA — Dataset 1 (Pump) + Dataset 2 (Equipment Monitoring) |
 | [`notebooks/02_baseline_comparison.ipynb`](notebooks/02_baseline_comparison.ipynb) | EWC vs HDC vs Fine-tuning — Equipment Monitoring |
 | [`notebooks/03_cl_evaluation.ipynb`](notebooks/03_cl_evaluation.ipynb) | CL evaluation — Pump Maintenance (TinyOL) |
-| [`notebooks/cl_eval/`](notebooks/cl_eval/) | Granular single-task + scenario comparisons (Sprints 7–8) |
+| [`notebooks/cl_eval/`](notebooks/cl_eval/) | Granular single-task + scenario comparisons (Sprints 7–13) |
+| [`notebooks/cl_eval/monitoring_anomaly_detection/`](notebooks/cl_eval/monitoring_anomaly_detection/) | Anomaly detection one-class — AUROC matrices + ROC curves (Sprint 13) |
 
 ## Results
 
@@ -172,9 +193,10 @@ Full experiment outputs: [`experiments/`](experiments/)
 | M4 K-Means + KNN | ✅ | ✅ | ✅ exp_005, 020, 022, 028, 033, 039 | ✅ |
 | M5 PCA | ✅ | ✅ | ✅ | ✅ |
 | DBSCAN baseline | ✅ | ✅ | ✅ exp_008, 021, 023, 029, 035, 041 | ✅ |
+| Anomaly detection (S13) | ✅ | ✅ | ✅ exp_086–089 | ⬜ |
 | M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ exp_004 (planned) | ⬜ |
 | ONNX export | 🟡 | ⬜ | ⬜ | ⬜ |
-| Notebooks (S7–8) | 🟡 | — | — | — |
+| Notebooks (S7–13) | 🟡 | — | — | — |
 
 ### Current Sprint
 
@@ -182,9 +204,9 @@ Full experiment outputs: [`experiments/`](experiments/)
 |--------|:------:|-------|
 | Sprints 1–5 | ✅ | Infrastructure + M1/M2/M3 + unsupervised baselines |
 | Sprint 6 | ✅ | Extended scenarios (pump_by_id, pump_temporal, monitoring_by_location) |
-| Sprints 7–8 | 🟡 | Granular notebooks (monitoring + pump, 14 notebooks planned) |
-| Sprint 9 | ⬜ | Extension + final comparison notebook |
-| Sprint 10 | ⬜ | MCU portage — STM32N6 environment + ONNX export |
+| Sprints 7–12 | ✅ | Notebooks CL + intégration CWRU/Pronostia + scénarios by-fault/severity |
+| Sprint 13 | ✅ | Anomaly detection one-class — HDC, TinyOL AE, KMeans, Mahalanobis (exp_086–089) |
+| Sprint 14 | ⬜ | Comparaison finale + manuscrit + MCU portage STM32N6 |
 
 ## Evaluation Metrics
 
@@ -195,6 +217,8 @@ For every CL experiment:
 | `aa` | Average Accuracy across all tasks |
 | `af` | Average Forgetting (0 = no forgetting) |
 | `bwt` | Backward Transfer (negative = forgetting) |
+| `auroc` | Area Under ROC Curve (anomaly detection only) |
+| `avg_precision` | Average Precision / AP score (anomaly detection only) |
 | `ram_peak_bytes` | Peak RAM measured via tracemalloc |
 | `inference_latency_ms` | Forward pass latency (mean over 100 runs) |
 | `n_params` | Total trainable parameters |
