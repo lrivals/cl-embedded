@@ -280,3 +280,29 @@ def dbscan_config() -> dict:
             "cl_strategy": "refit",
         }
     }
+
+
+# ---------------------------------------------------------------------------
+# Fixtures — feature importance CWRU / Pronostia (S11-21)
+# ---------------------------------------------------------------------------
+
+@pytest.fixture
+def cwru_synthetic_data() -> tuple[np.ndarray, np.ndarray]:
+    """300 échantillons 9-features CWRU synthétiques ; anomalie pilotée par rms (col 4)."""
+    rng = np.random.default_rng(42)
+    X = rng.normal(size=(300, 9)).astype(np.float32)
+    y = (X[:, 4] > 0.5).astype(int)
+    return X, y
+
+
+@pytest.fixture
+def pronostia_synthetic_tasks() -> dict[str, tuple[np.ndarray, np.ndarray]]:
+    """3 tâches Pronostia synthétiques 13-features ; signal dominant sur rms_acc_horiz (col 2)."""
+    rng = np.random.default_rng(42)
+    tasks: dict[str, tuple[np.ndarray, np.ndarray]] = {}
+    for name in ("condition_1", "condition_2", "condition_3"):
+        X = rng.normal(size=(200, 13)).astype(np.float32)
+        X[:50, 2] += 3.0
+        y = (X[:, 2] > 1.5).astype(int)
+        tasks[name] = (X, y)
+    return tasks

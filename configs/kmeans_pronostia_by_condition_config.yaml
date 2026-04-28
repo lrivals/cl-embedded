@@ -15,7 +15,8 @@ kmeans:
   anomaly_percentile: 95
   n_init: 10
   max_iter: 300
-  cl_strategy: "refit"    # TODO(arnaud): "refit" | "accumulate"
+  cl_strategy: "refit"
+  ema_alpha: 0.3
 
 data:
   dataset: "pronostia"

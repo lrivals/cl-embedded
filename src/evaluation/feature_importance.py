@@ -18,8 +18,52 @@ from typing import Callable
 import numpy as np
 
 FEATURE_NAMES_MONITORING: list[str] = ["temperature", "pressure", "vibration", "humidity"]
+
+from src.data.cwru_dataset import FEATURE_COLS as FEATURE_NAMES_CWRU
+from src.data.pronostia_dataset import FEATURE_NAMES as FEATURE_NAMES_PRONOSTIA
+
+CHANNEL_GROUPS_PRONOSTIA: dict[str, list[str]] = {
+    "acc_horiz": [
+        "mean_acc_horiz", "std_acc_horiz", "rms_acc_horiz",
+        "kurtosis_acc_horiz", "peak_acc_horiz", "crest_factor_acc_horiz",
+    ],
+    "acc_vert": [
+        "mean_acc_vert", "std_acc_vert", "rms_acc_vert",
+        "kurtosis_acc_vert", "peak_acc_vert", "crest_factor_acc_vert",
+    ],
+    "temporal": ["temporal_position"],
+}
+
 _FIGURE_DPI: int = 150
 _FONT_SIZE: int = 11
+
+
+def resolve_feature_names(dataset: str) -> list[str]:
+    """Return canonical feature names for a given dataset identifier.
+
+    Parameters
+    ----------
+    dataset : str
+        One of "monitoring", "cwru", "pronostia".
+
+    Returns
+    -------
+    list[str]
+        Ordered feature names for the requested dataset.
+
+    Raises
+    ------
+    ValueError
+        If `dataset` is not a known identifier.
+    """
+    _map: dict[str, list[str]] = {
+        "monitoring": FEATURE_NAMES_MONITORING,
+        "cwru": FEATURE_NAMES_CWRU,
+        "pronostia": FEATURE_NAMES_PRONOSTIA,
+    }
+    if dataset not in _map:
+        raise ValueError(f"Unknown dataset '{dataset}'. Expected one of {list(_map)}")
+    return _map[dataset]
 
 
 # ── 1. Permutation Importance ────────────────────────────────────────────────
@@ -80,6 +124,48 @@ def permutation_importance(
         importances[feat] = acc_base - float(np.mean(runs))
 
     return dict(sorted(importances.items(), key=lambda kv: kv[1], reverse=True))
+
+
+def permutation_importance_per_task(
+    predict_fn: Callable[[np.ndarray], np.ndarray],
+    tasks: list[dict],
+    feature_names: list[str],
+    n_repeats: int = 5,
+    random_state: int = 42,
+    threshold: float = 0.5,
+) -> dict[str, dict[str, float]]:
+    """
+    Lance permutation_importance sur chaque tâche séparément.
+
+    Parameters
+    ----------
+    predict_fn : Callable[[np.ndarray], np.ndarray]
+        Même interface que permutation_importance.
+    tasks : list[dict]
+        [{"task_name": str, "X": np.ndarray, "y": np.ndarray}, ...]
+    feature_names : list[str]
+    n_repeats : int
+    random_state : int
+    threshold : float
+
+    Returns
+    -------
+    dict[str, dict[str, float]]
+        {task_name: {feature_name: score}}
+    """
+    results: dict[str, dict[str, float]] = {}
+    for i, task in enumerate(tasks):
+        name = task.get("task_name", f"task_{i}")
+        results[name] = permutation_importance(
+            predict_fn,
+            task["X"],
+            task["y"],
+            feature_names,
+            n_repeats=n_repeats,
+            random_state=random_state,
+            threshold=threshold,
+        )
+    return results
 
 
 # ── 2. Gradient Saliency (PyTorch / EWC uniquement) ─────────────────────────

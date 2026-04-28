@@ -1,0 +1,20 @@
+{
+  "model": "HDCClassifier",
+  "input_shape": [
+    1,
+    13
+  ],
+  "forward": {
+    "ram_peak_bytes": 14504,
+    "ram_current_bytes": 344,
+    "inference_latency_ms": 0.07065332005367964,
+    "inference_latency_std_ms": 0.0037732523532288654,
+    "n_params": 2048,
+    "params_fp32_bytes": 14344,
+    "params_int8_bytes": 6152,
+    "within_budget_64ko": true
+  },
+  "estimated_ram_fp32_bytes": 14344,
+  "estimated_ram_int8_bytes": 6152,
+  "within_budget": true
+}

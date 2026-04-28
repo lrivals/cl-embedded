@@ -22,6 +22,7 @@ K_MAX_DEFAULT: int = 10
 ANOMALY_PERCENTILE_DEFAULT: int = 95
 N_INIT_DEFAULT: int = 10
 MAX_ITER_DEFAULT: int = 300
+EMA_ALPHA_DEFAULT: float = 0.3  # poids de la tâche courante dans la MAJ EMA du seuil
 
 
 class KMeansDetector:
@@ -45,7 +46,9 @@ class KMeansDetector:
     kmeans_ : sklearn.cluster.KMeans | None
         Modèle K-Means entraîné (None avant fit_task).
     threshold_ : float | None
-        Seuil de décision (calculé sur Task 0 si anomaly_threshold est null).
+        Seuil de décision (EMA inter-tâches si ema_alpha > 0, figé sinon).
+    threshold_history_ : list[float]
+        Seuil enregistré après chaque tâche [seuil_T0, seuil_T1, ...].
     k_selected_ : list[int]
         K sélectionné à chaque tâche (historique).
     task_id_ : int
@@ -67,9 +70,11 @@ class KMeansDetector:
         self.n_init: int = config.get("n_init", N_INIT_DEFAULT)
         self.max_iter: int = config.get("max_iter", MAX_ITER_DEFAULT)
         self.cl_strategy: str = config.get("cl_strategy", "refit")
+        self.ema_alpha: float = config.get("ema_alpha", EMA_ALPHA_DEFAULT)
 
         self.kmeans_: KMeans | None = None
         self.threshold_: float | None = self.anomaly_threshold
+        self.threshold_history_: list[float] = []
         self.k_selected_: list[int] = []
         self.task_id_: int = -1
 
@@ -158,14 +163,28 @@ class KMeansDetector:
         )
         self.kmeans_.fit(X)
 
-        # Calcul du seuil sur Task 0 uniquement (pas de leakage inter-tâches)
+        # Mise à jour EMA du seuil : figé sur Task 0, EMA sur tâches suivantes
+        distances = self._compute_distances(X)
+        percentile_new = float(np.percentile(distances, self.anomaly_percentile))
+
         if task_id == 0 and self.threshold_ is None:
-            distances = self._compute_distances(X)
-            self.threshold_ = float(np.percentile(distances, self.anomaly_percentile))
+            self.threshold_ = percentile_new  # MEM: 4 B @ FP32 / 4 B @ INT8 (scalaire EMA)
             print(
                 f"  [KMeans] Seuil calculé sur Task 0 : {self.threshold_:.4f} "
                 f"(percentile {self.anomaly_percentile})"
             )
+        elif task_id > 0 and self.threshold_ is not None and self.ema_alpha > 0.0:
+            self.threshold_ = (  # MEM: 4 B @ FP32 / 4 B @ INT8 (scalaire EMA)
+                self.ema_alpha * percentile_new + (1 - self.ema_alpha) * self.threshold_
+            )
+            print(
+                f"  [KMeans] Seuil EMA mis à jour (Task {task_id}) : "
+                f"new_pct={percentile_new:.4f} → threshold={self.threshold_:.4f} "
+                f"(alpha={self.ema_alpha})"
+            )
+
+        if self.threshold_ is not None:
+            self.threshold_history_.append(self.threshold_)
 
         return self
 
@@ -264,9 +283,11 @@ class KMeansDetector:
         """Résumé du modèle pour affichage console."""
         k = self.kmeans_.n_clusters if self.kmeans_ is not None else "—"
         threshold = f"{self.threshold_:.4f}" if self.threshold_ is not None else "—"
+        hist = [f"{t:.3f}" for t in self.threshold_history_]
         return (
             f"KMeansDetector | k={k} | method={self.k_method} | "
-            f"threshold={threshold} | strategy={self.cl_strategy} | "
+            f"threshold={threshold} | ema_alpha={self.ema_alpha} | "
+            f"history={hist} | strategy={self.cl_strategy} | "
             f"params={self.count_parameters()}"
         )
 

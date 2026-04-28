@@ -1,0 +1,40 @@
+{
+  "exp_id": "exp_104",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "acc_final": 0.1948051948051948,
+  "avg_forgetting": 0.01948051948051948,
+  "backward_transfer": 0.019480519480519487,
+  "per_task_acc": [
+    0.16883116883116883,
+    0.1038961038961039,
+    0.3116883116883117
+  ],
+  "ram_peak_bytes": 1324,
+  "inference_latency_ms": 0.003397009895707015,
+  "n_params": 90,
+  "acc_matrix": [
+    [
+      0.11688311688311688,
+      NaN,
+      NaN
+    ],
+    [
+      0.19480519480519481,
+      0.11688311688311688,
+      NaN
+    ],
+    [
+      0.16883116883116883,
+      0.1038961038961039,
+      0.3116883116883117
+    ]
+  ],
+  "welford_updates_per_task": [
+    536,
+    536,
+    535
+  ],
+  "cl_strategy": "welford"
+}

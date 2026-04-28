@@ -73,6 +73,29 @@ def _profile_model(model: KMeansDetector, X_sample: np.ndarray, n_runs: int = 10
     }
 
 
+def _resolve_feature_names(cfg: dict) -> list[str]:
+    from src.evaluation.feature_importance import (
+        FEATURE_NAMES_CWRU,
+        FEATURE_NAMES_PRONOSTIA,
+        FEATURE_NAMES_MONITORING,
+    )
+    dataset = cfg["data"].get("dataset", "")
+    if dataset == "cwru":
+        return FEATURE_NAMES_CWRU
+    if dataset == "pronostia":
+        return FEATURE_NAMES_PRONOSTIA
+    return FEATURE_NAMES_MONITORING
+
+
+def _extract_test_arrays(task: dict) -> tuple[np.ndarray, np.ndarray]:
+    loader = task.get("test_loader") or task["val_loader"]
+    X_list, y_list = [], []
+    for X_batch, y_batch in loader:
+        X_list.append(X_batch.numpy())
+        y_list.append(y_batch.numpy().ravel())
+    return np.concatenate(X_list), np.concatenate(y_list)
+
+
 def _run_cl(
     tasks: list[dict],
     model: KMeansDetector,
@@ -98,21 +121,19 @@ def _run_cl(
         X_train_last = X_train
         model.fit_task(X_train, task_id=i)
 
-        train_scores = model.anomaly_score(X_train)
-        threshold_i = float(np.percentile(train_scores, percentile))
+        # Utilise le seuil EMA du modèle (fixé sur Task 0, MAJ EMA sur tâches suivantes)
+        threshold_i = model.threshold_
         thresholds_per_task[i] = threshold_i
-        print(f"  Seuil Task {i} (train p{percentile}) : {threshold_i:.4f}")
+        print(f"  Seuil Task {i} (EMA threshold) : {threshold_i:.4f}")
 
         for j in range(i + 1):
             X_val, y_val = _extract_numpy(tasks[j]["val_loader"])
             scores = model.anomaly_score(X_val)
-            # Utiliser le seuil calibré quand la tâche j était courante
-            threshold_j = thresholds_per_task.get(j, threshold_i)
-            y_pred = (scores > threshold_j).astype(int)
+            y_pred = (scores > threshold_i).astype(int)
             acc = float(accuracy_score(y_val, y_pred))
             acc_matrix[i, j] = acc
             lbl = tasks[j].get("domain", f"T{j + 1}")
-            print(f"  Acc tâche {j + 1} ({lbl}) [seuil={threshold_j:.4f}]: {acc:.4f}")
+            print(f"  Acc tâche {j + 1} ({lbl}) [seuil={threshold_i:.4f}]: {acc:.4f}")
 
     cl_metrics = compute_cl_metrics(acc_matrix)
     print(f"\nAA={cl_metrics['aa']:.4f} | AF={cl_metrics['af']:.4f} | BWT={cl_metrics['bwt']:.4f}")
@@ -136,14 +157,56 @@ def _run_cl(
         "n_params": mem["n_params"],
         "acc_matrix": acc_matrix.tolist(),
         "k_selected_per_task": model.k_selected_,
-        "thresholds_per_task": thresholds_per_task,
+        "threshold_history": model.threshold_history_,
+        "ema_alpha": model.ema_alpha,
     }
 
     metrics_path = results_dir / "metrics_cl.json"
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print(f"\n  Résultats → {metrics_path}")
-    print(f"✅ KMeans CL by_fault_type terminé → {exp_dir}")
+
+    # ── Feature importance ────────────────────────────────────────────────────
+    from src.evaluation.feature_importance import (
+        permutation_importance,
+        permutation_importance_per_task,
+    )
+
+    feature_names = _resolve_feature_names(cfg)
+    threshold_fi = model.threshold_
+
+    task_arrays: list[dict] = []
+    for t in tasks:
+        X_t, y_t = _extract_test_arrays(t)
+        task_arrays.append({"task_name": t.get("domain", f"task_{t['task_id']}"), "X": X_t, "y": y_t})
+
+    X_all = np.concatenate([t["X"] for t in task_arrays])
+    y_all = np.concatenate([t["y"] for t in task_arrays])
+
+    global_imp = permutation_importance(
+        model.anomaly_score, X_all, y_all, feature_names, threshold=threshold_fi
+    )
+    per_task_imp = permutation_importance_per_task(
+        model.anomaly_score, task_arrays, feature_names, threshold=threshold_fi
+    )
+
+    is_pronostia = cfg["data"].get("task_split") == "by_condition"
+    importance_results = {
+        "model": "kmeans",
+        "dataset": "pronostia" if is_pronostia else "cwru",
+        "scenario": cfg["data"].get("task_split", "by_fault_type"),
+        "global": {"permutation_importance": global_imp},
+        "per_task": {
+            name: {"permutation_importance": imp}
+            for name, imp in per_task_imp.items()
+        },
+    }
+
+    importance_path = results_dir / "feature_importance.json"
+    with open(importance_path, "w", encoding="utf-8") as f:
+        json.dump(importance_results, f, indent=2)
+    print(f"  Feature importance → {importance_path}")
+    print(f"✅ KMeans CL terminé → {exp_dir}")
 
 
 def main() -> None:
@@ -201,6 +264,30 @@ def main() -> None:
             test_ratio=cfg["data"].get("test_ratio", 0.2),
             val_ratio=cfg["data"].get("val_ratio", 0.1),
             seed=cfg["data"].get("random_state", 42),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = KMeansDetector(cfg["kmeans"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_condition":
+        print(f"\n{'=' * 60}")
+        print(f"  KMeans CL by_condition (Pronostia) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.pronostia_dataset import get_pronostia_dataloaders
+        tasks = get_pronostia_dataloaders(
+            npy_dir=Path(cfg["data"]["npy_dir"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+            window_size=cfg["data"].get("window_size", 2560),
+            step_size=cfg["data"].get("step_size", 2560),
+            failure_ratio=cfg["data"].get("failure_ratio", 0.10),
         )
         for t in tasks:
             print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")

@@ -482,6 +482,29 @@ def _run_single_task_ewc(
     print(f"✅ EWC single-task terminé → {exp_dir}")
 
 
+def _resolve_feature_names_ewc(cfg: dict) -> list[str]:
+    from src.evaluation.feature_importance import (
+        FEATURE_NAMES_CWRU,
+        FEATURE_NAMES_PRONOSTIA,
+        FEATURE_NAMES_MONITORING,
+    )
+    dataset = cfg["data"].get("dataset", "equipment_monitoring")
+    if dataset == "cwru":
+        return FEATURE_NAMES_CWRU
+    if dataset == "pronostia":
+        return FEATURE_NAMES_PRONOSTIA
+    return FEATURE_NAMES_MONITORING
+
+
+def _extract_test_arrays_ewc(task: dict) -> tuple[np.ndarray, np.ndarray]:
+    loader = task.get("test_loader") or task["val_loader"]
+    X_list, y_list = [], []
+    for X_batch, y_batch in loader:
+        X_list.append(X_batch.numpy())
+        y_list.append(y_batch.numpy().ravel())
+    return np.concatenate(X_list), np.concatenate(y_list)
+
+
 def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
@@ -624,6 +647,56 @@ def main() -> None:
     import json as _json
     with open(results_dir / "metrics_cl.json", "w", encoding="utf-8") as _f:
         _json.dump(metrics_cl, _f, indent=2)
+
+    # ── Feature importance ────────────────────────────────────────────────────
+    try:
+        import torch as _torch
+        from src.evaluation.feature_importance import (
+            gradient_saliency,
+            permutation_importance,
+            permutation_importance_per_task,
+        )
+
+        feature_names = _resolve_feature_names_ewc(cfg)
+
+        def _ewc_predict_fn(X: np.ndarray) -> np.ndarray:
+            model.eval()
+            with _torch.no_grad():
+                x_t = _torch.from_numpy(X.astype(np.float32))
+                return model(x_t).detach().numpy().ravel()
+
+        task_arrays_fi: list[dict] = []
+        for t in tasks:
+            X_t, y_t = _extract_test_arrays_ewc(t)
+            task_arrays_fi.append({"task_name": t.get("domain", f"task_{t['task_id']}"), "X": X_t, "y": y_t})
+
+        X_all_fi = np.concatenate([t["X"] for t in task_arrays_fi])
+        y_all_fi = np.concatenate([t["y"] for t in task_arrays_fi])
+
+        global_perm = permutation_importance(_ewc_predict_fn, X_all_fi, y_all_fi, feature_names)
+        per_task_perm = permutation_importance_per_task(_ewc_predict_fn, task_arrays_fi, feature_names)
+        gs = gradient_saliency(model, X_all_fi, feature_names)
+
+        importance_results = {
+            "model": "ewc",
+            "dataset": cfg["data"].get("dataset", "equipment_monitoring"),
+            "scenario": cfg["data"].get("task_split", "by_fault_type"),
+            "global": {
+                "permutation_importance": global_perm,
+                "gradient_saliency": gs,
+            },
+            "per_task": {
+                name: {"permutation_importance": imp}
+                for name, imp in per_task_perm.items()
+            },
+        }
+
+        importance_path = results_dir / "feature_importance.json"
+        with open(importance_path, "w", encoding="utf-8") as _fj:
+            _json.dump(importance_results, _fj, indent=2)
+        print(f"  Feature importance → {importance_path}")
+    except Exception as _e:
+        print(f"  [WARN] Feature importance ignorée : {_e}")
 
     # Checkpoint modèle EWC final
     model.save_state(str(checkpoints_dir / "ewc_task3_final.pt"))

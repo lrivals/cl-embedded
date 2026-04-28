@@ -34,13 +34,13 @@ evaluation:
   - inference_latency_ms
   - n_params
   n_latency_runs: 100
-  output_dir: experiments/exp_081_hdc_cwru_by_severity/results/
+  output_dir: experiments/exp_110/results/
   seed: 42
 ewc:
   gamma: 0.9
   lambda: 400
   n_fisher_samples: 200
-exp_id: exp_081_hdc_cwru_by_severity
+exp_id: exp_110
 feature_bounds:
   crest:
   - -1.8889305591583252
@@ -78,6 +78,7 @@ kmeans:
   anomaly_percentile: 95
   anomaly_threshold: null
   cl_strategy: refit
+  ema_alpha: 0.3
   k_fixed: 4
   k_max: 8
   k_method: silhouette
@@ -87,8 +88,10 @@ kmeans:
 mahalanobis:
   anomaly_percentile: 95
   anomaly_threshold: null
-  cl_strategy: refit
+  cl_strategy: welford
   reg_covar: 1.0e-06
+  update_sigma_every: 1
+  welford_min_samples: 10
 memory:
   target_ram_bytes: 65536
   warn_if_above_bytes: 52000

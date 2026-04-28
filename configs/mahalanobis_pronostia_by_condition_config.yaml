@@ -10,7 +10,7 @@ mahalanobis:
   anomaly_threshold: null
   anomaly_percentile: 95
   reg_covar: 1.0e-6
-  cl_strategy: "refit"
+  cl_strategy: "welford"
   welford_min_samples: 10
   update_sigma_every: 1
 

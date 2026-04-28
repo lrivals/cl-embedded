@@ -1,7 +1,7 @@
 # Roadmap Phase 1 — Implémentation Python
 
-> Mise à jour : 24 avril 2026  
-> Horizon : 15 avril – 20 mai 2026 (étendu avec Sprints 6–9 notebooks)  
+> Mise à jour : 28 avril 2026  
+> Horizon : 15 avril – 20 mai 2026 (étendu avec Sprints 6–13 + analyses feature importance)  
 > ← [Index roadmap](roadmap.md)
 
 ---
@@ -353,49 +353,70 @@
 
 ---
 
-## Sprint 11 (Phase 1) — Dataset 4 : Battery Remaining Useful Life (Degradation Binaire)
+## Sprint 11 (Phase 1) — Single-Task Online + Contribution des Variables (Monitoring, CWRU, Pronostia)
 
-**Objectif** : Intégrer le dataset Battery RUL comme Dataset 4 — scénario de dégradation temporelle d'accumulateurs avec label binaire (RUL < 200 cycles = dégradé). Étend la couverture applicative du projet à l'électrochimique embarqué (drones, EVs, capteurs autonomes).
+**Objectif** : Évaluation prequential online strict sur les datasets existants + analyse de contribution individuelle des variables d'entrée pour les 6 modèles. Extension aux datasets CWRU et Pronostia avec analyse per-task et ablation study.
 
-> **Dataset** : `data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv` — 15 064 cycles, 8 features électrochimiques + cible RUL.  
-> **Label retenu** : binaire — `RUL < 200` → dégradé (1), sinon normal (0). Même protocole que les 3 datasets existants.  
-> **Scénario CL retenu** : Domain-incremental par fenêtres temporelles de cycles (3 tâches) :
-> - Task 1 : cycles 1–370 (début de vie, batterie neuve)
-> - Task 2 : cycles 371–740 (mi-vie, vieillissement progressif)
-> - Task 3 : cycles 741–1 112 (fin de vie, dégradation accélérée)  
-> **Features** : 7 features électrochimiques (Discharge Time, Decrement 3.6-3.4V, Max/Min Voltage, Time at 4.15V, Time constant current, Charging time) — tabulaires statiques, compatible avec les modèles existants sans modification.
+> Détail complet : [`docs/sprints/sprint_11/S1100_single_task_variable_contribution_sprint.md`](sprints/sprint_11/S1100_single_task_variable_contribution_sprint.md)
+>
+> **Datasets couverts** : Equipment Monitoring (4 features), CWRU (9 features), Pronostia (13 features).  
+> **Méthodes d'importance** : permutation (modèle-agnostique), gradient saliency (EWC/PyTorch uniquement), feature masking (HDC).  
+> **Nouveauté** : analyse **per-task** — l'importance varie-t-elle selon le type/sévérité de défaut ?  
+> **Ablation study** : courbe nb_features → AUC pour justifier la réduction d'empreinte MCU (Gap 2).
 
-| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
-|----|-------|:-----:|:---:|:----:|---------------|------------|
-| S11-01 | `battery_dataset.py` — loader CSV + binarisation `RUL < 200` + split par fenêtres de cycles | ⬜ | ⬜ | N/A | `src/data/battery_dataset.py` | 3h |
-| S11-02 | Configs YAML Battery : `battery_config.yaml` (CL 3 tâches) + `battery_single_task_config.yaml` | ⬜ | ⬜ | N/A | `configs/battery_config.yaml`, `configs/battery_single_task_config.yaml` | 1h |
-| S11-03 | EDA Battery RUL — section 4 dans `01_data_exploration.ipynb` (distribution RUL, label balance, corrélations) | ⬜ | ⬜ | ⬜ | `notebooks/01_data_exploration.ipynb` | 1h |
-| S11-04 | Run exp_056–061 — 6 modèles × scénario `no_split` (single-task baseline Battery) | ⬜ | ⬜ | ⬜ | `experiments/exp_056–061/` | 2h |
-| S11-05 | Run exp_062–067 — 6 modèles × 3 fenêtres temporelles (CL domain-incremental Battery) | ⬜ | ⬜ | ⬜ | `experiments/exp_062–067/` | 2h |
-| S11-06 | Notebooks individuels `battery_by_temporal_window/` — 6 modèles | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/battery_by_temporal_window/{ewc,hdc,tinyol,kmeans,mahalanobis,dbscan}.ipynb` | 6h |
-| S11-07 | Notebook comparaison Battery + notebook baseline single-task | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/battery_by_temporal_window/comparison.ipynb`, `notebooks/cl_eval/baselines/battery_single_task.ipynb` | 3h |
-| S11-08 | Tests unitaires `battery_dataset.py` | ⬜ | ⬜ | ⬜ | `tests/test_battery_dataset.py` | 2h |
-| S11-09 | Notebook synthèse croisée 4 datasets — comparaison modèles × datasets (AA, AF, BWT, RAM) | ⬜ | ⬜ | ⬜ | `notebooks/cl_eval/cross_dataset_comparison.ipynb` | 3h |
-| S11-10 | MAJ `roadmap_phase1.md` + README : Phase 1 étendue à 4 datasets, 67 expériences totales | ⬜ | ⬜ | N/A | `docs/roadmap_phase1.md`, `README.md` | 1h |
+**État d'avancement au 28 avril 2026** :
+
+- ✅ Terminé (19/23) : S11-01–S11-09 (feature_importance.py, notebooks Monitoring ×6), S11-11–S11-19 (extension CWRU/Pronostia, scripts, exp_100–111, notebooks feature importance, figures), S11-21 (tests)
+- ⬜ À faire (4/23) : S11-10 (doc Monitoring bilan), S11-20 (notebook cross-dataset), S11-22 (doc CWRU/Pronostia bilan), S11-23 (ablation study)
+
+| ID | Tâche | Statut | Fichier cible | Durée est. |
+|----|-------|--------|---------------|------------|
+| S11-01 | `feature_importance.py` (permutation, gradient, masking, plots) | ✅ | `src/evaluation/feature_importance.py` | 3h |
+| S11-02 | Export depuis `src/evaluation/__init__.py` | ✅ | `src/evaluation/__init__.py` | 0.5h |
+| S11-03 | Notebook EWC single-task online + contribution (Monitoring) | ✅ | `notebooks/cl_eval/monitoring_single_task/ewc.ipynb` | 2h |
+| S11-04 | Notebook HDC single-task online + contribution (Monitoring) | ✅ | `notebooks/cl_eval/monitoring_single_task/hdc.ipynb` | 2h |
+| S11-05 | Notebook TinyOL single-task online + MonitoringAutoencoder | ✅ | `notebooks/cl_eval/monitoring_single_task/tinyol.ipynb` | 3h |
+| S11-07 | Notebook KMeans single-task online + contribution (refit) | ✅ | `notebooks/cl_eval/monitoring_single_task/kmeans.ipynb` | 2h |
+| S11-08 | Notebook Mahalanobis single-task online + contribution (refit) | ✅ | `notebooks/cl_eval/monitoring_single_task/mahalanobis.ipynb` | 2h |
+| S11-09 | Notebook DBSCAN single-task online + contribution (refit) | ✅ | `notebooks/cl_eval/monitoring_single_task/dbscan.ipynb` | 2h |
+| S11-10 | Documentation Sprint 11 — partie Monitoring | ⬜ | `docs/sprints/sprint_11/` | 0.5h |
+| S11-11 | Extension `feature_importance.py` — constantes CWRU/Pronostia + per-task | ✅ | `src/evaluation/feature_importance.py` | 1h |
+| S11-12 | Extension `train_kmeans.py` — export `feature_importance.json` per-task | ✅ | `scripts/train_kmeans.py` | 1.5h |
+| S11-13 | Extension `train_mahalanobis.py` — export `feature_importance.json` per-task | ✅ | `scripts/train_mahalanobis.py` | 1.5h |
+| S11-14 | Extension `train_ewc.py` — importance per-task (permutation + gradient) | ✅ | `scripts/train_ewc.py` | 1.5h |
+| S11-15 | Extension `train_hdc.py` — importance per-task (permutation + masking) | ✅ | `scripts/train_hdc.py` | 1.5h |
+| S11-16 | Lancer exp_100–105 — KMeans + Mahalanobis CWRU/Pronostia | ✅ | `experiments/exp_100–105/` | 1h |
+| S11-17 | Lancer exp_106–111 — EWC + HDC CWRU/Pronostia | ✅ | `experiments/exp_106–111/` | 1h |
+| S11-18 | Notebooks feature importance CWRU (by_fault_type + by_severity) | ✅ | `notebooks/cl_eval/cwru_feature_importance/` | 3h |
+| S11-19 | Notebook feature importance Pronostia (by_condition) | ✅ | `notebooks/cl_eval/pronostia_feature_importance/` | 2h |
+| S11-20 | Notebook cross-dataset (Monitoring vs CWRU vs Pronostia) | ⬜ | `notebooks/cl_eval/cross_dataset_feature_importance.ipynb` | 2h |
+| S11-21 | Tests `test_feature_importance_cwru_pronostia.py` | ✅ | `tests/test_feature_importance_cwru_pronostia.py` | 1h |
+| S11-22 | Documentation Sprint 11 — partie CWRU/Pronostia | ⬜ | `docs/sprints/sprint_11/` | 0.5h |
+| S11-23 | Ablation study — retrait progressif de features (courbe nb_features vs AUC) | ⬜ | `src/evaluation/feature_importance.py` + `notebooks/cl_eval/ablation_feature_removal/` | 3h |
 
 **Numérotation expériences** :
 
-| Exp | Modèle | Scénario | Statut |
-|-----|--------|----------|--------|
-| exp_056 | EWC | Battery no_split | ⬜ |
-| exp_057 | HDC | Battery no_split | ⬜ |
-| exp_058 | TinyOL | Battery no_split | ⬜ |
-| exp_059 | KMeans | Battery no_split | ⬜ |
-| exp_060 | Mahalanobis | Battery no_split | ⬜ |
-| exp_061 | DBSCAN | Battery no_split | ⬜ |
-| exp_062 | EWC | Battery by_temporal_window (3 tâches) | ⬜ |
-| exp_063 | HDC | Battery by_temporal_window (3 tâches) | ⬜ |
-| exp_064 | TinyOL | Battery by_temporal_window (3 tâches) | ⬜ |
-| exp_065 | KMeans | Battery by_temporal_window (3 tâches) | ⬜ |
-| exp_066 | Mahalanobis | Battery by_temporal_window (3 tâches) | ⬜ |
-| exp_067 | DBSCAN | Battery by_temporal_window (3 tâches) | ⬜ |
+| Exp | Modèle | Dataset | Scénario | AA | AF | BWT | RAM | Top feature |
+| --- | ------ | ------- | -------- | -- | -- | --- | --- | ----------- |
+| exp_100 | KMeans | CWRU | by_fault_type | ✅ 0.312 | 0.065 | +0.201 | 5.3 Ko | skewness |
+| exp_101 | KMeans | CWRU | by_severity | ✅ 0.450 | 0.000 | +0.442 | 5.3 Ko | mean |
+| exp_102 | KMeans | Pronostia | by_condition | ✅ 0.872 | 0.059 | -0.059 | 5.3 Ko | kurtosis_acc_vert |
+| exp_103 | Mahalanobis | CWRU | by_fault_type | ✅ 0.160 | 0.026 | -0.026 | 1.3 Ko | skewness |
+| exp_104 | Mahalanobis | CWRU | by_severity | ✅ 0.195 | 0.019 | +0.019 | 1.3 Ko | skewness |
+| exp_105 | Mahalanobis | Pronostia | by_condition | ✅ 0.898 | 0.010 | -0.007 | 1.3 Ko | std_acc_vert |
+| exp_106 | EWC | CWRU | by_fault_type | ✅ 1.000 | 0.000 | 0.000 | 1.1 Ko | kurtosis |
+| exp_107 | EWC | CWRU | by_severity | ✅ 0.952 | 0.000 | +0.006 | 1.1 Ko | skewness |
+| exp_108 | EWC | Pronostia | by_condition | ✅ 0.982 | 0.000 | +0.005 | 1.1 Ko | temporal_position ⚠️ |
+| exp_109 | HDC | CWRU | by_fault_type | ✅ 0.935 | 0.045 | -0.039 | 7.7 Ko | form |
+| exp_110 | HDC | CWRU | by_severity | ✅ 0.892 | 0.019 | -0.006 | 7.7 Ko | sd |
+| exp_111 | HDC | Pronostia | by_condition | ✅ 0.850 | 0.056 | -0.056 | 14.2 Ko | crest_factor_acc_horiz |
 
-**Livrable sprint 11** : 12 expériences Battery (exp_056–067), 8 notebooks `cl_eval/`, 1 notebook synthèse croisée 4 datasets, loader `battery_dataset.py` validé. Phase 1 étendue : 67 expériences, 4 datasets, 6 modèles, 6 scénarios.
+> ⚠️ exp_108 : `temporal_position` top feature pour EWC Pronostia — feature non disponible en déploiement MCU réel (hors supervision) → `FIXME(gap1)` à traiter dans le notebook cross-dataset (S11-20).  
+> ⚠️ exp_100/103/104 : AA faibles pour KMeans/Mahalanobis sur CWRU (même pattern que exp_077/078) — dataset à 90% défauts, métriques pertinentes = `feature_importance.json` per-task + AUROC.
+
+**Livrable sprint 11** : module `feature_importance.py` étendu, 6 notebooks Monitoring + JSONs exp_030-035, 12 JSONs per-task exp_100–111, 4 notebooks CWRU/Pronostia + 1 cross-dataset + 1 ablation study (argument Gap 2).
+
+> **Note** : Dataset Battery RUL (initialement planifié Sprint 11) reporté au backlog — `battery_dataset.py` et configs YAML existent mais les expériences ne sont pas prioritaires avant la finalisation des analyses feature importance sur CWRU/Pronostia.
 
 ---
 

@@ -24,11 +24,12 @@ kmeans:
   k_fixed: 3              # utilisé uniquement si k_method == "fixed"
   k_min: 2                # borne basse pour la recherche K dynamique
   k_max: 10               # borne haute pour la recherche K dynamique
-  anomaly_threshold: null  # null → calculé automatiquement (percentile sur Task 1)
+  anomaly_threshold: null  # null → calculé automatiquement (percentile sur Task 0)
   anomaly_percentile: 95
   n_init: 10              # sklearn KMeans n_init
   max_iter: 300
-  cl_strategy: "refit"    # TODO(arnaud): "refit" | "accumulate"
+  cl_strategy: "refit"    # "refit" | "accumulate"
+  ema_alpha: 0.3          # poids tâche courante dans MAJ EMA du seuil (0=figé, 1=refit complet)
 
 knn:
   n_neighbors: 5
@@ -49,9 +50,9 @@ mahalanobis:
   anomaly_threshold: null        # null → calculé automatiquement (percentile sur Task 0)
   anomaly_percentile: 95
   reg_covar: 1.0e-6              # régularisation Σ : Σ_reg = Σ + reg_covar * I
-  cl_strategy: "refit"           # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
-  welford_min_samples: 10        # min. samples avant MAJ Σ⁻¹ en mode online (S9-07)
-  update_sigma_every: 1          # 1=continu, 10/50/100=mini-batch (S9-09)
+  cl_strategy: "welford"         # "refit" | "welford" (accumulation incrémentale inter-tâches)
+  welford_min_samples: 10        # min. samples avant MAJ Σ⁻¹ en mode online
+  update_sigma_every: 1          # 1=continu, N=mini-batch
 
 dbscan:
   EPSILON: 0.5          # rayon de voisinage (à tuner par dataset)

@@ -1,0 +1,123 @@
+_snapshot_timestamp: '2026-04-28T19:36:24.676331'
+backbone:
+  checkpoint_path: experiments/exp_076_tinyol_cwru_by_fault_type/checkpoints/backbone.pt
+  decoder_dims:
+  - 9
+  - 18
+  - 9
+  encoder_dims:
+  - 18
+  - 9
+  - 4
+  input_dim: 9
+data:
+  batch_size: 1
+  csv_path: data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv
+  dataset: cwru
+  n_classes: 2
+  n_features: 9
+  random_state: 42
+  task_split: by_fault_type
+  test_ratio: 0.2
+  val_ratio: 0.1
+dbscan:
+  anomaly_percentile: 95
+  cl_strategy: refit
+  eps: null
+  min_samples: 5
+evaluation:
+  metrics:
+  - acc_final
+  - avg_forgetting
+  - backward_transfer
+  - per_task_acc
+  - ram_peak_bytes
+  - inference_latency_ms
+  - n_params
+  n_latency_runs: 100
+  output_dir: experiments/exp_106/results/
+  seed: 42
+ewc:
+  gamma: 0.9
+  lambda: 400
+  n_fisher_samples: 200
+exp_id: exp_106
+feature_bounds:
+  crest:
+  - -1.4187079668045044
+  - 4.311003684997559
+  form:
+  - -1.0872983932495117
+  - 8.649434089660645
+  kurtosis:
+  - -0.7608376145362854
+  - 6.784101486206055
+  max:
+  - -1.2466038465499878
+  - 6.455930233001709
+  mean:
+  - -1.9831773042678833
+  - 2.5201008319854736
+  min:
+  - -7.285485744476318
+  - 1.1478608846664429
+  rms:
+  - -1.358906626701355
+  - 7.893540859222412
+  sd:
+  - -1.3586441278457642
+  - 7.877472400665283
+  skewness:
+  - -5.032320022583008
+  - 7.2616047859191895
+hdc:
+  D: 512
+  base_vectors_path: configs/hdc_base_vectors_cwru.npz
+  n_levels: 10
+  seed: 42
+kmeans:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  ema_alpha: 0.3
+  k_fixed: 4
+  k_max: 8
+  k_method: silhouette
+  k_min: 2
+  max_iter: 300
+  n_init: 10
+mahalanobis:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: welford
+  reg_covar: 1.0e-06
+  update_sigma_every: 1
+  welford_min_samples: 10
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+model:
+  architecture: mlp
+  dropout: 0.2
+  hidden_dims:
+  - 32
+  - 16
+  input_dim: 9
+  output_dim: 1
+oto_head:
+  input_dim: 5
+  learning_rate: 0.01
+  loss: bce
+  momentum: 0.0
+pretrain:
+  batch_size: 64
+  epochs: 20
+  learning_rate: 0.001
+training:
+  batch_size: 1
+  epochs_per_task: 10
+  learning_rate: 0.001
+  momentum: 0.9
+  optimizer: sgd
+  pos_weight: null
+  seed: 42

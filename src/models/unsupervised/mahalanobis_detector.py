@@ -15,7 +15,7 @@ import numpy as np
 # Valeurs par défaut — toujours passer par configs/unsupervised_config.yaml
 ANOMALY_PERCENTILE_DEFAULT: int = 95
 REG_COVAR_DEFAULT: float = 1e-6  # régularisation Σ : Σ_reg = Σ + reg_covar * I
-CL_STRATEGY_DEFAULT: str = "refit"  # "refit" uniquement (recalcul μ, Σ⁻¹ à chaque tâche)
+CL_STRATEGY_DEFAULT: str = "refit"  # "refit" | "welford"
 WELFORD_MIN_SAMPLES_DEFAULT: int = 10  # min. samples avant MAJ Σ⁻¹ en mode online
 UPDATE_SIGMA_EVERY_DEFAULT: int = 1    # 1=continu, N=mini-batch
 
@@ -70,6 +70,7 @@ class MahalanobisDetector:
         self.threshold_: float | None = self.anomaly_threshold
         self.task_id_: int = -1
         self.n_features_: int = 0
+        self.welford_updates_per_task_: list[int] = []
 
         # État Welford pour MAJ online (partial_fit)
         self._n_seen_: int = 0
@@ -96,25 +97,39 @@ class MahalanobisDetector:
         self.task_id_ = task_id
         self.n_features_ = X.shape[1]
 
-        # Calcul offline de μ et Σ
-        self.mu_ = X.mean(axis=0)  # [d]
-        cov = np.cov(X, rowvar=False)  # [d, d]
-        cov_reg = cov + self.reg_covar * np.eye(self.n_features_)  # régularisation
+        if self.cl_strategy == "welford" and task_id > 0:
+            # Accumulation incrémentale : ne pas réinitialiser μ, _M2_, _n_seen_
+            # partial_fit() met à jour mu_ et sigma_inv_ via Welford sans données brutes
+            self.partial_fit(X)
+            self.welford_updates_per_task_.append(X.shape[0])
+            print(
+                f"  [Mahalanobis] Tâche {task_id} — Welford update "
+                f"(+{X.shape[0]} samples, total={self._n_seen_}), "
+                f"RAM estimée={self._estimate_ram_bytes()} B"
+            )
+        else:
+            # Calcul offline de μ et Σ (refit ou task_id==0 pour welford)
+            self.mu_ = X.mean(axis=0)  # [d]
+            cov = np.cov(X, rowvar=False)  # [d, d]
+            cov_reg = cov + self.reg_covar * np.eye(self.n_features_)  # régularisation
 
-        self.sigma_inv_ = np.linalg.inv(cov_reg)  # [d, d] — offline uniquement
+            self.sigma_inv_ = np.linalg.inv(cov_reg)  # [d, d] — offline uniquement
 
-        # Initialise l'état Welford depuis le batch fit pour cohérence partial_fit
-        self._n_seen_ = X.shape[0]
-        self._M2_ = None  # reconstruit lazily par _init_welford_from_fit()
-        self._welford_batch_buf_ = []
+            # Initialise l'état Welford depuis le batch fit pour cohérence partial_fit
+            self._n_seen_ = X.shape[0]
+            self._M2_ = None  # reconstruit lazily par _init_welford_from_fit()
+            self._welford_batch_buf_ = []
 
-        print(
-            f"  [Mahalanobis] Tâche {task_id} — μ shape={self.mu_.shape}, "
-            f"Σ⁻¹ shape={self.sigma_inv_.shape}, "
-            f"RAM estimée={self._estimate_ram_bytes()} B"
-        )
+            if self.cl_strategy == "welford":
+                self.welford_updates_per_task_.append(X.shape[0])
 
-        # Calcul du seuil sur Task 0 uniquement (pas de leakage inter-tâches)
+            print(
+                f"  [Mahalanobis] Tâche {task_id} — μ shape={self.mu_.shape}, "
+                f"Σ⁻¹ shape={self.sigma_inv_.shape}, "
+                f"RAM estimée={self._estimate_ram_bytes()} B"
+            )
+
+        # Calcul du seuil sur Task 0 uniquement (jamais modifié en mode welford)
         if task_id == 0 and self.threshold_ is None:
             scores = self._compute_distances(X)
             self.threshold_ = float(np.percentile(scores, self.anomaly_percentile))
