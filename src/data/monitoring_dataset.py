@@ -25,6 +25,7 @@ Usage :
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -669,6 +670,7 @@ def get_monitoring_dataloaders_single_task(
 def get_cl_dataloaders_anomaly_detection(
     csv_path: Path,
     normalizer_path: Path,
+    scenario: Literal["by_equipment", "by_location"] = "by_equipment",
     batch_size: int = 32,
     train_ratio: float = 0.8,
     seed: int = 42,
@@ -690,6 +692,11 @@ def get_cl_dataloaders_anomaly_detection(
         Chemin vers equipment_anomaly_data.csv.
     normalizer_path : Path
         Chemin vers le YAML de normalisation (fittée sur données normales).
+    scenario : {"by_equipment", "by_location"}
+        Scénario CL :
+        - ``"by_equipment"`` (défaut) : 3 tâches Pump → Turbine → Compressor.
+        - ``"by_location"`` : 5 tâches Atlanta → Chicago → Houston → New York
+          → San Francisco (tous types d'équipements par site).
     batch_size : int
         Taille des mini-batches. Default : 32.
     train_ratio : float
@@ -701,13 +708,13 @@ def get_cl_dataloaders_anomaly_detection(
     Returns
     -------
     list[dict]
-        Liste ordonnée de 3 dicts (Pump → Turbine → Compressor) :
+        Liste ordonnée de dicts (3 pour by_equipment, 5 pour by_location) :
 
         .. code-block:: python
 
             {
-                "task_id": int,                  # 1, 2 ou 3
-                "domain": str,                   # "Pump", "Turbine" ou "Compressor"
+                "task_id": int,                  # 1-based
+                "domain": str,                   # nom du domaine (equipment ou location)
                 "train_loader": DataLoader,      # faulty==0 uniquement, shuffle=True
                 "test_loader_mixed": DataLoader, # tous échantillons, shuffle=False
                 "n_train": int,                  # nb samples normaux d'entraînement
@@ -716,9 +723,11 @@ def get_cl_dataloaders_anomaly_detection(
                 "n_test_faulty": int,            # nb faulty==1 dans test
             }
 
+        Pour ``by_location``, chaque dict inclut aussi ``"location": str``.
+
     Notes
     -----
-    Le seuil d'anomalie doit être calibré sur Task 0 (Pump) uniquement — ne pas
+    Le seuil d'anomalie doit être calibré sur Task 0 uniquement — ne pas
     recalculer sur les tâches suivantes pour éviter le leakage inter-tâches.
     """
     set_seed(seed)
@@ -731,6 +740,51 @@ def get_cl_dataloaders_anomaly_detection(
 
     tasks: list[dict] = []
 
+    if scenario == "by_location":
+        if LOCATION_COL not in df.columns:
+            raise ValueError(
+                f"Colonne '{LOCATION_COL}' absente du CSV. "
+                f"Colonnes présentes : {list(df.columns)}"
+            )
+        for task_id, location in enumerate(DEFAULT_LOCATION_ORDER, start=1):
+            df_loc = df[df[LOCATION_COL] == location].reset_index(drop=True)
+
+            df_normal = df_loc[df_loc[LABEL_COL] == 0].reset_index(drop=True)
+            df_faulty = df_loc[df_loc[LABEL_COL] == 1].reset_index(drop=True)
+
+            n_train = int(len(df_normal) * train_ratio)
+            df_normal_train = df_normal.iloc[:n_train].reset_index(drop=True)
+            df_normal_test = df_normal.iloc[n_train:].reset_index(drop=True)
+
+            df_test = pd.concat([df_normal_test, df_faulty], ignore_index=True)
+
+            x_train, y_train = df_to_tensors(df_normal_train)
+            x_test, y_test = df_to_tensors(df_test)
+
+            tasks.append(
+                {
+                    "task_id": task_id,
+                    "domain": location,
+                    "location": location,
+                    "train_loader": DataLoader(
+                        TensorDataset(x_train, y_train),
+                        batch_size=batch_size,
+                        shuffle=True,
+                    ),
+                    "test_loader_mixed": DataLoader(
+                        TensorDataset(x_test, y_test),
+                        batch_size=batch_size,
+                        shuffle=False,
+                    ),
+                    "n_train": len(x_train),
+                    "n_test": len(x_test),
+                    "n_test_normal": len(df_normal_test),
+                    "n_test_faulty": len(df_faulty),
+                }
+            )
+        return tasks
+
+    # scenario == "by_equipment" (défaut)
     for task_id, domain in enumerate(DOMAIN_ORDER, start=1):
         df_domain = df[df[DOMAIN_FEATURE] == domain].reset_index(drop=True)
 

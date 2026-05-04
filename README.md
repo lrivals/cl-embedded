@@ -35,8 +35,10 @@ The implementations target **PC-first development** with explicit design constra
 |-------|:--------------:|--------|-------|
 | HDC (one_class_mode) | ✅ | `hdc_anomaly_detection_config.yaml` | Seuil au percentile sur données normales |
 | TinyOL Autoencoder | ✅ | `tinyol_anomaly_detection_config.yaml` | Reconstruction MSE comme score d'anomalie |
+| EWC OneClass Detector | ✅ | `ewc_oneclass_config.yaml` | Autoencoder MLP + régularisation EWC sur MSE reconstruction |
 | K-Means one-class | ❌ | `unsupervised_anomaly_detection_config.yaml` | Distance au centroïde le plus proche |
 | Mahalanobis one-class | ✅ | `unsupervised_anomaly_detection_config.yaml` | Distance de Mahalanobis depuis données normales |
+| DBSCAN one-class | ❌ | `unsupervised_anomaly_detection_config.yaml` | Points bruit = anomalies (RAM variable selon volume normal) |
 
 Tous les modèles s'entraînent sur données normales uniquement et évaluent via matrice AUROC [T×T].
 
@@ -76,10 +78,11 @@ python scripts/train_tinyol.py --config configs/tinyol_config.yaml
 # Train unsupervised baselines (K-Means, Mahalanobis, DBSCAN, PCA, KNN)
 python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml
 
-# Anomaly detection — one-class CL (Sprint 13)
+# Anomaly detection — one-class CL (Sprints 13–16)
 python scripts/train_hdc.py --config configs/hdc_anomaly_detection_config.yaml
 python scripts/train_tinyol.py --config configs/tinyol_anomaly_detection_config.yaml
 python scripts/train_unsupervised.py --config configs/unsupervised_anomaly_detection_config.yaml
+python scripts/run_anomaly_detection.py --config configs/ewc_oneclass_config.yaml  # Sprint 14
 
 # Run all evaluations
 python scripts/evaluate_all.py --exp_dir experiments/
@@ -108,6 +111,7 @@ cl-embedded/
 │   ├── hdc_anomaly_detection_config.yaml       # Sprint 13
 │   ├── tinyol_anomaly_detection_config.yaml    # Sprint 13
 │   ├── unsupervised_anomaly_detection_config.yaml  # Sprint 13
+│   ├── ewc_oneclass_config.yaml                # Sprint 14 — EWC OneClass Detector
 │   ├── pump_normalizer.yaml    # Fixed Z-score statistics
 │   ├── monitoring_normalizer.yaml
 │   └── monitoring_normalizer_anomaly.yaml      # Fitted on normal samples only
@@ -128,7 +132,7 @@ cl-embedded/
 │   ├── training/               # CL scenarios + run_anomaly_detection_scenario()
 │   ├── evaluation/             # CL metrics + anomaly_metrics + memory profiler
 │   └── utils/                  # Reproducibility, config loader
-├── experiments/                # 41+ reproducible experiment outputs
+├── experiments/                # 142+ reproducible experiment outputs
 ├── notebooks/                  # Exploration + visualization
 │   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–13)
 ├── tests/                      # Unit tests
@@ -193,7 +197,8 @@ Full experiment outputs: [`experiments/`](experiments/)
 | M4 K-Means + KNN | ✅ | ✅ | ✅ exp_005, 020, 022, 028, 033, 039 | ✅ |
 | M5 PCA | ✅ | ✅ | ✅ | ✅ |
 | DBSCAN baseline | ✅ | ✅ | ✅ exp_008, 021, 023, 029, 035, 041 | ✅ |
-| Anomaly detection (S13) | ✅ | ✅ | ✅ exp_086–089 | ⬜ |
+| Anomaly detection (S13) | ✅ | ✅ | ✅ exp_086–093, exp_120–122 | ⬜ |
+| EWC OneClass (S14) | ⬜ | ⬜ | ⬜ exp_125–126 (planifié) | ⬜ |
 | M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ exp_004 (planned) | ⬜ |
 | ONNX export | 🟡 | ⬜ | ⬜ | ⬜ |
 | Notebooks (S7–13) | 🟡 | — | — | — |
@@ -205,8 +210,10 @@ Full experiment outputs: [`experiments/`](experiments/)
 | Sprints 1–5 | ✅ | Infrastructure + M1/M2/M3 + unsupervised baselines |
 | Sprint 6 | ✅ | Extended scenarios (pump_by_id, pump_temporal, monitoring_by_location) |
 | Sprints 7–12 | ✅ | Notebooks CL + intégration CWRU/Pronostia + scénarios by-fault/severity |
-| Sprint 13 | ✅ | Anomaly detection one-class — HDC, TinyOL AE, KMeans, Mahalanobis (exp_086–089) |
-| Sprint 14 | ⬜ | Comparaison finale + manuscrit + MCU portage STM32N6 |
+| Sprint 13 | ✅ | Anomaly detection one-class — 4 modèles Monitoring + DBSCAN/KMeans v2 CWRU + DBSCAN Monitoring/Pronostia (exp_086–093, exp_120–122) |
+| Sprint 14 | 🔄 | Monitoring anomaly detection complet — DBSCAN + EWC one-class + accumulate + by_location (exp_123–136) |
+| Sprint 15 | ⬜ | Pronostia anomaly detection — 6 modèles × by_condition refit + accumulate (exp_137–142) |
+| Sprint 16 | ⬜ | CWRU anomaly detection + notebook synthèse cross-dataset (exp_143–148) |
 
 ## Evaluation Metrics
 

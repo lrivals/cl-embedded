@@ -1,0 +1,45 @@
+{
+  "avg_auroc": 0.7242662427820102,
+  "auroc_forgetting": 0.2195934672334533,
+  "auroc_bwt": -0.2195934672334533,
+  "forgetting_per_task": [
+    0.16016394596115946,
+    0.27902298850574714
+  ],
+  "bwt_per_task": [
+    -0.16016394596115946,
+    -0.27902298850574714
+  ],
+  "auroc_matrix": [
+    [
+      0.8564945116802701,
+      null,
+      null
+    ],
+    [
+      0.6909653813678581,
+      0.9015804597701149,
+      null
+    ],
+    [
+      0.6963305657191107,
+      0.6225574712643678,
+      0.8539106913625527
+    ]
+  ],
+  "n_tasks": 3,
+  "exp_id": "exp_138b",
+  "model": "tinyol_ae",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "strategy": "accumulate",
+  "failure_ratio": 0.1,
+  "auroc_per_task_final": [
+    0.6963305657191107,
+    0.6225574712643678,
+    0.8539106913625527
+  ],
+  "ram_peak_bytes": 1992,
+  "inference_latency_ms": 0.10455084997374797,
+  "n_params": 1069
+}

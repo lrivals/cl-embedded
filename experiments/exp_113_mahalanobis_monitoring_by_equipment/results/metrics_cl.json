@@ -1,0 +1,40 @@
+{
+  "exp_id": "exp_113_mahalanobis_monitoring_by_equipment",
+  "model": "mahalanobis",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_equipment",
+  "acc_final": 0.9537371106072546,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0009861932938856066,
+  "per_task_acc": [
+    0.9526627218934911,
+    0.9512670565302144,
+    0.9572815533980582
+  ],
+  "ram_peak_bytes": 1264,
+  "inference_latency_ms": 0.006069819996810111,
+  "n_params": 20,
+  "acc_matrix": [
+    [
+      0.9506903353057199,
+      NaN,
+      NaN
+    ],
+    [
+      0.9526627218934911,
+      0.9512670565302144,
+      NaN
+    ],
+    [
+      0.9526627218934911,
+      0.9512670565302144,
+      0.9572815533980582
+    ]
+  ],
+  "welford_updates_per_task": [
+    2027,
+    2052,
+    2058
+  ],
+  "cl_strategy": "welford"
+}

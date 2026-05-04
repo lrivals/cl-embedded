@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CL-Embedded — Experiments Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --text: #e2e8f0;
+      --text-muted: #8892a4;
+      --accent: #6366f1;
+      --accent2: #818cf8;
+      --green: #22c55e;
+      --green-bg: #14532d33;
+      --red: #ef4444;
+      --red-bg: #7f1d1d33;
+      --purple: #a855f7;
+      --blue: #3b82f6;
+      --yellow: #f59e0b;
+      --radius: 10px;
+      --shadow: 0 4px 24px #0006;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #1a1d27 0%, #12162b 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 32px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-icon {
+      font-size: 2.4rem;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header-title p {
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-top: 2px;
+    }
+
+    .header-badges {
+      margin-left: auto;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-total {
+      background: #6366f133;
+      border: 1px solid #6366f155;
+      color: var(--accent2);
+    }
+
+    .badge-ok {
+      background: var(--green-bg);
+      border: 1px solid #22c55e44;
+      color: var(--green);
+    }
+
+    .badge-fail {
+      background: var(--red-bg);
+      border: 1px solid #ef444444;
+      color: var(--red);
+    }
+
+    /* ── Tabs ────────────────────────────────────── */
+    .tabs-bar {
+      display: flex;
+      gap: 4px;
+      padding: 16px 32px 0;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 8px 18px 12px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--accent2);
+      border-bottom-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .tab-panel {
+      display: none;
+      padding: 28px 32px;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── Stats cards ─────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .stat-card.purple::before {
+      background: var(--purple);
+    }
+
+    .stat-card.green::before {
+      background: var(--green);
+    }
+
+    .stat-card.red::before {
+      background: var(--red);
+    }
+
+    .stat-card.blue::before {
+      background: var(--blue);
+    }
+
+    .stat-card.yellow::before {
+      background: var(--yellow);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-top: 4px;
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ── Progress bar ────────────────────────────── */
+    .progress-wrap {
+      margin-bottom: 24px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--green), #86efac);
+      transition: width 0.6s ease;
+    }
+
+    /* ── Breakdown tables ────────────────────────── */
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .breakdown-section h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .breakdown-row {
+      display: grid;
+      grid-template-columns: 1fr 60px 60px 60px;
+      gap: 4px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      margin-bottom: 3px;
+      font-size: 0.82rem;
+      background: var(--surface2);
+      border: 1px solid transparent;
+      transition: border-color 0.12s;
+    }
+
+    .breakdown-row:hover {
+      border-color: var(--border);
+    }
+
+    .breakdown-row .name {
+      font-weight: 600;
+    }
+
+    .breakdown-row .num {
+      text-align: right;
+      color: var(--text-muted);
+    }
+
+    .breakdown-row .ok {
+      text-align: right;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .breakdown-row .fail {
+      text-align: right;
+      color: var(--red);
+    }
+
+    .model-pill {
+      display: inline-block;
+      padding: 1px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .pill-sup {
+      background: #6366f122;
+      color: var(--accent2);
+    }
+
+    .pill-unsup {
+      background: #f59e0b22;
+      color: var(--yellow);
+    }
+
+    /* ── Graph panel ─────────────────────────────── */
+    .graph-wrap {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      overflow: auto;
+      min-height: 500px;
+      position: relative;
+    }
+
+    .graph-controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .graph-controls span {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .ctrl-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .ctrl-btn:hover {
+      background: var(--border);
+    }
+
+    #mermaid-container svg {
+      max-width: none !important;
+    }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .dot-ds {
+      background: #e1bee7;
+    }
+
+    .dot-sc {
+      background: #bbdefb;
+    }
+
+    .dot-ok {
+      background: #c8e6c9;
+    }
+
+    .dot-fail {
+      background: #ffcdd2;
+    }
+
+    /* ── Table panel ─────────────────────────────── */
+    .table-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 8px 14px;
+      font-size: 0.86rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 0.84rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-select:focus {
+      border-color: var(--accent);
+    }
+
+    .table-count {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .exp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .exp-table th {
+      background: var(--surface2);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .exp-table th:hover {
+      color: var(--text);
+    }
+
+    .exp-table th .sort-icon {
+      opacity: 0.4;
+      font-size: 0.65rem;
+      margin-left: 4px;
+    }
+
+    .exp-table th.sort-asc .sort-icon,
+    .exp-table th.sort-desc .sort-icon {
+      opacity: 1;
+      color: var(--accent2);
+    }
+
+    .exp-table td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .exp-table tr:hover td {
+      background: var(--surface2);
+    }
+
+    .exp-table tr.hidden {
+      display: none;
+    }
+
+    .ds-tag {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .ds-Equipment {
+      background: #3b82f622;
+      color: #60a5fa;
+    }
+
+    .ds-Pump {
+      background: #f59e0b22;
+      color: #fbbf24;
+    }
+
+    .ds-Pronostia {
+      background: #a855f722;
+      color: #c084fc;
+    }
+
+    .ds-CWRU {
+      background: #22c55e22;
+      color: #4ade80;
+    }
+
+    .model-tag {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      color: var(--accent2);
+      background: #6366f115;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .status-ok {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .status-fail {
+      color: var(--red);
+    }
+
+    .metric-val {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #a5b4fc;
+    }
+
+    .metric-na {
+      color: var(--text-muted);
+    }
+
+    .folder-code {
+      font-family: 'Courier New', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .type-sup {
+      color: #818cf8;
+      font-size: 0.75rem;
+    }
+
+    .type-unsup {
+      color: var(--yellow);
+      font-size: 0.75rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Scrollbar ───────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3e4470;
+    }
+
+    /* ── Responsive ──────────────────────────────── */
+    @media (max-width: 720px) {
+      header {
+        padding: 16px;
+        flex-wrap: wrap;
+      }
+
+      .tabs-bar {
+        padding: 12px 16px 0;
+      }
+
+      .tab-panel {
+        padding: 18px 16px;
+      }
+
+      .breakdown-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-icon">🧪</div>
+    <div class="header-title">
+      <h1>CL-Embedded — Experiments Tracker</h1>
+      <p>Suivi des expériences d'apprentissage continu sur systèmes embarqués · ISAE-SUPAERO × ENAC × Edge Spectrum</p>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-total" id="b-total">96 total</span>
+      <span class="badge badge-ok" id="b-ok">82 ✅</span>
+      <span class="badge badge-fail" id="b-fail">14 ❌</span>
+    </div>
+  </header>
+
+  <div class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('summary',this)">📊 Résumé</button>
+    <button class="tab-btn" onclick="switchTab('table',this)">📋 Tableau</button>
+    <button class="tab-btn" onclick="switchTab('graph',this)">🌳 Graphe</button>
+  </div>
+
+  <!-- ═══════════════════ SUMMARY ═══════════════════ -->
+  <div class="tab-panel active" id="tab-summary">
+
+    <div class="stats-grid" id="stats-grid"></div>
+
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>Taux de complétion global</span>
+        <span id="pct-label">85.4%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="breakdown-grid">
+      <div class="breakdown-section">
+        <h3>Par Dataset</h3>
+        <div id="breakdown-ds"></div>
+      </div>
+      <div class="breakdown-section">
+        <h3>Par Modèle</h3>
+        <div id="breakdown-model"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TABLE ═══════════════════ -->
+  <div class="tab-panel" id="tab-table">
+    <div class="table-controls">
+      <input class="search-input" type="text" placeholder="🔍  Rechercher (dossier, scénario, modèle…)"
+        oninput="filterTable()">
+      <select class="filter-select" onchange="filterTable()" id="f-dataset">
+        <option value="">Tous les datasets</option>
+        <option>Equipment</option>
+        <option>Pump</option>
+        <option>Pronostia</option>
+        <option>CWRU</option>
+      </select>
+      <select class="filter-select" onchange="filterTable()" id="f-model">
+        <option value="">Tous les modèles</option>
+        <option>ewc</option>
+        <option>hdc</option>
+        <option>tinyol</option>
+        <option>kmeans</option>
+        <option>mahalanobis</option>
+        <option>dbscan</option>
+        <option>unsupervised</option>
+      </select>
+      <select class="filter-select" onchange="filterTable()" id="f-status">
+        <option value="">Tous statuts</option>
+        <option value="ok">🟢 Terminé</option>
+        <option value="fail">🔴 En cours / Échec</option>
+      </select>
+      <span class="table-count" id="table-count"></span>
+    </div>
+    <div class="table-wrap">
+      <table class="exp-table" id="exp-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)" data-col="0">Dataset <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(1)" data-col="1">Scénario <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(2)" data-col="2">Apprentissage <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(3)" data-col="3">Modèle <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(4)" data-col="4">Statut <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(5)" data-col="5">Avg Acc <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(6)" data-col="6">AF <span class="sort-icon">⇅</span></th>
+            <th onclick="sortTable(7)" data-col="7">Dossier <span class="sort-icon">⇅</span></th>
+          </tr>
+        </thead>
+        <tbody id="exp-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ GRAPH ═══════════════════ -->
+  <div class="tab-panel" id="tab-graph">
+    <div class="graph-controls">
+      <select class="filter-select" onchange="renderGraph()" id="g-dataset">
+        <option value="">Tous les datasets (Graphe)</option>
+        <option value="Equipment">Equipment</option>
+        <option value="Pump">Pump</option>
+        <option value="Pronostia">Pronostia</option>
+        <option value="CWRU">CWRU</option>
+      </select>
+      <select class="filter-select" onchange="renderGraph()" id="g-status">
+        <option value="">Tous statuts</option>
+        <option value="ok">🟢 Terminé</option>
+        <option value="fail">🔴 En cours / Échec</option>
+      </select>
+      <span>| Zoom / Pan :</span>
+      <button class="ctrl-btn" onclick="zoomIn()">＋ Zoom in</button>
+      <button class="ctrl-btn" onclick="zoomOut()">－ Zoom out</button>
+      <button class="ctrl-btn" onclick="resetZoom()">↺ Reset</button>
+      <button class="ctrl-btn" onclick="toggleDir()">⇄ LR / TD</button>
+    </div>
+    <div class="graph-wrap" id="graph-wrap">
+      <div id="mermaid-container" style="transform-origin:top left; transition:transform 0.2s;">
+        <div class="mermaid" id="mermaid-code"></div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot dot-ds"></div> Dataset
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot dot-sc"></div> Scénario
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot dot-ok"></div> Terminé ✅
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot dot-fail"></div> En cours / Échec ❌
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════════
+    //  DATA  (generated from experiments/)
+    // ══════════════════════════════════════════
+    const EXPERIMENTS = [{ "folder": "exp_001_ewc_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823892182918952, "af": 0.0009746588693957392 }, { "folder": "exp_002_hdc_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_005_unsupervised_dataset2", "dataset": "Equipment", "scenario": "dataset2", "model": "unsupervised", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_005_unsupervised_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "unsupervised", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_007_mahalanobis_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "mahalanobis", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_008_dbscan_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "dbscan", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_011_tinyol_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_012_tinyol_pump_by_id", "dataset": "Pump", "scenario": "pump_by_id", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_013_ewc_pump_by_id", "dataset": "Pump", "scenario": "pump_by_id", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.566", "aa": 0.5659169550173011, "af": 0.009987357509752473 }, { "folder": "exp_014_hdc_pump_by_id", "dataset": "Pump", "scenario": "pump_by_id", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_015_mahalanobis_pump_by_id", "dataset": "Pump", "scenario": "pump_by_id", "model": "mahalanobis", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_016_ewc_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823892182918952, "af": 0.0009746588693957392 }, { "folder": "exp_017_hdc_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_018_tinyol_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_019_mahalanobis_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "mahalanobis", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_020_kmeans_pump_by_id", "dataset": "Pump", "scenario": "pump_by_id", "model": "kmeans", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_021_dbscan_pump_by_id", "dataset": "Pump", "scenario": "pump_by_id", "model": "dbscan", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_022_kmeans_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "kmeans", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_023_dbscan_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "dbscan", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_024_tinyol_pump_temporal", "dataset": "Pump", "scenario": "pump_temporal", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_025_ewc_pump_temporal", "dataset": "Pump", "scenario": "pump_temporal", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.512", "aa": 0.5115607227624523, "af": 0.005116402116402099 }, { "folder": "exp_026_hdc_pump_temporal", "dataset": "Pump", "scenario": "pump_temporal", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_027_mahalanobis_pump_temporal", "dataset": "Pump", "scenario": "pump_temporal", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_028_kmeans_pump_temporal", "dataset": "Pump", "scenario": "pump_temporal", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_029_dbscan_pump_temporal", "dataset": "Pump", "scenario": "pump_temporal", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_030_ewc_monitoring_single_task", "dataset": "Equipment", "scenario": "monitoring_single_task", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823560609571529, "af": null }, { "folder": "exp_030_kmeans_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "kmeans", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_031_hdc_monitoring_single_task", "dataset": "Equipment", "scenario": "monitoring_single_task", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "0.856", "aa": 0.8559441561936619, "af": null }, { "folder": "exp_032_tinyol_monitoring_single_task", "dataset": "Equipment", "scenario": "monitoring_single_task", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "0.945", "aa": 0.9448069590190278, "af": null }, { "folder": "exp_033_kmeans_monitoring_single_task", "dataset": "Equipment", "scenario": "monitoring_single_task", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.955", "aa": 0.9553551088424617, "af": null }, { "folder": "exp_034_mahalanobis_monitoring_single_task", "dataset": "Equipment", "scenario": "monitoring_single_task", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.957", "aa": 0.9566326530612245, "af": null }, { "folder": "exp_035_dbscan_monitoring_single_task", "dataset": "Equipment", "scenario": "monitoring_single_task", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.955", "aa": 0.9553551088424617, "af": null }, { "folder": "exp_036_ewc_pump_single_task", "dataset": "Pump", "scenario": "pump_single_task", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.570", "aa": 0.5700836820083683, "af": null }, { "folder": "exp_037_hdc_pump_single_task", "dataset": "Pump", "scenario": "pump_single_task", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "0.510", "aa": 0.5100418410041841, "af": null }, { "folder": "exp_038_tinyol_pump_single_task", "dataset": "Pump", "scenario": "pump_single_task", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "0.566", "aa": 0.5658577405857741, "af": null }, { "folder": "exp_039_kmeans_pump_single_task", "dataset": "Pump", "scenario": "pump_single_task", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.442", "aa": 0.44184100418410047, "af": null }, { "folder": "exp_040_mahalanobis_pump_single_task", "dataset": "Pump", "scenario": "pump_single_task", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.446", "aa": 0.44602510460251083, "af": null }, { "folder": "exp_041_dbscan_pump_single_task", "dataset": "Pump", "scenario": "pump_single_task", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.570", "aa": 0.5700836820083683, "af": null }, { "folder": "exp_044_ewc_pronostia_no_split", "dataset": "Pronostia", "scenario": "pronostia_no_split", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.960", "aa": 0.9597682119205297, "af": null }, { "folder": "exp_045_hdc_pronostia_no_split", "dataset": "Pronostia", "scenario": "pronostia_no_split", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "0.636", "aa": 0.6357615894039734, "af": null }, { "folder": "exp_046_tinyol_pronostia_no_split", "dataset": "Pronostia", "scenario": "pronostia_no_split", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "0.950", "aa": 0.9503311258278145, "af": null }, { "folder": "exp_047_kmeans_pronostia_no_split", "dataset": "Pronostia", "scenario": "pronostia_no_split", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.900", "aa": 0.9, "af": null }, { "folder": "exp_048_mahalanobis_pronostia_no_split", "dataset": "Pronostia", "scenario": "pronostia_no_split", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.887", "aa": 0.8874172185430279, "af": null }, { "folder": "exp_049_dbscan_pronostia_no_split", "dataset": "Pronostia", "scenario": "pronostia_no_split", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.885", "aa": 0.8854304635761589, "af": null }, { "folder": "exp_050_ewc_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823892182918952, "af": 0.00038982038982049434 }, { "folder": "exp_051_hdc_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_052_tinyol_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_053_kmeans_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "kmeans", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_054_mahalanobis_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "mahalanobis", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_055_dbscan_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "dbscan", "type": "Non-supervisé", "status": "🔴", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_068_ewc_cwru_single_task", "dataset": "CWRU", "scenario": "cwru_single_task", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.978", "aa": 0.978, "af": null }, { "folder": "exp_069_hdc_cwru_single_task", "dataset": "CWRU", "scenario": "cwru_single_task", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "0.887", "aa": 0.887, "af": null }, { "folder": "exp_070_tinyol_cwru_single_task", "dataset": "CWRU", "scenario": "cwru_single_task", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "0.900", "aa": 0.9, "af": null }, { "folder": "exp_071_kmeans_cwru_single_task", "dataset": "CWRU", "scenario": "cwru_single_task", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_072_mahalanobis_cwru_single_task", "dataset": "CWRU", "scenario": "cwru_single_task", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_073_dbscan_cwru_single_task", "dataset": "CWRU", "scenario": "cwru_single_task", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_074_ewc_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "1.000", "aa": 1.0, "af": 0.0 }, { "folder": "exp_075_hdc_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_076_tinyol_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_077_kmeans_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.152", "aa": 0.15171428571428567, "af": 0.018857142857142848 }, { "folder": "exp_078_mahalanobis_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.316", "aa": 0.31610476190476196, "af": 0.012771428571428567 }, { "folder": "exp_079_dbscan_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.126", "aa": 0.12609523809523806, "af": 0.04533333333333336 }, { "folder": "exp_080_ewc_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.952", "aa": 0.9523809523809524, "af": 0.0 }, { "folder": "exp_081_hdc_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_082_tinyol_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_083_kmeans_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.303", "aa": 0.30266666666666664, "af": 0.06533333333333333 }, { "folder": "exp_084_mahalanobis_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.394", "aa": 0.39400000000000002, "af": 0.09133333333333333 }, { "folder": "exp_085_dbscan_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.121", "aa": 0.12133333333333336, "af": 0.292 }, { "folder": "exp_086_hdc_monitoring_anomaly_detection", "dataset": "Equipment", "scenario": "monitoring_anomaly_detection", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "0.945", "aa": 0.9450000000000001, "af": null }, { "folder": "exp_087_tinyol_ae_monitoring_anomaly_detection", "dataset": "Equipment", "scenario": "ae_monitoring_anomaly_detection", "model": "tinyol", "type": "Supervisé", "status": "🟢", "metric": "0.972", "aa": 0.972, "af": null }, { "folder": "exp_088_kmeans_monitoring_anomaly_detection", "dataset": "Equipment", "scenario": "monitoring_anomaly_detection", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.984", "aa": 0.984, "af": null }, { "folder": "exp_089_mahalanobis_monitoring_anomaly_detection", "dataset": "Equipment", "scenario": "monitoring_anomaly_detection", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.988", "aa": 0.988, "af": null }, { "folder": "exp_090_kmeans_cwru_by_fault_type_v2", "dataset": "CWRU", "scenario": "cwru_by_fault_type_v2", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.273", "aa": 0.27295238095238097, "af": 0.2076190476190476 }, { "folder": "exp_091_kmeans_cwru_by_severity_v2", "dataset": "CWRU", "scenario": "cwru_by_severity_v2", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.450", "aa": 0.45, "af": 0.0 }, { "folder": "exp_092_dbscan_cwru_by_fault_type_v2", "dataset": "CWRU", "scenario": "cwru_by_fault_type_v2", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.896", "aa": 0.8961904761904762, "af": 0.0 }, { "folder": "exp_093_dbscan_cwru_by_severity_v2", "dataset": "CWRU", "scenario": "cwru_by_severity_v2", "model": "dbscan", "type": "Non-supervisé", "status": "🟢", "metric": "0.896", "aa": 0.8961904761904762, "af": 0.0 }, { "folder": "exp_100_kmeans_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.312", "aa": 0.31238095238095237, "af": 0.0650476190476191 }, { "folder": "exp_101_kmeans_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.450", "aa": 0.45, "af": 0.0 }, { "folder": "exp_102_kmeans_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.872", "aa": 0.8720149253731344, "af": 0.05876865671641791 }, { "folder": "exp_103_mahalanobis_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.160", "aa": 0.16009523809523808, "af": 0.026285714285714293 }, { "folder": "exp_104_mahalanobis_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.195", "aa": 0.195, "af": 0.019 }, { "folder": "exp_105_mahalanobis_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.898", "aa": 0.8982089552238806, "af": 0.010298507462686589 }, { "folder": "exp_106_ewc_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "1.000", "aa": 1.0, "af": 0.0 }, { "folder": "exp_107_ewc_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.952", "aa": 0.9523809523809524, "af": 0.0 }, { "folder": "exp_108_ewc_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823892182918952, "af": 0.00038982038982049434 }, { "folder": "exp_109_hdc_cwru_by_fault_type", "dataset": "CWRU", "scenario": "cwru_by_fault_type", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_110_hdc_cwru_by_severity", "dataset": "CWRU", "scenario": "cwru_by_severity", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_111_hdc_pronostia_by_condition", "dataset": "Pronostia", "scenario": "pronostia_by_condition", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_112_kmeans_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.943", "aa": 0.9427736131934364, "af": 0.004854368932038848 }, { "folder": "exp_113_mahalanobis_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.954", "aa": 0.9536340264650284, "af": 0.000299145299145297 }, { "folder": "exp_114_ewc_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823892182918952, "af": 0.0009746588693957392 }, { "folder": "exp_115_hdc_monitoring_by_equipment", "dataset": "Equipment", "scenario": "monitoring_by_equipment", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }, { "folder": "exp_116_kmeans_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "kmeans", "type": "Non-supervisé", "status": "🟢", "metric": "0.947", "aa": 0.9466947983835082, "af": 0.007820512820512815 }, { "folder": "exp_117_mahalanobis_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "mahalanobis", "type": "Non-supervisé", "status": "🟢", "metric": "0.949", "aa": 0.9489119170984455, "af": 0.0014957264957264956 }, { "folder": "exp_118_ewc_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "ewc", "type": "Supervisé", "status": "🟢", "metric": "0.982", "aa": 0.9823892182918952, "af": 0.0009746588693957392 }, { "folder": "exp_119_hdc_monitoring_by_location", "dataset": "Equipment", "scenario": "monitoring_by_location", "model": "hdc", "type": "Supervisé", "status": "🟢", "metric": "N/A", "aa": null, "af": null }];
+
+    // ══════════════════════════════════════════
+    //  MERMAID GRAPH
+    // ══════════════════════════════════════════
+    //  MERMAID GRAPH GENERATOR
+    // ══════════════════════════════════════════
+    function generateMermaidDef() {
+      const gDs = document.getElementById('g-dataset');
+      const gSt = document.getElementById('g-status');
+      const dsFilter = gDs ? gDs.value : "";
+      const stFilter = gSt ? gSt.value : "";
+
+      const exps = EXPERIMENTS.filter(e => {
+        if (dsFilter && e.dataset !== dsFilter) return false;
+        if (stFilter && ((stFilter === 'ok') ? (e.status !== '🟢') : (e.status === '🟢'))) return false;
+        return true;
+      });
+
+      let def = `graph ${graphDir}\n`;
+      def += `    classDef dataset fill:#e1bee7,stroke:#8e24aa,stroke-width:2px,color:#000;\n`;
+      def += `    classDef scenario fill:#bbdefb,stroke:#1e88e5,stroke-width:2px,color:#000;\n`;
+      def += `    classDef run_success fill:#c8e6c9,stroke:#43a047,stroke-width:1px,color:#000;\n`;
+      def += `    classDef run_fail fill:#ffcdd2,stroke:#e53935,stroke-width:1px,color:#000;\n\n`;
+      def += `    Root[🔍 Expériences CL]\n`;
+
+      if (exps.length === 0) {
+        def += `    Root --> Empty[Aucun résultat]:::run_fail\n`;
+        return def;
+      }
+
+      const datasets = {};
+      exps.forEach(e => {
+        if (!datasets[e.dataset]) datasets[e.dataset] = {};
+        if (!datasets[e.dataset][e.scenario]) datasets[e.dataset][e.scenario] = [];
+        datasets[e.dataset][e.scenario].push(e);
+      });
+
+      let ds_idx = 0;
+      for (const ds in datasets) {
+        def += `    Root --> DS_${ds_idx}[${ds}]:::dataset\n`;
+        let sc_idx = 0;
+        for (const sc in datasets[ds]) {
+          def += `    DS_${ds_idx} --> SC_${ds_idx}_${sc_idx}[${sc}]:::scenario\n`;
+          let m_idx = 0;
+
+          const counts = {}, occs = {};
+          datasets[ds][sc].forEach(e => { counts[e.model] = (counts[e.model] || 0) + 1; });
+
+          for (const e of datasets[ds][sc]) {
+            occs[e.model] = (occs[e.model] || 0) + 1;
+            let label = e.model;
+            if (counts[e.model] > 1 && occs[e.model] > 1) {
+              label += ` v${occs[e.model]}`;
+            }
+            const isOk = e.status === '🟢';
+            label += isOk ? ' ✅' : ' ❌';
+            const cls = isOk ? 'run_success' : 'run_fail';
+
+            def += `    SC_${ds_idx}_${sc_idx} --> M_${ds_idx}_${sc_idx}_${m_idx}[${label}]:::${cls}\n`;
+            m_idx++;
+          }
+          sc_idx++;
+        }
+        ds_idx++;
+      }
+      return def;
+    }
+
+    // ══════════════════════════════════════════
+    //  TABS
+    // ══════════════════════════════════════════
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      btn.classList.add('active');
+      if (id === 'graph') initMermaid();
+    }
+
+    // ══════════════════════════════════════════
+    //  SUMMARY
+    // ══════════════════════════════════════════
+    function buildSummary() {
+      const total = EXPERIMENTS.length;
+      const ok = EXPERIMENTS.filter(e => e.status === '🟢').length;
+      const fail = total - ok;
+      const pct = (ok / total * 100).toFixed(1);
+
+      document.getElementById('b-total').textContent = `${total} total`;
+      document.getElementById('b-ok').textContent = `${ok} ✅`;
+      document.getElementById('b-fail').textContent = `${fail} ❌`;
+      document.getElementById('pct-label').textContent = `${pct}%`;
+      setTimeout(() => { document.getElementById('progress-fill').style.width = pct + '%'; }, 100);
+
+      // Stat cards
+      const datasets = ['Equipment', 'Pump', 'Pronostia', 'CWRU'];
+      const ds_colors = ['blue', 'yellow', 'purple', 'green'];
+      const statsGrid = document.getElementById('stats-grid');
+      statsGrid.innerHTML = `
+    <div class="stat-card purple">
+      <div class="stat-label">Total expériences</div>
+      <div class="stat-value" style="color:#c084fc">${total}</div>
+      <div class="stat-sub">4 datasets · 7 modèles</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Terminées ✅</div>
+      <div class="stat-value" style="color:#4ade80">${ok}</div>
+      <div class="stat-sub">${pct}% de complétion</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">En cours / Échec ❌</div>
+      <div class="stat-value" style="color:#f87171">${fail}</div>
+      <div class="stat-sub">à compléter</div>
+    </div>
+    ${datasets.map((ds, i) => {
+        const exps = EXPERIMENTS.filter(e => e.dataset === ds);
+        const dok = exps.filter(e => e.status === '🟢').length;
+        return `<div class="stat-card ${ds_colors[i]}">
+        <div class="stat-label">${ds}</div>
+        <div class="stat-value" style="font-size:1.6rem">${dok}/${exps.length}</div>
+        <div class="stat-sub">${(dok / exps.length * 100).toFixed(0)}% terminé</div>
+      </div>`;
+      }).join('')}
+  `;
+
+      // Breakdown by dataset
+      const bds = document.getElementById('breakdown-ds');
+      bds.innerHTML = datasets.map(ds => {
+        const exps = EXPERIMENTS.filter(e => e.dataset === ds);
+        const dok = exps.filter(e => e.status === '🟢').length;
+        return `<div class="breakdown-row">
+      <span class="name">${ds}</span>
+      <span class="num">${exps.length}</span>
+      <span class="ok">${dok}</span>
+      <span class="fail">${exps.length - dok}</span>
+    </div>`;
+      }).join('');
+
+      // Breakdown by model
+      const allModels = [...new Set(EXPERIMENTS.map(e => e.model))].sort();
+      const bmEl = document.getElementById('breakdown-model');
+      const SUP = new Set(['ewc', 'hdc', 'tinyol', 'tinyol_ae']);
+      bmEl.innerHTML = allModels.map(m => {
+        const exps = EXPERIMENTS.filter(e => e.model === m);
+        const mok = exps.filter(e => e.status === '🟢').length;
+        const tag = SUP.has(m)
+          ? `<span class="model-pill pill-sup">Sup</span>`
+          : `<span class="model-pill pill-unsup">Unsup</span>`;
+        return `<div class="breakdown-row">
+      <span class="name">${tag}${m}</span>
+      <span class="num">${exps.length}</span>
+      <span class="ok">${mok}</span>
+      <span class="fail">${exps.length - mok}</span>
+    </div>`;
+      }).join('');
+    }
+
+    // ══════════════════════════════════════════
+    //  TABLE
+    // ══════════════════════════════════════════
+    let sortCol = -1, sortAsc = true;
+
+    function buildTable() {
+      const tbody = document.getElementById('exp-tbody');
+      tbody.innerHTML = EXPERIMENTS.map((e, i) => {
+        const aaStr = e.aa != null ? e.aa.toFixed(3) : '—';
+        const afStr = e.af != null ? e.af.toFixed(3) : '—';
+        const isOk = e.status === '🟢';
+        return `<tr data-idx="${i}" data-dataset="${e.dataset}" data-model="${e.model}" data-status="${isOk ? 'ok' : 'fail'}">
+      <td><span class="ds-tag ds-${e.dataset}">${e.dataset}</span></td>
+      <td>${e.scenario}</td>
+      <td>${e.type === 'Supervisé'
+            ? `<span class="type-sup">Supervisé</span>`
+            : `<span class="type-unsup">Non-supervisé</span>`}</td>
+      <td><span class="model-tag">${e.model}</span></td>
+      <td class="${isOk ? 'status-ok' : 'status-fail'}">${isOk ? '🟢 Terminé' : '🔴 En cours'}</td>
+      <td class="${e.aa != null ? 'metric-val' : 'metric-na'}">${aaStr}</td>
+      <td class="${e.af != null ? 'metric-val' : 'metric-na'}">${afStr}</td>
+      <td><span class="folder-code">${e.folder}</span></td>
+    </tr>`;
+      }).join('');
+      updateCount();
+    }
+
+    function filterTable() {
+      const q = document.querySelector('.search-input').value.toLowerCase();
+      const ds = document.getElementById('f-dataset').value;
+      const mo = document.getElementById('f-model').value;
+      const st = document.getElementById('f-status').value;
+      let visible = 0;
+      document.querySelectorAll('#exp-tbody tr').forEach(tr => {
+        const idx = +tr.dataset.idx;
+        const exp = EXPERIMENTS[idx];
+        const text = (exp.folder + exp.scenario + exp.model + exp.dataset + exp.type).toLowerCase();
+        const show = (!q || text.includes(q))
+          && (!ds || exp.dataset === ds)
+          && (!mo || exp.model === mo)
+          && (!st || tr.dataset.status === st);
+        tr.classList.toggle('hidden', !show);
+        if (show) visible++;
+      });
+      document.getElementById('table-count').textContent = `${visible} / ${EXPERIMENTS.length} expériences`;
+    }
+
+    function updateCount() {
+      document.getElementById('table-count').textContent = `${EXPERIMENTS.length} / ${EXPERIMENTS.length} expériences`;
+    }
+
+    function sortTable(col) {
+      const ths = document.querySelectorAll('.exp-table th');
+      ths.forEach(th => th.classList.remove('sort-asc', 'sort-desc'));
+      if (sortCol === col) { sortAsc = !sortAsc; }
+      else { sortCol = col; sortAsc = true; }
+      ths[col].classList.add(sortAsc ? 'sort-asc' : 'sort-desc');
+
+      const tbody = document.getElementById('exp-tbody');
+      const rows = [...tbody.querySelectorAll('tr')];
+      rows.sort((a, b) => {
+        const va = a.cells[col].textContent.trim();
+        const vb = b.cells[col].textContent.trim();
+        const na = parseFloat(va), nb = parseFloat(vb);
+        let cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : va.localeCompare(vb, 'fr');
+        return sortAsc ? cmp : -cmp;
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    }
+
+    // ══════════════════════════════════════════
+    //  GRAPH
+    // ══════════════════════════════════════════
+    let mermaidInited = false;
+    let graphScale = 1;
+    let graphDir = 'LR';
+
+    function initMermaid() {
+      if (mermaidInited) return;
+      mermaidInited = true;
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        themeVariables: {
+          background: '#1a1d27',
+          primaryColor: '#e1bee7',
+          primaryTextColor: '#000',
+          primaryBorderColor: '#8e24aa',
+          lineColor: '#6366f1',
+          secondaryColor: '#bbdefb',
+          tertiaryColor: '#c8e6c9',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          fontSize: '13px',
+        },
+        flowchart: { curve: 'basis', htmlLabels: true, nodeSpacing: 35, rankSpacing: 60 }
+      });
+      renderGraph();
+    }
+
+    async function renderGraph() {
+      const def = generateMermaidDef();
+      try {
+        const { svg } = await mermaid.render('mermaid-svg', def);
+        document.getElementById('mermaid-code').innerHTML = svg;
+      } catch (e) {
+        document.getElementById('mermaid-code').innerHTML =
+          `<p style="color:#ef4444;padding:20px">Erreur Mermaid : ${e.message}</p>`;
+      }
+    }
+
+    function zoomIn() { graphScale = Math.min(graphScale * 1.25, 4); applyZoom(); }
+    function zoomOut() { graphScale = Math.max(graphScale / 1.25, 0.25); applyZoom(); }
+    function resetZoom() { graphScale = 1; applyZoom(); }
+    function applyZoom() {
+      document.getElementById('mermaid-container').style.transform = `scale(${graphScale})`;
+    }
+    function toggleDir() {
+      graphDir = graphDir === 'LR' ? 'TD' : 'LR';
+      mermaidInited = false;
+      document.getElementById('mermaid-code').innerHTML = '<p style="color:#8892a4;padding:20px">Rendu en cours…</p>';
+      initMermaid();
+    }
+
+    // ══════════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════════
+    buildSummary();
+    buildTable();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+{
+  "model": "dbscan",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_equipment",
+  "global": {
+    "permutation_importance": {
+      "temperature": 0.03270358306188925,
+      "vibration": 0.028664495114006483,
+      "pressure": 0.012117263843648307,
+      "humidity": 0.007687296416937994
+    }
+  },
+  "per_task": {
+    "Pump": {
+      "permutation_importance": {
+        "vibration": 0.027613412228796763,
+        "temperature": 0.02721893491124261,
+        "pressure": 0.009861932938855955,
+        "humidity": 0.0019723865877712132
+      }
+    },
+    "Turbine": {
+      "permutation_importance": {
+        "temperature": 0.03625730994152043,
+        "vibration": 0.02495126705653039,
+        "pressure": 0.012475633528265084,
+        "humidity": 0.00974658869395717
+      }
+    },
+    "Compressor": {
+      "permutation_importance": {
+        "vibration": 0.03572815533980578,
+        "temperature": 0.03262135922330078,
+        "pressure": 0.01281553398058255,
+        "humidity": 0.008155339805825168
+      }
+    }
+  }
+}

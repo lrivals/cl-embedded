@@ -38,8 +38,9 @@ from src.utils.reproducibility import set_seed
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="KMeans CWRU — single-task et CL by_fault_type")
+    parser = argparse.ArgumentParser(description="KMeans — single-task et CL (CWRU / Pronostia / Monitoring)")
     parser.add_argument("--config", default="configs/cwru_single_task_config.yaml")
+    parser.add_argument("--data_config", default=None, help="Config data override (ex. configs/monitoring_by_location_config.yaml)")
     parser.add_argument("--exp_id", default=None, help="Override exp_id")
     parser.add_argument("--exp_dir", default=None, help="Override répertoire expérience")
     return parser.parse_args()
@@ -146,7 +147,7 @@ def _run_cl(
     metrics: dict = {
         "exp_id": exp_id,
         "model": "kmeans",
-        "dataset": "cwru",
+        "dataset": cfg["data"].get("dataset", "cwru"),
         "scenario": cfg["data"].get("task_split", "by_fault_type"),
         "acc_final": cl_metrics["aa"],
         "avg_forgetting": cl_metrics["af"],
@@ -191,9 +192,10 @@ def _run_cl(
     )
 
     is_pronostia = cfg["data"].get("task_split") == "by_condition"
+    _dataset = "pronostia" if is_pronostia else cfg["data"].get("dataset", "cwru")
     importance_results = {
         "model": "kmeans",
-        "dataset": "pronostia" if is_pronostia else "cwru",
+        "dataset": _dataset,
         "scenario": cfg["data"].get("task_split", "by_fault_type"),
         "global": {"permutation_importance": global_imp},
         "per_task": {
@@ -212,13 +214,18 @@ def _run_cl(
 def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
+
+    if args.data_config:
+        data_cfg = load_config(args.data_config)
+        cfg["data"].update(data_cfg.get("data", {}))
+
     set_seed(cfg.get("evaluation", {}).get("seed", 42))
 
     if args.exp_id:
         cfg["exp_id"] = args.exp_id
-        cfg["evaluation"]["output_dir"] = f"experiments/{args.exp_id}/results/"
+        cfg.setdefault("evaluation", {})["output_dir"] = f"experiments/{args.exp_id}/results/"
     if args.exp_dir:
-        cfg["evaluation"]["output_dir"] = str(Path(args.exp_dir) / "results")
+        cfg.setdefault("evaluation", {})["output_dir"] = str(Path(args.exp_dir) / "results")
         cfg["exp_id"] = Path(args.exp_dir).name
 
     exp_id = cfg["exp_id"]
@@ -288,6 +295,49 @@ def main() -> None:
             window_size=cfg["data"].get("window_size", 2560),
             step_size=cfg["data"].get("step_size", 2560),
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = KMeansDetector(cfg["kmeans"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_equipment":
+        print(f"\n{'=' * 60}")
+        print(f"  KMeans CL by_equipment (Monitoring) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.monitoring_dataset import get_cl_dataloaders
+        tasks = get_cl_dataloaders(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = KMeansDetector(cfg["kmeans"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_location":
+        print(f"\n{'=' * 60}")
+        print(f"  KMeans CL by_location (Monitoring) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.monitoring_dataset import get_cl_dataloaders_by_location
+        tasks = get_cl_dataloaders_by_location(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+            location_order=cfg["data"].get("location_order"),
         )
         for t in tasks:
             print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")

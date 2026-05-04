@@ -1,0 +1,45 @@
+{
+  "avg_auroc": 0.7164576736754101,
+  "auroc_forgetting": 0.18453011216035659,
+  "auroc_bwt": -0.18453011216035659,
+  "forgetting_per_task": [
+    0.1812728679988741,
+    0.18778735632183907
+  ],
+  "bwt_per_task": [
+    -0.1812728679988741,
+    -0.18778735632183907
+  ],
+  "auroc_matrix": [
+    [
+      0.8853433717984801,
+      null,
+      null
+    ],
+    [
+      0.5551294680551646,
+      0.8057471264367816,
+      null
+    ],
+    [
+      0.704070503799606,
+      0.6179597701149425,
+      0.8273427471116817
+    ]
+  ],
+  "n_tasks": 3,
+  "exp_id": "exp_142",
+  "model": "ewc_oneclass",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "strategy": "refit",
+  "failure_ratio": 0.1,
+  "auroc_per_task_final": [
+    0.704070503799606,
+    0.6179597701149425,
+    0.8273427471116817
+  ],
+  "ram_peak_bytes": 1480,
+  "inference_latency_ms": 0.08671655003126943,
+  "n_params": 2837
+}

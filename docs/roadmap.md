@@ -1,7 +1,7 @@
 # Roadmap — CL-Embedded
 
-> Version : 2.3 | Mise à jour : 28 avril 2026  
-> Horizon : Phase 1 (PC Python) = avril–mai 2026
+> Version : 2.4 | Mise à jour : 5 mai 2026  
+> Horizon : Phase 1 (PC Python) = avril–mai 2026 (étendu avec Phase Anomaly Detection Sprints 13–16)
 
 ---
 
@@ -25,7 +25,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 ## Détail par phase
 
-- [Phase 1 — Implémentation Python](roadmap_phase1.md) — Sprints 1–13 (6 modèles, 5 datasets, analyse feature importance CWRU/Pronostia), résultats expériences
+- [Phase 1 — Implémentation Python](roadmap_phase1.md) — Sprints 1–16 (6 modèles + EWC one-class, 5 datasets, anomaly detection + feature importance CWRU/Pronostia), résultats expériences
 - [Phase 2 — Portage MCU](roadmap_phase2.md) — Sprint 10, Backlog
 
 ---
@@ -34,8 +34,8 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 | Gap | Critère | Statut |
 | --- | ------- | ------ |
-| **Gap 1** | Validation sur données industrielles réelles | ✅ exp_050–055 PRONOSTIA + exp_074–085 CWRU (Sprints 10–12) |
-| **Gap 2** | CL complet sous 100 Ko RAM avec chiffres précis | 🔄 Partiellement — Mahalanobis 80 B ✅, DBSCAN 118 Ko ❌ · feature importance per-task exp_100–111 ✅ · ablation study (S11-23) ⬜ |
+| **Gap 1** | Validation sur données industrielles réelles | ✅ exp_050–055 PRONOSTIA + exp_074–085 CWRU (Sprints 10–12) + exp_086–093 + exp_120–122 anomaly detection one-class (Sprint 13) |
+| **Gap 2** | CL complet sous 100 Ko RAM avec chiffres précis | 🔄 Partiellement — Mahalanobis 80 B ✅, DBSCAN variable (40.4 Ko ✅ by_location, 118 Ko ❌ Pronostia) · feature importance per-task exp_100–111 ✅ · ablation study (S11-23) ⬜ |
 | **Gap 3** | Quantification INT8 pendant entraînement incrémental | ⬜ Non adressé (Phase 2+) |
 
 ---
@@ -54,4 +54,4 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 | M4b KNN anomaly detection | ✅ | ✅ | ✅ | N/A | ✅ |
 | M5 PCA reconstruction | ✅ | ✅ | ✅ | N/A | ✅ |
 | M6 Mahalanobis | ✅ | ✅ | ✅ | N/A | ✅ |
-| M7 DBSCAN | ✅ | ⬜ | ✅ | N/A | ⬜ |
+| M7 DBSCAN | ✅ | ✅ | ✅ | N/A | ⬜ |

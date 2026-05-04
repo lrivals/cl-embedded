@@ -1,0 +1,38 @@
+# configs/dbscan_anomaly_detection_config.yaml
+# DBSCANDetector pour le scénario anomaly detection (one-class CL).
+# Entraînement sur données normales (faulty=0) uniquement.
+# NE PAS modifier les valeurs directement dans le code source.
+
+seed: 42
+exp_id: "exp_123_dbscan_monitoring_anomaly_detection"
+
+data:
+  dataset: "equipment_monitoring"
+  csv_path: "data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv"
+  normalizer_path: "configs/monitoring_normalizer_anomaly.yaml"
+  n_features: 4
+  domain_column: "equipment"
+  domain_order: ["Pump", "Turbine", "Compressor"]
+  label_column: "faulty"
+  feature_columns: ["temperature", "pressure", "vibration", "humidity"]
+
+dbscan:
+  eps: null                 # null → estimation automatique par kNN elbow (Ester et al., 1996)
+  eps_knn_k: 5              # k pour l'estimation kNN elbow
+  min_samples: 5
+  metric: "euclidean"
+  algorithm: "auto"
+  anomaly_threshold: null   # null → calculé sur Task 0 (Pump faulty=0)
+  anomaly_percentile: 95
+  cl_strategy: "refit"      # "refit" | "accumulate"
+
+evaluation:
+  seed: 42
+  metrics: ["avg_auroc", "auroc_forgetting", "auroc_bwt", "ram_peak_bytes", "n_params"]
+  output_dir: "experiments/exp_123_dbscan_monitoring_anomaly_detection/results/"
+
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+  # DBSCANDetector : core_points × 4 features × 4 B @ FP32
+  # RAM variable selon n_core_samples (typiquement quelques Ko)

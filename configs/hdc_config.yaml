@@ -70,3 +70,10 @@ memory:
                                 # TOTAL INT8            :  6 152 B ( 6.0 Ko)
                                 # FIXME(gap2) : valider expected_ram_bytes contre tracemalloc mesuré.
   warn_if_above_bytes: 52000    # Alerte si > ~80% du budget (laisse 14 Ko de marge)
+
+# Overrides par dataset (appliqués par run_anomaly_detection.py)
+DATASETS:
+  pronostia:
+    n_features: 13
+    base_vectors_path: "configs/hdc_base_vectors_pronostia.npz"  # généré au 1er run si absent
+    # feature_bounds calculées dynamiquement depuis Task 1 train data (Condition 1)

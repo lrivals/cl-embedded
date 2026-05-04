@@ -1,0 +1,31 @@
+# EWC One-Class Detector — Anomaly Detection Configuration
+# Contrainte : RAM totale modèle ≤ 64 Ko (FP32)
+# NE PAS modifier directement : créer une copie pour chaque variante expérimentale.
+
+MODEL:
+  HIDDEN_DIM: 32           # neurons couche cachée encodeur/décodeur
+  LATENT_DIM: 8            # dimension espace latent (bottleneck)
+  LAMBDA_EWC: 400.0        # poids régularisation EWC (0 = désactivé = baseline refit)
+  THRESHOLD_PERCENTILE: 95  # percentile MSE train_normal pour seuil anomalie
+
+TRAINING:
+  N_EPOCHS: 20
+  LR: 0.001
+  BATCH_SIZE: 32
+  DEVICE: "cpu"            # MCU-ciblé — pas de GPU
+
+DATASETS:
+  monitoring:
+    INPUT_DIM: 4           # temperature, pressure, vibration, humidity
+    # RAM estimée : (4*32 + 32*8 + 8*32 + 32*4) * 2 * 4 = 2 048 B @ FP32 ✅ << 64 Ko
+  pronostia:
+    INPUT_DIM: 13
+    HIDDEN_DIM: 64         # override pour plus grande capacité (13 features)
+    # RAM estimée : (13*64 + 64*16 + 16*64 + 64*13) * 2 * 4 ≈ 13 Ko @ FP32 ✅ << 64 Ko
+  cwru:
+    INPUT_DIM: 9
+    HIDDEN_DIM: 32
+    # RAM estimée : (9*32 + 32*8 + 8*32 + 32*9) * 2 * 4 ≈ 5 Ko @ FP32 ✅ << 64 Ko
+
+REPRODUCIBILITY:
+  SEED: 42

@@ -1,0 +1,39 @@
+{
+  "model": "mahalanobis",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_equipment",
+  "global": {
+    "permutation_importance": {
+      "temperature": 0.02775244299674262,
+      "vibration": 0.024104234527687396,
+      "pressure": 0.01850162866449523,
+      "humidity": 0.010814332247557124
+    }
+  },
+  "per_task": {
+    "Pump": {
+      "permutation_importance": {
+        "vibration": 0.02564102564102555,
+        "temperature": 0.024457593688362977,
+        "pressure": 0.015779092702169595,
+        "humidity": 0.007889546351084853
+      }
+    },
+    "Turbine": {
+      "permutation_importance": {
+        "temperature": 0.03235867446393759,
+        "vibration": 0.022222222222222254,
+        "pressure": 0.015984405458089657,
+        "humidity": 0.012475633528264973
+      }
+    },
+    "Compressor": {
+      "permutation_importance": {
+        "temperature": 0.025242718446601975,
+        "vibration": 0.02485436893203863,
+        "pressure": 0.02213592233009698,
+        "humidity": 0.006990291262135795
+      }
+    }
+  }
+}

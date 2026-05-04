@@ -449,7 +449,136 @@ def get_pronostia_dataloaders(
 
 
 # ---------------------------------------------------------------------------
-# 6. Interface single-task (baseline hors-CL)
+# 6. Interface anomaly detection CL (one-class, by_condition)
+# ---------------------------------------------------------------------------
+
+
+def get_pronostia_dataloaders_anomaly_detection(
+    npy_dir: Path,
+    normalizer_path: Path,
+    failure_ratio: float = FAILURE_RATIO,
+    test_size: float = 0.2,
+    batch_size: int = 32,
+    seed: int = 42,
+) -> list[dict]:
+    """
+    Loader anomaly detection one-class pour Pronostia (scénario by_condition).
+
+    Pour chaque condition opératoire, produit :
+    - ``train_loader`` : uniquement les échantillons normaux (label=0, début de vie)
+    - ``test_loader_mixed`` : tous les échantillons (normal + pré-défaillance) pour AUROC
+
+    Le split train/test est **temporel** (shuffle=False) — les données normales précèdent
+    les données faulty. Un split aléatoire rendrait le label binaire incohérent.
+
+    Parameters
+    ----------
+    npy_dir : Path
+        Répertoire contenant les fichiers 0.npy à 5.npy.
+    normalizer_path : Path
+        Chemin vers configs/pronostia_normalizer.yaml (fité sur Condition 1).
+    failure_ratio : float
+        Fraction terminale pré-défaillance (label=1). Default : FAILURE_RATIO (0.10).
+    test_size : float
+        Fraction de la séquence réservée au test. Default : 0.2.
+    batch_size : int
+        Taille des mini-batches. Default : 32.
+    seed : int
+        Seed pour le shuffle du train_loader. Default : 42.
+
+    Returns
+    -------
+    list[dict]
+        Liste de 3 dicts (Condition 1 → 2 → 3) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,               # 1, 2 ou 3
+                "domain": str,                # "condition_1" / "condition_2" / "condition_3"
+                "train_loader": DataLoader,   # label=0 uniquement, shuffle=True
+                "test_loader_mixed": DataLoader,  # label=0 + label=1, shuffle=False
+                "n_train": int,
+                "n_test": int,
+                "n_test_normal": int,
+                "n_test_faulty": int,
+            }
+
+    Notes
+    -----
+    # MEM: X [N_windows, 13] × 4 B @ FP32 — N_windows ≈ 200–600 selon condition
+    """
+    set_seed(seed)
+
+    normalizer = load_pronostia_normalizer(normalizer_path)
+    mean_vec = normalizer["mean"]
+    std_vec = normalizer["std"]
+
+    tasks: list[dict] = []
+
+    for condition in range(1, N_CONDITIONS + 1):
+        feats, lbls = load_condition_features(
+            npy_dir, condition, failure_ratio=failure_ratio
+        )
+
+        # Normalisation Z-score avec stats fixes (Condition 1)
+        # MEM: X [N_windows, 13] × 4 B @ FP32
+        feats = (feats - mean_vec) / std_vec
+
+        n_total = len(feats)
+        n_test = max(1, int(n_total * test_size))
+        n_train_all = n_total - n_test
+
+        # Split temporel : train = début de séquence, test = fin
+        X_train_all = feats[:n_train_all]
+        y_train_all = lbls[:n_train_all]
+        X_test = feats[n_train_all:]
+        y_test = lbls[n_train_all:]
+
+        # Train loader : normaux uniquement (faulty=0)
+        mask_normal = y_train_all == 0
+        X_train_normal = X_train_all[mask_normal]
+        y_train_normal = np.zeros(len(X_train_normal), dtype=np.float32)
+
+        # MEM: X_train_normal [n_train, 13] × 4 B @ FP32
+        x_train_t = torch.from_numpy(X_train_normal)
+        y_train_t = torch.from_numpy(y_train_normal)
+        train_loader = DataLoader(
+            TensorDataset(x_train_t, y_train_t),
+            batch_size=batch_size,
+            shuffle=True,
+        )
+
+        # Test loader : tous les échantillons (normal + faulty)
+        x_test_t = torch.from_numpy(X_test)
+        y_test_t = torch.from_numpy(y_test.astype(np.float32))
+        test_loader_mixed = DataLoader(
+            TensorDataset(x_test_t, y_test_t),
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        n_test_normal = int((y_test == 0).sum())
+        n_test_faulty = int((y_test == 1).sum())
+
+        tasks.append(
+            {
+                "task_id": condition,
+                "domain": f"condition_{condition}",
+                "train_loader": train_loader,
+                "test_loader_mixed": test_loader_mixed,
+                "n_train": len(X_train_normal),
+                "n_test": len(X_test),
+                "n_test_normal": n_test_normal,
+                "n_test_faulty": n_test_faulty,
+            }
+        )
+
+    return tasks
+
+
+# ---------------------------------------------------------------------------
+# 7. Interface single-task (baseline hors-CL)
 # ---------------------------------------------------------------------------
 
 

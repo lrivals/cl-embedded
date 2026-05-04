@@ -15,7 +15,7 @@ import numpy as np
 # Valeurs par défaut — toujours passer par configs/unsupervised_config.yaml
 ANOMALY_PERCENTILE_DEFAULT: int = 95
 REG_COVAR_DEFAULT: float = 1e-6  # régularisation Σ : Σ_reg = Σ + reg_covar * I
-CL_STRATEGY_DEFAULT: str = "refit"  # "refit" | "welford"
+CL_STRATEGY_DEFAULT: str = "refit"  # "refit" | "welford" | "accumulate"
 WELFORD_MIN_SAMPLES_DEFAULT: int = 10  # min. samples avant MAJ Σ⁻¹ en mode online
 UPDATE_SIGMA_EVERY_DEFAULT: int = 1    # 1=continu, N=mini-batch
 
@@ -77,6 +77,9 @@ class MahalanobisDetector:
         self._M2_: np.ndarray | None = None  # MEM: 64 B @ FP32 / 16 B @ INT8 (d=4)
         self._welford_batch_buf_: list[np.ndarray] = []  # buffer mini-batch temporaire
 
+        # Accumulate strategy — données brutes cumulées (non MCU-compatible)
+        self._X_accumulated: np.ndarray | None = None  # MEM: N×d @ FP32 (croît avec les tâches)
+
     def fit_task(self, X: np.ndarray, task_id: int) -> "MahalanobisDetector":
         """
         Calcule μ et Σ⁻¹ sur les données d'une tâche (offline).
@@ -97,7 +100,27 @@ class MahalanobisDetector:
         self.task_id_ = task_id
         self.n_features_ = X.shape[1]
 
-        if self.cl_strategy == "welford" and task_id > 0:
+        if self.cl_strategy == "accumulate":
+            # Refit sur toutes les données cumulées — aucun oubli, RAM croissante (non MCU)
+            self._X_accumulated = (
+                X.copy() if self._X_accumulated is None
+                else np.concatenate([self._X_accumulated, X], axis=0)
+            )
+            X_fit = self._X_accumulated
+            self.mu_ = X_fit.mean(axis=0)
+            cov = np.cov(X_fit, rowvar=False)
+            cov_reg = cov + self.reg_covar * np.eye(self.n_features_)
+            self.sigma_inv_ = np.linalg.inv(cov_reg)
+            self._n_seen_ = X_fit.shape[0]
+            self._M2_ = None
+            self._welford_batch_buf_ = []
+            acc_ram = self._X_accumulated.size * 4
+            print(
+                f"  [Mahalanobis] Tâche {task_id} — accumulate "
+                f"({X_fit.shape[0]} samples total), "
+                f"RAM modèle={self._estimate_ram_bytes()} B + données={acc_ram} B"
+            )
+        elif self.cl_strategy == "welford" and task_id > 0:
             # Accumulation incrémentale : ne pas réinitialiser μ, _M2_, _n_seen_
             # partial_fit() met à jour mu_ et sigma_inv_ via Welford sans données brutes
             self.partial_fit(X)
@@ -315,24 +338,34 @@ class MahalanobisDetector:
         """
         Retourne le nombre de paramètres du modèle (μ + Σ⁻¹).
 
+        En mode accumulate, inclut également les données brutes cumulées
+        (non embarquables MCU — documenté séparément dans summary()).
+
         Returns
         -------
         int
-            d + d² (vecteur moyen + matrice inverse de covariance).
+            d + d² + N×d si accumulate, sinon d + d².
         """
         if self.mu_ is None or self.sigma_inv_ is None:
             return 0
-        return int(self.mu_.size + self.sigma_inv_.size)
+        n = int(self.mu_.size + self.sigma_inv_.size)
+        if self._X_accumulated is not None:
+            n += int(self._X_accumulated.size)
+        return n
 
     def summary(self) -> str:
         """Résumé du modèle pour affichage console."""
         d = self.n_features_
         threshold = f"{self.threshold_:.4f}" if self.threshold_ is not None else "—"
         ram = f"{self._estimate_ram_bytes()} B" if d > 0 else "—"
+        acc_note = ""
+        if self._X_accumulated is not None:
+            acc_bytes = self._X_accumulated.size * 4
+            acc_note = f" + données={acc_bytes} B [non MCU]"
         return (
             f"MahalanobisDetector | d={d} | "
             f"threshold={threshold} | strategy={self.cl_strategy} | "
-            f"params={self.count_parameters()} | RAM={ram} @ FP32"
+            f"params={self.count_parameters()} | RAM={ram} @ FP32{acc_note}"
         )
 
     def save(self, path: str | Path) -> None:

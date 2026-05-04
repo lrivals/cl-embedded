@@ -1,0 +1,39 @@
+{
+  "model": "kmeans",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_equipment",
+  "global": {
+    "permutation_importance": {
+      "temperature": 0.03465798045602597,
+      "pressure": 0.02084690553745927,
+      "humidity": 0.013550488599348487,
+      "vibration": -0.002084690553745827
+    }
+  },
+  "per_task": {
+    "Pump": {
+      "permutation_importance": {
+        "temperature": 0.034319526627219044,
+        "pressure": 0.02051282051282055,
+        "humidity": 0.01104536489151886,
+        "vibration": 0.0031558185404340078
+      }
+    },
+    "Turbine": {
+      "permutation_importance": {
+        "temperature": 0.045224171539960945,
+        "pressure": 0.020272904483430665,
+        "humidity": 0.015204678362572999,
+        "vibration": -0.0011695906432748204
+      }
+    },
+    "Compressor": {
+      "permutation_importance": {
+        "temperature": 0.03223300970873788,
+        "pressure": 0.022135922330097202,
+        "humidity": 0.011650485436893177,
+        "vibration": -0.008543689320388181
+      }
+    }
+  }
+}

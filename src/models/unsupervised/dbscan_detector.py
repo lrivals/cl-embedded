@@ -81,6 +81,9 @@ class DBSCANDetector:
         self.n_features_: int = 0
 
         # Pour cl_strategy="accumulate"
+        # COMPLEXITÉ : O(N_total² × d) à chaque fit_task en accumulate (DBSCAN sklearn).
+        # Avec T=5 tâches et N≈500/tâche → N_total=2500 → ~3s/tâche sur CPU.
+        # Pour by_location (5 tâches), envisager un plafond sur _X_accumulated.
         self._X_accumulated: np.ndarray | None = None
 
     def _estimate_eps(self, X: np.ndarray) -> float:
@@ -136,6 +139,8 @@ class DBSCANDetector:
             if self._X_accumulated is None:
                 self._X_accumulated = X.copy()
             else:
+                # COMPLEXITÉ accumulate : dataset cumulé → DBSCAN O(N²·d) à chaque tâche.
+                # PC-only si N_total dépasse ~5000 échantillons (voir TODO(arnaud) S1400).
                 self._X_accumulated = np.concatenate([self._X_accumulated, X], axis=0)
             X_fit = self._X_accumulated  # MEM: (n_samples × d) @ FP32 pour accumulate
         else:
@@ -252,6 +257,20 @@ class DBSCANDetector:
             )
         scores = self.anomaly_score(X)
         return (scores > self.threshold_).astype(np.int64)
+
+    def predict_score(self, X: np.ndarray) -> np.ndarray:
+        """Alias de anomaly_score — conformité API S14-03."""
+        return self.anomaly_score(X)
+
+    def on_task_end(self) -> None:
+        """
+        No-op pour DBSCANDetector.
+
+        La gestion refit/accumulate est intégrée dans fit_task().
+        Méthode exposée pour conformité avec l'interface générique
+        (run_anomaly_detection_scenario n'appelle pas on_task_end pour les
+        modèles fit_task, mais la spec API S14-03 la liste).
+        """
 
     def score(self, X: np.ndarray, y: np.ndarray) -> float:
         """

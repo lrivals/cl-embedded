@@ -1,0 +1,45 @@
+{
+  "avg_auroc": 0.7101206995094657,
+  "auroc_forgetting": 0.0835890936696958,
+  "auroc_bwt": -0.0835890936696958,
+  "forgetting_per_task": [
+    0.12259006473402756,
+    0.044588122605364044
+  ],
+  "bwt_per_task": [
+    -0.12259006473402756,
+    -0.044588122605364044
+  ],
+  "auroc_matrix": [
+    [
+      0.734907120743034,
+      null,
+      null
+    ],
+    [
+      0.5989656628201521,
+      0.730316091954023,
+      null
+    ],
+    [
+      0.6123170560090064,
+      0.685727969348659,
+      0.8323170731707317
+    ]
+  ],
+  "n_tasks": 3,
+  "exp_id": "exp_140b",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "strategy": "accumulate",
+  "failure_ratio": 0.1,
+  "auroc_per_task_final": [
+    0.6123170560090064,
+    0.685727969348659,
+    0.8323170731707317
+  ],
+  "ram_peak_bytes": 1756,
+  "inference_latency_ms": 0.008324640002683736,
+  "n_params": 73034
+}

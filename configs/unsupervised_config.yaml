@@ -14,6 +14,7 @@ data:
   n_features: 4           # NUMERIC_FEATURES = [temperature, pressure, vibration, humidity]
   batch_size: 256
   val_ratio: 0.2
+  task_split: "by_equipment"
   domain_column: "equipment"
   domain_order: ["Pump", "Turbine", "Compressor"]  # casse cohérente avec DOMAIN_ORDER
   label_column: "faulty"
@@ -82,3 +83,26 @@ data_pump:
   batch_size: 32
   val_ratio: 0.2
   # MEM: 25 features/fenêtre × 4 B @ FP32 = 100 B/sample
+
+# --- Dataset Pronostia (Sprint 15) ---
+DATASETS:
+  pronostia:
+    INPUT_DIM: 13
+    N_TASKS: 3
+    SCENARIO: "by_condition"
+    FAILURE_RATIO: 0.10        # 10% derniers de chaque séquence = faulty
+    CONDITION_IDS: [1, 2, 3]   # conditions opératoires Pronostia
+    npy_dir: "data/raw/Pronostia dataset/binaries"
+    normalizer_path: "configs/pronostia_normalizer.yaml"
+    batch_size: 32
+    # RAM estimée modèles @ FP32 (input_dim=13) :
+    #   KMeans (k=3, 13 features) : 3 * 13 * 4 = 156 B
+    #   Mahalanobis (cov 13×13) : 13 * 13 * 4 = 676 B
+    #   DBSCAN : dépend du nombre de points (variable)
+    kmeans:
+      N_CLUSTERS: 3
+    mahalanobis:
+      REG_COVAR: 1.0e-6
+    dbscan:
+      EPSILON: 1.5             # adapter eps à dimension 13 (vs 0.5 monitoring)
+      MIN_SAMPLES: 5

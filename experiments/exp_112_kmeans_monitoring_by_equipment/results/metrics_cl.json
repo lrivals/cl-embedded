@@ -1,0 +1,45 @@
+{
+  "exp_id": "exp_112_kmeans_monitoring_by_equipment",
+  "model": "kmeans",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_equipment",
+  "acc_final": 0.9433147987450098,
+  "avg_forgetting": 0.0049309664694279776,
+  "backward_transfer": -0.003956307600032294,
+  "per_task_acc": [
+    0.9408284023668639,
+    0.9473684210526315,
+    0.941747572815534
+  ],
+  "ram_peak_bytes": 5404,
+  "inference_latency_ms": 0.28066591997685464,
+  "n_params": 8,
+  "acc_matrix": [
+    [
+      0.9506903353057199,
+      NaN,
+      NaN
+    ],
+    [
+      0.9388560157790927,
+      0.9454191033138402,
+      NaN
+    ],
+    [
+      0.9408284023668639,
+      0.9473684210526315,
+      0.941747572815534
+    ]
+  ],
+  "k_selected_per_task": [
+    2,
+    2,
+    2
+  ],
+  "threshold_history": [
+    3.8866093158721924,
+    3.8830233097076414,
+    3.9117257928848264
+  ],
+  "ema_alpha": 0.3
+}

@@ -74,3 +74,12 @@ memory:
   target_ram_bytes: 65536
   expected_ram_bytes: 7168     # ~7 Ko (tête OtO + activations ; backbone en Flash)
   warn_if_above_bytes: 52000
+
+# Overrides par dataset (appliqués par run_anomaly_detection.py)
+DATASETS:
+  pronostia:
+    backbone:
+      input_dim: 13
+      encoder_dims: [32, 16, 8]
+      decoder_dims: [16, 32, 13]
+      # MEM: Linear(13→32)+Linear(32→16)+Linear(16→8)+décodeur symétrique ≈ 3 Ko @ FP32

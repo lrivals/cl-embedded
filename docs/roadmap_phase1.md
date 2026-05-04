@@ -364,10 +364,10 @@
 > **Nouveauté** : analyse **per-task** — l'importance varie-t-elle selon le type/sévérité de défaut ?  
 > **Ablation study** : courbe nb_features → AUC pour justifier la réduction d'empreinte MCU (Gap 2).
 
-**État d'avancement au 28 avril 2026** :
+**État d'avancement au 29 avril 2026** :
 
-- ✅ Terminé (19/23) : S11-01–S11-09 (feature_importance.py, notebooks Monitoring ×6), S11-11–S11-19 (extension CWRU/Pronostia, scripts, exp_100–111, notebooks feature importance, figures), S11-21 (tests)
-- ⬜ À faire (4/23) : S11-10 (doc Monitoring bilan), S11-20 (notebook cross-dataset), S11-22 (doc CWRU/Pronostia bilan), S11-23 (ablation study)
+- ✅ Terminé (21/27) : S11-01–S11-09 (feature_importance.py, notebooks Monitoring ×6), S11-11–S11-19 (extension CWRU/Pronostia, scripts, exp_100–111, notebooks feature importance, figures), S11-21 (tests), S11-24–S11-27 (exp_112–119 monitoring by_equipment + by_location, notebooks exécutés)
+- ⬜ À faire (6/27) : S11-10 (doc Monitoring bilan), S11-20 (notebook cross-dataset), S11-22 (doc CWRU/Pronostia bilan), S11-23 (ablation study)
 
 | ID | Tâche | Statut | Fichier cible | Durée est. |
 |----|-------|--------|---------------|------------|
@@ -393,6 +393,10 @@
 | S11-21 | Tests `test_feature_importance_cwru_pronostia.py` | ✅ | `tests/test_feature_importance_cwru_pronostia.py` | 1h |
 | S11-22 | Documentation Sprint 11 — partie CWRU/Pronostia | ⬜ | `docs/sprints/sprint_11/` | 0.5h |
 | S11-23 | Ablation study — retrait progressif de features (courbe nb_features vs AUC) | ⬜ | `src/evaluation/feature_importance.py` + `notebooks/cl_eval/ablation_feature_removal/` | 3h |
+| S11-24 | Run exp_112–115 — KMeans, Mahalanobis, EWC, HDC × monitoring by_equipment avec export feature_importance.json per-task | ✅ | `experiments/exp_112–115/` | 1h |
+| S11-25 | Run exp_116–119 — KMeans, Mahalanobis, EWC, HDC × monitoring by_location avec export feature_importance.json per-task | ✅ | `experiments/exp_116–119/` | 1h |
+| S11-26 | Notebook feature importance Monitoring (by_equipment) | ✅ | `notebooks/cl_eval/monitoring_feature_importance/by_equipment.ipynb` | 2h |
+| S11-27 | Notebook feature importance Monitoring (by_location) | ✅ | `notebooks/cl_eval/monitoring_feature_importance/by_location.ipynb` | 2h |
 
 **Numérotation expériences** :
 
@@ -414,7 +418,20 @@
 > ⚠️ exp_108 : `temporal_position` top feature pour EWC Pronostia — feature non disponible en déploiement MCU réel (hors supervision) → `FIXME(gap1)` à traiter dans le notebook cross-dataset (S11-20).  
 > ⚠️ exp_100/103/104 : AA faibles pour KMeans/Mahalanobis sur CWRU (même pattern que exp_077/078) — dataset à 90% défauts, métriques pertinentes = `feature_importance.json` per-task + AUROC.
 
-**Livrable sprint 11** : module `feature_importance.py` étendu, 6 notebooks Monitoring + JSONs exp_030-035, 12 JSONs per-task exp_100–111, 4 notebooks CWRU/Pronostia + 1 cross-dataset + 1 ablation study (argument Gap 2).
+**Expériences Monitoring feature importance (S11-24/S11-25 — à lancer)** :
+
+| Exp | Modèle | Dataset | Scénario |
+|-----|--------|---------|----------|
+| exp_112 | KMeans | Monitoring | by_equipment |
+| exp_113 | Mahalanobis | Monitoring | by_equipment |
+| exp_114 | EWC | Monitoring | by_equipment |
+| exp_115 | HDC | Monitoring | by_equipment |
+| exp_116 | KMeans | Monitoring | by_location |
+| exp_117 | Mahalanobis | Monitoring | by_location |
+| exp_118 | EWC | Monitoring | by_location |
+| exp_119 | HDC | Monitoring | by_location |
+
+**Livrable sprint 11** : module `feature_importance.py` étendu, 6 notebooks Monitoring + JSONs exp_030-035, 12 JSONs per-task exp_100–111, 4 notebooks CWRU/Pronostia + 2 notebooks monitoring_feature_importance (by_equipment + by_location, exp_112–119) + 1 cross-dataset + 1 ablation study (argument Gap 2).
 
 > **Note** : Dataset Battery RUL (initialement planifié Sprint 11) reporté au backlog — `battery_dataset.py` et configs YAML existent mais les expériences ne sont pas prioritaires avant la finalisation des analyses feature importance sur CWRU/Pronostia.
 
@@ -675,3 +692,156 @@ Dataset 2 (Equipment Monitoring) — 3 domaines : Pump → Turbine → Compresso
 > **Supervisés (EWC/HDC/TinyOL)** : excellentes performances sur CWRU (acc ≥ 0.88), toutes dans le budget 64 Ko.  
 > **Non supervisés (KMeans/Mahalanobis/DBSCAN)** : accuracy ~15% en raison d'un training set à 90% défauts (CWRU est un benchmark de classification, pas d'anomalie-detection). L'indicateur pertinent est l'AUC-ROC (DBSCAN=0.84 ✅). DBSCAN dépasse 64 Ko tracemalloc (core points stockés, ~45 Ko analytique) — même pattern que Pronostia exp_049/055.  
 > Nouveaux scripts créés : `scripts/train_kmeans.py`, `scripts/train_mahalanobis.py`, `scripts/train_dbscan.py` (réutilisables pour datasets futurs). `get_cwru_dataloaders_single_task()` ajouté dans `cwru_dataset.py`.
+
+---
+
+## Sprint 13 (Phase 1) — Détection d'Anomalies One-Class ✅ TERMINÉ — 4 mai 2026
+
+**Objectif** : Implémenter le scénario CL anomaly detection (entraînement sur données normales, évaluation AUROC par tâche) pour 4 modèles sur Monitoring, puis étendre aux datasets CWRU (KMeans/DBSCAN v2) et Pronostia (DBSCAN). Clôture de la couverture DBSCAN multi-datasets.
+
+**Statut** : ✅ Infrastructure + exp_086–093 + exp_120–122 terminés
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S13-01 | `run_anomaly_detection_scenario()` + `AnomalyDetectionScenario` dans `src/training/scenarios.py` | ✅ | ✅ | N/A | `src/training/scenarios.py`, `scripts/run_anomaly_detection.py` | 4h |
+| S13-02 | Configs YAML anomaly detection (HDC, TinyOL, unsupervised) + normalizer sur données normales uniquement | ✅ | ✅ | N/A | `configs/hdc_anomaly_detection_config.yaml`, `configs/tinyol_anomaly_detection_config.yaml`, `configs/unsupervised_anomaly_detection_config.yaml`, `configs/monitoring_normalizer_anomaly.yaml` | 2h |
+| S13-03 | `get_cl_dataloaders_anomaly_detection()` — filtre train=normal, test=normal+faulty, 3 tâches by_equipment | ✅ | ✅ | N/A | `src/data/monitoring_dataset.py` | 2h |
+| S13-04 | Métriques anomaly detection — `avg_auroc`, `auroc_forgetting`, `auroc_bwt`, matrice AUROC [T×T] | ✅ | ✅ | N/A | `src/evaluation/anomaly_metrics.py` | 2h |
+| S13-05 | exp_086 — HDC Monitoring by_equipment refit | ✅ | ✅ | ✅ | `experiments/exp_086_hdc_monitoring_anomaly_detection/` | 0.5h |
+| S13-06 | exp_087 — TinyOL AE Monitoring by_equipment refit | ✅ | ✅ | ✅ | `experiments/exp_087_tinyol_ae_monitoring_anomaly_detection/` | 0.5h |
+| S13-07 | exp_088 — KMeans Monitoring by_equipment refit | ✅ | ✅ | ✅ | `experiments/exp_088_kmeans_monitoring_anomaly_detection/` | 0.5h |
+| S13-08 | exp_089 — Mahalanobis Monitoring by_equipment refit | ✅ | ✅ | ✅ | `experiments/exp_089_mahalanobis_monitoring_anomaly_detection/` | 0.5h |
+| S13-09 | exp_090–091 — KMeans CWRU v2 (by_fault_type + by_severity, stratégie accumulate) | ✅ | ✅ | ✅ | `experiments/exp_090–091/` | 1h |
+| S13-10 | exp_092–093 — DBSCAN CWRU v2 (by_fault_type + by_severity, stratégie accumulate) | ✅ | ✅ | ✅ | `experiments/exp_092–093/` | 1h |
+| S13-11 | exp_120–122 — DBSCAN Monitoring by_equipment + by_location + Pronostia by_condition | ✅ | ✅ | ✅ | `experiments/exp_120–122/` | 2h |
+| S13-12 | Notebook anomaly detection Monitoring (6 cellules : AUROC matrix, ROC curves, comparaison 4 modèles) | ✅ | ✅ | ✅ | `notebooks/cl_eval/monitoring_anomaly_detection/` | 3h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Dataset | Scénario | avg_AUROC | AF | RAM | Statut |
+|-----|--------|---------|----------|-----------|----|-----|--------|
+| exp_086 | HDC | Monitoring | by_equipment refit | 0.945 | ≈0.000 | 14.2 Ko | ✅ |
+| exp_087 | TinyOL AE | Monitoring | by_equipment refit | 0.972 | 0.004 | ~5.8 Ko | ✅ |
+| exp_088 | KMeans | Monitoring | by_equipment refit | 0.984 | 0.003 | 5.2 Ko | ✅ |
+| exp_089 | Mahalanobis | Monitoring | by_equipment refit | 0.988 | ≈0.000 | 1.5 Ko | ✅ |
+| exp_090 | KMeans | CWRU | by_fault_type v2 (accumulate) | — | — | 5.3 Ko | ✅ AA=0.273 |
+| exp_091 | KMeans | CWRU | by_severity v2 (accumulate) | — | — | 5.2 Ko | ✅ AA=0.450 |
+| exp_092 | DBSCAN | CWRU | by_fault_type v2 (accumulate) | — | — | 56.3 Ko | ✅ AA=0.896 |
+| exp_093 | DBSCAN | CWRU | by_severity v2 (accumulate) | — | — | 56.3 Ko | ✅ AA=0.896 |
+| exp_120 | DBSCAN | Monitoring | by_equipment refit | — | — | 71.9 Ko ⚠️ | ✅ AA=0.950 |
+| exp_121 | DBSCAN | Monitoring | by_location refit | — | — | 40.4 Ko ✅ | ✅ AA=0.949 |
+| exp_122 | DBSCAN | Pronostia | by_condition refit | — | — | 118.1 Ko ⚠️ | ✅ AA=0.835 |
+
+> ⚠️ DBSCAN RAM variable selon stratégie et dataset — by_location (40.4 Ko ✅) vs by_equipment (71.9 Ko ⚠️) vs Pronostia (118.1 Ko ⚠️). Core points stockés en mémoire = dépendant du volume de données normales. DBSCAN non portable STM32N6 sans borne buffer.  
+> ✅ Mahalanobis meilleur AUROC (0.988) et RAM (1.5 Ko) — argument Gap 2 manuscrit renforcé.
+
+**Livrable sprint 13** : infrastructure `run_anomaly_detection_scenario()`, 4 configs anomaly detection, 11 expériences (exp_086–093 + exp_120–122), notebook comparaison Monitoring 4 modèles. DBSCAN testé sur 3 datasets.
+
+---
+
+## Sprint 14 (Phase 1) — Anomaly Detection Monitoring : clôture 6 modèles × 2 stratégies × 2 scénarios 🔄 En cours — 5–9 mai 2026
+
+**Objectif** : Compléter la couverture Monitoring anomaly detection en ajoutant **DBSCAN** et **EWC one-class** (2 modèles manquants), produire les variantes **accumulate** pour tous les modèles, et étendre au scénario **by_location** (5 tâches).
+
+> Détail complet : [`docs/sprints/sprint_14/S1400_monitoring_anomaly_detection_sprint.md`](sprints/sprint_14/S1400_monitoring_anomaly_detection_sprint.md)
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S14-01 | `EWCOneClassDetector` (autoencoder MLP + régularisation EWC sur MSE reconstruction) | ⬜ | ✅ | N/A | `src/models/ewc/ewc_oneclass.py` | 4h |
+| S14-02 | Config YAML EWC one-class | ⬜ | ✅ | N/A | `configs/ewc_oneclass_config.yaml` | 1h |
+| S14-03 | Adapter `DBSCANDetector` pour `run_anomaly_detection_scenario()` | ⬜ | ✅ | N/A | `src/models/unsupervised/dbscan_detector.py` | 1.5h |
+| S14-04 | exp_123–124 — DBSCAN Monitoring by_equipment refit + accumulate | ⬜ | ✅ | ⬜ | `experiments/exp_123–124/` | 0.5h |
+| S14-05 | exp_125–126 — EWC one-class Monitoring by_equipment refit + accumulate | ⬜ | ✅ | ⬜ | `experiments/exp_125–126/` | 0.5h |
+| S14-06 | exp_127–130 — HDC/TinyOL/KMeans/Mahalanobis accumulate v2 (by_equipment) | ⬜ | ✅ | ⬜ | `experiments/exp_127–130/` | 2h |
+| S14-07 | RAM profiling `EWCOneClassDetector` + annotations `# MEM:` | ⬜ | ✅ | ⬜ | `src/models/ewc/ewc_oneclass.py` | 1h |
+| S14-08 | `get_cl_dataloaders_anomaly_detection(scenario="by_location")` — 5 tâches | ⬜ | ✅ | N/A | `src/data/monitoring_dataset.py` | 1.5h |
+| S14-09 | exp_131–136 — 6 modèles × Monitoring by_location refit | ⬜ | ✅ | ⬜ | `experiments/exp_131–136/` | 2h |
+| S14-10 | Notebook 6 modèles Monitoring — tableau AUROC by_equipment + by_location | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/monitoring_anomaly_detection/notebook_anomaly_detection_6models.ipynb` | 3h |
+| S14-11 | Tests unitaires `EWCOneClassDetector` + `DBSCANDetector` | ⬜ | ✅ | ⬜ | `tests/test_ewc_oneclass.py`, `tests/test_dbscan_detector.py` | 2h |
+| S14-12 | accumulate by_location v2 — 6 modèles (si temps restant) | 🟢 | ✅ | ⬜ | `experiments/exp_13Xb/` | 1.5h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Stratégie | Scénario | Statut |
+|-----|--------|-----------|----------|--------|
+| exp_123 | DBSCAN | refit | by_equipment | ⬜ |
+| exp_124 | DBSCAN | accumulate | by_equipment | ⬜ |
+| exp_125 | EWC one-class | refit | by_equipment | ⬜ |
+| exp_126 | EWC one-class | accumulate | by_equipment | ⬜ |
+| exp_127 | HDC | accumulate | by_equipment | ⬜ |
+| exp_128 | TinyOL AE | accumulate | by_equipment | ⬜ |
+| exp_129 | KMeans | accumulate | by_equipment | ⬜ |
+| exp_130 | Mahalanobis | accumulate | by_equipment | ⬜ |
+| exp_131 | HDC | refit | by_location | ⬜ |
+| exp_132 | TinyOL AE | refit | by_location | ⬜ |
+| exp_133 | KMeans | refit | by_location | ⬜ |
+| exp_134 | Mahalanobis | refit | by_location | ⬜ |
+| exp_135 | DBSCAN | refit | by_location | ⬜ |
+| exp_136 | EWC one-class | refit | by_location | ⬜ |
+
+**Livrable sprint 14** : `EWCOneClassDetector`, `configs/ewc_oneclass_config.yaml`, 14 expériences (exp_123–136), notebook 6 modèles Monitoring, tests `test_ewc_oneclass.py`.
+
+---
+
+## Sprint 15 (Phase 1) — Anomaly Detection Pronostia : loader + 6 modèles ⬜ Planifié — 12–15 mai 2026
+
+**Objectif** : Déployer les 6 modèles d'anomaly detection sur **Pronostia** (FEMTO Bearing, ~90% données normales). Créer le loader anomaly detection dédié et exécuter exp_137–142 (refit) + exp_137b–142b (accumulate).
+
+> Détail complet : [`docs/sprints/sprint_15/S1500_pronostia_anomaly_detection_sprint.md`](sprints/sprint_15/S1500_pronostia_anomaly_detection_sprint.md)
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S15-01 | `get_pronostia_dataloaders_anomaly_detection()` — train=normal, 3 tâches by_condition | ⬜ | ✅ | N/A | `src/data/pronostia_dataset.py` | 2.5h |
+| S15-02 | MAJ `configs/unsupervised_config.yaml` avec bloc Pronostia (INPUT_DIM=13, FAILURE_RATIO) | ⬜ | ✅ | N/A | `configs/unsupervised_config.yaml` | 0.5h |
+| S15-03–08 | exp_137–142 — 6 modèles Pronostia by_condition refit | ⬜ | ✅ | ⬜ | `experiments/exp_137–142/` | 3h |
+| S15-09 | RAM profiling Pronostia (input_dim=13 — impact EWC OC et HDC) | ⬜ | ✅ | ⬜ | `evaluation/memory_profiler.py` | 1h |
+| S15-10 | Notebook Pronostia — AUROC par tâche, 6 modèles | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/pronostia_anomaly_detection/notebook_pronostia_anomaly_detection.ipynb` | 3h |
+| S15-11 | exp_137b–142b — 6 modèles Pronostia accumulate (si temps) | 🟡 | ✅ | ⬜ | `experiments/exp_137b–142b/` | 2h |
+| S15-12 | Tests `get_pronostia_dataloaders_anomaly_detection()` | 🟡 | ✅ | ⬜ | `tests/test_pronostia_anomaly.py` | 1.5h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Stratégie | Statut | | Exp | Modèle | Stratégie | Statut |
+|-----|--------|-----------|--------|-|-----|--------|-----------|--------|
+| exp_137 | HDC | refit | ⬜ | | exp_137b | HDC | accumulate | ⬜ |
+| exp_138 | TinyOL AE | refit | ⬜ | | exp_138b | TinyOL AE | accumulate | ⬜ |
+| exp_139 | KMeans | refit | ⬜ | | exp_139b | KMeans | accumulate | ⬜ |
+| exp_140 | Mahalanobis | refit | ⬜ | | exp_140b | Mahalanobis | accumulate | ⬜ |
+| exp_141 | DBSCAN | refit | ⬜ | | exp_141b | DBSCAN | accumulate | ⬜ |
+| exp_142 | EWC one-class | refit | ⬜ | | exp_142b | EWC one-class | accumulate | ⬜ |
+
+**Livrable sprint 15** : `get_pronostia_dataloaders_anomaly_detection()`, 6 (ou 12) expériences Pronostia, notebook Pronostia, tests `test_pronostia_anomaly.py`.
+
+---
+
+## Sprint 16 (Phase 1) — Anomaly Detection CWRU + Clôture Phase Anomaly Detection ⬜ Planifié — 18–20 mai 2026
+
+**Objectif** : Déployer les 6 modèles d'anomaly detection sur **CWRU** (~20% données normales — cas difficile) et produire le **notebook de clôture cross-dataset** (Monitoring / Pronostia / CWRU). Conclut la Phase Anomaly Detection (Sprints 13–16).
+
+> Détail complet : [`docs/sprints/sprint_16/S1600_cwru_anomaly_detection_sprint.md`](sprints/sprint_16/S1600_cwru_anomaly_detection_sprint.md)
+
+| ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
+|----|-------|:-----:|:---:|:----:|---------------|------------|
+| S16-01 | Décision scénario CL CWRU anomaly detection (by_fault_type ou by_severity) — réponse TODO(arnaud) | ⬜ | ✅ | N/A | `docs/context/datasets.md` | 0.5h |
+| S16-02 | `get_cwru_dataloaders_anomaly_detection()` — train=Normal, scénario retenu en S16-01 | ⬜ | ✅ | N/A | `src/data/cwru_dataset.py` | 2h |
+| S16-03 | MAJ `configs/unsupervised_config.yaml` avec bloc CWRU (input_dim=9) | ⬜ | ✅ | N/A | `configs/unsupervised_config.yaml` | 0.5h |
+| S16-04 | exp_143–148 — 6 modèles CWRU refit | ⬜ | ✅ | ⬜ | `experiments/exp_143–148/` | 2h |
+| S16-05 | Notebook CWRU — AUROC par tâche, analyse ratio 20% normal | ⬜ | ✅ | ⬜ | `notebooks/cl_eval/cwru_anomaly_detection/notebook_cwru_anomaly_detection.ipynb` | 2h |
+| S16-06 | Notebook synthèse cross-dataset — AUROC 6 modèles × 3 datasets (refit vs accumulate) | 🟡 | ✅ | ⬜ | `notebooks/cl_eval/summary_anomaly_detection.ipynb` | 2h |
+| S16-07 | Tests `get_cwru_dataloaders_anomaly_detection()` | 🟡 | ✅ | ⬜ | `tests/test_cwru_anomaly.py` | 1h |
+| S16-08 | exp_143b–148b — 6 modèles CWRU accumulate (si temps) | 🟢 | ✅ | ⬜ | `experiments/exp_143b–148b/` | 2h |
+
+**Numérotation expériences** :
+
+| Exp | Modèle | Stratégie | Statut |
+|-----|--------|-----------|--------|
+| exp_143 | HDC | refit | ⬜ |
+| exp_144 | TinyOL AE | refit | ⬜ |
+| exp_145 | KMeans | refit | ⬜ |
+| exp_146 | Mahalanobis | refit | ⬜ |
+| exp_147 | DBSCAN | refit | ⬜ |
+| exp_148 | EWC one-class | refit | ⬜ |
+
+**Livrable sprint 16** : `get_cwru_dataloaders_anomaly_detection()`, 6 expériences CWRU (exp_143–148), notebook CWRU, **notebook synthèse cross-dataset** `summary_anomaly_detection.ipynb` — résultat central de la Phase Anomaly Detection pour le manuscrit.
+
+> **Après Sprint 16** : Phase Anomaly Detection clôturée (Sprints 13–16, ~63 expériences, 3 datasets, 6 modèles, 2 stratégies). Démarrer rédaction section Anomaly Detection du manuscrit à partir des notebooks de synthèse. Vérifier que M2 (EWC one-class) est documenté comme contribution CL × anomaly detection nouvelle.

@@ -1,12 +1,18 @@
 """
-scripts/train_dbscan.py — DBSCAN sur CWRU : single-task (exp_073) et CL by_fault_type (exp_079).
+scripts/train_dbscan.py — DBSCAN CL : CWRU, Monitoring, Pronostia.
 
 Usage
 -----
-    # Single-task
+    # Single-task CWRU
     python scripts/train_dbscan.py --config configs/cwru_single_task_config.yaml --exp_id exp_073
     # CL by_fault_type
     python scripts/train_dbscan.py --config configs/cwru_by_fault_config.yaml --exp_id exp_079_dbscan_cwru_by_fault_type
+    # CL monitoring by_equipment
+    python scripts/train_dbscan.py --config configs/unsupervised_config.yaml --exp_id exp_120_dbscan_monitoring_by_equipment
+    # CL monitoring by_location
+    python scripts/train_dbscan.py --config configs/unsupervised_config.yaml --data_config configs/monitoring_by_location_config.yaml --exp_id exp_121_dbscan_monitoring_by_location
+    # CL pronostia by_condition
+    python scripts/train_dbscan.py --config configs/dbscan_pronostia_by_condition_config.yaml --exp_id exp_122_dbscan_pronostia_by_condition
 
 Sortie
 ------
@@ -14,7 +20,8 @@ Sortie
     ├── config_snapshot.yaml
     └── results/
         ├── metrics_single_task.json   (mode no_split)
-        └── metrics_cl.json            (mode by_fault_type)
+        ├── metrics_cl.json            (mode CL)
+        └── feature_importance.json   (mode CL)
 """
 
 from __future__ import annotations
@@ -38,8 +45,9 @@ from src.utils.reproducibility import set_seed
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="DBSCAN CWRU — single-task et CL by_fault_type")
+    parser = argparse.ArgumentParser(description="DBSCAN — single-task et CL (CWRU / Pronostia / Monitoring)")
     parser.add_argument("--config", default="configs/cwru_single_task_config.yaml")
+    parser.add_argument("--data_config", default=None, help="Config data override (ex. configs/monitoring_by_location_config.yaml)")
     parser.add_argument("--exp_id", default=None, help="Override exp_id")
     parser.add_argument("--exp_dir", default=None, help="Override répertoire expérience")
     return parser.parse_args()
@@ -51,6 +59,29 @@ def _extract_numpy(loader) -> tuple[np.ndarray, np.ndarray]:
         Xs.append(X_batch.numpy())
         ys.append(y_batch.numpy().ravel())
     return np.concatenate(Xs, axis=0), np.concatenate(ys, axis=0)
+
+
+def _resolve_feature_names(cfg: dict) -> list[str]:
+    from src.evaluation.feature_importance import (
+        FEATURE_NAMES_CWRU,
+        FEATURE_NAMES_PRONOSTIA,
+        FEATURE_NAMES_MONITORING,
+    )
+    dataset = cfg["data"].get("dataset", "")
+    if dataset == "cwru":
+        return FEATURE_NAMES_CWRU
+    if dataset == "pronostia":
+        return FEATURE_NAMES_PRONOSTIA
+    return FEATURE_NAMES_MONITORING
+
+
+def _extract_test_arrays(task: dict) -> tuple[np.ndarray, np.ndarray]:
+    loader = task.get("test_loader") or task["val_loader"]
+    X_list, y_list = [], []
+    for X_batch, y_batch in loader:
+        X_list.append(X_batch.numpy())
+        y_list.append(y_batch.numpy().ravel())
+    return np.concatenate(X_list), np.concatenate(y_list)
 
 
 def _profile_model(model: DBSCANDetector, X_sample: np.ndarray, n_runs: int = 100) -> dict:
@@ -81,7 +112,7 @@ def _run_cl(
     results_dir: Path,
     exp_dir: Path,
 ) -> None:
-    """Boucle CL domain-incremental (stratégie refit) — 3 tâches Ball→IR→OR."""
+    """Boucle CL domain-incremental (stratégie refit)."""
     n_tasks = len(tasks)
     percentile = cfg["dbscan"].get("anomaly_percentile", 95)
     n_latency_runs = cfg.get("evaluation", {}).get("n_latency_runs", 100)
@@ -122,11 +153,15 @@ def _run_cl(
           f"Latence: {mem['inference_latency_ms']:.3f} ms  |  "
           f"n_params: {mem['n_params']}")
 
+    task_split = cfg["data"].get("task_split", "by_fault_type")
+    is_pronostia = task_split == "by_condition"
+    dataset_name = "pronostia" if is_pronostia else cfg["data"].get("dataset", "cwru")
+
     metrics: dict = {
         "exp_id": exp_id,
         "model": "dbscan",
-        "dataset": "cwru",
-        "scenario": cfg["data"].get("task_split", "by_fault_type"),
+        "dataset": dataset_name,
+        "scenario": task_split,
         "acc_final": cl_metrics["aa"],
         "avg_forgetting": cl_metrics["af"],
         "backward_transfer": cl_metrics["bwt"],
@@ -143,12 +178,57 @@ def _run_cl(
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print(f"\n  Résultats → {metrics_path}")
-    print(f"✅ DBSCAN CL by_fault_type terminé → {exp_dir}")
+
+    # ── Feature importance ────────────────────────────────────────────────────
+    from src.evaluation.feature_importance import (
+        permutation_importance,
+        permutation_importance_per_task,
+    )
+
+    feature_names = _resolve_feature_names(cfg)
+    threshold_fi = float(np.mean(list(thresholds_per_task.values())))
+
+    task_arrays: list[dict] = []
+    for t in tasks:
+        X_t, y_t = _extract_test_arrays(t)
+        task_arrays.append({"task_name": t.get("domain", f"task_{t['task_id']}"), "X": X_t, "y": y_t})
+
+    X_all = np.concatenate([t["X"] for t in task_arrays])
+    y_all = np.concatenate([t["y"] for t in task_arrays])
+
+    global_imp = permutation_importance(
+        model.anomaly_score, X_all, y_all, feature_names, threshold=threshold_fi
+    )
+    per_task_imp = permutation_importance_per_task(
+        model.anomaly_score, task_arrays, feature_names, threshold=threshold_fi
+    )
+
+    importance_results = {
+        "model": "dbscan",
+        "dataset": dataset_name,
+        "scenario": task_split,
+        "global": {"permutation_importance": global_imp},
+        "per_task": {
+            name: {"permutation_importance": imp}
+            for name, imp in per_task_imp.items()
+        },
+    }
+
+    importance_path = results_dir / "feature_importance.json"
+    with open(importance_path, "w", encoding="utf-8") as f:
+        json.dump(importance_results, f, indent=2)
+    print(f"  Feature importance → {importance_path}")
+    print(f"✅ DBSCAN CL {task_split} terminé → {exp_dir}")
 
 
 def main() -> None:
     args = parse_args()
     cfg = load_config(args.config)
+
+    if args.data_config:
+        data_cfg = load_config(args.data_config)
+        cfg["data"].update(data_cfg.get("data", {}))
+
     set_seed(cfg.get("evaluation", {}).get("seed", 42))
 
     if args.exp_id:
@@ -201,6 +281,73 @@ def main() -> None:
             test_ratio=cfg["data"].get("test_ratio", 0.2),
             val_ratio=cfg["data"].get("val_ratio", 0.1),
             seed=cfg["data"].get("random_state", 42),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = DBSCANDetector(cfg["dbscan"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_condition":
+        print(f"\n{'=' * 60}")
+        print(f"  DBSCAN CL by_condition (Pronostia) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.pronostia_dataset import get_pronostia_dataloaders
+        tasks = get_pronostia_dataloaders(
+            npy_dir=Path(cfg["data"]["npy_dir"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+            window_size=cfg["data"].get("window_size", 2560),
+            step_size=cfg["data"].get("step_size", 2560),
+            failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = DBSCANDetector(cfg["dbscan"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_equipment":
+        print(f"\n{'=' * 60}")
+        print(f"  DBSCAN CL by_equipment (Monitoring) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.monitoring_dataset import get_cl_dataloaders
+        tasks = get_cl_dataloaders(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = DBSCANDetector(cfg["dbscan"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_location":
+        print(f"\n{'=' * 60}")
+        print(f"  DBSCAN CL by_location (Monitoring) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.monitoring_dataset import get_cl_dataloaders_by_location
+        tasks = get_cl_dataloaders_by_location(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+            location_order=cfg["data"].get("location_order"),
         )
         for t in tasks:
             print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")

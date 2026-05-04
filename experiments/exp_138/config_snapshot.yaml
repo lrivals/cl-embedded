@@ -1,0 +1,82 @@
+DATASETS:
+  pronostia:
+    backbone:
+      decoder_dims:
+      - 16
+      - 32
+      - 13
+      encoder_dims:
+      - 32
+      - 16
+      - 8
+      input_dim: 13
+_snapshot_timestamp: '2026-05-04T22:56:06.397116'
+backbone:
+  activation: relu
+  checkpoint_path: experiments/exp_003_tinyol_dataset1/backbone.pt
+  decoder_dims:
+  - 16
+  - 32
+  - 25
+  encoder_dims:
+  - 32
+  - 16
+  - 8
+  input_dim: 25
+data:
+  csv_path: data/raw/pump_maintenance/Large Industrial_Pump_Maintenance_Dataset/Large_Industrial_Pump_Maintenance_Dataset.csv
+  dataset: pump_maintenance
+  feature_columns:
+  - temperature
+  - vibration
+  - pressure
+  - rpm
+  features_per_channel:
+  - mean
+  - std
+  - rms
+  - kurtosis
+  - peak
+  - crest_factor
+  label_column: maintenance_required
+  n_tasks: 3
+  normalizer_path: configs/pump_normalizer.yaml
+  step_size: 16
+  task_strategy: chronological
+  timestamp_column: timestamp
+  window_size: 32
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_003_tinyol_dataset1/results/
+  seed: 42
+exp_id: exp_003_tinyol_dataset1
+memory:
+  expected_ram_bytes: 7168
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+oto_head:
+  input_dim: 9
+  learning_rate: 0.01
+  loss: bce
+  momentum: 0.0
+  optimizer: sgd
+  output_dim: 1
+pretrain:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  loss: mse
+  optimizer: adam
+  pretrain_fraction: 0.3
+  seed: 42
+  val_fraction: 0.1
+uint8_buffer:
+  embed_dim: 8
+  enabled: false
+  size: 50

@@ -1,0 +1,45 @@
+{
+  "model": "ewc",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_fault_type",
+  "global": {
+    "permutation_importance": {
+      "temperature": 0.06644951140065147,
+      "vibration": 0.03973941368078182,
+      "pressure": 0.02931596091205202,
+      "humidity": 0.008729641693811074
+    },
+    "gradient_saliency": {
+      "temperature": 0.032350413501262665,
+      "pressure": 0.018463749438524246,
+      "vibration": 0.015050610527396202,
+      "humidity": 0.017072362825274467
+    }
+  },
+  "per_task": {
+    "Pump": {
+      "permutation_importance": {
+        "temperature": 0.05483234714003937,
+        "vibration": 0.03905325443786978,
+        "pressure": 0.02998027613412224,
+        "humidity": 0.0035502958579880506
+      }
+    },
+    "Turbine": {
+      "permutation_importance": {
+        "temperature": 0.08538011695906433,
+        "vibration": 0.04015594541910328,
+        "pressure": 0.02417153996101351,
+        "humidity": 0.008576998050682239
+      }
+    },
+    "Compressor": {
+      "permutation_importance": {
+        "temperature": 0.05864077669902923,
+        "vibration": 0.040776699029126284,
+        "pressure": 0.0361165048543689,
+        "humidity": 0.01631067961165067
+      }
+    }
+  }
+}

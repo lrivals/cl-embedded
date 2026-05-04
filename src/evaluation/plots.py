@@ -744,7 +744,7 @@ def plot_performance_by_task_bar(
     x = np.arange(n_tasks)
 
     if ax is None:
-        fig, ax = plt.subplots(figsize=(max(6, n_tasks * 1.4), 4), dpi=FIGURE_DPI)
+        fig, ax = plt.subplots(figsize=(max(10, n_tasks * 1.4), 4), dpi=FIGURE_DPI)
     else:
         fig = ax.get_figure()
 
@@ -766,6 +766,7 @@ def plot_performance_by_task_bar(
 
     ax.set_xticks(x)
     ax.set_xticklabels(task_names, fontsize=FIGURE_FONT_SIZE - 1)
+    ax.tick_params(axis='x', labelrotation=15)
     ax.set_ylabel("Accuracy finale", fontsize=FIGURE_FONT_SIZE)
     ax.set_ylim(0.0, 1.05)
     ax.set_title(title, fontsize=FIGURE_FONT_SIZE + 1, fontweight="bold")
