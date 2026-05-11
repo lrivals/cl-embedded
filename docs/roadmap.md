@@ -1,7 +1,7 @@
 # Roadmap — CL-Embedded
 
 > Version : 2.4 | Mise à jour : 5 mai 2026  
-> Horizon : Phase 1 (PC Python) = avril–mai 2026 (étendu avec Phase Anomaly Detection Sprints 13–16)
+> Horizon : Phase 1 (PC Python) = avril–mai 2026 (étendu avec Phase Anomaly Detection Sprints 13–19)
 
 ---
 
@@ -25,7 +25,7 @@ Phase 3 : Expériences + rédaction [15 juin → 6 août 2026]
 
 ## Détail par phase
 
-- [Phase 1 — Implémentation Python](roadmap_phase1.md) — Sprints 1–16 (6 modèles + EWC one-class, 5 datasets, anomaly detection + feature importance CWRU/Pronostia), résultats expériences
+- [Phase 1 — Implémentation Python](roadmap_phase1.md) — Sprints 1–19 (6 modèles + EWC one-class, 5 datasets, anomaly detection + feature importance CWRU/Pronostia, Sprints 17–19 anomaly detection Equipment Monitoring + Pronostia), résultats expériences
 - [Phase 2 — Portage MCU](roadmap_phase2.md) — Sprint 10, Backlog
 
 ---

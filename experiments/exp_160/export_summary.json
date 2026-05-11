@@ -1,0 +1,20 @@
+{
+  "_exported_at": "2026-05-11T21:02:08.824186",
+  "_opset_version": 17,
+  "models": [
+    {
+      "model_name": "ewc_backbone",
+      "onnx_path": "experiments/exp_160/ewc_backbone.onnx",
+      "int8_path": "experiments/exp_160/ewc_backbone_int8.onnx",
+      "opset_version": 17,
+      "input_dim": 4,
+      "n_params": 705,
+      "onnx_fp32_bytes": 3558,
+      "onnx_int8_bytes": 4330,
+      "onnx_valid": true,
+      "ort_match_atol_1e5": true,
+      "max_abs_diff": 1.1920928955078125e-07,
+      "mean_abs_diff": 2.5811605155467987e-08
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug STM32 (NUCLEO-F439ZI)",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32f4x.cfg"
+            ],
+            "cwd": "${workspaceRoot}/firmware/stm32f4_blink",
+            "executable": "${workspaceRoot}/firmware/stm32f4_blink/build/stm32f4_blink.elf",
+            "runToEntryPoint": "main",
+            "showDevDebugOutput": "none",
+            "preLaunchTask": "build-stm32"
+        }
+    ]
+}

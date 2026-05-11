@@ -1,0 +1,50 @@
+{
+  "avg_auroc": 0.9999677938808373,
+  "auroc_forgetting": 4.83091787439327e-05,
+  "auroc_bwt": -4.83091787439327e-05,
+  "forgetting_per_task": [
+    9.66183574878654e-05,
+    0.0
+  ],
+  "bwt_per_task": [
+    -9.66183574878654e-05,
+    0.0
+  ],
+  "auroc_matrix": [
+    [
+      1.0,
+      null,
+      null
+    ],
+    [
+      1.0,
+      1.0,
+      null
+    ],
+    [
+      0.9999033816425121,
+      1.0,
+      1.0
+    ]
+  ],
+  "n_tasks": 3,
+  "exp_id": "exp_152",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "strategy": "refit",
+  "failure_ratio": null,
+  "n_train_normal_per_task": [
+    62,
+    62,
+    61
+  ],
+  "auroc_per_task_final": [
+    0.9999033816425121,
+    1.0,
+    1.0
+  ],
+  "ram_peak_bytes": 1644,
+  "inference_latency_ms": 0.008346399954461958,
+  "n_params": 90
+}

@@ -1,0 +1,50 @@
+{
+  "avg_auroc": 0.9933977455716586,
+  "auroc_forgetting": -0.0035024154589372025,
+  "auroc_bwt": 0.0035024154589372025,
+  "forgetting_per_task": [
+    0.0036231884057970065,
+    -0.010628019323671412
+  ],
+  "bwt_per_task": [
+    -0.0036231884057970065,
+    0.010628019323671412
+  ],
+  "auroc_matrix": [
+    [
+      0.998647342995169,
+      null,
+      null
+    ],
+    [
+      0.9994202898550726,
+      0.977487922705314,
+      null
+    ],
+    [
+      0.995024154589372,
+      0.9881159420289855,
+      0.9970531400966184
+    ]
+  ],
+  "n_tasks": 3,
+  "exp_id": "exp_149",
+  "model": "hdc",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "strategy": "refit",
+  "failure_ratio": null,
+  "n_train_normal_per_task": [
+    62,
+    62,
+    61
+  ],
+  "auroc_per_task_final": [
+    0.995024154589372,
+    0.9881159420289855,
+    0.9970531400966184
+  ],
+  "ram_peak_bytes": 8104,
+  "inference_latency_ms": 0.08802992022538092,
+  "n_params": 512
+}

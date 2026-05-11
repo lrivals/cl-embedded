@@ -29,7 +29,7 @@ The implementations target **PC-first development** with explicit design constra
 | **M5** | PCA reconstruction error | ❌ | Both | ~4 KB |
 | — | DBSCAN | ❌ | Both | — |
 
-### One-Class Anomaly Detection (Sprint 13)
+### One-Class Anomaly Detection (Sprints 13–19)
 
 | Model | MCU-compatible | Config | Notes |
 |-------|:--------------:|--------|-------|
@@ -78,11 +78,16 @@ python scripts/train_tinyol.py --config configs/tinyol_config.yaml
 # Train unsupervised baselines (K-Means, Mahalanobis, DBSCAN, PCA, KNN)
 python scripts/train_unsupervised.py --config configs/unsupervised_config.yaml
 
-# Anomaly detection — one-class CL (Sprints 13–16)
+# Anomaly detection — one-class CL (Sprints 13–19)
 python scripts/train_hdc.py --config configs/hdc_anomaly_detection_config.yaml
 python scripts/train_tinyol.py --config configs/tinyol_anomaly_detection_config.yaml
 python scripts/train_unsupervised.py --config configs/unsupervised_anomaly_detection_config.yaml
 python scripts/run_anomaly_detection.py --config configs/ewc_oneclass_config.yaml  # Sprint 14
+
+# Run anomaly detection batch (CWRU / Equipment Monitoring / Pronostia)
+python scripts/run_anomaly_detection.py --model hdc --dataset cwru --scenario by_severity --strategy refit --exp_id exp_143
+python scripts/run_anomaly_detection.py --model mahalanobis --dataset equipment_monitoring --scenario by_equipment_type --strategy refit --exp_id exp_152
+python scripts/run_anomaly_detection.py --model hdc --dataset pronostia --scenario by_bearing_condition --strategy refit --exp_id exp_155
 
 # Run all evaluations
 python scripts/evaluate_all.py --exp_dir experiments/
@@ -120,7 +125,9 @@ cl-embedded/
 │   ├── models/                 # Detailed implementation specs (3 models + unsupervised)
 │   ├── context/                # Project context, hardware, datasets
 │   ├── sprints/                # Sprint-level task tracking
-│   └── roadmap_phase1.md       # Phase 1 development roadmap (Sprints 1–9)
+│   ├── roadmap.md              # Master roadmap index
+│   ├── roadmap_phase1.md       # Phase 1 development roadmap (Sprints 1–9)
+│   └── roadmap_phase2.md       # Phase 2 MCU portage + Sprints 17–19
 ├── skills/                     # Claude prompting guides
 ├── src/
 │   ├── data/                   # Dataset loaders (pump + monitoring)
@@ -132,9 +139,9 @@ cl-embedded/
 │   ├── training/               # CL scenarios + run_anomaly_detection_scenario()
 │   ├── evaluation/             # CL metrics + anomaly_metrics + memory profiler
 │   └── utils/                  # Reproducibility, config loader
-├── experiments/                # 142+ reproducible experiment outputs
+├── experiments/                # 160+ reproducible experiment outputs
 ├── notebooks/                  # Exploration + visualization
-│   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–13)
+│   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–19)
 ├── tests/                      # Unit tests
 └── scripts/                    # CLI entry points
 ```
@@ -156,8 +163,12 @@ All implementations respect MCU portability requirements:
 | [`notebooks/01_data_exploration.ipynb`](notebooks/01_data_exploration.ipynb) | EDA — Dataset 1 (Pump) + Dataset 2 (Equipment Monitoring) |
 | [`notebooks/02_baseline_comparison.ipynb`](notebooks/02_baseline_comparison.ipynb) | EWC vs HDC vs Fine-tuning — Equipment Monitoring |
 | [`notebooks/03_cl_evaluation.ipynb`](notebooks/03_cl_evaluation.ipynb) | CL evaluation — Pump Maintenance (TinyOL) |
-| [`notebooks/cl_eval/`](notebooks/cl_eval/) | Granular single-task + scenario comparisons (Sprints 7–13) |
+| [`notebooks/cl_eval/`](notebooks/cl_eval/) | Granular single-task + scenario comparisons (Sprints 7–19) |
 | [`notebooks/cl_eval/monitoring_anomaly_detection/`](notebooks/cl_eval/monitoring_anomaly_detection/) | Anomaly detection one-class — AUROC matrices + ROC curves (Sprint 13) |
+| [`notebooks/cl_eval/cwru_anomaly_detection/`](notebooks/cl_eval/cwru_anomaly_detection/) | Anomaly detection CWRU — 6 modèles × by_severity (Sprint 17) |
+| [`notebooks/cl_eval/equipment_monitoring_anomaly_detection/`](notebooks/cl_eval/equipment_monitoring_anomaly_detection/) | Anomaly detection Equipment Monitoring — by_equipment_type (Sprint 18) |
+| [`notebooks/cl_eval/pronostia_anomaly_detection/`](notebooks/cl_eval/pronostia_anomaly_detection/) | Anomaly detection Pronostia — by_bearing_condition (Sprint 19) |
+| [`notebooks/cl_eval/summary_anomaly_detection.ipynb`](notebooks/cl_eval/summary_anomaly_detection.ipynb) | Synthèse cross-dataset finale — AUROC × 6 modèles × 3 datasets (Sprint 19) |
 
 ## Results
 
@@ -198,10 +209,13 @@ Full experiment outputs: [`experiments/`](experiments/)
 | M5 PCA | ✅ | ✅ | ✅ | ✅ |
 | DBSCAN baseline | ✅ | ✅ | ✅ exp_008, 021, 023, 029, 035, 041 | ✅ |
 | Anomaly detection (S13) | ✅ | ✅ | ✅ exp_086–093, exp_120–122 | ⬜ |
-| EWC OneClass (S14) | ⬜ | ⬜ | ⬜ exp_125–126 (planifié) | ⬜ |
+| EWC OneClass (S14) | ✅ | ✅ | ✅ exp_123–136 | ⬜ |
+| Anomaly detection CWRU (S17) | ⬜ | ⬜ | ⬜ exp_143–148 (planifié) | ⬜ |
+| Anomaly detection Equipment (S18) | ⬜ | ⬜ | ⬜ exp_149–154 (planifié) | ⬜ |
+| Anomaly detection Pronostia (S19) | ⬜ | ⬜ | ⬜ exp_155–160 (planifié) | ⬜ |
 | M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ exp_004 (planned) | ⬜ |
 | ONNX export | 🟡 | ⬜ | ⬜ | ⬜ |
-| Notebooks (S7–13) | 🟡 | — | — | — |
+| Notebooks (S7–19) | 🟡 | — | — | — |
 
 ### Current Sprint
 
@@ -211,9 +225,12 @@ Full experiment outputs: [`experiments/`](experiments/)
 | Sprint 6 | ✅ | Extended scenarios (pump_by_id, pump_temporal, monitoring_by_location) |
 | Sprints 7–12 | ✅ | Notebooks CL + intégration CWRU/Pronostia + scénarios by-fault/severity |
 | Sprint 13 | ✅ | Anomaly detection one-class — 4 modèles Monitoring + DBSCAN/KMeans v2 CWRU + DBSCAN Monitoring/Pronostia (exp_086–093, exp_120–122) |
-| Sprint 14 | 🔄 | Monitoring anomaly detection complet — DBSCAN + EWC one-class + accumulate + by_location (exp_123–136) |
-| Sprint 15 | ⬜ | Pronostia anomaly detection — 6 modèles × by_condition refit + accumulate (exp_137–142) |
-| Sprint 16 | ⬜ | CWRU anomaly detection + notebook synthèse cross-dataset (exp_143–148) |
+| Sprint 14 | ✅ | Monitoring anomaly detection complet — DBSCAN + EWC one-class + accumulate + by_location (exp_123–136) |
+| Sprint 15 | ✅ | Pronostia anomaly detection — 6 modèles × by_condition refit + accumulate (exp_137–142) |
+| Sprint 16 | 🔄 | Portage MCU Phase 2 — toolchain ARM + ONNX export + C MVP + profiling HW |
+| Sprint 17 | ⬜ | CWRU anomaly detection — 6 modèles × by_severity (exp_143–148) |
+| Sprint 18 | ⬜ | Equipment Monitoring anomaly detection — by_equipment_type (exp_149–154) |
+| Sprint 19 | ⬜ | Pronostia anomaly detection (exp_155–160) + notebook synthèse cross-dataset final |
 
 ## Evaluation Metrics
 

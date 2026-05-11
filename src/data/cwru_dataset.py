@@ -13,8 +13,9 @@ Pas de dépendance PyTorch — numpy + pandas uniquement (portabilité MCU).
 
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Literal
 
 import numpy as np
 import pandas as pd
@@ -394,6 +395,156 @@ def get_cwru_cl_dataloaders_by_severity(
             "n_train": len(X_train),
             "n_val": len(X_val),
             "n_test": len(X_test),
+        })
+
+    return tasks
+
+
+def get_cwru_dataloaders_anomaly_detection(
+    data_path: str | Path,
+    scenario: Literal["by_fault_type", "by_severity"] = "by_severity",
+    test_size: float = 0.2,
+    batch_size: int = 32,
+    seed: int = 42,
+) -> list[dict]:
+    """
+    Loader anomaly detection one-class pour CWRU (scénario by_severity ou by_fault_type).
+
+    Pour chaque tâche, produit :
+    - ``train_loader`` : uniquement les échantillons normaux (label=0, ~62 par tâche)
+    - ``test_loader_mixed`` : Normal subset + Faulty de la tâche courante pour AUROC
+
+    Les 230 fenêtres normales sont réparties de manière déterministe entre les 3 tâches
+    (np.array_split, sans shuffle). Le StandardScaler est fitté sur le train normal de la
+    Tâche 0 uniquement (pas de data leakage).
+
+    Parameters
+    ----------
+    data_path : str | Path
+        Chemin vers feature_time_48k_2048_load_1.csv.
+    scenario : {"by_severity", "by_fault_type"}
+        Scénario CL retenu (by_severity = défaut Sprint 16).
+    test_size : float
+        Fraction des normaux réservée au test loader (0.2 = 20%).
+    batch_size : int
+        Taille des mini-batches.
+    seed : int
+        Seed pour le shuffle du train_loader.
+
+    Returns
+    -------
+    list[dict]
+        Liste de 3 dicts (Tâche 0 → 1 → 2) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,                # 0, 1 ou 2
+                "task_name": str,              # ex. "007" / "ball"
+                "domain": str,                 # identique à task_name
+                "train_loader": DataLoader,    # label=0 uniquement, shuffle=True
+                "test_loader_mixed": DataLoader,  # label=0 + label=1, shuffle=False
+                "n_train": int,
+                "n_test": int,
+                "n_test_normal": int,
+                "n_test_faulty": int,
+            }
+
+    Notes
+    -----
+    # MEM: X_normal_train [~62, 9] × 4 B @ FP32 / [~62, 9] × 1 B @ INT8
+    """
+    import torch
+    from torch.utils.data import DataLoader, TensorDataset
+
+    ds = CWRUDataset(data_path, random_state=seed)
+
+    # Sélectionner l'ordre des tâches et les labels faulty selon le scénario
+    if scenario == "by_fault_type":
+        task_order = FAULT_TYPE_ORDER
+        task_fault_labels = FAULT_TYPE_LABELS
+    elif scenario == "by_severity":
+        task_order = SEVERITY_ORDER
+        task_fault_labels = SEVERITY_LABELS
+    else:
+        raise ValueError(f"scenario doit être 'by_fault_type' ou 'by_severity', reçu : {scenario!r}")
+
+    # Répartition déterministe des normaux en 3 thirds
+    normal_mask = ds.fault_labels == NORMAL_LABEL
+    X_normal = ds.X[normal_mask]
+    y_normal = ds.y[normal_mask]
+    normal_splits_X = np.array_split(X_normal, N_TASKS)
+    normal_splits_y = np.array_split(y_normal, N_TASKS)
+
+    scaler: StandardScaler | None = None
+    tasks: list[dict] = []
+
+    for task_id, task_name in enumerate(task_order):
+        X_norm_task = normal_splits_X[task_id]
+
+        # Split normal train/test (déterministe — pas de stratify car classe unique)
+        n_test_norm = max(1, int(len(X_norm_task) * test_size))
+        X_norm_train = X_norm_task[n_test_norm:]
+        X_norm_test = X_norm_task[:n_test_norm]
+
+        # Toutes les fenêtres faulty de cette tâche vont en test uniquement
+        faulty_mask = np.isin(ds.fault_labels, task_fault_labels[task_name])
+        X_faulty = ds.X[faulty_mask]
+        y_faulty = ds.y[faulty_mask]
+
+        # Normalisation — fit uniquement sur les normaux d'entraînement de la Tâche 0
+        if task_id == 0:
+            scaler = StandardScaler()
+            X_norm_train = scaler.fit_transform(X_norm_train).astype(np.float32)
+        else:
+            X_norm_train = scaler.transform(X_norm_train).astype(np.float32)  # type: ignore[union-attr]
+        X_norm_test = scaler.transform(X_norm_test).astype(np.float32)  # type: ignore[union-attr]
+        X_faulty = scaler.transform(X_faulty).astype(np.float32)  # type: ignore[union-attr]
+
+        if len(X_norm_train) < 100:
+            warnings.warn(
+                f"Tâche {task_id} ({task_name!r}) : seulement {len(X_norm_train)} échantillons "
+                f"normaux d'entraînement (CWRU ~10% normal). Les détecteurs one-class peuvent "
+                f"être instables.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        # Train loader : normaux uniquement
+        # MEM: X_norm_train [~62, 9] × 4 B @ FP32 / [~62, 9] × 1 B @ INT8
+        y_train_zeros = np.zeros(len(X_norm_train), dtype=np.float32)
+        x_train_t = torch.from_numpy(X_norm_train)
+        y_train_t = torch.from_numpy(y_train_zeros)
+        train_loader = DataLoader(
+            TensorDataset(x_train_t, y_train_t),
+            batch_size=batch_size,
+            shuffle=True,
+        )
+
+        # Test loader : normaux test + faulty (mélangés)
+        X_test_all = np.concatenate([X_norm_test, X_faulty], axis=0)
+        y_test_norm = np.zeros(len(X_norm_test), dtype=np.float32)
+        y_test_faulty = y_faulty.astype(np.float32)
+        y_test_all = np.concatenate([y_test_norm, y_test_faulty], axis=0)
+
+        x_test_t = torch.from_numpy(X_test_all)
+        y_test_t = torch.from_numpy(y_test_all)
+        test_loader_mixed = DataLoader(
+            TensorDataset(x_test_t, y_test_t),
+            batch_size=batch_size,
+            shuffle=False,
+        )
+
+        tasks.append({
+            "task_id": task_id,
+            "task_name": task_name,
+            "domain": task_name,
+            "train_loader": train_loader,
+            "test_loader_mixed": test_loader_mixed,
+            "n_train": len(X_norm_train),
+            "n_test": len(X_test_all),
+            "n_test_normal": len(X_norm_test),
+            "n_test_faulty": len(X_faulty),
         })
 
     return tasks

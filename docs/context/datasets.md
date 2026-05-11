@@ -272,6 +272,79 @@ tasks = get_pronostia_dataloaders(cfg)
 
 ---
 
+## Dataset 5 — CWRU Bearing Dataset (Case Western Reserve University)
+
+| Champ | Valeur |
+|-------|--------|
+| **Source** | Case Western Reserve University Bearing Data Center |
+| **Nature** | Séries temporelles vibratoires (roulement à billes) |
+| **Chemin local** | `data/raw/CWRU Bearing Dataset/` |
+| **Fichier features** | `feature_time_48k_2048_load_1.csv` (2 300 lignes × 9 features) |
+| **Fichiers MAT bruts** | `data/raw/CWRU Bearing Dataset/raw/*.mat` (10 fichiers) |
+
+### Structure des données
+
+- **2 300 fenêtres** × 9 features statistiques (10 classes × 230 fenêtres)
+- **Fenêtre** : 2 048 points @ 48 kHz, pas de recouvrement
+- **Label binaire** : 0 = Normal, 1 = Défaut
+- **Classes** : 1 classe Normal (`Time_Normal_1_098.mat`) + 9 classes faulty :
+  - Ball defects : B007, B014, B021 (3 sévérités)
+  - Inner Race defects : IR007, IR014, IR021
+  - Outer Race defects : OR007, OR014, OR021
+
+### Features extraites (9 features)
+
+`max`, `min`, `mean`, `sd`, `rms`, `skewness`, `kurtosis`, `crest`, `form`
+
+### Scénario CL supervisé — CWRU
+
+**Domain-Incremental**, deux variantes :
+
+| Variante | Tâche 0 | Tâche 1 | Tâche 2 |
+|----------|---------|---------|---------|
+| by_fault_type | Ball (x007/014/021) | Inner Race | Outer Race |
+| by_severity | Sévérité 0.007" | Sévérité 0.014" | Sévérité 0.021" |
+
+### Scénario Anomaly Detection — CWRU
+
+**Scénario retenu : `by_severity`**
+
+Justification : la sévérité croissante (0.007" → 0.014" → 0.021") modélise la dégradation
+progressive d'un défaut, ce qui est plus naturel pour un détecteur one-class et cohérent
+avec Pronostia (dégradation temporelle en fin de vie). Le scénario `by_fault_type` reste
+disponible comme alternative via le paramètre `scenario` du loader.
+
+| Tâche | task_name | Train (normal uniquement) | Test (normal + faulty) |
+|-------|-----------|--------------------------|------------------------|
+| 0 | `"007"` | Normal[0:77] (~62 train après split) | Normal[0:77] test + B007 + IR007 + OR007 |
+| 1 | `"014"` | Normal[77:154] (~62 train) | Normal[77:154] test + B014 + IR014 + OR014 |
+| 2 | `"021"` | Normal[154:230] (~61 train) | Normal[154:] test + B021 + IR021 + OR021 |
+
+**Contrainte** : seulement ~230 fenêtres normales au total (≈10% du dataset), soit ~77 par tâche
+et ~62 en train (80/20 split). Les détecteurs one-class peuvent être instables — voir
+overrides dans `configs/unsupervised_anomaly_detection_config.yaml` (DATASETS.cwru).
+
+```
+SPLIT_STRATEGY : "by_severity"
+N_TASKS        : 3
+NORMAL_RATIO   : ~0.10 (230 normaux / 2 300 total)
+```
+
+### Chargement recommandé — CWRU Anomaly Detection
+
+```python
+from src.data.cwru_dataset import get_cwru_dataloaders_anomaly_detection
+
+tasks = get_cwru_dataloaders_anomaly_detection(
+    data_path="data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv",
+    scenario="by_severity",  # ou "by_fault_type"
+)
+# → [{"task_id": 0, "task_name": "007", "train_loader": ..., "test_loader_mixed": ...,
+#      "n_train": ~62, "n_test": ~705, "n_test_normal": ~15, "n_test_faulty": ~690}, ...]
+```
+
+---
+
 ## Comparaison et rôles dans le projet
 
 | Critère | Dataset 1 — Pump | Dataset 2 — Monitoring | Dataset 3 — Battery RUL | Dataset 4 — Pronostia |

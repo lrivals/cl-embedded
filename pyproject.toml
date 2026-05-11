@@ -19,6 +19,7 @@ dependencies = [
     "pyyaml>=6.0",
     "onnx>=1.14",
     "onnxruntime>=1.16",
+    "onnxscript>=0.1",
     "matplotlib>=3.7",
     "seaborn>=0.12",
 ]

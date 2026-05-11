@@ -1,0 +1,63 @@
+DATASETS:
+  cwru:
+    INPUT_DIM: 9
+    backbone:
+      decoder_dims:
+      - 8
+      - 9
+      - 9
+      encoder_dims:
+      - 9
+      - 8
+      - 4
+      input_dim: 9
+_snapshot_timestamp: '2026-05-05T19:10:25.335893'
+anomaly_percentile: 95
+anomaly_threshold: null
+backbone:
+  checkpoint_path: experiments/exp_087_tinyol_monitoring_anomaly_detection/backbone_task{}.pt
+  decoder_dims:
+  - 4
+  - 4
+  - 4
+  encoder_dims:
+  - 4
+  - 4
+  - 2
+  input_dim: 4
+data:
+  csv_path: data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - Pump
+  - Turbine
+  - Compressor
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_column: faulty
+  n_tasks: 3
+  normalizer_path: configs/monitoring_normalizer_anomaly.yaml
+evaluation:
+  metrics:
+  - avg_auroc
+  - auroc_forgetting
+  - auroc_bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_087_tinyol_monitoring_anomaly_detection/results/
+  seed: 42
+exp_id: exp_087_tinyol_monitoring_anomaly_detection
+memory:
+  expected_ram_bytes: 408
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+pretrain:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  optimizer: adam
+  seed: 42

@@ -1,0 +1,10 @@
+{
+  "mode": "uart",
+  "port": "/dev/ttyACM0",
+  "baud": 115200,
+  "n_samples": 10,
+  "accuracy": 0.0,
+  "crc_errors": 0,
+  "latency_mean_us": 3.0,
+  "latency_p99_us": 3.0
+}

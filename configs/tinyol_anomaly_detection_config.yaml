@@ -36,6 +36,14 @@ data:
   feature_columns: ["temperature", "pressure", "vibration", "humidity"]
   n_tasks: 3
 
+DATASETS:
+  cwru:
+    INPUT_DIM: 9
+    backbone:
+      input_dim: 9
+      encoder_dims: [9, 8, 4]  # bottleneck 4D < 9D input — compression forcée
+      decoder_dims: [8, 9, 9]  # reconstruction symétrique
+
 evaluation:
   seed: 42
   metrics: ["avg_auroc", "auroc_forgetting", "auroc_bwt", "ram_peak_bytes", "n_params"]

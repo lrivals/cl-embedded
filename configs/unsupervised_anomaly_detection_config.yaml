@@ -47,3 +47,26 @@ memory:
   warn_if_above_bytes: 52000
   # Mahalanobis d=4 : (4 + 4×4) × 4 = 80 B @ FP32
   # KMeans k=3, d=4 : 3 × 4 × 4 = 48 B @ FP32 (centroids seulement)
+
+# --- Blocs dataset-specific (ajout Sprint 16) ---
+DATASETS:
+  cwru:
+    INPUT_DIM: 9
+    N_TASKS: 3
+    SPLIT_STRATEGY: "by_severity"   # décision S16-01 — by_severity retenu
+    NORMAL_RATIO: 0.10              # ~230 normaux / 2300 total
+    csv_path: "data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv"
+    batch_size: 32
+    # ~77 normaux/tâche → ~62 train, ~15 test normaux
+    # MEM: KMeans (k=1, d=9) : 1 × 9 × 4 = 36 B @ FP32
+    # MEM: Mahalanobis (d=9, cov 9×9) : (9 + 81) × 4 = 360 B @ FP32
+    # Overrides justifiés par le faible nombre de normaux (~62 train/tâche)
+    kmeans:
+      N_CLUSTERS: 1           # 1 centroïde normal (données insuffisantes pour k>1)
+    mahalanobis:
+      REG_COVAR: 1.0e-4       # régularisation plus forte (cov instable sur ~62 échantillons)
+    dbscan:
+      EPS: 0.8
+      MIN_SAMPLES: 3          # min_samples réduit car peu de normaux
+    ewc_oneclass:
+      THRESHOLD_PERCENTILE: 80  # seuil abaissé (entraînement sur peu de normaux)

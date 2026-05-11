@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "STM32F439ZI",
+            "includePath": [
+                "${workspaceRoot}/firmware/stm32f4_blink/inc"
+            ],
+            "defines": [
+                "STM32F439xx"
+            ],
+            "compilerPath": "/usr/bin/arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "intelliSenseMode": "gcc-arm",
+            "browse": {
+                "path": [
+                    "${workspaceRoot}/firmware/stm32f4_blink/inc",
+                    "${workspaceRoot}/firmware/stm32f4_blink/src"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}

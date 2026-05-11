@@ -1,0 +1,71 @@
+{
+  "_onnx_fp32": "experiments/exp_160/ewc_backbone.onnx",
+  "_onnx_int8": null,
+  "_checkpoint": "experiments/exp_001_ewc_monitoring_by_equipment/checkpoints/ewc_task3_final.pt",
+  "_dataset": "monitoring",
+  "tasks": [
+    {
+      "task_id": 1,
+      "domain": "Pump",
+      "n_val": 507,
+      "pytorch_fp32": {
+        "accuracy": 0.9763313609467456,
+        "auroc": 0.9792122538293215
+      },
+      "onnx_fp32": {
+        "accuracy": 0.9763313609467456,
+        "auroc": 0.9792122538293215
+      },
+      "ort_match_atol_1e5": true,
+      "max_abs_diff_fp32": 6.938353180885315e-08,
+      "onnx_int8": {
+        "accuracy": 0.9763313609467456,
+        "auroc": 0.9792997811816192
+      },
+      "auroc_drop_fp32_to_int8": -8.752735229766717e-05,
+      "within_2pt_threshold": true
+    },
+    {
+      "task_id": 2,
+      "domain": "Turbine",
+      "n_val": 513,
+      "pytorch_fp32": {
+        "accuracy": 0.9824561403508771,
+        "auroc": 0.9535708326380777
+      },
+      "onnx_fp32": {
+        "accuracy": 0.9824561403508771,
+        "auroc": 0.9535708326380777
+      },
+      "ort_match_atol_1e5": true,
+      "max_abs_diff_fp32": 8.079223334789276e-08,
+      "onnx_int8": {
+        "accuracy": 0.9824561403508771,
+        "auroc": 0.9535708326380778
+      },
+      "auroc_drop_fp32_to_int8": -1.1102230246251565e-16,
+      "within_2pt_threshold": true
+    },
+    {
+      "task_id": 3,
+      "domain": "Compressor",
+      "n_val": 515,
+      "pytorch_fp32": {
+        "accuracy": 0.9864077669902913,
+        "auroc": 0.9904496281271129
+      },
+      "onnx_fp32": {
+        "accuracy": 0.9864077669902913,
+        "auroc": 0.9904496281271129
+      },
+      "ort_match_atol_1e5": true,
+      "max_abs_diff_fp32": 6.426125764846802e-08,
+      "onnx_int8": {
+        "accuracy": 0.9864077669902913,
+        "auroc": 0.9904496281271129
+      },
+      "auroc_drop_fp32_to_int8": 0.0,
+      "within_2pt_threshold": true
+    }
+  ]
+}

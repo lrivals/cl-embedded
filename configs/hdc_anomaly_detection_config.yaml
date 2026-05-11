@@ -34,6 +34,13 @@ feature_bounds:
   vibration: [-2.757283926010132, 4.817769527435303]
   humidity: [-3.3623745441436768, 3.3421783447265625]
 
+DATASETS:
+  cwru:
+    n_features: 9
+    INPUT_DIM: 9
+    D: 512                    # dimension des base vectors CWRU (hdc_base_vectors_cwru.npz)
+    base_vectors_path: "configs/hdc_base_vectors_cwru.npz"
+
 evaluation:
   seed: 42
   metrics: ["avg_auroc", "auroc_forgetting", "auroc_bwt", "ram_peak_bytes", "n_params"]

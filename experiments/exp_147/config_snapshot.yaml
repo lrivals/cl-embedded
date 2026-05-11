@@ -1,0 +1,46 @@
+DATASETS:
+  cwru:
+    INPUT_DIM: 9
+    dbscan:
+      EPS: 0.8
+      MIN_SAMPLES: 3
+_snapshot_timestamp: '2026-05-05T14:55:29.900692'
+data:
+  csv_path: data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - Pump
+  - Turbine
+  - Compressor
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_column: faulty
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer_anomaly.yaml
+dbscan:
+  algorithm: auto
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  eps: null
+  eps_knn_k: 5
+  metric: euclidean
+  min_samples: 5
+evaluation:
+  metrics:
+  - avg_auroc
+  - auroc_forgetting
+  - auroc_bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_123_dbscan_monitoring_anomaly_detection/results/
+  seed: 42
+exp_id: exp_123_dbscan_monitoring_anomaly_detection
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+seed: 42

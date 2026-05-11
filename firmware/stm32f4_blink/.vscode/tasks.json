@@ -1,0 +1,44 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-stm32",
+            "type": "shell",
+            "command": "make -j4",
+            "options": {
+                "cwd": "${workspaceRoot}/firmware/stm32f4_blink"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": "$gcc"
+        },
+        {
+            "label": "flash-stm32",
+            "type": "shell",
+            "command": "make flash",
+            "options": {
+                "cwd": "${workspaceRoot}/firmware/stm32f4_blink"
+            },
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "clean-stm32",
+            "type": "shell",
+            "command": "make clean",
+            "options": {
+                "cwd": "${workspaceRoot}/firmware/stm32f4_blink"
+            },
+            "group": "build"
+        }
+    ]
+}

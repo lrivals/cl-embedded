@@ -1,0 +1,27 @@
+name: Firmware CI
+
+on: [push, pull_request]
+
+jobs:
+  host-tests:
+    name: Host unit tests (x86)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run host unit tests (gcc x86)
+        run: make -C firmware/stm32f4_blink/ test
+
+  arm-build:
+    name: ARM firmware build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
+
+      - name: Build firmware (ARM Cortex-M4)
+        run: make -C firmware/stm32f4_blink/ all

@@ -26,6 +26,13 @@ dbscan:
   anomaly_percentile: 95
   cl_strategy: "refit"      # "refit" | "accumulate"
 
+DATASETS:
+  cwru:
+    INPUT_DIM: 9
+    dbscan:
+      EPS: 0.8
+      MIN_SAMPLES: 3
+
 evaluation:
   seed: 42
   metrics: ["avg_auroc", "auroc_forgetting", "auroc_bwt", "ram_peak_bytes", "n_params"]

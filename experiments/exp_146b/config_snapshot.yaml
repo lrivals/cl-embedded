@@ -1,0 +1,67 @@
+DATASETS:
+  cwru:
+    INPUT_DIM: 9
+    NORMAL_RATIO: 0.1
+    N_TASKS: 3
+    SPLIT_STRATEGY: by_severity
+    batch_size: 32
+    csv_path: data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv
+    dbscan:
+      EPS: 0.8
+      MIN_SAMPLES: 3
+    ewc_oneclass:
+      THRESHOLD_PERCENTILE: 80
+    kmeans:
+      N_CLUSTERS: 1
+    mahalanobis:
+      REG_COVAR: 0.0001
+_snapshot_timestamp: '2026-05-05T19:10:30.445057'
+data:
+  csv_path: data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  domain_column: equipment
+  domain_order:
+  - Pump
+  - Turbine
+  - Compressor
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_column: faulty
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer_anomaly.yaml
+evaluation:
+  metrics:
+  - avg_auroc
+  - auroc_forgetting
+  - auroc_bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir_kmeans: experiments/exp_088_kmeans_monitoring_anomaly_detection/results/
+  output_dir_mahalanobis: experiments/exp_089_mahalanobis_monitoring_anomaly_detection/results/
+  seed: 42
+exp_id_kmeans: exp_088_kmeans_monitoring_anomaly_detection
+exp_id_mahalanobis: exp_089_mahalanobis_monitoring_anomaly_detection
+kmeans:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  k_fixed: 3
+  k_max: 8
+  k_method: silhouette
+  k_min: 2
+  max_iter: 300
+  n_init: 10
+mahalanobis:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: refit
+  reg_covar: 1.0e-06
+  update_sigma_every: 1
+  welford_min_samples: 10
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+seed: 42

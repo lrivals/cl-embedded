@@ -45,6 +45,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 
+from src.data.cwru_dataset import (
+    FEATURE_COLS as CWRU_FEATURE_NAMES,
+    get_cwru_dataloaders_anomaly_detection,
+)
 from src.data.monitoring_dataset import get_cl_dataloaders_anomaly_detection
 from src.data.pronostia_dataset import (
     FEATURE_NAMES,
@@ -67,7 +71,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--exp_id", required=True)
     parser.add_argument("--strategy", required=True, choices=["refit", "accumulate"])
     parser.add_argument("--dataset", default="monitoring")
-    parser.add_argument("--scenario", default="by_equipment")
+    parser.add_argument("--scenario", default=None)
     return parser.parse_args()
 
 
@@ -150,6 +154,89 @@ def _profile_model(model, X_sample: np.ndarray, n_runs: int = 100) -> dict:
         "ram_peak_bytes": int(ram_peak),
         "n_params": n_params,
     }
+
+
+def _load_cwru_tasks(cfg: dict, seed: int, scenario: str | None = None) -> list[dict]:
+    """Charge les tâches CWRU pour l'anomaly detection one-class."""
+    ds_cfg = cfg.get("DATASETS", {}).get("cwru", {})
+    csv_path = Path(ds_cfg.get(
+        "csv_path",
+        "data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv",
+    ))
+    effective_scenario = scenario or ds_cfg.get("SPLIT_STRATEGY", "by_severity")
+    batch_size = int(ds_cfg.get("batch_size", cfg.get("data", {}).get("batch_size", 32)))
+    return get_cwru_dataloaders_anomaly_detection(
+        data_path=csv_path,
+        scenario=effective_scenario,
+        batch_size=batch_size,
+        seed=seed,
+    )
+
+
+def _apply_cwru_overrides(cfg: dict, model_name: str, tasks: list[dict]) -> None:
+    """
+    Applique les overrides dataset-specific CWRU sur cfg avant construction du modèle.
+
+    Patche cfg in-place — les builders lisent directement les clés modifiées.
+    """
+    ds_cfg = cfg.get("DATASETS", {}).get("cwru", {})
+
+    if model_name == "ewc_oneclass":
+        model_cfg = cfg.setdefault("MODEL", {})
+        if "INPUT_DIM" in ds_cfg:
+            model_cfg["INPUT_DIM"] = ds_cfg["INPUT_DIM"]
+
+    elif model_name == "hdc":
+        cfg.setdefault("data", {})["n_features"] = ds_cfg.get("INPUT_DIM", 9)
+        bv_path = ds_cfg.get("base_vectors_path")
+        if bv_path and "hdc" in cfg:
+            cfg["hdc"]["base_vectors_path"] = bv_path
+            # Synchroniser D avec la dimension réelle du fichier de base vectors
+            d_override = ds_cfg.get("D")
+            if d_override is not None:
+                cfg["hdc"]["D"] = int(d_override)
+        X_t0 = np.concatenate([b[0].numpy() for b in tasks[0]["train_loader"]])
+        feature_bounds = {
+            CWRU_FEATURE_NAMES[i]: [float(X_t0[:, i].min()), float(X_t0[:, i].max())]
+            for i in range(X_t0.shape[1])
+        }
+        cfg["feature_bounds"] = feature_bounds
+
+    elif model_name == "tinyol_ae":
+        backbone_overrides = ds_cfg.get("backbone", {})
+        if backbone_overrides:
+            cfg.setdefault("backbone", {}).update(backbone_overrides)
+
+    elif model_name == "kmeans":
+        kmeans_overrides = ds_cfg.get("kmeans", {})
+        if kmeans_overrides:
+            n_clusters = kmeans_overrides.get("N_CLUSTERS")
+            if n_clusters is not None:
+                cfg["kmeans"]["k_fixed"] = int(n_clusters)
+                cfg["kmeans"]["k_method"] = "fixed"
+
+    elif model_name == "mahalanobis":
+        maha_overrides = ds_cfg.get("mahalanobis", {})
+        if maha_overrides:
+            reg_covar = maha_overrides.get("REG_COVAR")
+            if reg_covar is not None:
+                cfg["mahalanobis"]["reg_covar"] = float(reg_covar)
+
+    elif model_name == "dbscan":
+        dbscan_overrides = ds_cfg.get("dbscan", {})
+        if dbscan_overrides:
+            epsilon = dbscan_overrides.get("EPS")
+            if epsilon is not None:
+                cfg["dbscan"]["EPSILON"] = float(epsilon)
+            min_samples = dbscan_overrides.get("MIN_SAMPLES")
+            if min_samples is not None:
+                cfg["dbscan"]["MIN_SAMPLES"] = int(min_samples)
+
+    if model_name == "ewc_oneclass":
+        ewc_overrides = ds_cfg.get("ewc_oneclass", {})
+        pct = ewc_overrides.get("THRESHOLD_PERCENTILE")
+        if pct is not None:
+            cfg.setdefault("TRAINING", {})["THRESHOLD_PERCENTILE"] = int(pct)
 
 
 def _load_pronostia_tasks(cfg: dict, seed: int, failure_ratio: float) -> list[dict]:
@@ -252,9 +339,26 @@ def main() -> None:
         else None
     )
 
+    # Scénario effectif (--scenario overrides config pour CWRU, default "by_equipment" pour monitoring)
+    if args.dataset == "cwru":
+        effective_scenario = args.scenario or cfg.get("DATASETS", {}).get("cwru", {}).get("SPLIT_STRATEGY", "by_severity")
+    elif args.dataset == "pronostia":
+        effective_scenario = args.scenario or "by_condition"
+    else:
+        effective_scenario = args.scenario or "by_equipment"
+
     if args.dataset == "pronostia":
         tasks = _load_pronostia_tasks(cfg, seed, failure_ratio)
         _apply_pronostia_overrides(cfg, args.model, tasks)
+        for t in tasks:
+            print(
+                f"  Task {t['task_id']} ({t['domain']}): "
+                f"{t['n_train']} train (normal) | "
+                f"{t['n_test']} test ({t['n_test_normal']} normal + {t['n_test_faulty']} faulty)"
+            )
+    elif args.dataset == "cwru":
+        tasks = _load_cwru_tasks(cfg, seed, scenario=args.scenario)
+        _apply_cwru_overrides(cfg, args.model, tasks)
         for t in tasks:
             print(
                 f"  Task {t['task_id']} ({t['domain']}): "
@@ -274,7 +378,7 @@ def main() -> None:
         tasks = get_cl_dataloaders_anomaly_detection(
             csv_path=csv_path,
             normalizer_path=normalizer_path,
-            scenario=args.scenario,
+            scenario=args.scenario or "by_equipment",
             batch_size=batch_size,
             seed=seed,
         )
@@ -324,13 +428,21 @@ def main() -> None:
         f"n_params: {prof['n_params']}"
     )
 
+    per_task_n_train = [t["n_train"] for t in tasks]
+    n_train_report = (
+        [sum(per_task_n_train[: i + 1]) for i in range(len(per_task_n_train))]
+        if args.strategy == "accumulate"
+        else per_task_n_train
+    )
+
     extra = {
         "exp_id": exp_id,
         "model": args.model,
         "dataset": args.dataset,
-        "scenario": args.scenario,
+        "scenario": effective_scenario,
         "strategy": args.strategy,
         "failure_ratio": failure_ratio,
+        "n_train_normal_per_task": n_train_report,
         "auroc_per_task_final": [
             float(auroc_matrix[len(tasks) - 1, j]) for j in range(len(tasks))
         ],

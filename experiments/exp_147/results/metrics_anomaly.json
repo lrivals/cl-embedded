@@ -1,0 +1,50 @@
+{
+  "avg_auroc": 1.0,
+  "auroc_forgetting": 0.0,
+  "auroc_bwt": 0.0,
+  "forgetting_per_task": [
+    0.0,
+    0.0
+  ],
+  "bwt_per_task": [
+    0.0,
+    0.0
+  ],
+  "auroc_matrix": [
+    [
+      1.0,
+      null,
+      null
+    ],
+    [
+      1.0,
+      1.0,
+      null
+    ],
+    [
+      1.0,
+      1.0,
+      1.0
+    ]
+  ],
+  "n_tasks": 3,
+  "exp_id": "exp_147",
+  "model": "dbscan",
+  "dataset": "cwru",
+  "scenario": "by_severity",
+  "strategy": "refit",
+  "failure_ratio": null,
+  "n_train_normal_per_task": [
+    62,
+    62,
+    61
+  ],
+  "auroc_per_task_final": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "ram_peak_bytes": 10674,
+  "inference_latency_ms": 0.218961179980397,
+  "n_params": 531
+}
