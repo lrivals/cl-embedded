@@ -195,6 +195,17 @@ Utiliser ces clés BibTeX exactes (issues de `references.bib` du projet manuscri
 
 ---
 
+## Environnement de développement — Outils installés
+
+| Outil | Version | Chemin | Usage dans le projet |
+|-------|---------|--------|----------------------|
+| **STM32CubeMX** | 6.17.0 | `~/STM32CubeMX/STM32CubeMX` | Génération de code d'initialisation MCU, configuration périphériques STM32N6, pinout |
+| **CMake** | 4.3.2 | `/usr/local/bin/cmake` | Build system pour le code C embarqué (Phase 2), intégration VSCode via CMake Tools |
+
+> Ces outils sont à utiliser pour la Phase 2 (portage MCU). CMake est le build system de référence pour les projets STM32CubeIDE exportés. STM32CubeMX génère le `.ioc` et les fichiers de config HAL à partir desquels CMake compile.
+
+---
+
 ## Commandes rapides
 
 ```bash

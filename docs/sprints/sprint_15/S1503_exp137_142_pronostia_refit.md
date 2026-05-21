@@ -88,13 +88,32 @@ experiments/exp_137/
 
 ---
 
+## Résultats
+
+| Exp | Modèle | AUROC C1 | AUROC C2 | AUROC C3 | avg_AUROC | AF |
+| --- | ------ | :------: | :------: | :------: | :-------: | :-: |
+| exp_137 | HDC | 0.6450 | 0.7839 | 0.7404 | **0.7231** | −0.018 |
+| exp_138 | TinyOL AE | 0.7009 | 0.6055 | 0.8740 | **0.7268** | +0.183 |
+| exp_139 | KMeans | 0.7019 | 0.6440 | 0.8747 | **0.7402** | +0.027 |
+| exp_140 | Mahalanobis | 0.6026 | 0.5202 | 0.8791 | **0.6673** | +0.205 |
+| exp_141 | DBSCAN | 0.6861 | 0.5864 | 0.8378 | **0.7034** | +0.106 |
+| exp_142 | EWC one-class | 0.7041 | 0.6180 | 0.8273 | **0.7165** | +0.185 |
+
+> AF = `auroc_forgetting` (positif = oubli, négatif = transfert positif). HDC est le seul modèle sans oubli notable sur Pronostia.
+
+---
+
 ## Critères d'acceptation
 
-- [ ] exp_137–142 : `metrics_anomaly.json` présents avec `auroc_per_task` de longueur 3
-- [ ] `config_snapshot.yaml` présents dans les 6 répertoires
-- [ ] `failure_ratio: 0.10` reporté dans chaque `metrics_anomaly.json` (traçabilité)
-- [ ] Aucun crash — si DBSCAN (exp_141) ne converge pas, documenter et ajuster eps
+- [x] exp_137–142 : `metrics_anomaly.json` présents avec `auroc_per_task_final` de longueur 3
+- [x] `config_snapshot.yaml` présents dans les 6 répertoires
+- [x] `failure_ratio: 0.10` reporté dans chaque `metrics_anomaly.json` (traçabilité)
+- [x] Aucun crash — DBSCAN (exp_141) a convergé avec `EPSILON: 1.5`, pas d'ajustement nécessaire
 
 ## Statut
 
-⬜ À faire
+✅ Terminé
+
+## Bilan
+
+Les 6 expériences refit sur Pronostia by_condition sont complètes. KMeans obtient le meilleur avg_AUROC (0.7402), Mahalanobis le plus faible (0.6673). L'oubli est élevé pour TinyOL AE, EWC one-class et Mahalanobis (AF > 0.18), ce qui s'explique par le refit complet à chaque tâche. HDC montre un léger transfert positif (AF = −0.018). DBSCAN a convergé avec `EPSILON=1.5` sans ajustement post-hoc. La clé JSON réelle est `auroc_per_task_final` (non `auroc_per_task` comme dans la spécification initiale).

@@ -82,12 +82,12 @@ cross_scenario_af_comparison.png   # by_severity vs by_fault_type
 
 ## Critères d'acceptation
 
-- [ ] 7 notebooks présents dans `notebooks/cl_eval/cwru_by_severity/`
-- [ ] Chaque notebook modèle s'exécute sans erreur (`Run All`)
-- [ ] 5 figures sauvegardées par notebook modèle
-- [ ] `comparison.ipynb` inclut la section cross-scenario (AF by_severity vs by_fault_type)
-- [ ] Section 8 : tableau comparatif baseline vs by_severity vs by_fault_type présent
+- [x] 7 notebooks présents dans `notebooks/cl_eval/cwru_by_severity/`
+- [x] Chaque notebook modèle s'exécute sans erreur (`Run All`)
+- [x] 5 figures sauvegardées par notebook modèle
+- [x] `comparison.ipynb` inclut la section cross-scenario (AF by_severity vs by_fault_type)
+- [x] Section 8 : tableau comparatif baseline vs by_severity vs by_fault_type présent
 
 ## Statut
 
-⬜ Non démarré
+✅ Terminé — 13 mai 2026

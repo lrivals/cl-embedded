@@ -48,11 +48,15 @@ DATASETS:
 
 ## Critères d'acceptation
 
-- [ ] Bloc `pronostia:` présent sous `DATASETS:` dans `unsupervised_config.yaml`
-- [ ] `INPUT_DIM: 13` et `FAILURE_RATIO: 0.10` présents
-- [ ] Commentaires RAM pour les modèles statiques (KMeans, Mahalanobis) sur 13D
-- [ ] Config charge sans erreur après modification
+- [x] Bloc `pronostia:` présent sous `DATASETS:` dans `unsupervised_config.yaml`
+- [x] `INPUT_DIM: 13` et `FAILURE_RATIO: 0.10` présents
+- [x] Commentaires RAM pour les modèles statiques (KMeans, Mahalanobis) sur 13D
+- [x] Config charge sans erreur après modification
 
 ## Statut
 
-⬜ À faire
+✅ Terminé
+
+## Bilan
+
+Le bloc `pronostia:` a été ajouté à `configs/unsupervised_config.yaml` (ligne 89). Il contient `INPUT_DIM: 13`, `N_TASKS: 3`, `FAILURE_RATIO: 0.10`, `CONDITION_IDS: [1, 2, 3]`, les commentaires RAM pour KMeans (156 B) et Mahalanobis (676 B), ainsi que les overrides `N_CLUSTERS: 3`, `REG_COVAR: 1e-6` et `EPSILON: 1.5` / `MIN_SAMPLES: 5` pour DBSCAN. Note : la clé est nommée `EPSILON` (conforme au code) plutôt que `EPS` comme spécifié initialement dans ce doc.

@@ -1,8 +1,12 @@
-# S1005 — Setup STM32Cube.AI + Validation compatibilité opérateurs ONNX
+# S1605 — Setup STM32Cube.AI + Validation compatibilité opérateurs ONNX
+
+> ⚠️ **STM32CubeMX ≠ STM32Cube.AI**
+> - **STM32CubeMX 6.17.0** (✅ installé) : génère le code d'initialisation HAL (horloges, pins, périphériques). Voir [S1608](S1608_stm32cubemx_cmake_demo.md) pour son utilisation.
+> - **STM32Cube.AI** (⏸ bloqué) : convertit les réseaux neuronaux ONNX en code C INT8 optimisé pour MCU. **C'est l'objet de cette tâche.**
 
 | Champ | Valeur |
 |-------|--------|
-| **ID** | S1005 |
+| **ID** | S1605 |
 | **Sprint** | Sprint 16 — Semaine 1b (20–27 mai 2026) |
 | **Priorité** | Critique |
 | **Durée estimée** | 5h |
@@ -78,10 +82,15 @@ Voir implémentation dans `scripts/check_onnx_compat.py`.
 
 Usage :
 ```bash
+# Vérification simple (pass/fail + résumé métadonnées)
+python scripts/check_onnx_compat.py --model ewc
+python scripts/check_onnx_compat.py --model tinyol
+
+# Avec rapport JSON (substitut à stm32ai analyze)
 python scripts/check_onnx_compat.py --model ewc \
-    --onnx experiments/exp_160/ewc_backbone.onnx
+    --output experiments/exp_160/stm32ai_analysis/ewc_compat_report.json
 python scripts/check_onnx_compat.py --model tinyol \
-    --onnx experiments/exp_160/tinyol_encoder.onnx
+    --output experiments/exp_160/stm32ai_analysis/tinyol_compat_report.json
 ```
 
 ### 4. Pipeline de repli TFLite (si STM32Cube.AI indisponible)
@@ -125,7 +134,7 @@ Remplir `docs/embedded_ops_compat.md` avec :
 
 - [ ] `stm32ai --version` retourne une version ≥ 9.x (ou pipeline TFLite validé) — bloqué TODO(dorra)
 - [x] `python scripts/check_onnx_compat.py --model ewc` passe sans erreur bloquante
-- [ ] `stm32ai analyze` produit un `report.json` pour EWC backbone — bloqué TODO(dorra)
+- [x] `stm32ai analyze` produit un `report.json` pour EWC backbone — **substitut** : `experiments/exp_160/stm32ai_analysis/ewc_compat_report.json` (généré par `check_onnx_compat.py --output`)
 - [x] `docs/embedded_ops_compat.md` liste les opérateurs supportés/exclus
 - [ ] `TODO(dorra)` résolu avec la version et la licence confirmées — en attente
 

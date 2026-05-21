@@ -1,0 +1,33 @@
+{
+  "path": "experiments/exp_160/ewc_backbone.onnx",
+  "valid": true,
+  "opset": 17,
+  "operators": [
+    "Gemm",
+    "Relu",
+    "Sigmoid"
+  ],
+  "n_nodes": 6,
+  "inputs": [
+    {
+      "name": "input",
+      "shape": [
+        1,
+        4
+      ],
+      "dtype": "FLOAT32"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "shape": [
+        1,
+        1
+      ]
+    }
+  ],
+  "file_size_bytes": 3558,
+  "errors": [],
+  "warnings": []
+}

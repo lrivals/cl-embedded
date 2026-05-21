@@ -1,0 +1,5 @@
+// stm32f439zi_usart3.repl — Platform description NUCLEO-F439ZI
+// usart3 (PD8=TX, PD9=RX) est defini dans platforms/cpus/stm32f4.repl @ 0x40004800.
+// Le .resc cree le socket TCP 3456 via CreateServerSocketTerminal.
+
+using "platforms/boards/stm32f4_discovery-kit.repl"

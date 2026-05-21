@@ -43,53 +43,53 @@ Compléter la couverture du dataset Monitoring pour la phase Anomaly Detection e
 
 ### Monitoring by_equipment — DBSCAN
 
-| Exp | Modèle | Stratégie | Config | Statut |
-|-----|--------|-----------|--------|--------|
-| exp_123 | DBSCAN | by_equipment refit | `configs/unsupervised_config.yaml` | ⬜ |
-| exp_124 | DBSCAN | by_equipment accumulate | `configs/unsupervised_config.yaml` | ⬜ |
+| Exp | Modèle | Stratégie | Config | Statut | AUROC |
+|-----|--------|-----------|--------|--------|-------|
+| exp_123 | DBSCAN | by_equipment refit | `configs/unsupervised_config.yaml` | ✅ | 0.9871 |
+| exp_124 | DBSCAN | by_equipment accumulate | `configs/unsupervised_config.yaml` | ✅ | 0.9873 |
 
 ### Monitoring by_equipment — EWC one-class
 
-| Exp | Modèle | Stratégie | Config | Statut |
-|-----|--------|-----------|--------|--------|
-| exp_125 | EWC one-class | by_equipment refit | `configs/ewc_oneclass_config.yaml` | ⬜ |
-| exp_126 | EWC one-class | by_equipment accumulate | `configs/ewc_oneclass_config.yaml` | ⬜ |
+| Exp | Modèle | Stratégie | Config | Statut | AUROC |
+|-----|--------|-----------|--------|--------|-------|
+| exp_125 | EWC one-class | by_equipment refit | `configs/ewc_oneclass_config.yaml` | ✅ | 0.9630 |
+| exp_126 | EWC one-class | by_equipment accumulate | `configs/ewc_oneclass_config.yaml` | ✅ | 0.9682 |
 
 ### Monitoring by_equipment — accumulate v2 (4 modèles existants)
 
-| Exp | Modèle | Stratégie | Config | Statut |
-|-----|--------|-----------|--------|--------|
-| exp_127 | HDC | by_equipment accumulate | `configs/hdc_config.yaml` | ⬜ |
-| exp_128 | TinyOL AE | by_equipment accumulate | `configs/tinyol_config.yaml` | ⬜ |
-| exp_129 | KMeans | by_equipment accumulate | `configs/unsupervised_config.yaml` | ⬜ |
-| exp_130 | Mahalanobis | by_equipment accumulate | `configs/unsupervised_config.yaml` | ⬜ |
+| Exp | Modèle | Stratégie | Config | Statut | AUROC |
+|-----|--------|-----------|--------|--------|-------|
+| exp_127 | HDC | by_equipment accumulate | `configs/hdc_config.yaml` | ✅ | 0.9451 |
+| exp_128 | TinyOL AE | by_equipment accumulate | `configs/tinyol_config.yaml` | ✅ | 0.9628 |
+| exp_129 | KMeans | by_equipment accumulate | `configs/unsupervised_config.yaml` | ✅ | 0.9845 |
+| exp_130 | Mahalanobis | by_equipment accumulate | `configs/unsupervised_config.yaml` | ✅ | 0.9877 |
 
 ### Monitoring by_location — 6 modèles refit
 
-| Exp | Modèle | Stratégie | Config | Statut |
-|-----|--------|-----------|--------|--------|
-| exp_131 | HDC | by_location refit | `configs/hdc_config.yaml` | ⬜ |
-| exp_132 | TinyOL AE | by_location refit | `configs/tinyol_config.yaml` | ⬜ |
-| exp_133 | KMeans | by_location refit | `configs/unsupervised_config.yaml` | ⬜ |
-| exp_134 | Mahalanobis | by_location refit | `configs/unsupervised_config.yaml` | ⬜ |
-| exp_135 | DBSCAN | by_location refit | `configs/unsupervised_config.yaml` | ⬜ |
-| exp_136 | EWC one-class | by_location refit | `configs/ewc_oneclass_config.yaml` | ⬜ |
+| Exp | Modèle | Stratégie | Config | Statut | AUROC |
+|-----|--------|-----------|--------|--------|-------|
+| exp_131 | HDC | by_location refit | `configs/hdc_config.yaml` | ✅ | 0.9470 |
+| exp_132 | TinyOL AE | by_location refit | `configs/tinyol_config.yaml` | ✅ | 0.9329 |
+| exp_133 | KMeans | by_location refit | `configs/unsupervised_config.yaml` | ✅ | 0.9851 |
+| exp_134 | Mahalanobis | by_location refit | `configs/unsupervised_config.yaml` | ✅ | 0.9879 |
+| exp_135 | DBSCAN | by_location refit | `configs/unsupervised_config.yaml` | ✅ | 0.9857 |
+| exp_136 | EWC one-class | by_location refit | `configs/ewc_oneclass_config.yaml` | ✅ | 0.9552 |
 
 ---
 
 ## Critères d'acceptation
 
-- [ ] S14-01 : `EWCOneClassDetector` importable depuis `src.models.ewc.ewc_oneclass`, API `fit_task(X_normal)` / `predict_score(X)` / `on_task_end()` conforme à `run_anomaly_detection_scenario()`
-- [ ] S14-02 : `configs/ewc_oneclass_config.yaml` charge sans erreur ; `HIDDEN_DIM`, `LATENT_DIM`, `LAMBDA_EWC`, `THRESHOLD_PERCENTILE` présents avec valeurs par défaut ≤ 64 Ko RAM
-- [ ] S14-03 : `DBSCANDetector.fit_task()` + `predict_score()` intégrés dans `run_anomaly_detection_scenario()` sans modification du scénario générique
-- [ ] S14-04 : exp_123–124 exécutées, `metrics_anomaly.json` + `config_snapshot.yaml` présents
-- [ ] S14-05 : exp_125–126 exécutées, `metrics_anomaly.json` + `config_snapshot.yaml` présents
-- [ ] S14-06 : exp_127–130 exécutées, `metrics_anomaly.json` présents (compléter exp_086–089 refit)
-- [ ] S14-07 : `ram_peak_bytes` mesuré pour EWC one-class (input_dim=4) ; annotations `# MEM:` présentes sur chaque couche de `ewc_oneclass.py`
-- [ ] S14-08 : `get_cl_dataloaders_anomaly_detection(scenario="by_location")` retourne 5 tâches avec split train_normal / test_all
-- [ ] S14-09 : exp_131–136 exécutées, `metrics_anomaly.json` présents
-- [ ] S14-10 : notebook exécutable end-to-end, tableau AUROC 6×4 (modèle × stratégie/scénario) présent
-- [ ] S14-11 : `pytest tests/test_ewc_oneclass.py tests/test_dbscan_detector.py -v` → 100% pass
+- [x] S14-01 : `EWCOneClassDetector` importable depuis `src.models.ewc.ewc_oneclass`, API `fit_task(X_normal)` / `predict_score(X)` / `on_task_end()` conforme à `run_anomaly_detection_scenario()` ✅
+- [x] S14-02 : `configs/ewc_oneclass_config.yaml` charge sans erreur ; `HIDDEN_DIM`, `LATENT_DIM`, `LAMBDA_EWC`, `THRESHOLD_PERCENTILE` présents avec valeurs par défaut ≤ 64 Ko RAM ✅
+- [x] S14-03 : `DBSCANDetector.fit_task()` + `predict_score()` intégrés dans `run_anomaly_detection_scenario()` sans modification du scénario générique ✅
+- [x] S14-04 : exp_123–124 exécutées, `metrics_anomaly.json` + `config_snapshot.yaml` présents ✅
+- [x] S14-05 : exp_125–126 exécutées, `metrics_anomaly.json` + `config_snapshot.yaml` présents ✅
+- [x] S14-06 : exp_127–130 exécutées, `metrics_anomaly.json` présents ✅
+- [x] S14-07 : `ram_peak_bytes` mesuré pour EWC one-class (input_dim=4) ; annotations `# MEM:` présentes sur chaque couche de `ewc_oneclass.py` ✅
+- [x] S14-08 : `get_cl_dataloaders_anomaly_detection(scenario="by_location")` retourne 5 tâches avec split train_normal / test_all ✅
+- [x] S14-09 : exp_131–136 exécutées, `metrics_anomaly.json` présents ✅
+- [x] S14-10 : notebook `notebook_anomaly_detection_6models.ipynb` exécuté end-to-end, tableau AUROC 6×3 (modèle × by_equip_refit / by_equip_accum / by_loc_refit) présent ✅
+- [x] S14-11 : `pytest tests/test_ewc_oneclass.py tests/test_dbscan_detector.py -v` → 100% pass (13 + 12 = 25 tests) ✅
 
 ---
 

@@ -1,0 +1,26 @@
+# board_ewc.yaml — Config EWC head MLP embarqué (NUCLEO-F439ZI / STM32N6)
+# Toujours passer par ce fichier pour modifier les hyperparamètres.
+
+MODEL: ewc_head
+PLATFORM: nucleo_f439zi
+
+# Architecture (doit correspondre aux constantes dans ewc_head.h)
+EWC_IN: 5
+EWC_H1: 32
+EWC_H2: 16
+EWC_OUT: 2
+
+# Hyperparamètres
+EWC_LR: 0.01             # Learning rate SGD (constante dans ewc_head.h)
+EWC_LAMBDA: 400.0        # Coefficient régularisation Fisher
+FISHER_EMA_DECAY: 0.99   # Décroissance EMA pour mise à jour Fisher online
+
+# Budget mémoire (vérification Gap 2)
+RAM_WEIGHTS_BYTES: 3072   # (5×32+32 + 32×16+16 + 16×2+2) × 4 B
+RAM_FISHER_BYTES: 6144    # fisher + star_weights (×2 poids)
+RAM_ACTIVATIONS_BYTES: 200  # h1(128B) + h2(64B) + logits(8B) stack
+# Total : ~9.5 Ko << 64 Ko
+
+# Export poids C
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
+WEIGHTS_CHECKPOINT: "experiments/exp_160/ewc_head_weights.pkl"

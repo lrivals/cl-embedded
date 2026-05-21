@@ -1,0 +1,30 @@
+# board_tinyol.yaml — Config TinyOL encoder embarqué (NUCLEO-F439ZI / STM32N6)
+# Toujours passer par ce fichier pour modifier les hyperparamètres.
+# Référence : Ren2021TinyOL, tinyol_spec.md
+
+MODEL: tinyol_encoder
+PLATFORM: nucleo_f439zi
+
+# Architecture (doit correspondre aux constantes dans tinyol.h)
+TINYOL_IN: 5
+TINYOL_H1: 32
+TINYOL_EMB: 16
+TINYOL_OUT: 5
+
+# Hyperparamètres
+RECONSTRUCTION_THRESHOLD: 0.05  # Seuil MSE pour détection anomalie
+
+# Budget mémoire (vérification Gap 2)
+RAM_ENCODER_BYTES: 3136   # w_enc1(640) + b_enc1(128) + w_enc2(2048) + b_enc2(64) + activations(256)
+RAM_DECODER_BYTES: 2816   # w_dec1(2048) + b_dec1(128) + w_dec2(640) + b_dec2(20) + activations(256)
+# Note : poids encoder + decoder en Flash (read-only), seules les activations en SRAM
+RAM_ACTIVATIONS_BYTES: 512  # h1(128B) + emb(64B) + recon(20B) stack
+# Total SRAM : ~7 Ko << 64 Ko
+
+# STM32N6 NPU : encoder tourne sur NeuralART Turbo (inférence uniquement)
+# Backprop tête OtO sur Cortex-M55 SW (sprint suivant)
+NPU_TARGET: "NeuralART_Turbo"  # TODO(dorra): confirmer format .nef
+
+# Export poids C
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
+WEIGHTS_CHECKPOINT: "experiments/exp_S19/tinyol_weights.pkl"

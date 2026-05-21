@@ -74,8 +74,8 @@ Adapter les trois détecteurs non supervisés existants (KMeans, Mahalanobis, DB
 
 ---
 
-## Questions ouvertes (reportées Sprint 14–16)
+## Questions ouvertes résolues (Sprint 15)
 
-- `TODO(arnaud)` : scénario CWRU anomaly detection — by_fault_type ou by_severity ? (→ Sprint 16 S16-01)
-- `TODO(dorra)` : DBSCAN avec CoreSet borné pour rester sous 64 Ko ? Alternative envisageable ?
-- `TODO(fred)` : seuil AUROC acceptable pour portage industriel (≥ 0.90 ? ≥ 0.95 ?) — (→ Sprint 16 S16-06)
+- ~~`TODO(arnaud)` : scénario CWRU anomaly detection — by_fault_type ou by_severity ?~~ → **Résolu Sprint 15** : les deux scénarios ont été exécutés (exp_143–148 by_severity, exp_149–154 by_fault_type). AUROC 0.99–1.00 dans les deux cas.
+- `TODO(dorra)` : DBSCAN avec CoreSet borné pour rester sous 64 Ko ? → DBSCAN écarté du portage (73–121 Ko, voir [S1303_dbscan_ram_disqualification.md](S1303_dbscan_ram_disqualification.md))
+- ~~`TODO(fred)` : seuil AUROC acceptable pour portage industriel ?~~ → **Résolu Sprint 15** : CWRU AUROC ≥ 0.99 (5 modèles sur 6), Pronostia AUROC ~0.72. Le seuil de 0.90 est atteint sur CWRU ; Pronostia reste en dessous.

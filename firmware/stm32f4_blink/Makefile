@@ -16,7 +16,8 @@ C_SOURCES   = src/main.c \
               src/hw_info.c \
               src/mahalanobis.c \
               src/ewc_head.c \
-              src/pipeline.c
+              src/pipeline.c \
+              src/syscalls.c
 ASM_SOURCES = startup/startup_stm32f439xx.s
 
 # ── Includes ─────────────────────────────────────────────────────────────
@@ -29,7 +30,7 @@ FLOAT    = -mfloat-abi=hard
 MCU      = $(CPU) -mthumb $(FPU) $(FLOAT)
 
 # ── Flags de compilation ─────────────────────────────────────────────────
-CFLAGS   = $(MCU) $(C_INCLUDES) -DSTM32F439xx \
+CFLAGS   = $(MCU) $(C_INCLUDES) -DSTM32F439xx -DDEBUG_PRINTF=1 \
            -Wall -Wextra -Os -g3 \
            -ffunction-sections -fdata-sections \
            -std=gnu11
@@ -38,7 +39,7 @@ ASFLAGS  = $(MCU) -g3
 
 # ── Linker ───────────────────────────────────────────────────────────────
 LDSCRIPT  = linker/STM32F439ZITx_FLASH.ld
-LDFLAGS   = $(MCU) -specs=nano.specs -T$(LDSCRIPT) \
+LDFLAGS   = $(MCU) -specs=nano.specs -u _printf_float -T$(LDSCRIPT) \
             -Wl,--gc-sections -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref \
             -Wl,--print-memory-usage
 

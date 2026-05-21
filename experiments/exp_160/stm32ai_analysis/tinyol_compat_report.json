@@ -1,0 +1,32 @@
+{
+  "path": "experiments/exp_160/tinyol_encoder.onnx",
+  "valid": true,
+  "opset": 17,
+  "operators": [
+    "Gemm",
+    "Relu"
+  ],
+  "n_nodes": 5,
+  "inputs": [
+    {
+      "name": "input",
+      "shape": [
+        1,
+        25
+      ],
+      "dtype": "FLOAT32"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "output",
+      "shape": [
+        1,
+        8
+      ]
+    }
+  ],
+  "file_size_bytes": 6682,
+  "errors": [],
+  "warnings": []
+}

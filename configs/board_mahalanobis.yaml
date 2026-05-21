@@ -1,0 +1,20 @@
+# board_mahalanobis.yaml — Config Mahalanobis embarqué (NUCLEO-F439ZI / STM32N6)
+# Toujours passer par ce fichier pour modifier les hyperparamètres (jamais dans le code C).
+
+MODEL: mahalanobis
+PLATFORM: nucleo_f439zi
+
+# Architecture
+MAHA_DIM: 5              # Nombre de features (doit correspondre à MAHA_DIM dans mahalanobis.h)
+
+# Hyperparamètres
+THRESHOLD: 2.5           # Seuil de décision (distance Mahalanobis)
+EMA_ALPHA: 0.05          # Facteur EMA pour update incrémental de la moyenne
+
+# Budget mémoire (vérification Gap 2)
+RAM_WEIGHTS_BYTES: 128   # mean(20B) + precision(100B) + scalaires(8B)
+RAM_ACTIVATIONS_BYTES: 40  # diff(20B) + left(20B) stack temporaire
+
+# Export poids C
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
+WEIGHTS_CHECKPOINT: "experiments/exp_160/mahalanobis_weights.pkl"

@@ -32,8 +32,24 @@ Mettre en place la chaîne outillage complète pour le portage des modèles CL P
 | S1005 | Setup STM32Cube.AI CLI + validation compatibilité opérateurs ONNX | 🔴 | ⏸ | `scripts/check_onnx_compat.py`, `docs/embedded_ops_compat.md` | TODO(dorra) |
 | S1006 | Infrastructure de test C : Unity + CI GitHub Actions | 🟡 | ✅ | `firmware/stm32f4_blink/tests/`, `.github/workflows/firmware.yml` | S1001 |
 | S1007 | Simulateur capteur UART + métriques online (board réelle) | 🟡 | ✅ | `scripts/sensor_sim.py`, `src/evaluation/online_metrics.py` | S1001 |
+| S1008 | STM32CubeMX projet NUCLEO-F439ZI + CMake build + démo encadrants | 🟡 | 🆕 | `firmware/stm32f4_cubemx/`, `docs/embedded_demo_guide.md` | S1001, S1004 |
+| S1009 | LED blink LD2 (PA5) via HAL CubeMX — Hello World embarqué | 🟡 | 🆕 | `firmware/stm32f4_cubemx/Core/Src/main.c` | S1008 |
 
-> Détail : S1601_stm32_env_setup.md · S1602_onnx_export.md · S1603_portage_c_mvp.md · S1604_hardware_characterization.md · S1605_stm32cubeai_setup.md · S1606_c_test_infrastructure.md · S1607_sensor_simulator.md
+> Détail : S1601_stm32_env_setup.md · S1602_onnx_export.md · S1603_portage_c_mvp.md · S1604_hardware_characterization.md · S1605_stm32cubeai_setup.md · S1606_c_test_infrastructure.md · S1607_sensor_simulator.md · S1608_stm32cubemx_cmake_demo.md · S1609_led_blink_cubemx.md
+
+---
+
+## Outils installés
+
+| Outil | Version | Chemin | Statut | Usage |
+|-------|---------|--------|--------|-------|
+| ARM GCC | 13.x | `arm-none-eabi-gcc` | ✅ | Compilation C embarqué |
+| OpenOCD | — | `openocd` | ✅ | Flash + debug JTAG/SWD |
+| **STM32CubeMX** | **6.17.0** | `~/STM32CubeMX/STM32CubeMX` | **✅ Installé** | Génération HAL, config pins/horloges |
+| **CMake** | **4.3.2** | `/usr/local/bin/cmake` | **✅ Installé** | Build system C embarqué (VSCode intégré) |
+| STM32Cube.AI | ≥ 9.x requis | `stm32ai` | ⏸ `TODO(dorra)` | Conversion ONNX → code C INT8 |
+
+> ⚠️ **STM32CubeMX ≠ STM32Cube.AI** — CubeMX génère le code d'initialisation HAL (horloges, pins). Cube.AI convertit les réseaux neuronaux en C INT8. Ce sont deux outils distincts.
 
 ---
 
@@ -51,12 +67,12 @@ ST-LINK intégré                               accès hardware TODO(dorra/fred)
 ## Pipeline Phase 2
 
 ```
-PyTorch .pt
-  → scripts/export_onnx.py     → .onnx
-  → STM32Cube.AI / TFLite      → code C INT8
-  → firmware/stm32f4_blink/    → .elf
-  → make flash                 → NUCLEO-F439ZI
-  → scripts/sensor_sim.py      → UART frames
+STM32CubeMX (.ioc)                           PyTorch .pt
+  → firmware/stm32f4_cubemx/ (HAL)            → scripts/export_onnx.py → .onnx
+  → CMakeLists.txt                             → STM32Cube.AI (⏸) → code C INT8
+  → cmake --build build → .elf
+  → openocd flash → NUCLEO-F439ZI
+  → scripts/sensor_sim.py → UART frames
   → src/evaluation/online_metrics.py → AUROC streaming
 ```
 

@@ -81,11 +81,23 @@ notebooks/figures/anomaly_detection/pronostia/
 
 ## Critères d'acceptation
 
-- [ ] Notebook exécutable end-to-end sans erreur
-- [ ] Tableau AUROC présent avec toutes les valeurs remplies (exp_137–142)
-- [ ] Figure score temporel présente (section 3)
-- [ ] Section "Conclusions Pronostia" rédigée avec ≥ 3 observations pour le manuscrit
+- [x] Notebook exécutable end-to-end sans erreur
+- [x] Tableau AUROC présent avec toutes les valeurs remplies (exp_137–142)
+- [x] Figure score temporel présente (section 3)
+- [x] Section "Conclusions Pronostia" rédigée avec ≥ 3 observations pour le manuscrit
 
 ## Statut
 
-⬜ À faire
+✅ Terminé
+
+## Bilan
+
+Notebook exécuté end-to-end (toutes les cellules ont des outputs). 10 figures générées dans `notebooks/figures/cl_evaluation/anomaly_detection/pronostia/` :
+
+- `auroc_table_full_pronostia.png` — synthèse 6 modèles (avg AUROC, AF, BWT, RAM, latence)
+- `auroc_table_pronostia.png` — AUROC par tâche (C1/C2/C3)
+- `auroc_per_task_pronostia.png` — évolution AUROC par tâche (6 graphes)
+- `ram_latency_pronostia.png` — budget RAM et latence STM32N6
+- `forgetting_analysis_pronostia.png` — analyse oubli (AF) par modèle
+- `ram_comparison_pronostia_vs_monitoring.png` — comparaison RAM 13D vs 4D
+- `score_temporal_best_model.png` — score d'anomalie KMeans dans le temps

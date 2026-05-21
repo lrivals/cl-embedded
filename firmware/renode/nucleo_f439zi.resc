@@ -1,0 +1,36 @@
+# nucleo_f439zi.resc — Script Renode NUCLEO-F439ZI (STM32F439ZI Cortex-M4)
+#
+# Usage interactif  : renode firmware/renode/nucleo_f439zi.resc
+# Usage headless CI : renode --console --disable-xwt firmware/renode/nucleo_f439zi.resc
+#
+# USART3 @ 115200 baud, PD8=TX PD9=RX — ST-LINK VCP sur NUCLEO-F439ZI
+# DEBUG_PRINTF=1 actif par defaut dans le Makefile
+# Sortie texte : "score=X.XXXX pred=N lat=N us\r\n" sur USART3
+
+# ── Creer la machine ────────────────────────────────────────────────────────
+mach create "nucleo-f439zi"
+
+# ── Charger la description materielle (STM32F4 + peripheriques Discovery) ──
+machine LoadPlatformDescription @firmware/renode/stm32f439zi_usart3.repl
+
+# ── Charger le firmware ─────────────────────────────────────────────────────
+sysbus LoadELF @firmware/stm32f4_blink/build/stm32f4_blink.elf
+
+# ── Exposer USART3 via socket TCP 3456 ─────────────────────────────────────
+# send_test_frame.py se connecte sur ce port.
+# Le firmware repond : [pred:u8][confidence:f32][latency_us:u32] = 9 B
+# DEBUG_PRINTF=1 : texte "score=X.XXXX pred=N lat=N us" egalement envoye.
+emulation CreateServerSocketTerminal 3456 "usart3_terminal"
+connector Connect sysbus.usart3 usart3_terminal
+
+# ── Observer GPIO PA5 (LED LD2 — blink test, optionnel) ────────────────────
+# Decommenter pour voir les toggles PA5 :
+# sysbus.gpioPortA.5 Log
+
+# ── Demarrer la simulation ──────────────────────────────────────────────────
+start
+
+# ── Maintenir Renode actif 30s (headless) pour que send_test_frame.py puisse se connecter
+# En mode interactif, supprimer ces deux lignes pour garder le prompt (monitor).
+sleep 30
+quit

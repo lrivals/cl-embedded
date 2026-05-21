@@ -25,3 +25,39 @@ jobs:
 
       - name: Build firmware (ARM Cortex-M4)
         run: make -C firmware/stm32f4_blink/ all
+
+      - name: Upload ELF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stm32f4_blink-elf
+          path: firmware/stm32f4_blink/build/stm32f4_blink.elf
+
+  renode-sim:
+    name: Renode simulation (Mahalanobis pipeline)
+    runs-on: ubuntu-latest
+    needs: arm-build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi dotnet-runtime-8.0 screen
+
+      - name: Install Renode (from GitHub Releases — not in apt)
+        run: |
+          RENODE_VER=1.16.1
+          wget -q -O /tmp/renode.deb \
+            https://github.com/renode/renode/releases/download/v${RENODE_VER}/renode_${RENODE_VER}_amd64.deb
+          sudo dpkg -i /tmp/renode.deb
+          renode --version
+
+      - name: Download ELF artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: stm32f4_blink-elf
+          path: firmware/stm32f4_blink/build/
+
+      - name: Run Renode Mahalanobis simulation
+        run: bash firmware/renode/run_mahalanobis_sim.sh --skip-build
+        timeout-minutes: 2

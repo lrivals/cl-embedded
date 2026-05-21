@@ -1,0 +1,37 @@
+# profiling_config.yaml — Seuils et format pour le profiling automatique carte
+# Utilisé par scripts/profiling_reader.py et scripts/board_dataset_builder.py
+
+PROFILING_VERSION: 2
+
+# Seuils d'alerte (déclenche un WARNING dans les logs si dépassé)
+LATENCY_ALERT_MS: 10.0      # Alerte si latence > 10 ms (budget = 100 ms)
+RAM_ALERT_BYTES: 52000      # Alerte si RAM > 52 Ko (marge 12 Ko vs 64 Ko cible)
+THROUGHPUT_MIN_IPS: 10      # Alerte si throughput < 10 inférences/s
+
+# Format de sortie JSON
+OUTPUT_FIELDS:
+  - latency_mean_us
+  - latency_p50_us
+  - latency_p99_us
+  - ram_used_bytes
+  - throughput_ips
+  - inference_count
+  - baud_rate
+  - platform
+  - firmware_version
+
+# Fenêtre de moyennage pour le throughput (nombre d'inférences)
+THROUGHPUT_WINDOW: 50
+
+# Baud rate UART (doit correspondre au firmware)
+BAUD_RATE: 115200
+
+# Timeout réponse firmware (secondes)
+UART_TIMEOUT_S: 2.0
+
+# Répertoire de sauvegarde par défaut
+DEFAULT_OUTPUT_DIR: "experiments/"
+
+# Plateforme cible courante (mise à jour manuellement lors du changement de board)
+# Options : "nucleo_f439zi" | "stm32n6_eval" | "edge_spectrum"
+PLATFORM: "nucleo_f439zi"

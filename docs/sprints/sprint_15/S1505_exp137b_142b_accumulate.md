@@ -36,12 +36,31 @@ Les expériences accumulate Pronostia utilisent le suffixe `b` (ex. `exp_137b`) 
 
 ---
 
+## Résultats
+
+| Exp | Modèle | AUROC C1 | AUROC C2 | AUROC C3 | avg_AUROC | Δ vs refit |
+| --- | ------ | :------: | :------: | :------: | :-------: | :--------: |
+| exp_137b | HDC | 0.6450 | 0.7839 | 0.7404 | **0.7231** | 0.0000 |
+| exp_138b | TinyOL AE | 0.6963 | 0.6226 | 0.8539 | **0.7243** | −0.0025 |
+| exp_139b | KMeans | 0.6738 | 0.6500 | 0.8492 | **0.7243** | −0.0159 |
+| exp_140b | Mahalanobis | 0.6123 | 0.6857 | 0.8323 | **0.7101** | +0.0429 |
+| exp_141b | DBSCAN | 0.6443 | 0.6745 | 0.8134 | **0.7107** | +0.0073 |
+| exp_142b | EWC one-class | 0.7098 | 0.6293 | 0.8281 | **0.7224** | +0.0059 |
+
+> Δ vs refit = avg_AUROC accumulate − avg_AUROC refit. Valeurs proches de 0 : la stratégie accumulate n'apporte pas de gain notable sur Pronostia (3 tâches seulement).
+
+---
+
 ## Critères d'acceptation
 
-- [ ] exp_137b–142b : `metrics_anomaly.json` présents avec `strategy: accumulate`
-- [ ] `config_snapshot.yaml` présents
-- [ ] AUROC accumulate comparé à AUROC refit dans le notebook Pronostia
+- [x] exp_137b–142b : `metrics_anomaly.json` présents avec `strategy: accumulate`
+- [x] `config_snapshot.yaml` présents dans les 6 répertoires
+- [x] AUROC accumulate comparé à AUROC refit dans le notebook Pronostia (section 2)
 
 ## Statut
 
-⬜ À faire
+✅ Terminé
+
+## Bilan
+
+Les 6 expériences accumulate sont complètes. Les écarts refit vs accumulate sont très faibles (|Δ| < 0.05 pour tous les modèles), ce qui confirme que sur Pronostia (3 tâches, peu de données par tâche), accumuler les données n'apporte pas d'avantage significatif par rapport au refit simple. HDC donne des résultats identiques (modèle non-paramétrique, insensible à la stratégie d'entraînement).

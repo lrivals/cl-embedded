@@ -114,10 +114,14 @@ pytest tests/test_pronostia_anomaly.py -v
 
 ## Critères d'acceptation
 
-- [ ] 6 tests, 100% pass
-- [ ] Aucun accès aux fichiers `data/raw/` ou `data/processed/` dans les tests
-- [ ] `tmp_path` utilisé pour les données synthétiques (fixture pytest)
+- [x] 6 tests, 100% pass
+- [x] Aucun accès aux fichiers `data/raw/` ou `data/processed/` dans les tests
+- [x] `tmp_path` utilisé pour les données synthétiques (fixture pytest)
 
 ## Statut
 
-⬜ À faire
+✅ Terminé
+
+## Bilan
+
+`tests/test_pronostia_anomaly.py` implémenté et validé. Résultat `pytest` : **6 passed in 4.25s**. Tous les tests utilisent la fixture `synthetic_pronostia_data(tmp_path)` avec des fichiers synthétiques en mémoire — aucun accès aux données brutes. Les 6 cas couvrent : retour de 3 tâches, ordre des task_ids, train-loader uniquement normal, test-loader avec deux classes, sensibilité du split au `FAILURE_RATIO`, et `input_dim=13`.

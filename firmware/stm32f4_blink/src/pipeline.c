@@ -12,6 +12,9 @@
 #include "model_weights.h"
 #include "mahalanobis.h"
 #include "stm32f4xx.h"
+#ifdef DEBUG_PRINTF
+#include <stdio.h>
+#endif
 
 #define SYSCLK_HZ    180000000U
 #define PROTO_MAGIC0 0xCDU   /* MAGIC=0xABCD little-endian : octet bas en premier */
@@ -168,4 +171,11 @@ void pipeline_run(void)
     float    confidence = 1.0f / (1.0f + score);
 
     uart_send_response((uint8_t)anomaly, confidence, lat_us);
+
+#ifdef DEBUG_PRINTF
+    char dbg[64];
+    snprintf(dbg, sizeof(dbg), "score=%.4f pred=%d lat=%lu us\r\n",
+             (double)score, anomaly, lat_us);
+    for (int i = 0; dbg[i]; i++) uart_send_byte((uint8_t)dbg[i]);
+#endif
 }

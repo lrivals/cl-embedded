@@ -83,12 +83,12 @@ ranking_models.png
 
 ## Critères d'acceptation
 
-- [ ] 7 notebooks présents dans `notebooks/cl_eval/cwru_by_fault_type/`
-- [ ] Chaque notebook modèle s'exécute sans erreur (`Run All`)
-- [ ] 5 figures sauvegardées par notebook modèle
-- [ ] `comparison.ipynb` s'exécute sans erreur, 3 figures de comparaison générées
-- [ ] Section 8 de chaque notebook : tableau comparatif baseline vs CL présent
+- [x] 7 notebooks présents dans `notebooks/cl_eval/cwru_by_fault_type/`
+- [x] Chaque notebook modèle s'exécute sans erreur (`Run All`)
+- [x] 5 figures sauvegardées par notebook modèle
+- [x] `comparison.ipynb` s'exécute sans erreur, 3 figures de comparaison générées
+- [x] Section 8 de chaque notebook : tableau comparatif baseline vs CL présent
 
 ## Statut
 
-⬜ Non démarré
+✅ Terminé — 13 mai 2026

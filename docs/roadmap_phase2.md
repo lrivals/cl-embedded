@@ -1,6 +1,6 @@
 # Roadmap Phase 2 — Portage MCU
 
-> Mise à jour : 11 mai 2026 → 11 mai 2026 (Sprint 16 clôturé)  
+> Mise à jour : 21 mai 2026 (Sprint 17 🔄 O1 ✅ O2 ✅ O3 ⬜ O4 ⬜ | Sprint 18–19 ⬜)  
 > Horizon : 20 mai – 6 août 2026  
 > ← [Index roadmap](roadmap.md)
 
@@ -25,23 +25,47 @@ P2-10 (1–6 août)         → Code GitHub public + soumission rapport final
 
 ---
 
-## Sprint 17 (18–20 mai 2026) — CWRU Anomaly Detection
+## Sprint 17 (20–27 mai 2026) — NUCLEO-F439ZI : Exemples + Simulation PC 🔄
 
-**Objectif** : Anomaly detection CWRU — 6 modèles, clôture Phase Anomaly Detection (Sprints 13–17)
-→ Détail : [`docs/sprints/sprint_17/`](sprints/sprint_17/)
+**Objectif** : Prise en main périphériques HAL (GPIO, UART, TIM PWM) + simulation Renode
+
+| Objectif | Tâches | Statut | Résultat |
+| -------- | ------ | :----: | -------- |
+| O1 — GPIO CubeMX | S17-01 à S17-04 | ✅ | Projet CubeMX, LED LD2, GPIO_IOToggle importé |
+| O2 — UART printf | S17-05 à S17-08 | ✅ | `printf` → USART3 VCP — validé hardware 21 mai · `Hello NUCLEO — tick=XXX` · 16/16 tests PASS |
+| O3 — TIM3 PWM | S17-09 à S17-11 | ⬜ | PA6 @ 1 kHz, duty variable 10–90 % |
+| O4 — Renode CI | S17-12 à S17-16 | ⬜ | Simulation `.elf` sans hardware |
+
+→ Détail : [`docs/sprints/sprint_17/S1700_nucleo_examples_sprint.md`](sprints/sprint_17/S1700_nucleo_examples_sprint.md)
 
 ---
 
-## Sprint 18 (21–27 mai 2026) — Equipment Monitoring Anomaly Detection
+## Sprint 18 (25 mai – 1er juin 2026) — Pipeline données capteurs sur carte ⬜
 
-**Objectif** : Anomaly detection Equipment Monitoring (4D, ~50% normal, by_equipment_type)
+**Objectif** : Pipeline complet PC → NUCLEO → PC (streaming datasets Phase 1 via UART, dataset builder, auto-profiling firmware)
+
+| Objectif | Tâches | Statut | Résultat |
+| -------- | ------ | :----: | -------- |
+| O1 — Protocole UART étendu | S1801 | ⬜ | timestamps, task_id, séquences continues |
+| O2 — Streaming + dataset builder | S1802–S1803 | ⬜ | `scripts/sensor_stream.py`, CSV/HDF5 auto |
+| O3 — Firmware auto-profiling | S1804–S1805 | ⬜ | DWT latence, .bss size, throughput |
+| O4 — Tests + config | S1806–S1811 | ⬜ | Unity tests pipeline + config YAML |
+
 → Détail : [`docs/sprints/sprint_18/`](sprints/sprint_18/)
 
 ---
 
-## Sprint 19 (28 mai–3 juin 2026) — Pronostia Anomaly Detection
+## Sprint 19 (1–8 juin 2026) — Déploiement modèles Phase 1 sur carte ⬜
 
-**Objectif** : Anomaly detection Pronostia (13D, ~90% normal, by_bearing_condition)
+**Objectif** : Valider les 3 modèles CL (Mahalanobis, EWC, TinyOL) en C sur NUCLEO-F439ZI, résultats enregistrés dans `experiments/` au format unifié Phase 1
+
+| Objectif | Tâches | Statut | Résultat |
+| -------- | ------ | :----: | -------- |
+| O1 — Mahalanobis + EWC C complet | S1901–S1902 | ⬜ | EWC consolidate + Fisher EMA |
+| O2 — TinyOL skeleton C | S1903–S1904 | ⬜ | forward pass + mock_data framework |
+| O3 — Firmware metrics + recorder | S1905–S1907 | ⬜ | acc online, AUROC sliding, forgetting |
+| O4 — Tests Unity + expériences | S1908–S1913 | ⬜ | 100% PASS + exp_S19_01/02 |
+
 → Détail : [`docs/sprints/sprint_19/`](sprints/sprint_19/)
 
 ---
@@ -158,5 +182,5 @@ P2-10 (1–6 août)         → Code GitHub public + soumission rapport final
 | Gap | Critère | Sprint cible | Statut |
 |-----|---------|:------------:|--------|
 | **Gap 1** | Validation données industrielles réelles | Phase 1 ✅ | ✅ PRONOSTIA + CWRU + Monitoring validés |
-| **Gap 2** | CL < 100 Ko RAM avec mesures précises HW | P2-04 | ⬜ En attente profiling HW |
+| **Gap 2** | CL < 100 Ko RAM avec mesures précises HW | Sprint 16 ✅ / Sprint 19 🔄 | 🔄 Mahalanobis 128 B SRAM @ 3 µs validé HW (S16-04) — EWC + TinyOL C en cours (Sprint 19) |
 | **Gap 3** | INT8 pendant entraînement incrémental | P2-05 | ⬜ Non adressé |

@@ -10,12 +10,17 @@
 
 #include "mahalanobis.h"
 
-/* VSQRT.F32 directement — pas de libm, pas d'errno, 1 cycle FPU */
+/* VSQRT.F32 directement sur cible ARM FPU ; sqrtf() standard sur host x86 */
 static inline float fpu_sqrtf(float x)
 {
+#ifdef __arm__
     float r;
     __asm volatile("vsqrt.f32 %0, %1" : "=t"(r) : "t"(x));
     return r;
+#else
+    extern float sqrtf(float);
+    return sqrtf(x);
+#endif
 }
 
 void maha_init(MahalanobisDetector *det, float threshold, float ema_alpha)

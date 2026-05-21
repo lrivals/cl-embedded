@@ -151,6 +151,40 @@ PC (Python/PyTorch)
 
 ---
 
+## Outils installés sur la machine de développement
+
+| Outil | Version | Chemin d'installation | Statut |
+|-------|---------|----------------------|--------|
+| **STM32CubeMX** | 6.17.0 | `~/STM32CubeMX/STM32CubeMX` | ✅ Installé |
+| **CMake** | 4.3.2 | `/usr/local/bin/cmake` (symlink → `/opt/cmake-4.3.2-linux-x86_64/`) | ✅ Installé |
+
+### Rôle de chaque outil dans le projet
+
+**STM32CubeMX** :
+- Génération du fichier `.ioc` (configuration du MCU STM32N6 : horloges, périphériques, pinout)
+- Export du projet avec HAL drivers et fichiers de démarrage
+- Intégration avec STM32CubeIDE ou export CMake (via *Makefile* ou *STM32CubeIDE project*)
+- À utiliser dès la Phase 2 pour initialiser le projet embarqué C
+
+**CMake 4.3.2** :
+- Build system pour compiler le code C embarqué généré par STM32CubeMX
+- Intégration native avec VSCode via l'extension **CMake Tools** (cmake détecté automatiquement dans `/usr/local/bin/`)
+- Fichier `CMakeLists.txt` à placer à la racine du projet C embarqué (Phase 2)
+- Commandes de référence :
+
+```bash
+# Configurer le projet (depuis le dossier du projet C)
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+# Compiler
+cmake --build build
+
+# Vérifier la version
+cmake --version  # → cmake version 4.3.2
+```
+
+---
+
 ## Carte de développement (Phase 1 — si nécessaire pour validation rapide)
 
 Bien que la cible finale soit le STM32N6, des validations intermédiaires peuvent être effectuées sur :

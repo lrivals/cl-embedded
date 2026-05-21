@@ -84,10 +84,14 @@ python scripts/train_tinyol.py --config configs/tinyol_anomaly_detection_config.
 python scripts/train_unsupervised.py --config configs/unsupervised_anomaly_detection_config.yaml
 python scripts/run_anomaly_detection.py --config configs/ewc_oneclass_config.yaml  # Sprint 14
 
-# Run anomaly detection batch (CWRU / Equipment Monitoring / Pronostia)
-python scripts/run_anomaly_detection.py --model hdc --dataset cwru --scenario by_severity --strategy refit --exp_id exp_143
-python scripts/run_anomaly_detection.py --model mahalanobis --dataset equipment_monitoring --scenario by_equipment_type --strategy refit --exp_id exp_152
+# Run anomaly detection batch (Monitoring / Pronostia)
 python scripts/run_anomaly_detection.py --model hdc --dataset pronostia --scenario by_bearing_condition --strategy refit --exp_id exp_155
+
+# Firmware (Phase 2 — NUCLEO-F439ZI)
+make -C firmware/stm32f4_blink/ test             # Unity tests host x86 (16/16 PASS)
+make -C firmware/stm32f4_blink/ flash            # Flash NUCLEO via OpenOCD
+python scripts/sensor_stream.py --dry-run        # Simulate UART sensor streaming (Sprint 18)
+python scripts/board_experiment_recorder.py --dry-run  # Record on-board results (Sprint 19)
 
 # Run all evaluations
 python scripts/evaluate_all.py --exp_dir experiments/
@@ -139,7 +143,7 @@ cl-embedded/
 │   ├── training/               # CL scenarios + run_anomaly_detection_scenario()
 │   ├── evaluation/             # CL metrics + anomaly_metrics + memory profiler
 │   └── utils/                  # Reproducibility, config loader
-├── experiments/                # 160+ reproducible experiment outputs
+├── experiments/                # 160+ reproducible experiment outputs (exp_S19 series: on-board)
 ├── notebooks/                  # Exploration + visualization
 │   └── cl_eval/                # Granular CL evaluation notebooks (Sprints 7–19)
 ├── tests/                      # Unit tests
@@ -210,12 +214,14 @@ Full experiment outputs: [`experiments/`](experiments/)
 | DBSCAN baseline | ✅ | ✅ | ✅ exp_008, 021, 023, 029, 035, 041 | ✅ |
 | Anomaly detection (S13) | ✅ | ✅ | ✅ exp_086–093, exp_120–122 | ⬜ |
 | EWC OneClass (S14) | ✅ | ✅ | ✅ exp_123–136 | ⬜ |
-| Anomaly detection CWRU (S17) | ⬜ | ⬜ | ⬜ exp_143–148 (planifié) | ⬜ |
-| Anomaly detection Equipment (S18) | ⬜ | ⬜ | ⬜ exp_149–154 (planifié) | ⬜ |
-| Anomaly detection Pronostia (S19) | ⬜ | ⬜ | ⬜ exp_155–160 (planifié) | ⬜ |
 | M1 + UINT8 buffer | ⬜ | ⬜ | ⬜ exp_004 (planned) | ⬜ |
-| ONNX export | 🟡 | ⬜ | ⬜ | ⬜ |
-| Notebooks (S7–19) | 🟡 | — | — | — |
+| ONNX export (S16) | ✅ | ⬜ | ✅ exp_160 (FP32→INT8 Δ AUROC≈0) | ✅ |
+| Mahalanobis C firmware (S16) | ✅ | ✅ | ✅ 3 µs @ 180 MHz, 128 B SRAM | ✅ |
+| UART pipeline + sensor sim (S16) | ✅ | ✅ | ✅ 10/10 trames, 0 CRC errors | — |
+| NUCLEO périphériques (S17) | 🔄 | 🔄 | — O1 ✅ O2 ✅ O3–O4 ⬜ | — |
+| Streaming pipeline capteurs (S18) | ⬜ | ⬜ | ⬜ exp_S18 (planifié) | ⬜ |
+| Déploiement modèles sur carte (S19) | ⬜ | ⬜ | ⬜ exp_S19 (planifié) | ⬜ |
+| Notebooks (S7–16) | 🟡 | — | — | — |
 
 ### Current Sprint
 
@@ -227,10 +233,10 @@ Full experiment outputs: [`experiments/`](experiments/)
 | Sprint 13 | ✅ | Anomaly detection one-class — 4 modèles Monitoring + DBSCAN/KMeans v2 CWRU + DBSCAN Monitoring/Pronostia (exp_086–093, exp_120–122) |
 | Sprint 14 | ✅ | Monitoring anomaly detection complet — DBSCAN + EWC one-class + accumulate + by_location (exp_123–136) |
 | Sprint 15 | ✅ | Pronostia anomaly detection — 6 modèles × by_condition refit + accumulate (exp_137–142) |
-| Sprint 16 | 🔄 | Portage MCU Phase 2 — toolchain ARM + ONNX export + C MVP + profiling HW |
-| Sprint 17 | ⬜ | CWRU anomaly detection — 6 modèles × by_severity (exp_143–148) |
-| Sprint 18 | ⬜ | Equipment Monitoring anomaly detection — by_equipment_type (exp_149–154) |
-| Sprint 19 | ⬜ | Pronostia anomaly detection (exp_155–160) + notebook synthèse cross-dataset final |
+| Sprint 16 | ✅ | Portage MCU Phase 2 — toolchain ARM + ONNX export + Mahalanobis C + UART pipeline + profiling HW (3 µs @ 180 MHz, 128 B SRAM) |
+| Sprint 17 | 🔄 | NUCLEO-F439ZI périphériques — GPIO ✅ UART ✅ TIM PWM ⬜ Renode CI ⬜ |
+| Sprint 18 | ⬜ | Pipeline données capteurs sur carte — streaming UART, dataset builder, auto-profiling |
+| Sprint 19 | ⬜ | Déploiement modèles Phase 1 sur carte — EWC + TinyOL C, Unity tests, exp_S19 |
 
 ## Evaluation Metrics
 

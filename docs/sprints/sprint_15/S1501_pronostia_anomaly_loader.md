@@ -117,13 +117,17 @@ def get_pronostia_dataloaders_anomaly_detection(...):
 
 ## Critères d'acceptation
 
-- [ ] Retourne exactement 3 tuples `(task_id, condition_name, train_loader, test_loader)`
-- [ ] `train_loader` ne contient que des échantillons avec y=0 (vérifiable : `all(y == 0)`)
-- [ ] `test_loader` contient les deux classes y=0 et y=1
-- [ ] Le split est temporel (`shuffle=False`) — les données normales précèdent les données faulty
-- [ ] `FAILURE_RATIO` est bien pris en compte (test avec 0.05 et 0.20 pour vérification)
-- [ ] `X.shape[1] == 13` pour toutes les tâches
+- [x] Retourne exactement 3 tuples `(task_id, condition_name, train_loader, test_loader)`
+- [x] `train_loader` ne contient que des échantillons avec y=0 (vérifiable : `all(y == 0)`)
+- [x] `test_loader` contient les deux classes y=0 et y=1
+- [x] Le split est temporel (`shuffle=False`) — les données normales précèdent les données faulty
+- [x] `FAILURE_RATIO` est bien pris en compte (test avec 0.05 et 0.20 pour vérification)
+- [x] `X.shape[1] == 13` pour toutes les tâches
 
 ## Statut
 
-⬜ À faire
+✅ Terminé
+
+## Bilan
+
+`get_pronostia_dataloaders_anomaly_detection()` implémentée à `src/data/pronostia_dataset.py:456`. Les 6 tests unitaires de `tests/test_pronostia_anomaly.py` passent à 100% (voir S15-07). Le label binaire est construit par seuil temporel avec `FAILURE_RATIO=0.10`, le split train/test respecte l'ordre chronologique (`shuffle=False`), et les 3 tâches by_condition sont retournées avec `input_dim=13`.
