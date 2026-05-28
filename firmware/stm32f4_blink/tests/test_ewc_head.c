@@ -168,3 +168,139 @@ void test_ewc_sgd_step_modifies_weights(void)
     /* w1[0][0] doit avoir changé (gradient non nul sur cet élément) */
     TEST_ASSERT_NOT_EQUAL(w1_00_before, h.w1[0][0]);
 }
+
+/* ── Tests ewc_consolidate ──────────────────────────────────────────────── */
+
+void test_ewc_consolidate_fisher_ema(void)
+{
+    /* alpha=0.9, fisher initial=0 → après consolidate : fisher ≈ 0.1 * w² */
+    EWCHead h = make_small_weights_head();
+    ewc_consolidate(&h, 0.9f);
+
+    for (int j = 0; j < EWC_H1; j++) {
+        for (int i = 0; i < EWC_IN; i++) {
+            float expected = 0.1f * h.star_w1[j][i] * h.star_w1[j][i];
+            TEST_ASSERT_FLOAT_WITHIN(TOL, expected, h.fisher1[j][i]);
+        }
+    }
+}
+
+void test_ewc_consolidate_star_w_copied(void)
+{
+    /* Après consolidation, star_w doit être une copie exacte de w */
+    EWCHead h = make_small_weights_head();
+    ewc_consolidate(&h, 0.9f);
+
+    for (int j = 0; j < EWC_H1; j++) {
+        for (int i = 0; i < EWC_IN; i++) {
+            TEST_ASSERT_FLOAT_WITHIN(TOL, h.w1[j][i], h.star_w1[j][i]);
+        }
+    }
+    for (int j = 0; j < EWC_H2; j++) {
+        for (int i = 0; i < EWC_H1; i++) {
+            TEST_ASSERT_FLOAT_WITHIN(TOL, h.w2[j][i], h.star_w2[j][i]);
+        }
+    }
+}
+
+void test_ewc_consolidate_fisher_nonneg(void)
+{
+    /* La diagonale Fisher (grad²) est toujours ≥ 0 */
+    EWCHead h = make_small_weights_head();
+    ewc_consolidate(&h, 0.5f);
+
+    for (int j = 0; j < EWC_H1; j++) {
+        for (int i = 0; i < EWC_IN; i++) {
+            TEST_ASSERT_GREATER_OR_EQUAL_FLOAT(0.0f, h.fisher1[j][i]);
+        }
+    }
+    for (int j = 0; j < EWC_H2; j++) {
+        for (int i = 0; i < EWC_H1; i++) {
+            TEST_ASSERT_GREATER_OR_EQUAL_FLOAT(0.0f, h.fisher2[j][i]);
+        }
+    }
+    for (int j = 0; j < EWC_OUT; j++) {
+        for (int i = 0; i < EWC_H2; i++) {
+            TEST_ASSERT_GREATER_OR_EQUAL_FLOAT(0.0f, h.fisher3[j][i]);
+        }
+    }
+}
+
+void test_ewc_penalty_active(void)
+{
+    /* Scénario 2 tâches : consolider tâche 0 → lambda > 0 → step tâche 1.
+     * Le terme EWC doit produire un delta de poids différent de sans régularisation. */
+    EWCHead h_no_ewc = make_small_weights_head();
+    EWCHead h_ewc    = make_small_weights_head();
+    float x[EWC_IN]  = {1.0f, 0.5f, 0.0f, 0.0f, 0.0f};
+    int label = 1;
+
+    /* Perturber avant consolidation pour que Fisher[0][0] = 0.1*(0.15)² > 0 */
+    h_ewc.w1[0][0] += 0.05f;
+    ewc_consolidate(&h_ewc, 0.9f);   /* star_w1[0][0] = 0.15, Fisher > 0 */
+
+    /* Perturber après consolidation pour créer l'écart (w - star_w) ≠ 0 */
+    h_ewc.w1[0][0] += 0.05f;
+    h_ewc.lambda = 400.0f;
+
+    float w_ewc_before    = h_ewc.w1[0][0];
+    float w_no_ewc_before = h_no_ewc.w1[0][0];
+
+    ewc_sgd_step(&h_ewc,    x, label);
+    ewc_sgd_step(&h_no_ewc, x, label);
+
+    float delta_ewc    = h_ewc.w1[0][0]    - w_ewc_before;
+    float delta_no_ewc = h_no_ewc.w1[0][0] - w_no_ewc_before;
+
+    /* La pénalité EWC doit modifier le gradient → deltas différents */
+    TEST_ASSERT(delta_ewc != delta_no_ewc);
+}
+
+/* ── Tests ewc_init ─────────────────────────────────────────────────────── */
+
+void test_ewc_init_weights_nonzero(void)
+{
+    /* Xavier LCG seed=42 → poids non nuls (évite le problème de symétrie) */
+    EWCHead h;
+    memset(&h, 0, sizeof(h));
+    h.lambda = 100.0f;   /* ne doit pas être modifié par ewc_init */
+    ewc_init(&h);
+
+    /* Au moins un poids w1 doit être non nul */
+    int any_nonzero = 0;
+    for (int j = 0; j < EWC_H1 && !any_nonzero; j++)
+        for (int i = 0; i < EWC_IN; i++)
+            if (h.w1[j][i] != 0.0f) { any_nonzero = 1; break; }
+    TEST_ASSERT_TRUE(any_nonzero);
+
+    /* lambda ne doit pas avoir été modifié */
+    TEST_ASSERT_FLOAT_WITHIN(TOL, 100.0f, h.lambda);
+}
+
+void test_ewc_init_fisher_zero(void)
+{
+    /* ewc_init doit remettre Fisher et star_w à zéro */
+    EWCHead h = make_small_weights_head();
+    ewc_consolidate(&h, 0.9f);   /* fisher et star_w non nuls */
+    ewc_init(&h);
+
+    for (int j = 0; j < EWC_H1; j++)
+        for (int i = 0; i < EWC_IN; i++) {
+            TEST_ASSERT_FLOAT_WITHIN(TOL, 0.0f, h.fisher1[j][i]);
+            TEST_ASSERT_FLOAT_WITHIN(TOL, 0.0f, h.star_w1[j][i]);
+        }
+}
+
+void test_ewc_init_deterministic(void)
+{
+    /* Deux appels successifs → poids identiques (LCG déterministe seed=42) */
+    EWCHead h1, h2;
+    memset(&h1, 0, sizeof(h1));
+    memset(&h2, 0, sizeof(h2));
+    ewc_init(&h1);
+    ewc_init(&h2);
+
+    for (int j = 0; j < EWC_H1; j++)
+        for (int i = 0; i < EWC_IN; i++)
+            TEST_ASSERT_FLOAT_WITHIN(TOL, h1.w1[j][i], h2.w1[j][i]);
+}

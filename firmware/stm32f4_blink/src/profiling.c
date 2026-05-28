@@ -9,14 +9,25 @@
  */
 
 #include "profiling.h"
+#ifndef TEST_HOST
 #include "stm32f4xx.h"
+#endif
 #include <string.h>
 
 #define SYSCLK_HZ    180000000U
-#define DWT_CTRL    (*(volatile uint32_t *)0xE0001000UL)
-#define DWT_CYCCNT  (*(volatile uint32_t *)0xE0001004UL)
+
+#ifndef TEST_HOST
+#define DWT_CTRL        (*(volatile uint32_t *)0xE0001000UL)
+#define DWT_CYCCNT      (*(volatile uint32_t *)0xE0001004UL)
 #define CoreDebug_DEMCR (*(volatile uint32_t *)0xE000EDFCUL)
-#define TRCENA_BIT  (1U << 24)
+#define TRCENA_BIT      (1U << 24)
+#else
+volatile uint32_t g_mock_cyccnt = 0U;
+#define DWT_CYCCNT      g_mock_cyccnt
+#define DWT_CTRL        g_mock_cyccnt
+#define CoreDebug_DEMCR g_mock_cyccnt
+#define TRCENA_BIT      0U
+#endif
 
 /* MEM: 20 B @ FP32/uint32 en .bss */
 ProfilingState g_profiling;
@@ -25,6 +36,7 @@ void profiling_init(void)
 {
     memset(&g_profiling, 0, sizeof(g_profiling));
 
+#ifndef TEST_HOST
     /* Active DWT cycle counter */
     CoreDebug_DEMCR |= TRCENA_BIT;
     DWT_CYCCNT = 0U;
@@ -34,6 +46,7 @@ void profiling_init(void)
     g_profiling.bss_bytes = (uint16_t)(
         (uintptr_t)&_ebss - (uintptr_t)&_sbss
     );
+#endif
 }
 
 void profiling_start(void)

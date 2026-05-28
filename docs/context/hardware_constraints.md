@@ -1,4 +1,6 @@
-# Contraintes hardware — STM32N6 (cible) et implications pour l'implémentation Python
+# Contraintes hardware — STM32N6 (cible finale) et NUCLEO-F439ZI (board active)
+
+> **Résumé du setup actuel** : la carte utilisée est la **NUCLEO-F439ZI** (Cortex-M4 @ 180 MHz, 256 Ko SRAM). Elle sert à valider la toolchain, le portage C des modèles et le pipeline UART (Sprints 16–19). La **STM32N6** reste la cible finale (Cortex-M55, 64 Ko, NPU) — les mesures sur NUCLEO sont indicatives du comportement MCU mais non représentatives du budget RAM final.
 
 ---
 
@@ -185,12 +187,33 @@ cmake --version  # → cmake version 4.3.2
 
 ---
 
-## Carte de développement (Phase 1 — si nécessaire pour validation rapide)
+## Carte de développement active : NUCLEO-F439ZI
 
-Bien que la cible finale soit le STM32N6, des validations intermédiaires peuvent être effectuées sur :
+La **NUCLEO-F439ZI** est la board utilisée pour les Sprints 16–19. Elle ne possède pas de NPU et dispose de plus de RAM que la cible finale, mais permet de valider la toolchain, le portage C des modèles et le pipeline capteur UART avant d'avoir accès au STM32N6.
 
-| Carte | MCU | RAM | NPU | Latence backprop |
-|-------|-----|-----|-----|-----------------|
-| **STM32N6 (cible)** | Cortex-M55 | 64 Ko | ✅ Inf-only | À mesurer |
-| Nucleo-F439ZI | Cortex-M4 @ 180 MHz | 256 Ko | ❌ | Référence Benatti (< 100 ms) |
-| Arduino Nano 33 BLE | Cortex-M4 @ 64 MHz | 256 Ko | ❌ | Référence TinyOL (~10 % overhead) |
+| Propriété | NUCLEO-F439ZI (board active) | STM32N6 (cible finale) |
+| --------- | :--------------------------: | :--------------------: |
+| MCU | Cortex-M4 @ 180 MHz | Cortex-M55 @ ~400 MHz |
+| SRAM | **256 Ko** (192 Ko + 64 Ko CCM) | **64 Ko** (contrainte stage) |
+| Flash | 2 Mo | 512 Ko |
+| NPU | ❌ | ✅ NeuralART Turbo (inf-only) |
+| FPU | SP FP32 | SP FP32 + Helium MVE |
+| Debug | ST-LINK v2 embarqué (OpenOCD) | ST-LINK v3 |
+| Statut | ✅ **Board active — Sprints 16–19** | ⬜ Cible finale (disponibilité à confirmer) |
+
+### Mesures réelles Sprint 16 (NUCLEO-F439ZI @ 180 MHz)
+
+| Modèle | Latence inférence | RAM SRAM (.bss) | Flash (.text) | Critère Gap 2 |
+| ------ | :---------------: | :-------------: | :-----------: | :-----------: |
+| Mahalanobis (MAHA_DIM=5) | **3 µs** | **128 B** | ~3.4 Ko | ✅ (< 100 ms, marge ×33 000) |
+| EWC head C | À mesurer (Sprint 19) | ~9.5 Ko (estimé) | ~3 Ko | `FIXME(gap2)` |
+| TinyOL encoder C | À mesurer (Sprint 19) | ~7 Ko (estimé) | ~6 Ko | `FIXME(gap2)` |
+
+> `FIXME(gap2)` : Les mesures EWC et TinyOL sont des estimations issues de l'analyse statique Python. La validation sur NUCLEO (et a fortiori sur STM32N6) est requise pour le manuscrit.
+
+### Différences à prendre en compte pour le portage STM32N6
+
+- **RAM** : la NUCLEO a 256 Ko → les modèles tiennent facilement. Sur STM32N6 (64 Ko), il faudra re-vérifier chaque composant.
+- **Pas de NPU** sur NUCLEO → le forward pass tourne sur Cortex-M4 (plus lent). Sur STM32N6, le forward NPU sera plus rapide mais le flow code change (ST AI runtime).
+- **Helium MVE** absent sur Cortex-M4 → les benchmarks SIMD ne sont pas représentatifs de STM32N6.
+- **IDCODE mesuré** : `0x20036419` (STM32F439) — confirmé par `HAL_GetREVID()` Sprint 16.

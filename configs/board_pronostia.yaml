@@ -1,0 +1,54 @@
+# board_pronostia.yaml — Config multi-modèles Pronostia board (NUCLEO-F439ZI)
+# Pronostia : 3 conditions opératoires (CL domain-incremental)
+# Features : top-5 sélectionnées par mutual_info (voir pronostia_feature_subset.yaml)
+
+MODEL: multi
+PLATFORM: nucleo_f439zi
+DATASET: pronostia
+FEATURE_SUBSET: "configs/pronostia_feature_subset.yaml"
+
+# Mahalanobis (anomaly detection — même config que board_mahalanobis.yaml)
+MAHA_DIM: 5
+THRESHOLD: 2.5
+EMA_ALPHA: 0.05
+RAM_MAHA_BYTES: 200
+
+# EWC head (classification — même architecture que board_ewc.yaml)
+EWC_IN: 5
+EWC_H1: 32
+EWC_H2: 16
+EWC_OUT: 2
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0
+lambda_ewc: 400.0        # clé reconnue par board_experiment_recorder.py
+FISHER_EMA_DECAY: 0.99
+RAM_EWC_BYTES: 9728
+
+# CL scénario Pronostia
+n_tasks: 3
+n_samples: 600        # 200 par condition
+cl_sequence: "cond1:200,cond2:200,cond3:200"
+
+# Tâches CL
+tasks:
+  - id: 0
+    name: cond1
+    description: "1 800 rpm / 4 000 N — Bearing1_1 + Bearing1_2"
+    n_samples: 200
+  - id: 1
+    name: cond2
+    description: "1 650 rpm / 4 200 N — Bearing2_1 + Bearing2_2"
+    n_samples: 200
+  - id: 2
+    name: cond3
+    description: "1 500 rpm / 5 000 N — Bearing3_1 + Bearing3_2"
+    n_samples: 200
+
+# Gap 2 — budget mémoire (identique Monitoring, N_FEATURES=5 inchangé)
+ram_budget_bytes: 65536
+ram_total_estimate_bytes: 15728   # = maha(200) + ewc(9728) + tinyol(5800)
+gap2_compliant: true
+
+# Export poids C (mêmes poids que board_ewc.yaml — architecture identique)
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
+WEIGHTS_CHECKPOINT: "experiments/exp_S21_03/mahalanobis_weights.pkl"

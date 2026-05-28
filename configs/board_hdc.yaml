@@ -1,0 +1,24 @@
+# board_hdc.yaml — Config HDC embarqué (NUCLEO-F439ZI)
+# Toujours passer par ce fichier pour modifier les hyperparamètres (jamais dans le code C).
+
+MODEL: hdc
+PLATFORM: nucleo_f439zi
+
+# Architecture
+HDC_DIM: 1000          # Dimension des hypervecteurs — TODO(arnaud): D=512 si budget serré?
+HDC_N_FEATURES: 5      # Nombre de features d'entrée (doit correspondre à HDC_N_FEATURES dans hdc.h)
+HDC_N_CLASSES: 2       # Classes : faulty / normal
+
+# Hyperparamètres
+SEED: 42               # Seed pour génération proj aléatoire — TODO(dorra): Flash const ou régénéré?
+
+# Budget mémoire (vérification Gap 2)
+RAM_STRUCT_BYTES: 28004    # am(8Ko) + proj(20Ko) dans struct SRAM skeleton
+RAM_ACTIVATIONS_BYTES: 4000  # hv_out stack temporaire (HDC_DIM * 4)
+RAM_TARGET_BYTES: 262144     # 256 Ko NUCLEO-F439ZI
+
+# Note : si proj en Flash const, SRAM = am(8Ko) + hv_out(4Ko) = 12 Ko
+RAM_OPTIMIZED_BYTES: 12288   # cible après optimisation Flash
+
+# Export poids C
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"

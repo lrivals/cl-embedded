@@ -64,7 +64,7 @@ Perte : Binary Cross-Entropy (BCE)
 | Snapshot θ* | 769 scalaires | ~3 Ko |
 | **TOTAL EWC** | **2 307 scalaires** | **~9 Ko @ FP32** |
 
-> ✅ Très largement dans la cible 64 Ko. Ce modèle est le plus frugal des trois.
+> ✅ Très largement dans le budget NUCLEO-F439ZI (256 Ko). Ce modèle est le plus frugal des trois.
 
 ---
 
@@ -207,7 +207,7 @@ evaluation:
   metrics: ["acc_final", "avg_forgetting", "bwt", "ram_peak_bytes"]
 
 memory:
-  target_ram_bytes: 65536   # 64 Ko cible STM32N6
+  target_ram_bytes: 262144  # 256 Ko NUCLEO-F439ZI (board active)
   expected_ram_bytes: 9216  # ~9 Ko estimé
 ```
 
@@ -235,7 +235,7 @@ Le coefficient λ est le principal hyperparamètre à tuner. Sa valeur contrôle
 | Pas de BatchNorm | ✅ | Stats fixes pour normalisation |
 | Taille < 9 Ko (FP32) | ✅ estimé | À vérifier `memory_profiler.py` |
 | Fisher stockable en Flash | ✅ | Dictionnaire de 769 scalaires |
-| Backprop sur Cortex-M55 | ✅ | Opérations matricielles standards |
+| Backprop sur Cortex-M4 | ✅ | Opérations matricielles standards (NUCLEO-F439ZI) |
 | Inférence exportable INT8 | À valider | Via ONNX → TFLite Micro |
 
 ---

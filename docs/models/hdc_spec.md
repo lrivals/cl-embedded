@@ -17,7 +17,7 @@ L'Hyperdimensional Computing (HDC) est un paradigme de calcul qui représente l'
 
 **Mécanisme CL natif** : l'accumulation de nouveaux exemples met à jour directement le prototype de classe → **pas de gradient, pas d'oubli catastrophique par construction**.
 
-**Avantage MCU** : opérations binaires (XOR, POPCOUNT) → très efficace sur Cortex-M55 avec instructions DSP/SIMD. Pas de multiplication flottante dans la phase d'entraînement.
+**Avantage MCU** : opérations binaires (XOR, POPCOUNT) → très efficace sur Cortex-M4 avec instructions DSP. Pas de multiplication flottante dans la phase d'entraînement.
 
 ---
 
@@ -253,7 +253,7 @@ evaluation:
   metrics: ["acc_final", "avg_forgetting", "bwt", "ram_peak_bytes"]
   
 memory:
-  target_ram_bytes: 65536     # 64 Ko cible STM32N6
+  target_ram_bytes: 262144    # 256 Ko NUCLEO-F439ZI (board active)
   expected_ram_bytes: 12288   # ~12 Ko estimé
 ```
 
@@ -294,7 +294,7 @@ Cette extension est **hors scope pour l'implémentation initiale** — à consid
 | Critère | Statut | Note |
 |---------|--------|------|
 | Pas de FP dans la phase d'entraînement | ✅ | Accumulation INT32 + signe |
-| Opérations SIMD/DSP compatibles Cortex-M55 | ✅ | XOR, POPCOUNT, ADD vectoriels |
+| Opérations DSP compatibles Cortex-M4 | ✅ | XOR, POPCOUNT, ADD (NUCLEO-F439ZI) |
 | RAM < 12 Ko | ✅ estimé | À vérifier |
 | Inférence par similarité (pas de softmax) | ✅ | Dot product INT8 |
 | Pas de dépendance PyTorch à l'inférence | ✅ | NumPy pur → C portable |

@@ -93,7 +93,7 @@ python scripts/board_dataset_builder.py \
 
 | Mode firmware | `latency_mean_ms` | `latency_p99_ms` | `throughput_mean_ips` | `ram_peak_bytes` | `acc_final` |
 |--------------|------------------|-----------------|----------------------|-----------------|------------|
-| Dry-run | ~0.003 | ~0.003 | ~333333 | ~200 | 1.0 |
+| Dry-run (2026-05-25) | 0.003 | 0.003 | 333333 | 200 | 1.0 |
 | Dummy (NUCLEO) | — | — | — | — | ~0.5 |
 | Mahalanobis (NUCLEO) | — | — | — | — | — |
 

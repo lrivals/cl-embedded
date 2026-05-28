@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🔴 Critique |
-| **Statut** | ✅ Scripté — dry-run à valider |
+| **Statut** | ✅ Validé board réel (2026-05-27) |
 | **Durée estimée** | 3h |
 | **Dépendances** | S1906 (protocole v3) |
 | **Fichiers cibles** | `scripts/board_experiment_recorder.py`, `tests/test_board_recorder.py` |
@@ -131,9 +131,19 @@ Vérifier que `pandas.read_json("experiments/exp_S19_01/results.json")` retourne
 
 ---
 
+## Bug corrigé (2026-05-27)
+
+`board_experiment_recorder.py` appelait `_stream_uart()` sans `protocol_version=3`. Le firmware envoie du v3 (21 B), mais le recorder parsait en v2 (14 B) → valeurs corrompues (latences en milliards de µs, RAM aléatoire).
+
+**Fix** : passage de `protocol_version=3` explicite dans `_run_experiment()`.
+
+De plus, `config_snapshot.yaml` mentionnait `protocol_version: 2` à titre informatif — corrigé en `3`.
+
+---
+
 ## Vérification
 
-- [ ] `python scripts/board_experiment_recorder.py --model mahalanobis --dataset cwru --dry-run --output experiments/exp_S19_01` → exit 0
-- [ ] `experiments/exp_S19_01/results.json` contient les 6 métriques obligatoires
-- [ ] `pytest tests/test_board_recorder.py -v` → PASS (S1910)
-- [ ] Formatage JSON valide : `python -m json.tool experiments/exp_S19_01/results.json`
+- [x] Board réel Mahalanobis CWRU : `results.json` créé avec 6 métriques — exit 0
+- [x] Board réel EWC Monitoring : `results.json` créé avec 6 métriques — exit 0
+- [x] Protocol v3 correctement parsé dans les deux runs
+- [ ] `pytest tests/test_board_recorder.py -v` → PASS (S1910, non encore lancé)

@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | Sprint 19 |
 | **Semaine** | 1–8 juin 2026 |
-| **Statut** | ⬜ À faire |
+| **Statut** | 🔄 En cours — 12/13 tâches ✅, S1903 (poids TinyOL) restante |
 | **Priorité globale** | 🔴 Critique — validation modèles CL sur MCU |
 | **Durée estimée totale** | ~42h |
 | **Dépendances** | Sprint 16 (Mahalanobis C ✅, EWC head C esquissé ✅), Sprint 18 (pipeline données ✅) |
@@ -32,19 +32,19 @@ board_experiment_recorder.py  →  experiments/exp_S19_XX/results.json
 
 | ID | Tâche | Priorité | Statut | Fichier(s) cible(s) | Dépendances |
 |----|-------|:--------:|:------:|--------------------|-------------|
-| S1901 | Validation Mahalanobis C : end-to-end avec streaming S18, comparaison PC vs C | 🔴 | ⬜ | `firmware/stm32f4_blink/src/mahalanobis.c` | S18 done |
-| S1902 | Compléter EWC head C : Fisher EMA update, `ewc_consolidate()`, annotations MEM | 🔴 | ⬜ | `firmware/stm32f4_blink/src/ewc_head.c` (compléter) | S1901 |
-| S1903 | TinyOL encoder C skeleton : forward pass seulement (NPU-simulated), poids Flash | 🔴 | ⬜ | `firmware/stm32f4_blink/src/tinyol.c`, `inc/tinyol.h` | S1901 |
-| S1904 | Mock data framework C : samples synthétiques en dur pour tests host sans board | 🔴 | ⬜ | `firmware/stm32f4_blink/tests/mock_data.h` | — |
-| S1905 | Firmware metrics : accuracy online, AUROC sliding window, forgetting tracker | 🔴 | ⬜ | `firmware/stm32f4_blink/src/metrics.c`, `inc/metrics.h` | S1904 |
-| S1906 | Response protocol v3 : ajoute metrics_snapshot (acc, auroc, forgetting) | 🔴 | ⬜ | `firmware/stm32f4_blink/src/pipeline.c` | S1905 |
-| S1907 | Experiment recorder Python : capture résultats board → experiments/ unifié Phase 1 | 🔴 | ⬜ | `scripts/board_experiment_recorder.py` | S1906 |
-| S1908 | Configs YAML modèles embarqués : dims, seuils, Fisher decay, LR | 🟡 | ⬜ | `configs/board_mahalanobis.yaml`, `configs/board_ewc.yaml`, `configs/board_tinyol.yaml` | S1902–S1903 |
-| S1909 | Tests Unity : tous modèles sur mock_data, vérification pas de malloc | 🟡 | ⬜ | `firmware/stm32f4_blink/tests/test_models.c` | S1902–S1904 |
-| S1910 | Tests Python recorder : JSON output, champs obligatoires, format unifié | 🟡 | ⬜ | `tests/test_board_recorder.py` | S1907 |
-| S1911 | Expérience E19-01 : Mahalanobis 500 samples CWRU, auto-enregistré, PC vs carte | 🟡 | ⬜ | `experiments/exp_S19_01/` | S1907–S1908 |
-| S1912 | Expérience E19-02 : EWC head 3 tâches Monitoring, forgetting mesuré on-board | 🟡 | ⬜ | `experiments/exp_S19_02/` | S1902, S1911 |
-| S1913 | RAM profiling statique : `-Wl,-Map` + parser map file → valide < 64 Ko | 🟢 | ⬜ | `scripts/parse_map_file.py` | S1902–S1903 |
+| S1901 | Validation Mahalanobis C : end-to-end avec streaming S18, comparaison PC vs C | 🔴 | ✅ | `firmware/stm32f4_blink/src/mahalanobis.c` | S18 done |
+| S1902 | Compléter EWC head C : Fisher EMA update, `ewc_consolidate()`, annotations MEM | 🔴 | ✅ | `firmware/stm32f4_blink/src/ewc_head.c` | S1901 |
+| S1903 | TinyOL encoder C skeleton : forward pass seulement (NPU-simulated), poids Flash | 🔴 | 🔄 | `firmware/stm32f4_blink/src/tinyol.c`, `inc/tinyol.h` | S1901 |
+| S1904 | Mock data framework C : samples synthétiques en dur pour tests host sans board | 🔴 | ✅ | `firmware/stm32f4_blink/tests/mock_data.h` | — |
+| S1905 | Firmware metrics : accuracy online, AUROC sliding window, forgetting tracker | 🔴 | ✅ | `firmware/stm32f4_blink/src/metrics.c`, `inc/metrics.h` | S1904 |
+| S1906 | Response protocol v3 : ajoute metrics_snapshot (acc, auroc, forgetting) | 🔴 | ✅ | `firmware/stm32f4_blink/src/pipeline.c` | S1905 |
+| S1907 | Experiment recorder Python : capture résultats board → experiments/ unifié Phase 1 | 🔴 | ✅ | `scripts/board_experiment_recorder.py` | S1906 |
+| S1908 | Configs YAML modèles embarqués : dims, seuils, Fisher decay, LR | 🟡 | ✅ | `configs/board_mahalanobis.yaml`, `configs/board_ewc.yaml`, `configs/board_tinyol.yaml` | S1902–S1903 |
+| S1909 | Tests Unity : tous modèles sur mock_data, vérification pas de malloc | 🟡 | ✅ | `firmware/stm32f4_blink/tests/test_models.c` — **28/28 PASS** | S1902–S1904 |
+| S1910 | Tests Python recorder : JSON output, champs obligatoires, format unifié | 🟡 | ✅ | `tests/test_board_recorder.py` — **13 passed, 11 skipped (board)** | S1907 |
+| S1911 | Expérience E19-01 : Mahalanobis 500 samples CWRU, auto-enregistré, PC vs carte | 🟡 | ✅ | `experiments/exp_S19_01/` — acc=68.7% (sans --update), lat=0.004 ms ✅ | S1907–S1908 |
+| S1912 | Expérience E19-02 : EWC head 3 tâches Monitoring, forgetting mesuré on-board | 🟡 | ✅ | `experiments/exp_S19_02/` — lat=0.004 ms ✅, acc=8% ⚠️ (init poids) | S1902, S1911 |
+| S1913 | RAM profiling statique : `-Wl,-Map` + parser map file → valide < 64 Ko | 🟢 | ✅ | `scripts/parse_map_file.py` | S1902–S1903 |
 
 > Détail : [S1901](S1901_mahalanobis_validation.md) · [S1902](S1902_ewc_head_complete.md) · [S1903](S1903_tinyol_skeleton.md) · [S1904](S1904_mock_data.md) · [S1905](S1905_firmware_metrics.md) · [S1906](S1906_protocol_v3.md) · [S1907](S1907_experiment_recorder.md) · [S1908](S1908_board_configs.md) · [S1909](S1909_unity_model_tests.md) · [S1910](S1910_tests_recorder.md) · [S1911](S1911_exp_mahalanobis.md) · [S1912](S1912_exp_ewc.md) · [S1913](S1913_ram_profiling_static.md)
 

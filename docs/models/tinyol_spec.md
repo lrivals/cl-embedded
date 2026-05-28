@@ -72,7 +72,7 @@ Input: [batch, 9]    ← embedding z (8D) + MSE scalaire = 9D
 | **TOTAL RAM dynamique** | **~600 B** | **~140 B** | **RAM** |
 | **TOTAL Flash (backbone)** | **5,8 Ko** | **1,5 Ko** | **Flash** |
 
-> ✅ Largement dans la cible de 64 Ko RAM. Marge disponible pour le buffer UINT8 (extension).
+> ✅ Largement dans le budget NUCLEO-F439ZI (256 Ko). Marge disponible pour le buffer UINT8 (extension).
 
 ---
 
@@ -236,7 +236,7 @@ REPLAY_EMBED_DIM = 8        # dimension de z
 | Backbone exportable ONNX / TFLite | À vérifier | Après implémentation |
 | Activations ReLU (INT8-friendly) | ✅ | Pas de GELU, SiLU, etc. |
 | Normalisation offline (stats fixes) | ✅ | Pas de BatchNorm online |
-| Taille modèle < 64 Ko (total) | ✅ estimé | À mesurer avec `memory_profiler.py` |
+| Taille modèle < 256 Ko (total NUCLEO) | ✅ estimé | À mesurer avec `memory_profiler.py` |
 
 ---
 

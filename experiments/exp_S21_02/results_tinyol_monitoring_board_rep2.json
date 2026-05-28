@@ -1,0 +1,33 @@
+{
+  "exp_id": "tinyol_monitoring_board",
+  "model": "tinyol",
+  "dataset": "monitoring",
+  "platform": "nucleo_f439zi",
+  "date": "2026-05-28",
+  "acc_final": 0.1185,
+  "avg_forgetting": 0.0,
+  "backward_transfer": -0.0,
+  "ram_peak_bytes": 5800,
+  "inference_latency_ms": 0.004,
+  "n_params": 881,
+  "n_tasks": 3,
+  "n_samples_total": 498,
+  "latency_p99_ms": 0.004,
+  "throughput_mean_ips": 0,
+  "per_task_acc": {
+    "0": 0.0964,
+    "1": 0.1566,
+    "2": 0.1024
+  },
+  "collection_time_s": 3.18,
+  "config_snapshot": "experiments/exp_S21_02/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 2,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  }
+}

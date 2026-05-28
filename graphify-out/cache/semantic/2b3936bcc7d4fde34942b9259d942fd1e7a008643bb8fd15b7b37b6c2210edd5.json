@@ -1,0 +1,1 @@
+{"nodes": [{"id": "firmware_cmsis_nn_activation", "label": "CMSIS-NN ActivationFunctions", "file_type": "code", "source_file": "firmware/stm32f4_cubemx/Drivers/CMSIS/NN/Source/ActivationFunctions/CMakeLists.txt", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

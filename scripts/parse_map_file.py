@@ -57,16 +57,23 @@ def parse_map_file(map_path: Path) -> dict:
     total_flash_bytes = text_bytes + data_bytes  # .data initialisé en Flash
 
     # Symboles notables (modèles + pipeline)
-    notable = ["g_detector", "g_profiling", "g_ewc_head", "g_tinyol_enc"]
+    notable = [
+        "g_detector", "g_ewc_head",
+        "g_tinyol_enc", "g_tinyol_dec",
+        "g_acc", "g_auroc", "g_fgt", "g_profiling",
+    ]
     symbol_sizes = {}
-    sym_re = re.compile(
-        r"0x[0-9a-fA-F]+\s+(0x[0-9a-fA-F]+)\s+(\S+)",
+    # Deux formats dans le .map GNU ld :
+    #   Petit : " .bss.NAME    0xADDR    0xSIZE  build/x.o"  (1 ligne)
+    #   Grand : " .bss.NAME\n              0xADDR    0xSIZE  build/x.o"  (2 lignes)
+    bss_sym_re = re.compile(
+        r"\.bss\.(\S+)(?:\s+0x[0-9a-fA-F]+\s+|\s*\n\s+0x[0-9a-fA-F]+\s+)(0x[0-9a-fA-F]+)",
         re.MULTILINE,
     )
-    for m in sym_re.finditer(content):
-        size_str, name = m.group(1), m.group(2)
-        if any(n in name for n in notable):
-            symbol_sizes[name] = int(size_str, 16)
+    for m in bss_sym_re.finditer(content):
+        sym_name, size_str = m.group(1), m.group(2)
+        if any(n == sym_name for n in notable):
+            symbol_sizes[sym_name] = int(size_str, 16)
 
     return {
         "text_bytes":        text_bytes,
@@ -90,15 +97,38 @@ def check_constraints(sizes: dict, ram_limit: int) -> list[str]:
     return violations
 
 
+def _build_gap2_json(sizes: dict, ram_limit: int, violations: list[str]) -> dict:
+    breakdown = {f"{k} (.bss)": v for k, v in sizes["symbols"].items()}
+    return {
+        "platform":          "nucleo_f439zi",
+        "total_bss_bytes":   sizes["bss_bytes"],
+        "total_data_bytes":  sizes["data_bytes"],
+        "total_flash_bytes": sizes["total_flash_bytes"],
+        "gap2_budget_bytes": ram_limit,
+        "gap2_margin_bytes": ram_limit - sizes["total_ram_bytes"],
+        "gap2_compliant":    len(violations) == 0,
+        "breakdown":         breakdown,
+        "fixme": (
+            "NUCLEO-F439ZI indicatif (192 Ko SRAM). "
+            "Validation formelle STM32N6 (64 Ko) bloquée."
+        ),
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Parse fichier .map linker → validation contrainte RAM (Gap 2)")
     parser.add_argument("map_file", help="Chemin vers le fichier .map (ex: firmware.map)")
     parser.add_argument("--ram-limit", type=int, default=RAM_LIMIT_NUCLEO_BYTES,
                         help=f"Limite RAM en octets (défaut: {RAM_LIMIT_NUCLEO_BYTES} pour NUCLEO-F439ZI)")
+    parser.add_argument("--budget", type=int, dest="ram_limit",
+                        help="Alias pour --ram-limit (budget en octets, ex: 65536 pour STM32N6)")
     parser.add_argument("--stm32n6", action="store_true",
                         help="Applique la limite STM32N6 stricte (64 Ko)")
-    parser.add_argument("--save", help="Chemin JSON pour sauvegarder les résultats")
+    parser.add_argument("--save", dest="save",
+                        help="Chemin JSON pour sauvegarder les résultats")
+    parser.add_argument("--output", dest="save",
+                        help="Alias --save (chemin JSON, ex: experiments/gap2_table.json)")
     args = parser.parse_args()
 
     if args.stm32n6:
@@ -132,12 +162,18 @@ def main() -> None:
         print("\n  ❌ VIOLATIONS GAP 2 :")
         for v in violations:
             print(f"    - {v}")
+        if args.save:
+            out = _build_gap2_json(sizes, ram_limit, violations)
+            Path(args.save).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.save).write_text(json.dumps(out, indent=2))
+            print(f"\nSauvegardé : {args.save}")
+        raise SystemExit(1)
     else:
         print(f"\n  ✅ Gap 2 RAM : {sizes['total_ram_bytes']} B < {ram_limit} B ({ram_limit/1024:.0f} Ko) — OK")
 
     if args.save:
-        out = {**sizes, "ram_limit_bytes": ram_limit,
-               "gap2_compliant": len(violations) == 0, "violations": violations}
+        out = _build_gap2_json(sizes, ram_limit, violations)
+        Path(args.save).parent.mkdir(parents=True, exist_ok=True)
         Path(args.save).write_text(json.dumps(out, indent=2))
         print(f"\nSauvegardé : {args.save}")
 

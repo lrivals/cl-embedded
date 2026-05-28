@@ -18,3 +18,16 @@ RAM_ACTIVATIONS_BYTES: 40  # diff(20B) + left(20B) stack temporaire
 # Export poids C
 WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
 WEIGHTS_CHECKPOINT: "experiments/exp_160/mahalanobis_weights.pkl"
+
+# Champs spec S1908 (snake_case, cohérence avec #define dans mahalanobis.h)
+model: mahalanobis
+platform: nucleo_f439zi
+n_features: 5   # MAHA_DIM
+n_params: 30
+threshold_init: 2.5
+ema_alpha: 0.05
+ram_budget_bytes: 65536
+ram_model_bytes: 200
+n_tasks: 3
+n_samples: 500
+dataset: cwru

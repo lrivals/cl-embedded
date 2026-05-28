@@ -19,6 +19,53 @@ static float relu(float v)
     return v > 0.0f ? v : 0.0f;
 }
 
+/* ── Initialisation Xavier LCG ─────────────────────────────────────────── */
+
+/* MEM: ewc_init — 0 B stack extra, initialise EWCHead en place (poids Xavier,
+ * Fisher et star_w remis à zéro). Ne touche pas h->lambda.
+ * LCG Knuth : multiplicateur=1664525, incrément=1013904223 (Numerical Recipes). */
+void ewc_init(EWCHead *h)
+{
+    uint32_t rng = 42u;
+#define LCG_NEXT(r) ((r) = (r) * 1664525u + 1013904223u)
+#define LCG_F01(r)  ((float)((r) >> 8) / (float)(1u << 24))   /* [0, 1) 24 bits */
+
+    /* Xavier uniform — limit = sqrt(6 / (fan_in + fan_out)) */
+    static const float lim1 = 0.4026f;   /* sqrt(6/(5+32))  */
+    static const float lim2 = 0.3536f;   /* sqrt(6/(32+16)) */
+    static const float lim3 = 0.5774f;   /* sqrt(6/(16+2))  */
+
+    for (int j = 0; j < EWC_H1; j++) {
+        h->b1[j] = 0.0f;
+        for (int i = 0; i < EWC_IN; i++) {
+            LCG_NEXT(rng);
+            h->w1[j][i]      = (LCG_F01(rng) * 2.0f - 1.0f) * lim1;
+            h->fisher1[j][i] = 0.0f;
+            h->star_w1[j][i] = 0.0f;
+        }
+    }
+    for (int j = 0; j < EWC_H2; j++) {
+        h->b2[j] = 0.0f;
+        for (int i = 0; i < EWC_H1; i++) {
+            LCG_NEXT(rng);
+            h->w2[j][i]      = (LCG_F01(rng) * 2.0f - 1.0f) * lim2;
+            h->fisher2[j][i] = 0.0f;
+            h->star_w2[j][i] = 0.0f;
+        }
+    }
+    for (int j = 0; j < EWC_OUT; j++) {
+        h->b3[j] = 0.0f;
+        for (int i = 0; i < EWC_H2; i++) {
+            LCG_NEXT(rng);
+            h->w3[j][i]      = (LCG_F01(rng) * 2.0f - 1.0f) * lim3;
+            h->fisher3[j][i] = 0.0f;
+            h->star_w3[j][i] = 0.0f;
+        }
+    }
+#undef LCG_NEXT
+#undef LCG_F01
+}
+
 /* ── Forward pass ──────────────────────────────────────────────────────── */
 
 void ewc_forward(const EWCHead *h, const float *x, float *out)
@@ -154,5 +201,42 @@ void ewc_sgd_step(EWCHead *h, const float *x, int label)
             h->w1[j][i] -= EWC_LR * grad;
         }
         h->b1[j] -= EWC_LR * dh1[j];
+    }
+}
+
+/* ── Consolidation EWC : Fisher EMA + snapshot θ* ──────────────────────── */
+
+/* MEM: ewc_consolidate — 0 B stack (tout in-place dans EWCHead en SRAM)
+ * EWCHead total : ~9.5 Ko @ FP32 en .bss
+ *   Poids courants : 3 Ko, Fisher diagonal : 3 Ko, θ* : 3 Ko, lambda : 4 B */
+void ewc_consolidate(EWCHead *h, float alpha)
+{
+    float one_minus_alpha = 1.0f - alpha;
+
+    /* Couche 1 — grad² ≈ w² (proxy Fisher diagonal online, cf. Kirkpatrick2017EWC) */
+    for (int j = 0; j < EWC_H1; j++) {
+        for (int i = 0; i < EWC_IN; i++) {
+            float g2 = h->w1[j][i] * h->w1[j][i];
+            h->fisher1[j][i] = alpha * h->fisher1[j][i] + one_minus_alpha * g2;
+            h->star_w1[j][i] = h->w1[j][i];
+        }
+    }
+
+    /* Couche 2 */
+    for (int j = 0; j < EWC_H2; j++) {
+        for (int i = 0; i < EWC_H1; i++) {
+            float g2 = h->w2[j][i] * h->w2[j][i];
+            h->fisher2[j][i] = alpha * h->fisher2[j][i] + one_minus_alpha * g2;
+            h->star_w2[j][i] = h->w2[j][i];
+        }
+    }
+
+    /* Couche 3 — pas de Fisher sur les biais (standard EWC) */
+    for (int j = 0; j < EWC_OUT; j++) {
+        for (int i = 0; i < EWC_H2; i++) {
+            float g2 = h->w3[j][i] * h->w3[j][i];
+            h->fisher3[j][i] = alpha * h->fisher3[j][i] + one_minus_alpha * g2;
+            h->star_w3[j][i] = h->w3[j][i];
+        }
     }
 }

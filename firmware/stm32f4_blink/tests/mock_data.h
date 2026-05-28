@@ -89,6 +89,16 @@ static const float MOCK_EWC_LOGIT_TOLERANCE = 0.01f;
 
 /* ── TinyOL reconstruction error attendue (poids zéro → MSE ~ ||x||²/N) ── */
 /* Pour MOCK_NORMAL_T0[0] = [0.10, 0.05, 0.08, -0.03, 0.12] avec poids=0 :
- * recon = [0, 0, 0, 0, 0], MSE = (0.01+0.0025+0.0064+0.0009+0.0144)/5 ≈ 0.007 */
-static const float MOCK_TINYOL_RECON_ERR_ZERO_WEIGHTS = 0.007f;
+ * recon = [0, 0, 0, 0, 0], MSE = (0.01+0.0025+0.0064+0.0009+0.0144)/5 = 0.00684 */
+static const float MOCK_TINYOL_RECON_ERR_ZERO_WEIGHTS = 0.00684f;
 static const float MOCK_TINYOL_RECON_TOLERANCE = 1e-4f;
+
+/* ── Référence embedding TinyOL (MOCK_NORMAL_T0[0], poids seed=42) ─────── */
+/* Calculée par scripts/export_weights_tinyol.py — validée dans test_tinyol.c */
+#include "tinyol.h"
+static const float MOCK_TINYOL_REF_EMB_T0[16] = {
+    0.00000000f, 0.00000000f, 0.01407837f, 0.07328057f,
+    0.00000000f, 0.00000000f, 0.00000000f, 0.00000000f,
+    0.00000000f, 0.00000000f, 0.02019043f, 0.00000000f,
+    0.15381224f, 0.00000000f, 0.00000000f, 0.10535455f,
+};

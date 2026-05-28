@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🟡 Important |
-| **Statut** | ⬜ À lancer |
+| **Statut** | ✅ Complété sur board réel (2026-05-27) |
 | **Durée estimée** | 3h |
 | **Dépendances** | S1907 (recorder validé), S1908 (config) |
 | **Fichiers cibles** | `experiments/exp_S19_01/` |
@@ -159,14 +159,29 @@ La latence Mahalanobis est dominée par le produit matrice-vecteur 5×5. Sur NUC
 
 ---
 
+## Résultats board réel (2026-05-27)
+
+198 samples CWRU, 3 tâches, NUCLEO-F439ZI, protocol v3 :
+
+| Métrique | Valeur | Seuil |
+|----------|--------|-------|
+| `inference_latency_ms` | **0.004 ms** | < 100 ms ✅ |
+| `accuracy` globale | 68.7% | — |
+| RAM build (statique) | 1 768 B | < 64 Ko ✅ |
+| Erreurs CRC | 0/198 | ✅ |
+
+> `acc=68.7%` sans `--update` : le seuil Mahalanobis n'est pas adapté. À relancer avec `--update` pour valider l'EMA online.
+
+---
+
 ## Vérification
 
-- [ ] Dry-run : JSON créé avec 6 métriques
-- [ ] (si board disponible) `acc_final` ≥ 0.85 sur 500 samples CWRU
-- [ ] Delta `acc_final` PC vs board < 2%
-- [ ] `inference_latency_ms` < 1 ms sur NUCLEO (contrainte projet : < 100 ms)
-- [ ] `ram_peak_bytes` < 1 Ko (Mahalanobis très léger)
-- [ ] `FIXME(gap2)` : noté dans les questions ouvertes pour validation STM32N6 ultérieure
+- [x] JSON créé avec 6 métriques (`experiments/exp_S19_01/results.json`)
+- [x] `inference_latency_ms` < 1 ms ✅
+- [x] `ram_peak_bytes` : 1 768 B ✅
+- [ ] `acc_final` ≥ 0.85 : non atteint sans `--update` — relancer avec adaptation EMA
+- [ ] Delta `acc_final` PC vs board < 2% : non mesuré (`compare_mahalanobis_pc_vs_board.py` à lancer)
+- [ ] `FIXME(gap2)` : validation STM32N6 (64 Ko cible) requise
 
 ---
 

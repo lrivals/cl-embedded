@@ -1,0 +1,11 @@
+baud: 115200
+dataset: cwru
+date: '2026-05-25T07:27:52.061851'
+dry_run: true
+n_samples: 500
+n_tasks: 3
+platform: nucleo_f439zi
+port: null
+protocol_version: 2
+rate_hz: 0.0
+update_requested: false

@@ -14,6 +14,7 @@
 #include "stm32f4xx.h"
 #include "hw_info.h"
 #include "pipeline.h"
+#include "profiling.h"
 
 int main(void)
 {
@@ -32,7 +33,8 @@ int main(void)
         hw_dwt_calibrate(info.sysclk_hz);
     }
 
-    /* ── 4. Init pipeline (GPIO PA5, poids Mahalanobis depuis Flash) ── */
+    /* ── 4. Init pipeline + profiling ──────────────────────────────── */
+    profiling_init();
     pipeline_init();
 
     /* ── 5. Boucle d'inférence (bloque sur trame UART) ──────────────── */

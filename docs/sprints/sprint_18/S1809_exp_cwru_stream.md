@@ -7,8 +7,8 @@
 | **Priorité** | 🟡 Secondaire |
 | **Durée estimée** | 3h |
 | **Dépendances** | S1801–S1806 (pipeline complet opérationnel) |
-| **Fichiers cibles** | `experiments/exp_S18_01/` |
-| **Statut** | ⬜ À faire — critère de succès du sprint |
+| **Fichiers cibles** | `experiments/exp_S18_01/`, `experiments/exp_S18_01_board/` |
+| **Statut** | ✅ Validé — dry-run + board NUCLEO-F439ZI (2026-05-25) |
 
 ---
 
@@ -99,12 +99,14 @@ exp_S18_01/
 
 ---
 
-## Tableau résultats (à remplir après exécution)
+## Tableau résultats
 
 | Mode | Date | `acc_final` | `ram_peak_bytes` | `latency_mean_ms` | `latency_p99_ms` | `throughput_mean_ips` | `gap2_compliant` | Durée session |
 |------|------|------------|-----------------|------------------|-----------------|----------------------|-----------------|--------------|
-| dry-run | — | — | — | — | — | — | — | — |
-| NUCLEO-F439ZI | — | — | — | — | — | — | — | — |
+| dry-run | 2026-05-25 | 1.0 | 200 | 0.003 | 0.003 | 333333 | True | 1.1 s |
+| NUCLEO-F439ZI | 2026-05-25 | 0.4197 † | 1 000 | 0.0037 | 0.004 | 34 235 | True | 26.1 s |
+
+> † `acc_final` = comparaison pred binaire Mahalanobis (0/1 anomalie) vs label CWRU multi-classe (0/1/2) — métrique non représentative pour un détecteur d'anomalie non supervisé. La vraie performance se mesure via AUROC (calculé en Phase 1 PC : ~0.90+). La latence et la RAM sont les métriques Gap 2 pertinentes.
 
 ---
 
@@ -137,11 +139,19 @@ print(f"  lat = {r['inference_latency_ms']} ms")
 
 ## Critères d'acceptation
 
-- [ ] `python scripts/board_dataset_builder.py --dataset cwru --dry-run --n-samples 500 --output experiments/exp_S18_01` complète en < 5 minutes
-- [ ] `experiments/exp_S18_01/results.json` présent avec `n_samples=500` et `n_tasks=3`
-- [ ] `experiments/exp_S18_01/dataset.csv` contient exactement 500 lignes
-- [ ] `experiments/exp_S18_01/profiling.json` présent avec `gap2_compliant: true`
-- [ ] `experiments/exp_S18_01/config_snapshot.yaml` présent avec `protocol_version: 2`
+- [x] `python scripts/board_dataset_builder.py --dataset cwru --dry-run --n-samples 500 --output experiments/exp_S18_01` complète en < 5 minutes ✅ (1.1 s)
+- [x] `experiments/exp_S18_01/results.json` présent avec `n_samples=500` et `n_tasks=3` ✅
+- [x] `experiments/exp_S18_01/dataset.csv` contient exactement 500 lignes ✅
+- [x] `experiments/exp_S18_01/profiling.json` présent avec `gap2_compliant: true` ✅
+- [x] `experiments/exp_S18_01/config_snapshot.yaml` présent avec `protocol_version: 2` ✅
+- [x] **Board** : `exp_S18_01_board/` produit en 26.1 s, lat=3.7 µs, RAM=1000 B, Gap 2 compliant ✅
+
+## Bugs corrigés lors de la validation board (2026-05-25)
+
+| Bug | Symptôme | Cause | Fix |
+|-----|----------|-------|-----|
+| DEBUG_PRINTF UART pollution | latency_us=1 113 449 ms, acc=0.028 | `-DDEBUG_PRINTF=1` dans `CFLAGS` → bytes ASCII après chaque réponse → désync parsing Python | Retiré de `CFLAGS` firmware (gardé dans `make test`) |
+| `profiling_init()` non appelé | `ram_peak_bytes=0` | `profiling_init()` absent de `main.c` → `bss_bytes` reste 0 | Ajout `profiling_init()` + `#include "profiling.h"` dans `main.c` |
 
 ---
 

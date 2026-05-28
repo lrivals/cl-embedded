@@ -16,7 +16,11 @@ C_SOURCES   = src/main.c \
               src/hw_info.c \
               src/mahalanobis.c \
               src/ewc_head.c \
+              src/tinyol.c \
+              src/hdc.c \
+              src/metrics.c \
               src/pipeline.c \
+              src/profiling.c \
               src/syscalls.c
 ASM_SOURCES = startup/startup_stm32f439xx.s
 
@@ -30,7 +34,7 @@ FLOAT    = -mfloat-abi=hard
 MCU      = $(CPU) -mthumb $(FPU) $(FLOAT)
 
 # ── Flags de compilation ─────────────────────────────────────────────────
-CFLAGS   = $(MCU) $(C_INCLUDES) -DSTM32F439xx -DDEBUG_PRINTF=1 \
+CFLAGS   = $(MCU) $(C_INCLUDES) -DSTM32F439xx \
            -Wall -Wextra -Os -g3 \
            -ffunction-sections -fdata-sections \
            -std=gnu11
@@ -84,13 +88,26 @@ clean:
 # On compile uniquement les modules portables (pas pipeline.c / main.c / hw_info.c
 # qui ont des dépendances HAL STM32 incompatibles avec x86).
 TEST_CC  = gcc
-TEST_SRC = tests/test_mahalanobis.c tests/test_ewc_head.c tests/test_runner.c \
+TEST_SRC = tests/test_mahalanobis.c tests/test_ewc_head.c \
+           tests/test_profiling.c tests/test_pipeline.c tests/test_tinyol.c \
+           tests/test_hdc.c \
+           tests/test_runner.c \
            tests/unity/unity.c \
-           src/mahalanobis.c src/ewc_head.c
+           src/mahalanobis.c src/ewc_head.c src/tinyol.c src/hdc.c src/profiling.c src/pipeline.c \
+           src/metrics.c
 TEST_INC = -Iinc -Itests/unity
 
 test: $(BUILD_DIR)
-	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -lm -o $(BUILD_DIR)/test_runner
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -lm -o $(BUILD_DIR)/test_runner
 	./$(BUILD_DIR)/test_runner
 
-.PHONY: all flash debug clean test
+TEST_MODELS_SRC = tests/test_models.c \
+                  tests/unity/unity.c \
+                  src/mahalanobis.c src/ewc_head.c src/tinyol.c src/metrics.c
+
+test-models: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_MODELS_SRC) $(TEST_INC) -Itests \
+	           -DTEST_HOST -lm -o $(BUILD_DIR)/test_models_runner
+	./$(BUILD_DIR)/test_models_runner
+
+.PHONY: all flash debug clean test test-models

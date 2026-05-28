@@ -1,0 +1,20 @@
+{
+  "platform": "nucleo_f439zi",
+  "total_bss_bytes": 15676,
+  "total_data_bytes": 460,
+  "total_flash_bytes": 24032,
+  "gap2_budget_bytes": 65536,
+  "gap2_margin_bytes": 49400,
+  "gap2_compliant": true,
+  "breakdown": {
+    "g_fgt (.bss)": 36,
+    "g_auroc (.bss)": 260,
+    "g_acc (.bss)": 8,
+    "g_ewc_head (.bss)": 8652,
+    "g_tinyol_dec (.bss)": 2836,
+    "g_tinyol_enc (.bss)": 2880,
+    "g_detector (.bss)": 128,
+    "g_profiling (.bss)": 20
+  },
+  "fixme": "NUCLEO-F439ZI indicatif (192 Ko SRAM). Validation formelle STM32N6 (64 Ko) bloqu\u00e9e."
+}

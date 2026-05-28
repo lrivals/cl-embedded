@@ -22,8 +22,10 @@ typedef struct {
 } ProfilingState;
 
 /* Symboles fournis par le linker script (calculés au link time) */
+#ifndef TEST_HOST
 extern uint32_t _sbss;   /* Début segment .bss */
 extern uint32_t _ebss;   /* Fin segment .bss  */
+#endif
 
 extern ProfilingState g_profiling;
 

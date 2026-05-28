@@ -1,0 +1,20 @@
+{
+  "model": "ewc",
+  "n_samples": 500,
+  "max_abs_delta": 5.25445716936801e-08,
+  "mean_abs_delta": 1.748024706460516e-08,
+  "tolerance": 0.001,
+  "compliant": true,
+  "platform": "dry_run",
+  "acc_final": 0.01,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0,
+  "per_task_acc": {
+    "0": 0.0241,
+    "1": 0.006,
+    "2": 0.0
+  },
+  "ram_peak_bytes": 57853629,
+  "inference_latency_ms": 0.114,
+  "n_params": 769
+}

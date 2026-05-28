@@ -1,0 +1,47 @@
+{
+  "exp_id": "ewc_pronostia_board",
+  "model": "ewc",
+  "dataset": "pronostia",
+  "platform": "nucleo_f439zi",
+  "date": "2026-05-28",
+  "acc_final": 0.8617,
+  "avg_forgetting": 0.1625,
+  "backward_transfer": -0.1625,
+  "ram_peak_bytes": 200,
+  "inference_latency_ms": 0.2508,
+  "n_params": 1538,
+  "n_tasks": 3,
+  "n_samples_total": 600,
+  "latency_p99_ms": 0.251,
+  "throughput_mean_ips": 0,
+  "per_task_acc": {
+    "0": 0.97,
+    "1": 0.725,
+    "2": 0.89
+  },
+  "collection_time_s": 4.16,
+  "config_snapshot": "experiments/exp_S21_04/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "lambda_ewc": 400.0,
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 3,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  },
+  "run_statistics": {
+    "n_repetitions": 3,
+    "inference_latency_ms_mean": 0.2509,
+    "inference_latency_ms_std": 0.0,
+    "acc_final_mean": 0.8861,
+    "acc_final_std": 0.0229,
+    "avg_forgetting_mean": 0.1458,
+    "avg_forgetting_std": 0.0254,
+    "backward_transfer_mean": -0.1458,
+    "backward_transfer_std": 0.0254,
+    "ram_peak_bytes_mean": 200.0,
+    "ram_peak_bytes_std": 0.0
+  }
+}

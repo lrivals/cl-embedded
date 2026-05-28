@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🔴 Critique |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Implémenté |
 | **Durée estimée** | 3h |
 | **Dépendances** | S1905 (metrics.c ✅) |
 | **Fichiers cibles** | `firmware/stm32f4_blink/src/pipeline.c`, `firmware/stm32f4_blink/inc/pipeline.h` |

@@ -24,7 +24,9 @@ build_frame_v2 = _mod.build_frame_v2
 crc8           = _mod.crc8
 MAGIC          = _mod.MAGIC
 PROTO_VERSION  = _mod.PROTO_VERSION
-RESPONSE_V2_SIZE = _mod.RESPONSE_V2_SIZE
+RESPONSE_V2_SIZE  = _mod.RESPONSE_V2_SIZE
+RESPONSE_V3_SIZE  = _mod.RESPONSE_V3_SIZE
+parse_response    = _mod.parse_response
 
 
 # ── Fixtures ────────────────────────────────────────────────────────────────
@@ -142,3 +144,27 @@ def test_compute_stats_fields(mock_xy):
 def test_compute_stats_empty():
     stats = _mod._compute_stats([])
     assert stats["n_samples"] == 0
+
+
+# ── Tests parse_response v3 / rétrocompatibilité v2 ─────────────────────────
+
+def test_sensor_stream_parse_v3():
+    data = struct.pack("<BfIfff", 1, 0.9, 1234, 0.8, 0.75, 0.02)
+    assert len(data) == RESPONSE_V3_SIZE
+    result = parse_response(data)
+    assert "acc" in result and "auroc" in result and "forgetting" in result
+    assert abs(result["acc"] - 0.8) < 1e-5
+    assert abs(result["auroc"] - 0.75) < 1e-5
+    assert abs(result["forgetting"] - 0.02) < 1e-5
+    assert result["pred"] == 1
+
+
+def test_sensor_stream_backward_compat():
+    data = struct.pack("<BfIHHB", 0, 0.95, 5000, 200, 333, 0)
+    assert len(data) == RESPONSE_V2_SIZE
+    result = parse_response(data)
+    assert "pred" in result
+    assert "acc" not in result
+    assert "auroc" not in result
+    assert "forgetting" not in result
+    assert result["ram_bytes"] == 200

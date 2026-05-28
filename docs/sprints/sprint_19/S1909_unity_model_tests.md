@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🟡 Important |
-| **Statut** | ⬜ À compléter |
+| **Statut** | ✅ Complété — 28/28 PASS |
 | **Durée estimée** | 4h |
 | **Dépendances** | S1902 (ewc_consolidate), S1904 (mock_data ✅) |
 | **Fichiers cibles** | `firmware/stm32f4_blink/tests/test_models.c` |

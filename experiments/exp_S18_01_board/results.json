@@ -1,0 +1,19 @@
+{
+  "exp_id": "exp_S18_01_board",
+  "model": "streaming_pipeline",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "date": "2026-05-25",
+  "acc_final": 0.4197,
+  "avg_forgetting": null,
+  "backward_transfer": null,
+  "ram_peak_bytes": 1000,
+  "inference_latency_ms": 0.0037,
+  "n_params": null,
+  "n_samples": 498,
+  "n_tasks": 3,
+  "latency_p99_ms": 0.004,
+  "throughput_mean_ips": 34235,
+  "config_snapshot": "experiments/exp_S18_01_board/config_snapshot.yaml",
+  "collection_time_s": 26.14
+}

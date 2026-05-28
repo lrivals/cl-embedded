@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🔴 Critique |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Validé sur board (2026-05-27) |
 | **Durée estimée** | 4h |
 | **Dépendances** | Sprint 18 pipeline données ✅ |
 | **Fichiers cibles** | `firmware/stm32f4_blink/src/pipeline.c`, `scripts/sensor_stream.py` |
@@ -106,11 +106,30 @@ python scripts/board_experiment_recorder.py \
 
 ---
 
+## Résultats board (2026-05-27)
+
+Run réel sur NUCLEO-F439ZI, 198 samples CWRU, 3 tâches, protocol v3 :
+
+| Métrique | Valeur mesurée | Seuil |
+|----------|---------------|-------|
+| `inference_latency_ms` | **0.004 ms** | < 100 ms ✅ |
+| `accuracy` | 68.7% | — |
+| Erreurs CRC | 0 | ✅ |
+| RAM build | 1768 B / 192 Ko (0.90%) | ✅ |
+| Flash build | 18 760 B / 2 Mo (0.89%) | ✅ |
+
+Bug corrigé au passage : `sensor_stream.py:209` — `ram_b`/`thr` non définis en protocol v3 dans le print verbose (`UnboundLocalError`).
+
+> Note : `acc=68.7%` attendu (Mahalanobis sans `--update` = seuil fixe non adapté). À relancer avec `--update` pour voir l'adaptation EMA.
+
+---
+
 ## Vérification
 
-- [ ] `make test` dans `firmware/stm32f4_blink/` → `test_mahalanobis.c` : 16/16 PASS
-- [ ] Dry-run recorder : JSON présent avec les 6 métriques obligatoires
-- [ ] (optionnel) Comparaison PC vs C : delta score < 1% sur 500 samples CWRU
+- [x] `make test` dans `firmware/stm32f4_blink/` → 28/28 PASS (tous modèles)
+- [x] Streaming board : 198 samples reçus sans timeout ni CRC error
+- [x] Protocol v3 : acc/auroc/forgetting correctement décodés
+- [ ] Comparaison PC vs C : delta score < 1% sur 500 samples CWRU (TODO)
 
 ---
 

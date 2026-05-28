@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🟡 Important |
-| **Statut** | ⬜ À implémenter |
+| **Statut** | ✅ Implémenté — 13 passed, 11 skipped (board) |
 | **Durée estimée** | 2h |
 | **Dépendances** | S1907 (board_experiment_recorder.py ✅) |
 | **Fichiers cibles** | `tests/test_board_recorder.py` |

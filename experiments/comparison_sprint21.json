@@ -1,0 +1,134 @@
+{
+  "generated": "2026-05-28",
+  "sprint": 21,
+  "protocol": "S2113 — 3 répétitions warm run, reset OpenOCD entre répétitions",
+  "datasets": ["cwru", "monitoring", "pronostia"],
+  "models": ["mahalanobis", "ewc", "tinyol"],
+  "results": {
+    "cwru": {
+      "mahalanobis": {
+        "exp": "exp_S19_01",
+        "acc_final": 0.6285,
+        "acc_std": null,
+        "avg_forgetting": 0.0,
+        "latency_ms": 0.004,
+        "ram_bytes": 200,
+        "note": "board live, 1 répétition (pré-protocole S2113)"
+      },
+      "ewc": {
+        "exp": null,
+        "note": "non testé CWRU board"
+      },
+      "tinyol": {
+        "exp": null,
+        "note": "non prévu Sprint 21"
+      }
+    },
+    "monitoring": {
+      "mahalanobis": {
+        "exp": "exp_S21_01",
+        "acc_final": 0.107,
+        "acc_std": 0.012,
+        "avg_forgetting": 0.011,
+        "avg_forgetting_std": 0.008,
+        "latency_ms": 0.004,
+        "latency_std": 0.0,
+        "ram_bytes": 200,
+        "n_repetitions": 3,
+        "gap2_ram_compliant": true,
+        "gap2_latency_compliant": true,
+        "note": "cold start — poids Mahalanobis non initialisés, voir FIXME(gap1) S2103"
+      },
+      "ewc": {
+        "exp": "exp_S19_02",
+        "acc_final": 0.896,
+        "acc_std": 0.003,
+        "avg_forgetting": 0.010,
+        "avg_forgetting_std": 0.012,
+        "latency_ms": 0.249,
+        "latency_std": 0.001,
+        "ram_bytes": 9728,
+        "lambda_ewc": 400.0,
+        "n_repetitions": 3,
+        "gap2_ram_compliant": true,
+        "gap2_latency_compliant": true
+      },
+      "tinyol": {
+        "exp": "exp_S21_02",
+        "acc_final": 0.114,
+        "acc_std": 0.010,
+        "avg_forgetting": 0.0,
+        "avg_forgetting_std": 0.0,
+        "latency_ms": 0.004,
+        "latency_std": 0.0,
+        "ram_bytes": 5800,
+        "n_repetitions": 3,
+        "gap2_ram_compliant": true,
+        "gap2_latency_compliant": true,
+        "note": "cold start — poids TinyOL entraînés CWRU, threshold non calibré Monitoring"
+      }
+    },
+    "pronostia": {
+      "mahalanobis": {
+        "exp": "exp_S21_03",
+        "acc_final": 0.094,
+        "acc_std": 0.007,
+        "avg_forgetting": 0.0,
+        "avg_forgetting_std": 0.0,
+        "latency_ms": 0.004,
+        "latency_std": 0.0,
+        "ram_bytes": 200,
+        "n_repetitions": 3,
+        "gap2_ram_compliant": true,
+        "gap2_latency_compliant": true,
+        "note": "cold start — même problème qu'E21-01"
+      },
+      "ewc": {
+        "exp": "exp_S21_04",
+        "acc_final": 0.886,
+        "acc_std": 0.023,
+        "avg_forgetting": 0.146,
+        "avg_forgetting_std": 0.025,
+        "latency_ms": 0.251,
+        "latency_std": 0.0,
+        "ram_bytes": 9728,
+        "lambda_ewc": 400.0,
+        "n_repetitions": 3,
+        "gap2_ram_compliant": true,
+        "gap2_latency_compliant": true
+      },
+      "ewc_baseline": {
+        "exp": "exp_S21_04_baseline",
+        "acc_final": 0.852,
+        "acc_std": 0.011,
+        "avg_forgetting": 0.204,
+        "avg_forgetting_std": 0.017,
+        "latency_ms": 0.250,
+        "latency_std": 0.001,
+        "ram_bytes": 9728,
+        "lambda_ewc": 0.0,
+        "n_repetitions": 3,
+        "gap2_ram_compliant": true,
+        "gap2_latency_compliant": true,
+        "note": "baseline catastrophic forgetting — AF(λ=0)=0.204 > AF(λ=400)=0.146"
+      },
+      "tinyol": {
+        "exp": null,
+        "note": "non prévu Sprint 21"
+      }
+    }
+  },
+  "gap2_summary": {
+    "ram_budget_bytes": 65536,
+    "all_compliant": true,
+    "ram_max_observed_bytes": 9728,
+    "latency_max_observed_ms": 0.251,
+    "latency_budget_ms": 100
+  },
+  "ewc_property_verified_on_board": {
+    "dataset": "pronostia",
+    "avg_forgetting_lambda400": 0.146,
+    "avg_forgetting_lambda0": 0.204,
+    "verified": true
+  }
+}

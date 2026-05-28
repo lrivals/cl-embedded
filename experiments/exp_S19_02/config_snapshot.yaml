@@ -1,0 +1,14 @@
+baud: 115200
+board_config: configs/board_ewc.yaml
+dataset: monitoring
+date: '2026-05-28T10:13:50.903130'
+dry_run: false
+fisher_decay: 0.99
+lambda_ewc: 400.0
+model: ewc
+n_samples: 500
+n_tasks: 3
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

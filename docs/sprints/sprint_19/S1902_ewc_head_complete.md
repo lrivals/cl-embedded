@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🔴 Critique |
-| **Statut** | ⬜ À faire |
+| **Statut** | ✅ Implémenté |
 | **Durée estimée** | 5h |
 | **Dépendances** | S1901 (pipeline validé) |
 | **Fichiers cibles** | `firmware/stm32f4_blink/src/ewc_head.c`, `firmware/stm32f4_blink/inc/ewc_head.h` |

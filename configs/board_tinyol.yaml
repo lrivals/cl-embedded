@@ -28,3 +28,19 @@ NPU_TARGET: "NeuralART_Turbo"  # TODO(dorra): confirmer format .nef
 # Export poids C
 WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
 WEIGHTS_CHECKPOINT: "experiments/exp_S19/tinyol_weights.pkl"
+
+# Champs spec S1908 (snake_case, cohérence avec #define dans tinyol.h)
+model: tinyol
+platform: nucleo_f439zi
+n_in: 5         # TINYOL_IN
+n_h1: 32        # TINYOL_H1
+n_emb: 16       # TINYOL_EMB
+n_out: 5        # TINYOL_OUT
+n_params: 881
+threshold: 0.05
+ram_budget_bytes: 65536
+ram_model_bytes: 5800
+ram_flash_bytes: 5600
+n_tasks: 3
+n_samples: 500
+dataset: cwru

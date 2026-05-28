@@ -1,0 +1,16 @@
+{
+  "platform": "nucleo_f439zi",
+  "date": "2026-05-25 07:36:57",
+  "n_samples": 300,
+  "latency_mean_us": 3.0,
+  "latency_p50_us": 3.0,
+  "latency_p99_us": 3.0,
+  "latency_mean_ms": 0.003,
+  "latency_p99_ms": 0.003,
+  "ram_mean_bytes": 200,
+  "ram_peak_bytes": 200,
+  "throughput_mean_ips": 333333,
+  "throughput_min_ips": 333333,
+  "alerts": [],
+  "gap2_compliant": true
+}

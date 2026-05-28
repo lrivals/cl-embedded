@@ -1,0 +1,20 @@
+{
+  "model": "mahalanobis",
+  "n_samples": 500,
+  "max_abs_delta": 8.345328845749123e-07,
+  "mean_abs_delta": 1.1550417866512674e-07,
+  "tolerance": 0.0001,
+  "compliant": true,
+  "platform": "dry_run",
+  "acc_final": 0.974,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0,
+  "per_task_acc": {
+    "0": 1.0,
+    "1": 0.9458,
+    "2": 0.9762
+  },
+  "ram_peak_bytes": 1097991,
+  "inference_latency_ms": 0.0082,
+  "n_params": 32
+}

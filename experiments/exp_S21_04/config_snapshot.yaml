@@ -1,0 +1,13 @@
+baud: 115200
+board_config: configs/board_pronostia.yaml
+dataset: pronostia
+date: '2026-05-28T10:12:54.082632'
+dry_run: false
+lambda_ewc: 400.0
+model: ewc
+n_samples: 600
+n_tasks: 3
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

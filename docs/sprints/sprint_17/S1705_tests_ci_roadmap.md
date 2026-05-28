@@ -8,7 +8,7 @@
 | **Durée estimée** | 2.5h |
 | **Dépendances** | S1702 ✅ (printf debug), S1704 ✅ (Renode opérationnel) |
 | **Fichiers cibles** | `firmware/stm32f4_blink/tests/test_pipeline.c`, `.github/workflows/firmware.yml`, `docs/roadmap_phase2.md` |
-| **Statut** | ⬜ À démarrer |
+| **Statut** | ✅ Terminé (25 mai 2026) |
 
 ---
 
@@ -169,13 +169,16 @@ Modifier `docs/roadmap_phase2.md` :
 
 ## Critères d'acceptation
 
-- [ ] `make test` → **18/18 PASS** (2 nouveaux tests UART mock)
-- [ ] `.github/workflows/firmware.yml` contient le step Renode conditionnel
-- [ ] `docs/roadmap_phase2.md` : Sprint 17 référencé, S1008/S1009 mis à jour
-- [ ] Le workflow CI ne régresse pas sur les 16 tests existants
+- [x] `make test` → **24/24 PASS** (22 existants + 2 nouveaux tests UART mock pipeline)
+- [x] Mock `uart_send_byte()` / `uart_getbyte()` sous `#ifdef TEST_MODE` — aucun accès registre USART3 sur x86
+- [x] `test_pipeline_debug_printf_contains_score` : vérifie présence de `"score="` dans le buffer TX
+- [x] `test_pipeline_response_v2_14bytes` : vérifie que `uart_send_response_v2` émet exactement 14 octets
+- [x] `.github/workflows/firmware.yml` syntaxe YAML valide (step Renode déjà présent)
+- [x] `docs/roadmap_phase2.md` : Sprint 17 ✅ CLÔTURÉ, O3/O4/O5 mis à jour
+- [x] Le workflow CI ne régresse pas sur les 22 tests existants
 
 ---
 
 ## Statut
 
-⬜ À démarrer
+✅ Terminé (25 mai 2026)

@@ -54,3 +54,6 @@ float tinyol_reconstruction_error(const float *x, const float *recon, int n);
 /* Prédiction anomalie : 1 si MSE > threshold */
 int tinyol_predict(const TinyOLEncoder *enc, const TinyOLDecoder *dec,
                    const float *x, float threshold);
+
+/* Initialise enc et dec depuis les constantes Flash de model_weights.h */
+void tinyol_init(TinyOLEncoder *enc, TinyOLDecoder *dec);

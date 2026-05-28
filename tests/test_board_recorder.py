@@ -144,3 +144,141 @@ def test_results_json_serializable(output_dir):
     serialized = json.dumps(json_out)
     recovered = json.loads(serialized)
     assert recovered["model"] == "ewc"
+
+
+# ── Tests intégration CLI (subprocess dry-run) ───────────────────────────────
+
+import subprocess
+import sys
+
+_REPO_ROOT = Path(__file__).parent.parent
+_RECORDER_CLI = _REPO_ROOT / "scripts" / "board_experiment_recorder.py"
+_DATA_ROOTS = {
+    "cwru":       _REPO_ROOT / "data" / "raw" / "cwru",
+    "monitoring": _REPO_ROOT / "data" / "raw" / "equipment_monitoring",
+}
+
+REQUIRED_KEYS = {
+    "acc_final", "avg_forgetting", "backward_transfer",
+    "ram_peak_bytes", "inference_latency_ms", "n_params",
+}
+BOARD_KEYS = {
+    "exp_id", "model", "dataset", "platform",
+    "date", "n_tasks", "n_samples_total", "config_snapshot",
+}
+
+
+def _dataset_available(dataset: str) -> bool:
+    p = _DATA_ROOTS.get(dataset, Path("/nonexistent"))
+    try:
+        return p.is_dir() and any(p.iterdir())
+    except PermissionError:
+        return False
+
+
+def _run_recorder_cli(model: str, dataset: str, output: Path) -> Path:
+    result = subprocess.run(
+        [sys.executable, str(_RECORDER_CLI),
+         "--model", model,
+         "--dataset", dataset,
+         "--dry-run",
+         "--output", str(output)],
+        capture_output=True, text=True, cwd=str(_REPO_ROOT),
+    )
+    assert result.returncode == 0, f"recorder CLI failed:\n{result.stderr}"
+    return output / "results.json"
+
+
+class TestDryRunOutput:
+
+    def test_json_file_created(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent — test nécessite les données CWRU")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        assert json_path.exists(), "results.json non créé"
+
+    def test_json_is_valid(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        assert isinstance(data, dict)
+
+    def test_required_keys_present(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        missing = REQUIRED_KEYS - data.keys()
+        assert not missing, f"Clés obligatoires manquantes : {missing}"
+
+    def test_board_keys_present(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        missing = BOARD_KEYS - data.keys()
+        assert not missing, f"Clés board manquantes : {missing}"
+
+    def test_metric_types(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        assert isinstance(data["acc_final"], float)
+        assert isinstance(data["avg_forgetting"], float)
+        assert isinstance(data["backward_transfer"], float)
+        assert isinstance(data["ram_peak_bytes"], (int, float))
+        assert isinstance(data["inference_latency_ms"], float)
+        assert isinstance(data["n_params"], int)
+
+    def test_metric_ranges(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        assert 0.0 <= data["acc_final"] <= 1.0
+        assert data["avg_forgetting"] >= 0.0
+        assert data["ram_peak_bytes"] > 0
+        assert data["inference_latency_ms"] > 0.0
+        assert data["n_params"] > 0
+
+    def test_n_params_mahalanobis(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        assert data["n_params"] == 30
+
+    def test_n_params_ewc(self, tmp_path):
+        if not _dataset_available("monitoring"):
+            pytest.skip("data/raw/equipment_monitoring absent")
+        json_path = _run_recorder_cli("ewc", "monitoring", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        assert data["n_params"] == 1538
+
+    def test_config_snapshot_exists(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        out = tmp_path / "exp"
+        _run_recorder_cli("mahalanobis", "cwru", out)
+        assert (out / "config_snapshot.yaml").exists(), "config_snapshot.yaml non copié"
+
+    def test_platform_field(self, tmp_path):
+        if not _dataset_available("cwru"):
+            pytest.skip("data/raw/cwru absent")
+        json_path = _run_recorder_cli("mahalanobis", "cwru", tmp_path / "exp")
+        data = json.loads(json_path.read_text())
+        assert data["platform"] == "nucleo_f439zi"
+
+    @pytest.mark.parametrize("model,dataset", [
+        ("mahalanobis", "cwru"),
+        ("ewc", "monitoring"),
+        ("tinyol", "cwru"),
+    ])
+    def test_all_models_dry_run(self, tmp_path, model, dataset):
+        if not _dataset_available(dataset):
+            pytest.skip(f"data/raw/{dataset} absent")
+        json_path = _run_recorder_cli(model, dataset, tmp_path / f"exp_{model}")
+        data = json.loads(json_path.read_text())
+        assert REQUIRED_KEYS <= data.keys()

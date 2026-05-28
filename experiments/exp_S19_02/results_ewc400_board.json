@@ -1,0 +1,27 @@
+{
+  "exp_id": "ewc400_board",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "platform": "nucleo_f439zi",
+  "date": "2026-05-27",
+  "acc_final": 0.8976,
+  "avg_forgetting": 0.009,
+  "backward_transfer": -0.009,
+  "ram_peak_bytes": 0,
+  "inference_latency_ms": 0.2481,
+  "n_params": 1538,
+  "n_tasks": 3,
+  "n_samples_total": 498,
+  "latency_p99_ms": 0.25,
+  "throughput_mean_ips": 0,
+  "per_task_acc": {
+    "0": 0.9036,
+    "1": 0.8976,
+    "2": 0.8916
+  },
+  "collection_time_s": 3.33,
+  "config_snapshot": "experiments/exp_S19_02/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "lambda_ewc": 400.0
+}

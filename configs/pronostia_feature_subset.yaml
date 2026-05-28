@@ -1,0 +1,9 @@
+# pronostia_feature_subset.yaml — Top-5 features Pronostia pour board (N_FEATURES=5)
+# Généré par scripts/pronostia_feature_selection.py
+method: mutual_info
+n_features_total: 13
+n_features_selected: 5
+feature_indices: [1, 2, 4, 8, 12]
+feature_names: [std_acc_horiz, rms_acc_horiz, peak_acc_horiz, rms_acc_vert, temporal_position]
+ranking: {std_acc_horiz: 0.3789, rms_acc_horiz: 0.3844, peak_acc_horiz: 0.3377, rms_acc_vert: 0.3145,
+  temporal_position: 1.0}

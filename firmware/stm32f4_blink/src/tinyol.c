@@ -15,6 +15,8 @@
  */
 
 #include "tinyol.h"
+#include "model_weights.h"
+#include <string.h>
 
 /* ReLU scalaire */
 static inline float relu_f(float v)
@@ -96,4 +98,21 @@ int tinyol_predict(const TinyOLEncoder *enc, const TinyOLDecoder *dec,
     tinyol_decode(dec, emb, recon);
     float err = tinyol_reconstruction_error(x, recon, (int)TINYOL_OUT);
     return err > threshold ? 1 : 0;
+}
+
+/* ── Initialisation depuis Flash (model_weights.h) ──────────────────────── */
+
+/* MEM: TinyOLEncoder+Decoder poids en Flash (const) — ~5.6 Ko @ FP32
+ * enc_w1[32][5], enc_b1[32], enc_w2[16][32], enc_b2[16]
+ * dec_w1[32][16], dec_b1[32], dec_w2[5][32], dec_b2[5] */
+void tinyol_init(TinyOLEncoder *enc, TinyOLDecoder *dec)
+{
+    memcpy(enc->w_enc1, TINYOL_W_ENC1, sizeof(enc->w_enc1));
+    memcpy(enc->b_enc1, TINYOL_B_ENC1, sizeof(enc->b_enc1));
+    memcpy(enc->w_enc2, TINYOL_W_ENC2, sizeof(enc->w_enc2));
+    memcpy(enc->b_enc2, TINYOL_B_ENC2, sizeof(enc->b_enc2));
+    memcpy(dec->w_dec1, TINYOL_W_DEC1, sizeof(dec->w_dec1));
+    memcpy(dec->b_dec1, TINYOL_B_DEC1, sizeof(dec->b_dec1));
+    memcpy(dec->w_dec2, TINYOL_W_DEC2, sizeof(dec->w_dec2));
+    memcpy(dec->b_dec2, TINYOL_B_DEC2, sizeof(dec->b_dec2));
 }

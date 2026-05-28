@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 19 |
 | **Priorité** | 🟢 Nice-to-have |
-| **Statut** | ✅ Script existant — procédure à documenter |
+| **Statut** | ✅ Complété |
 | **Durée estimée** | 2h |
 | **Dépendances** | S1902, S1903 (modèles compilés) |
 | **Fichiers cibles** | `scripts/parse_map_file.py`, `firmware/stm32f4_blink/Makefile` |

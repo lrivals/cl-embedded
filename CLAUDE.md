@@ -5,6 +5,32 @@
 
 ---
 
+## Graphe de connaissance — À consulter en priorité
+
+**Au démarrage de chaque nouvelle conversation**, consulter en priorité :
+
+1. [`graphify-out/GRAPH_REPORT.md`](graphify-out/GRAPH_REPORT.md) — rapport des nœuds architecturaux centraux, connexions clés, et rationale de design extrait du code et des docs
+2. [`graphify-out/graph.html`](graphify-out/graph.html) — visualisation interactive (ouvrir dans le browser pour naviguer les dépendances)
+3. [`graphify-out/graph.json`](graphify-out/graph.json) — données structurées pour requêtes programmatiques
+
+Ce graphe reflète l'état réel du dépôt : code C firmware, modèles Python, specs docs, configs YAML, et leurs interdépendances. Il est plus fiable que la mémoire ou les suppositions pour répondre à "où est défini X ?" ou "qu'est-ce qui dépend de Y ?".
+
+**Requêtes utiles en CLI :**
+
+```bash
+graphify query "what connects ewc_head.c to pipeline.c?"
+graphify path "EWCMlpClassifier" "model_weights.h"
+```
+
+**Mise à jour du graphe** (après chaque sprint ou changement significatif) :
+
+```bash
+# Dans Claude Code IDE :
+/graphify . --update
+```
+
+---
+
 ## Identité du projet
 
 **Titre** : Apprentissage Incrémental pour Systèmes Embarqués à Ressources Limitées  
@@ -19,9 +45,11 @@
 
 ## Objectif principal (Objectif 1 du stage)
 
-Implémenter et comparer trois méthodes d'apprentissage incrémental (continual learning, CL) sur PC en Python, conçues pour être portées sur un microcontrôleur **STM32N6** (Cortex-M55, ~64 Ko RAM, NPU inférence-only).
+Implémenter et comparer trois méthodes d'apprentissage incrémental (continual learning, CL) sur PC en Python, puis les porter en C sur microcontrôleur **NUCLEO-F439ZI** (Cortex-M4 @ 180 MHz, 256 Ko SRAM).
 
 Application visée : **maintenance prédictive industrielle** (détection de panne, classification d'état).
+
+> **Board de travail** : **NUCLEO-F439ZI** (Cortex-M4, 256 Ko SRAM, pas de NPU) — c'est la carte utilisée pour tout le développement firmware (Sprints 16–19 et au-delà). La STM32N6 (Cortex-M55, 64 Ko, NPU) était la cible originale du stage mais n'est pas disponible ; ne pas concevoir pour elle.
 
 ---
 
@@ -37,15 +65,15 @@ Application visée : **maintenance prédictive industrielle** (détection de pan
 
 ---
 
-## Contraintes non négociables (hardware STM32N6)
+## Contraintes hardware (NUCLEO-F439ZI — board active)
 
-1. **RAM ≤ 64 Ko** — modèle + activations + buffer CL réunis
-2. **NPU = inférence uniquement** — la backpropagation s'exécute sur Cortex-M55 (SW)
-3. **FP32 pour la backprop** — pas de backprop INT8 native (à explorer sur MLP minimal)
-4. **Latence ≤ 100 ms** par inférence + mise à jour
-5. **Pas d'accès à un dataset complet en RAM** — le modèle voit chaque échantillon une seule fois (online learning) ou via un buffer borné
+1. **RAM ≤ 256 Ko** — budget réel de la NUCLEO-F439ZI (192 Ko SRAM + 64 Ko CCM)
+2. **Pas de NPU** — forward pass et backpropagation s'exécutent tous les deux sur Cortex-M4 en FP32
+3. **FP32 partout** — pas de contrainte INT8 sur la NUCLEO ; les annotations `# MEM: @ INT8` restent utiles pour référence future mais ne bloquent rien
+4. **Latence ≤ 100 ms** par inférence + mise à jour (critère Gap 2, mesuré via DWT)
+5. **Pas d'accès à un dataset complet en RAM** — online learning ou buffer borné
 
-> **Règle de code** : tout paramètre de taille (couches, buffer, embeddings) doit avoir une constante nommée dans `configs/` avec une valeur par défaut respectant la contrainte 64 Ko.
+> **Règle de code** : tout paramètre de taille (couches, buffer, embeddings) doit avoir une constante nommée dans `configs/`. La valeur par défaut doit tenir dans 256 Ko (NUCLEO). Ne pas sur-contraindre à 64 Ko.
 
 ---
 
@@ -198,11 +226,13 @@ Utiliser ces clés BibTeX exactes (issues de `references.bib` du projet manuscri
 ## Environnement de développement — Outils installés
 
 | Outil | Version | Chemin | Usage dans le projet |
-|-------|---------|--------|----------------------|
-| **STM32CubeMX** | 6.17.0 | `~/STM32CubeMX/STM32CubeMX` | Génération de code d'initialisation MCU, configuration périphériques STM32N6, pinout |
-| **CMake** | 4.3.2 | `/usr/local/bin/cmake` | Build system pour le code C embarqué (Phase 2), intégration VSCode via CMake Tools |
+| ----- | ------- | ------ | -------------------- |
+| **STM32CubeMX** | 6.17.0 | `~/STM32CubeMX/STM32CubeMX` | Génération de code d'initialisation MCU, configuration périphériques NUCLEO-F439ZI, pinout |
+| **CMake** | 4.3.2 | `/usr/local/bin/cmake` | Build system pour le code C embarqué, intégration VSCode via CMake Tools |
+| **OpenOCD** | — | — | Flash + debug NUCLEO-F439ZI via ST-LINK v2 embarqué |
+| **arm-none-eabi-gcc** | — | — | Compilateur croisé pour le firmware C (Cortex-M4) |
 
-> Ces outils sont à utiliser pour la Phase 2 (portage MCU). CMake est le build system de référence pour les projets STM32CubeIDE exportés. STM32CubeMX génère le `.ioc` et les fichiers de config HAL à partir desquels CMake compile.
+> CMake est le build system de référence (`firmware/stm32f4_blink/` + `firmware/stm32f4_cubemx/`). STM32CubeMX génère le `.ioc` et les fichiers HAL pour la NUCLEO-F439ZI.
 
 ---
 
@@ -226,3 +256,10 @@ pytest tests/ -v
 # Profiling mémoire
 python scripts/profile_memory.py --model ewc --dataset monitoring
 ```
+
+## Fin d'une implementation
+
+A la fin d'implementation d'une tache d'un sprint :
+
+1. Mettre à jour le fichier doc de la tâche du sprint et le roadmap de sprint.
+2. Invoquer le skill **`graphify_sprint_update`** (`skills/graphify_sprint_update.md`) — il évalue si un update du graphe de connaissance est pertinent avant de le lancer.

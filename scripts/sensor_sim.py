@@ -56,6 +56,8 @@ _MONITORING_CSV = Path(
     "/equipment_anomaly_data.csv"
 )
 _CWRU_PROCESSED = Path("data/processed/cwru_features.npz")
+_PRONOSTIA_BINARIES = Path("data/raw/Pronostia dataset/binaries")
+_PRONOSTIA_SUBSET_CFG = Path("configs/pronostia_feature_subset.yaml")
 
 
 def _load_monitoring() -> tuple[np.ndarray, np.ndarray]:
@@ -74,26 +76,29 @@ def _load_cwru() -> tuple[np.ndarray, np.ndarray]:
         data = np.load(_CWRU_PROCESSED)
         return data["X"].astype(np.float32), data["y"].astype(np.int64)
 
-    # Fallback : chargement brut via get_cwru_dataloaders_anomaly_detection
-    from src.data.cwru_dataset import get_cwru_dataloaders_anomaly_detection
+    # Fallback : lecture directe du CSV features CWRU
+    from src.data.cwru_dataset import CWRUDataset
     from pathlib import Path as _Path
+
+    cwru_csv = _Path("data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv")
+    ds = CWRUDataset(cwru_csv)
+    return ds.X.astype(np.float32), ds.y.astype(np.int64)
+
+
+def _load_pronostia() -> tuple[np.ndarray, np.ndarray]:
+    """Charge Pronostia (3 conditions concaténées) et applique la sélection 13→5 features."""
     import yaml
+    from src.data.pronostia_dataset import load_condition_features, N_CONDITIONS
 
-    with open("configs/unsupervised_anomaly_detection_config.yaml") as f:
-        cfg = yaml.safe_load(f)
+    subset = yaml.safe_load(_PRONOSTIA_SUBSET_CFG.read_text())
+    indices = subset["feature_indices"]  # [1, 2, 4, 8, 12]
 
-    cwru_dir = _Path("data/raw/CWRU Bearing Dataset")
-    tasks = get_cwru_dataloaders_anomaly_detection(cwru_dir, cfg)
-    # Concaténer tous les loaders (train + val) de toutes les tâches
-    Xs, ys = [], []
-    for task in tasks:
-        for split in ("train_loader", "val_loader"):
-            if split not in task:
-                continue
-            for xb, yb in task[split]:
-                Xs.append(xb.numpy())
-                ys.append(yb.numpy())
-    return np.concatenate(Xs).astype(np.float32), np.concatenate(ys).astype(np.int64)
+    all_X, all_y = [], []
+    for cond in range(1, N_CONDITIONS + 1):
+        X_cond, y_cond = load_condition_features(_PRONOSTIA_BINARIES, condition=cond)
+        all_X.append(X_cond[:, indices].astype(np.float32))
+        all_y.append(y_cond.astype(np.int64))
+    return np.concatenate(all_X), np.concatenate(all_y)
 
 
 def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
@@ -103,7 +108,7 @@ def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
     Parameters
     ----------
     name : str
-        "cwru" ou "monitoring"
+        "cwru", "monitoring" ou "pronostia"
 
     Returns
     -------
@@ -113,6 +118,7 @@ def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
     loaders = {
         "monitoring": _load_monitoring,
         "cwru": _load_cwru,
+        "pronostia": _load_pronostia,
     }
     if name not in loaders:
         raise ValueError(f"Dataset inconnu : {name}. Choisir parmi {list(loaders)}")
@@ -218,7 +224,7 @@ def run_uart(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Simulateur de capteur UART pour firmware STM32")
-    parser.add_argument("--dataset", choices=["cwru", "monitoring"], required=True)
+    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia"], required=True)
     parser.add_argument("--dry-run", action="store_true", help="Loopback, pas de board nécessaire")
     parser.add_argument("--port", type=str, default="/dev/ttyUSB0")
     parser.add_argument("--baud", type=int, default=115200)

@@ -11,7 +11,8 @@
 #define EWC_H1  32     /* Neurons couche cachée 1 */
 #define EWC_H2  16     /* Neurons couche cachée 2 */
 #define EWC_OUT  2     /* Sorties (logits — softmax + CE en inférence) */
-#define EWC_LR  0.01f  /* Taux d'apprentissage SGD */
+#define EWC_LR           0.01f  /* Taux d'apprentissage SGD */
+#define EWC_FISHER_DECAY 0.99f  /* EMA decay pour ewc_consolidate() */
 
 typedef struct {
     /* Poids courants — MEM: 3 Ko @ FP32 */
@@ -32,6 +33,8 @@ typedef struct {
     float star_w3[EWC_OUT][EWC_H2];
 } EWCHead;
 
+void ewc_init(EWCHead *h);   /* Xavier LCG seed=42, zero fisher/star_w, ne touche pas lambda */
 void ewc_forward(const EWCHead *h, const float *x, float *out);
 int  ewc_predict(const EWCHead *h, const float *x);
 void ewc_sgd_step(EWCHead *h, const float *x, int label);
+void ewc_consolidate(EWCHead *h, float alpha);
