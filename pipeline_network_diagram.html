@@ -418,7 +418,7 @@
 
 <body>
 
-  <h1>CL-Embedded <span>— Pipeline Architecture</span> <em>D3.js · Force simulation</em></h1>
+  <h1>CL-Embedded <span>— Pipeline Architecture (PC → NUCLEO-F439ZI)</span> <em>D3.js · Force simulation · à jour Sprint 38</em></h1>
 
   <!-- Controls -->
   <div class="controls">
@@ -437,6 +437,7 @@
         <button class="btn" onclick="filterByCategory('plot')">Système de plot</button>
         <button class="btn" onclick="filterByCategory('ml_cl')">Modèles ML et CL</button>
         <button class="btn" onclick="filterByCategory('ml_unsup')">Modèles Non Supervisés</button>
+        <button class="btn" onclick="filterByCategory('firmware_board')">Firmware / Board MCU</button>
       </div>
 
       <div class="controls-section-label">Filtre par expérience</div>
@@ -501,6 +502,12 @@
       <div class="legend-item">
         <div class="legend-dot" style="background:#14b8a6"></div>Outputs
       </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ec4899"></div>Firmware C (board)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#facc15"></div>Hardware NUCLEO
+      </div>
     </div>
     <div class="legend-title" style="margin-top:8px">Liens</div>
     <div class="legend-section">
@@ -518,6 +525,12 @@
       </div>
       <div class="legend-item">
         <div class="legend-line" style="background:#64748b"></div>uses_config
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#ec4899"></div>includes (C)
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#facc15"></div>flash / UART
       </div>
     </div>
   </div>
@@ -558,6 +571,8 @@
       utils: "#06b6d4",
       main: "#f97316",
       output: "#14b8a6",
+      firmware: "#ec4899",
+      board: "#facc15",
     };
 
     const linkColors = {
@@ -566,6 +581,8 @@
       output: "#22c55e",
       generates: "#f59e0b",
       uses_config: "#64748b",
+      includes: "#ec4899",
+      flash: "#facc15",
     };
 
     const nodes = [
@@ -1015,6 +1032,151 @@
         file: "experiments/exp_086_hdc_monitoring_anomaly_detection/",
         description: "Résultats anomaly detection monitoring (exp_086–089)\nModèles : HDC, TinyOL AE, KMeans, Mahalanobis\nAUROC, AUPR, F1 par exp"
       },
+
+      // ── Datasets industriels additionnels (Phase 2) ─────────────────────────────
+      {
+        id: "cmapss_csv", name: "CMAPSS CSV", type: "data", category: "data_eda", experiment: "all", importance: 1,
+        file: "data/raw/cmapss/",
+        description: "Dataset D5 — CMAPSS (NASA Turbofan)\n21 variables capteurs simulés, 4 sous-ensembles FD001–FD004\nLabel : RUL (Remaining Useful Life)\nScénario CL : domain-incremental par FD set"
+      },
+      {
+        id: "paderborn_csv", name: "Paderborn CSV", type: "data", category: "data_eda", experiment: "all", importance: 1,
+        file: "data/raw/paderborn/",
+        description: "Dataset D6 — Paderborn Bearing\nVibration, évolution de l'endommagement\nLabel : niveau de dommage (health / damaged)\nScénario CL : class-incremental mono-classe par tâche"
+      },
+      {
+        id: "cmapss_loader", name: "cmapss_loader.py", type: "data_loader", category: "data_eda", experiment: "all", importance: 0,
+        file: "src/data/cmapss_loader.py",
+        description: "Loader CMAPSS — RUL regression\nFenêtrage capteurs, seuil RUL→faulty configurable\nFeature subset (5feat / all)"
+      },
+      {
+        id: "paderborn_loader", name: "paderborn_loader.py", type: "data_loader", category: "data_eda", experiment: "all", importance: 0,
+        file: "src/data/paderborn_loader.py",
+        description: "Loader Paderborn — multiclasse dommage\nRefit normalizer si features natives hors cache\nFeature subset par modèle"
+      },
+
+      // ── Modèles natifs (Sprint 25+) ─────────────────────────────────────────────
+      {
+        id: "ewc_mlp_regression", name: "EWCMlpRegression", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/ewc/ewc_mlp_regression.py",
+        description: "EWC Regression — RUL (Sprint 25)\nMLP + MSE + pénalité EWC\nCMAPSS / Pronostia / Battery\nMétriques : RMSE, MAE, PHM-2008 Horizon Score\nBoard : RMSE_RUL=21.23 (ratio 0.94)"
+      },
+      {
+        id: "ewc_mlp_multiclass", name: "EWCMlpMulticlass", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/ewc/ewc_mlp_multiclass.py",
+        description: "EWC Multiclasse — N classes de faute (Sprint 25)\nMLP softmax + EWC\nCWRU (10 cls), Paderborn (3 cls)\nMétriques : F1-macro, matrice de confusion, AF_f1"
+      },
+      {
+        id: "ewc_mlp_int8", name: "EWCMlpInt8 (M2b)", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/models/ewc/ewc_mlp_int8.py",
+        description: "EWC INT8 — Gap 3 (Sprint 22/28)\nFake-quant QAT pendant l'entraînement incrémental\nRAM ×4 vs FP32, métrique préservée (Δ≤0.006)\nCMAPSS, Paderborn"
+      },
+      {
+        id: "hdc_regressor", name: "HDCRegressor", type: "ml", category: "ml_cl", experiment: "all", importance: 0,
+        file: "src/models/hdc/hdc_regressor.py",
+        description: "HDC Regressor — RUL (Sprint 25)\nSomme pondérée de prototypes\nComparé à EWC sur CMAPSS"
+      },
+      {
+        id: "meta_learner", name: "meta_learner.py", type: "ml", category: "ml_cl", experiment: "all", importance: 1,
+        file: "src/ensemble/meta_learner.py",
+        description: "Méta-modèle de stacking (Sprint 31)\nlogreg/MLP arbitrant une paire Maha + supervisé\nFeatures [p_maha, p_sup, disagreement, conf_sup]\nBoard : TRIPLE_MODE, parité board↔PC = 1.000"
+      },
+
+      // ── Scripts d'entraînement natifs + export ──────────────────────────────────
+      {
+        id: "train_ewc_rul", name: "train_ewc_rul.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/train_ewc_rul.py",
+        description: "Entraînement EWC Regression (RUL)\nCMAPSS / Pronostia / Battery\nProduit : metrics.json, checkpoints/"
+      },
+      {
+        id: "train_ewc_multiclass", name: "train_ewc_multiclass.py", type: "main", category: "eval_exp", experiment: "all", importance: 0,
+        file: "scripts/train_ewc_multiclass.py",
+        description: "Entraînement EWC Multiclasse\nCWRU / Paderborn\nProduit : metrics.json, confusion_matrix"
+      },
+      {
+        id: "export_weights_c", name: "export_weights_c.py", type: "main", category: "firmware_board", experiment: "all", importance: 1,
+        file: "scripts/export_weights_c.py",
+        description: "Export poids modèle → header C (jamais à la main)\nFlags : --ewc-head, --mahal, --maha-q15, --meta,\n--drift-thresholds, --maha-int8\nLit EWC_IN=k du checkpoint (dims natives par modèle)"
+      },
+      {
+        id: "export_weights_tinyol", name: "export_weights_tinyol.py", type: "main", category: "firmware_board", experiment: "all", importance: 0,
+        file: "scripts/export_weights_tinyol.py",
+        description: "Export poids TinyOL → header C\nEncodeur/décodeur + tête OtO"
+      },
+
+      // ── Firmware C (NUCLEO-F439ZI) ──────────────────────────────────────────────
+      {
+        id: "nucleo_board", name: "NUCLEO-F439ZI", type: "board", category: "firmware_board", experiment: "all", importance: 1,
+        file: "firmware/stm32f4_blink/",
+        description: "Carte cible — Cortex-M4 @ 180 MHz, 256 Ko SRAM, pas de NPU\nGap 2 : latence ≪ 100 ms (DWT), .bss mesuré\nFP32 partout + variantes INT8/Q15\nValidée depuis Sprint 17"
+      },
+      {
+        id: "fw_pipeline", name: "pipeline.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 1,
+        file: "firmware/stm32f4_blink/src/pipeline.c",
+        description: "Cœur firmware — protocole UART v3\nModes : SINGLE / DUAL / PAIR / TRIPLE (nibble)\nGate de nouveauté autonome (Sprint 38, -DEWC_AUTO_UPDATE)\nNe jamais modifier sans synchroniser sensor_stream.py"
+      },
+      {
+        id: "fw_ewc_head", name: "ewc_head.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 1,
+        file: "firmware/stm32f4_blink/src/ewc_head.c",
+        description: "Tête EWC C — forward + update SGD on-device\nParité exacte board↔PC\nVariantes : régression, multiclasse"
+      },
+      {
+        id: "fw_ewc_int8", name: "ewc_head_int8.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 0,
+        file: "firmware/stm32f4_blink/src/ewc_head_int8.c",
+        description: "Tête EWC INT8 firmware (Gap 3)\nPTQ embarquée, RAM ÷4\nLatence MAJ non accélérée FPU (cohérent S29)"
+      },
+      {
+        id: "fw_mahalanobis", name: "mahalanobis.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 1,
+        file: "firmware/stm32f4_blink/src/mahalanobis.c",
+        description: "Détecteur Mahalanobis C\nμ + Σ⁻¹, distance FP32 sur FPU\n~5-6 µs/inférence, parité exacte\nVariantes INT8 / Q15"
+      },
+      {
+        id: "fw_mahalanobis_q15", name: "mahalanobis_q15.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 0,
+        file: "firmware/stm32f4_blink/src/mahalanobis_q15.c",
+        description: "Mahalanobis Q15 (Sprint 34)\nσ⁻¹ int16 Q15 → recouvre l'AUROC vs INT8\nFLAG 0xF0, déquant→distance FP32\nParité bit-à-bit Python"
+      },
+      {
+        id: "fw_hdc", name: "hdc.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 0,
+        file: "firmware/stm32f4_blink/src/hdc.c",
+        description: "HDC C embarqué\nProjection en ligne, prototypes binaires\nVariante INT8 (Sprint 22/29)"
+      },
+      {
+        id: "fw_tinyol", name: "tinyol.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 0,
+        file: "firmware/stm32f4_blink/src/tinyol.c",
+        description: "TinyOL C — autoencoder + tête OtO\n~71 µs/inférence on-board"
+      },
+      {
+        id: "fw_meta_head", name: "meta_head.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 0,
+        file: "firmware/stm32f4_blink/src/meta_head.c",
+        description: "Tête méta (stacking) C — Sprint 31\nlogreg / MLP, poids ← meta_weights.h généré\nTRIPLE_MODE, parité board↔PC = 1.000"
+      },
+      {
+        id: "fw_drift", name: "drift_detector.c", type: "firmware", category: "firmware_board", experiment: "all", importance: 1,
+        file: "firmware/stm32f4_blink/src/drift_detector.c",
+        description: "Gate de nouveauté embarqué (Sprint 38)\nSlidingWindowDriftDetector + Mahalanobis\nDécide QUAND/AVEC QUEL label updater EWC\n4 politiques (frozen/always/gated_true/gated_pseudo)\n~97 % de MAJ en moins, +300 B RAM"
+      },
+      {
+        id: "model_weights_h", name: "model_weights*.h", type: "firmware", category: "firmware_board", experiment: "all", importance: 0,
+        file: "firmware/stm32f4_blink/inc/model_weights_ewc.h",
+        description: "Headers de poids générés (jamais à la main)\newc_head / mahalanobis / maha_q15 / meta / drift\nGénérés par export_weights_c.py\nVides par défaut → fallback Xavier (0 régression)"
+      },
+
+      // ── Drivers board + sorties ─────────────────────────────────────────────────
+      {
+        id: "sensor_stream", name: "sensor_stream.py", type: "main", category: "firmware_board", experiment: "all", importance: 1,
+        file: "scripts/sensor_stream.py",
+        description: "Streaming UART hôte ↔ board\nEnvoie features, reçoit prédiction + latence DWT\n--model / --condition / --update / --proto 3\nDoit rester synchrone avec pipeline.c"
+      },
+      {
+        id: "board_recorder", name: "board_experiment_recorder.py", type: "main", category: "firmware_board", experiment: "all", importance: 0,
+        file: "scripts/board_experiment_recorder.py",
+        description: "Enregistre les campagnes board en expériences\nAssemble résultats + parité board↔PC\nN/A honnête (metric_value=null + na_reason)"
+      },
+      {
+        id: "exp_board", name: "experiments/exp_S*/", type: "output", category: "firmware_board", experiment: "all", importance: 1,
+        file: "experiments/exp_S38_autonomous/",
+        description: "Résultats board réelle NUCLEO-F439ZI (Sprints 18–38)\nlatence DWT, .bss, parité board↔PC, CRC\nDUAL/PAIR/TRIPLE, INT8/Q15, gate autonome"
+      },
     ];
 
     const links = [
@@ -1199,6 +1361,69 @@
       { source: "generate_cwru_notebooks", target: "cwru_dataset", type: "import" },
       { source: "generate_cwru_notebooks", target: "cwru_by_fault_config", type: "uses_config" },
       { source: "generate_cwru_notebooks", target: "cwru_by_severity_config", type: "uses_config" },
+
+      // ── Datasets additionnels → loaders ─────────────────────────────────────────
+      { source: "cmapss_loader", target: "cmapss_csv", type: "reads" },
+      { source: "paderborn_loader", target: "paderborn_csv", type: "reads" },
+      { source: "cmapss_loader", target: "config_loader", type: "import" },
+      { source: "paderborn_loader", target: "config_loader", type: "import" },
+
+      // ── Modèles natifs : héritage + Fisher ──────────────────────────────────────
+      { source: "ewc_mlp_regression", target: "base_cl_model", type: "import" },
+      { source: "ewc_mlp_regression", target: "fisher", type: "import" },
+      { source: "ewc_mlp_multiclass", target: "base_cl_model", type: "import" },
+      { source: "ewc_mlp_multiclass", target: "fisher", type: "import" },
+      { source: "ewc_mlp_int8", target: "ewc_mlp", type: "import" },
+      { source: "hdc_regressor", target: "hdc_base_vectors_mod", type: "import" },
+      { source: "meta_learner", target: "mahalanobis", type: "import" },
+      { source: "meta_learner", target: "ewc_mlp", type: "import" },
+
+      // ── Scripts natifs → modèles / loaders / sorties ────────────────────────────
+      { source: "train_ewc_rul", target: "ewc_mlp_regression", type: "import" },
+      { source: "train_ewc_rul", target: "cmapss_loader", type: "import" },
+      { source: "train_ewc_rul", target: "pronostia_dataset", type: "import" },
+      { source: "train_ewc_rul", target: "metrics", type: "import" },
+      { source: "train_ewc_rul", target: "exp_board", type: "output" },
+      { source: "train_ewc_multiclass", target: "ewc_mlp_multiclass", type: "import" },
+      { source: "train_ewc_multiclass", target: "cwru_dataset", type: "import" },
+      { source: "train_ewc_multiclass", target: "paderborn_loader", type: "import" },
+      { source: "train_ewc_multiclass", target: "metrics", type: "import" },
+      { source: "train_ewc_multiclass", target: "exp_board", type: "output" },
+
+      // ── Export poids PC → headers C ─────────────────────────────────────────────
+      { source: "export_weights_c", target: "ewc_mlp", type: "import" },
+      { source: "export_weights_c", target: "ewc_mlp_multiclass", type: "import" },
+      { source: "export_weights_c", target: "ewc_mlp_regression", type: "import" },
+      { source: "export_weights_c", target: "mahalanobis", type: "import" },
+      { source: "export_weights_c", target: "meta_learner", type: "import" },
+      { source: "export_weights_c", target: "model_weights_h", type: "generates" },
+      { source: "export_weights_tinyol", target: "tinyol_autoencoder", type: "import" },
+      { source: "export_weights_tinyol", target: "model_weights_h", type: "generates" },
+
+      // ── Firmware : pipeline.c inclut les modules C ──────────────────────────────
+      { source: "fw_pipeline", target: "fw_ewc_head", type: "includes" },
+      { source: "fw_pipeline", target: "fw_ewc_int8", type: "includes" },
+      { source: "fw_pipeline", target: "fw_mahalanobis", type: "includes" },
+      { source: "fw_pipeline", target: "fw_mahalanobis_q15", type: "includes" },
+      { source: "fw_pipeline", target: "fw_hdc", type: "includes" },
+      { source: "fw_pipeline", target: "fw_tinyol", type: "includes" },
+      { source: "fw_pipeline", target: "fw_meta_head", type: "includes" },
+      { source: "fw_pipeline", target: "fw_drift", type: "includes" },
+      { source: "fw_pipeline", target: "model_weights_h", type: "includes" },
+      { source: "fw_drift", target: "fw_mahalanobis", type: "includes" },
+
+      // ── Headers générés alimentent les modules firmware ─────────────────────────
+      { source: "model_weights_h", target: "fw_ewc_head", type: "reads" },
+      { source: "model_weights_h", target: "fw_mahalanobis", type: "reads" },
+      { source: "model_weights_h", target: "fw_meta_head", type: "reads" },
+
+      // ── Déploiement board + streaming UART ──────────────────────────────────────
+      { source: "fw_pipeline", target: "nucleo_board", type: "flash" },
+      { source: "sensor_stream", target: "nucleo_board", type: "flash" },
+      { source: "sensor_stream", target: "fw_pipeline", type: "uses_config" },
+      { source: "sensor_stream", target: "board_recorder", type: "import" },
+      { source: "board_recorder", target: "exp_board", type: "output" },
+      { source: "nucleo_board", target: "exp_board", type: "output" },
     ];
 
     // ─────────────────────────────────────────────────────────────────────────────
