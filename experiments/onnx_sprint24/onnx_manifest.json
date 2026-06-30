@@ -1,0 +1,226 @@
+{
+  "generated_at": "2026-06-02T13:06:10.758316",
+  "sprint": 24,
+  "onnx_opset": 17,
+  "models": [
+    {
+      "filename": "ewc_cmapss.onnx",
+      "model": "ewc",
+      "dataset": "cmapss",
+      "input_dim": 5,
+      "n_params": 737,
+      "file_size_kb": 3.6,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "ewc_cwru.onnx",
+      "model": "ewc",
+      "dataset": "cwru",
+      "input_dim": 9,
+      "n_params": 865,
+      "file_size_kb": 4.1,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "ewc_monitoring.onnx",
+      "model": "ewc",
+      "dataset": "monitoring",
+      "input_dim": 4,
+      "n_params": 705,
+      "file_size_kb": 3.47,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "ewc_paderborn.onnx",
+      "model": "ewc",
+      "dataset": "paderborn",
+      "input_dim": 5,
+      "n_params": 737,
+      "file_size_kb": 3.6,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "ewc_pronostia.onnx",
+      "model": "ewc",
+      "dataset": "pronostia",
+      "input_dim": 13,
+      "n_params": 993,
+      "file_size_kb": 4.6,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "ewc_pump.onnx",
+      "model": "ewc",
+      "dataset": "pump",
+      "input_dim": 25,
+      "n_params": 1377,
+      "file_size_kb": 6.1,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "model": "hdc",
+      "dataset": "cmapss",
+      "status": "skipped",
+      "reason": "HDC utilise une accumulation additive de prototypes INT32 sans graphe computationnel diff\u00e9rentiable. Export ONNX non applicable. Op\u00e9rations \u00e9quivalentes : MatMul (encodage) + ArgMax (inf\u00e9rence)."
+    },
+    {
+      "model": "hdc",
+      "dataset": "cwru",
+      "status": "skipped",
+      "reason": "HDC utilise une accumulation additive de prototypes INT32 sans graphe computationnel diff\u00e9rentiable. Export ONNX non applicable. Op\u00e9rations \u00e9quivalentes : MatMul (encodage) + ArgMax (inf\u00e9rence)."
+    },
+    {
+      "model": "hdc",
+      "dataset": "monitoring",
+      "status": "skipped",
+      "reason": "HDC utilise une accumulation additive de prototypes INT32 sans graphe computationnel diff\u00e9rentiable. Export ONNX non applicable. Op\u00e9rations \u00e9quivalentes : MatMul (encodage) + ArgMax (inf\u00e9rence)."
+    },
+    {
+      "model": "hdc",
+      "dataset": "paderborn",
+      "status": "skipped",
+      "reason": "HDC utilise une accumulation additive de prototypes INT32 sans graphe computationnel diff\u00e9rentiable. Export ONNX non applicable. Op\u00e9rations \u00e9quivalentes : MatMul (encodage) + ArgMax (inf\u00e9rence)."
+    },
+    {
+      "model": "hdc",
+      "dataset": "pump",
+      "status": "skipped",
+      "reason": "HDC utilise une accumulation additive de prototypes INT32 sans graphe computationnel diff\u00e9rentiable. Export ONNX non applicable. Op\u00e9rations \u00e9quivalentes : MatMul (encodage) + ArgMax (inf\u00e9rence)."
+    },
+    {
+      "filename": "mahalanobis_cmapss.onnx",
+      "model": "mahalanobis",
+      "dataset": "cmapss",
+      "input_dim": 5,
+      "n_params": 30,
+      "file_size_kb": 0.39,
+      "onnx_opset": 17,
+      "validated": false,
+      "status": "exported"
+    },
+    {
+      "filename": "mahalanobis_cwru.onnx",
+      "model": "mahalanobis",
+      "dataset": "cwru",
+      "input_dim": 9,
+      "n_params": 90,
+      "file_size_kb": 0.62,
+      "onnx_opset": 17,
+      "validated": false,
+      "status": "exported"
+    },
+    {
+      "filename": "mahalanobis_monitoring.onnx",
+      "model": "mahalanobis",
+      "dataset": "monitoring",
+      "input_dim": 4,
+      "n_params": 20,
+      "file_size_kb": 0.35,
+      "onnx_opset": 17,
+      "validated": false,
+      "status": "exported"
+    },
+    {
+      "filename": "mahalanobis_paderborn.onnx",
+      "model": "mahalanobis",
+      "dataset": "paderborn",
+      "input_dim": 5,
+      "n_params": 30,
+      "file_size_kb": 0.39,
+      "onnx_opset": 17,
+      "validated": false,
+      "status": "exported"
+    },
+    {
+      "filename": "mahalanobis_pronostia.onnx",
+      "model": "mahalanobis",
+      "dataset": "pronostia",
+      "input_dim": 13,
+      "n_params": 182,
+      "file_size_kb": 0.99,
+      "onnx_opset": 17,
+      "validated": false,
+      "status": "exported"
+    },
+    {
+      "filename": "mahalanobis_pump.onnx",
+      "model": "mahalanobis",
+      "dataset": "pump",
+      "input_dim": 25,
+      "n_params": 650,
+      "file_size_kb": 2.81,
+      "onnx_opset": 17,
+      "validated": false,
+      "status": "exported"
+    },
+    {
+      "filename": "tinyol_cwru.onnx",
+      "model": "tinyol",
+      "dataset": "cwru",
+      "input_dim": 9,
+      "n_params": 391,
+      "file_size_kb": 2.21,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "tinyol_monitoring.onnx",
+      "model": "tinyol",
+      "dataset": "monitoring",
+      "input_dim": 4,
+      "n_params": 184,
+      "file_size_kb": 1.4,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "filename": "tinyol_pump.onnx",
+      "model": "tinyol",
+      "dataset": "pump",
+      "input_dim": 25,
+      "n_params": 1496,
+      "file_size_kb": 6.53,
+      "onnx_opset": 17,
+      "validated": true,
+      "status": "exported"
+    },
+    {
+      "model": "hdc",
+      "dataset": "pronostia",
+      "status": "skipped",
+      "reason": "pas d'exp\u00e9rience HDC correspondante sur Pronostia"
+    },
+    {
+      "model": "tinyol",
+      "dataset": "cmapss",
+      "status": "skipped",
+      "reason": "pas de loader temporel appropri\u00e9 pour CMAPSS"
+    },
+    {
+      "model": "tinyol",
+      "dataset": "paderborn",
+      "status": "skipped",
+      "reason": "pas de loader temporel appropri\u00e9 pour Paderborn"
+    },
+    {
+      "model": "tinyol",
+      "dataset": "pronostia",
+      "status": "skipped",
+      "reason": "pas d'exp\u00e9rience TinyOL correspondante sur Pronostia"
+    }
+  ]
+}

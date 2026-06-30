@@ -30,12 +30,13 @@ Usage :
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import pandas as pd
 import torch
 import yaml
-from sklearn.model_selection import StratifiedShuffleSplit, train_test_split
+from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader, TensorDataset
 
 from src.utils.config_loader import load_config
@@ -81,7 +82,10 @@ VAL_RATIO: float = 0.2
 # ---------------------------------------------------------------------------
 
 
-def load_raw_dataset(csv_path: Path) -> pd.DataFrame:
+def load_raw_dataset(
+    csv_path: Path,
+    rul_failure_threshold: int = RUL_FAILURE_THRESHOLD,
+) -> pd.DataFrame:
     """
     Charge le CSV Battery RUL, valide les colonnes et binarise le label.
 
@@ -89,6 +93,10 @@ def load_raw_dataset(csv_path: Path) -> pd.DataFrame:
     ----------
     csv_path : Path
         Chemin vers Battery_RUL.csv.
+    rul_failure_threshold : int
+        Seuil de binarisation : RUL < seuil → dégradé (label=1). Default :
+        RUL_FAILURE_THRESHOLD (200). Pilotable via ``data.rul_failure_threshold``
+        dans la config (cf. balayage de seuil Sprint 32).
 
     Returns
     -------
@@ -111,13 +119,12 @@ def load_raw_dataset(csv_path: Path) -> pd.DataFrame:
     missing = [c for c in required_cols if c not in df.columns]
     if missing:
         raise ValueError(
-            f"Colonnes manquantes : {missing}\n"
-            f"Colonnes présentes : {list(df.columns)}"
+            f"Colonnes manquantes : {missing}\n" f"Colonnes présentes : {list(df.columns)}"
         )
 
     # Binarisation du label : RUL < seuil = dégradé (1), sinon normal (0)
     # MEM: colonne faulty [N] × 1 B @ UINT8
-    df["faulty"] = (df[RUL_COL] < RUL_FAILURE_THRESHOLD).astype(np.float32)
+    df["faulty"] = (df[RUL_COL] < rul_failure_threshold).astype(np.float32)
 
     # Tri chronologique par Cycle_Index
     df = df.sort_values(CYCLE_COL).reset_index(drop=True)
@@ -233,6 +240,8 @@ def get_battery_dataloaders(
     val_ratio: float = VAL_RATIO,
     seed: int = 42,
     n_tasks: int = N_TASKS,
+    mode: Literal["binary", "rul"] = "binary",
+    rul_failure_threshold: int = RUL_FAILURE_THRESHOLD,
 ) -> list[dict]:
     """
     Point d'entrée principal pour l'entraînement CL sur le Dataset 4 (Battery RUL).
@@ -260,6 +269,12 @@ def get_battery_dataloaders(
         Seed global. Default : 42.
     n_tasks : int
         Nombre de tâches CL. Default : N_TASKS (3).
+    mode : {"binary", "rul"}
+        "binary" (défaut) : labels 0/1 (RUL < rul_failure_threshold).
+        "rul" : RUL continu en cycles restants (float32, split aléatoire sans stratify).
+    rul_failure_threshold : int
+        Seuil de binarisation RUL en mode "binary". Default : RUL_FAILURE_THRESHOLD
+        (200). Pilotable via ``data.rul_failure_threshold`` (balayage Sprint 32).
 
     Returns
     -------
@@ -280,7 +295,7 @@ def get_battery_dataloaders(
     """
     set_seed(seed)
 
-    df = load_raw_dataset(csv_path)
+    df = load_raw_dataset(csv_path, rul_failure_threshold=rul_failure_threshold)
     normalizer = load_battery_normalizer(normalizer_path)
     df = normalize_features(df, normalizer)
 
@@ -294,12 +309,13 @@ def get_battery_dataloaders(
         end = start + slice_size if task_idx < n_tasks - 1 else n_total
         df_task = df.iloc[start:end].reset_index(drop=True)
 
-        # Split stratifié sur faulty pour conserver le taux de défauts
+        # Stratification uniquement en mode binaire (labels continus incompatibles)
+        stratify_col = df_task["faulty"] if mode == "binary" else None
         try:
             df_train, df_val = train_test_split(
                 df_task,
                 test_size=val_ratio,
-                stratify=df_task["faulty"],
+                stratify=stratify_col,
                 random_state=seed,
             )
         except ValueError:
@@ -311,15 +327,23 @@ def get_battery_dataloaders(
         df_train = df_train.reset_index(drop=True)
         df_val = df_val.reset_index(drop=True)
 
-        x_train, y_train = df_to_tensors(df_train)
-        x_val, y_val = df_to_tensors(df_val)
+        if mode == "rul":
+            x_train_np = df_train[FEATURE_COLUMNS].to_numpy(dtype=np.float32)
+            x_val_np = df_val[FEATURE_COLUMNS].to_numpy(dtype=np.float32)
+            y_train_np = df_train[RUL_COL].to_numpy(dtype=np.float32).reshape(-1, 1)
+            y_val_np = df_val[RUL_COL].to_numpy(dtype=np.float32).reshape(-1, 1)
+            x_train = torch.from_numpy(x_train_np)
+            y_train = torch.from_numpy(y_train_np)
+            x_val = torch.from_numpy(x_val_np)
+            y_val = torch.from_numpy(y_val_np)
+        else:
+            x_train, y_train = df_to_tensors(df_train)
+            x_val, y_val = df_to_tensors(df_val)
 
         train_loader = DataLoader(
             TensorDataset(x_train, y_train), batch_size=batch_size, shuffle=True
         )
-        val_loader = DataLoader(
-            TensorDataset(x_val, y_val), batch_size=batch_size, shuffle=False
-        )
+        val_loader = DataLoader(TensorDataset(x_val, y_val), batch_size=batch_size, shuffle=False)
 
         tasks.append(
             {
@@ -347,6 +371,7 @@ def get_battery_dataloaders_single_task(
     test_ratio: float = 0.2,
     val_ratio: float = 0.1,
     seed: int = 42,
+    rul_failure_threshold: int = RUL_FAILURE_THRESHOLD,
 ) -> dict:
     """
     Baseline hors-CL : tous les cycles fusionnés, split global stratifié.
@@ -379,7 +404,7 @@ def get_battery_dataloaders_single_task(
     """
     set_seed(seed)
 
-    df = load_raw_dataset(csv_path)
+    df = load_raw_dataset(csv_path, rul_failure_threshold=rul_failure_threshold)
 
     # Split stratifié train+val / test
     df_trainval, df_test = train_test_split(

@@ -1,0 +1,29 @@
+name: ai-trace-guard
+
+# Garde-fou pour les ajouts futurs. Le dépôt de travail contient légitimement des
+# références internes (CLAUDE.md, skills/, graphify) : un scan brut serait toujours
+# rouge. L'invariant utile est : « l'export GitLab sort-il toujours propre ? ».
+# On construit donc l'export dans un dossier jetable et on applique le gate
+# (--check-only). Si un ajout introduit une trace non couverte par les règles de
+# configs/gitlab_release.yaml, ce job échoue → on corrige avant la prochaine release.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  export-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # git ls-files a besoin de l'arbre complet
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Verify the GitLab export stays trace-free
+        run: python scripts/prepare_gitlab_release.py --check-only

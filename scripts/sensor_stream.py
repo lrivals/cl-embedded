@@ -1,8 +1,8 @@
 """
-sensor_stream.py — Streaming continu PC → carte STM32 (protocole UART v2).
+sensor_stream.py — Streaming continu PC → carte STM32 (protocole UART v2/v3).
 
 Extension de sensor_sim.py : supporte multi-tâches, timestamps, rate-limiting,
-et le protocole v2 étendu (task_id, FLAGS, réponse 14 B).
+et les protocoles v2 (14 B) et v3 (23 B).
 
 Protocole v2 :
     Trame envoyée :
@@ -10,6 +10,11 @@ Protocole v2 :
         [N:1B] [features:f32×N] [label:1B] [FLAGS:1B] [CRC8:1B]
     Réponse firmware (14 B) :
         [pred:u8] [conf:f32] [latency_us:u32] [ram_b:u16] [throughput:u16] [status:u8]
+
+Protocole v3 :
+    Trame envoyée : identique v2 (VERSION=0x03)
+    Réponse firmware (23 B) :
+        [pred:u8] [conf:f32] [latency_us:u32] [ram_b:u16] [acc:f32] [auroc:f32] [forgetting:f32]
 
 Usage :
     # Dry-run (pas de board)
@@ -41,12 +46,42 @@ FRAME_FLAGS_PROFILING   = 0x02
 FRAME_FLAGS_CONSOLIDATE = 0x04   # frontière de tâche → ewc_consolidate() firmware
 FRAME_FLAGS_RESET       = 0x08   # réinitialise poids EWC → ewc_init() + reset métriques
 FRAME_FLAGS_EWC_MODE    = 0x10   # utilise EWC head pour inférence (au lieu de Mahalanobis)
+FRAME_FLAGS_HDC_MODE    = 0x20   # utilise HDCClassifier (bit 5, cohérence pipeline.h PROTO_FLAG_HDC_MODE)
+FRAME_FLAGS_INT8_MODE   = 0x40   # utilise EWCHeadInt8 (bit 6, cohérence pipeline.h PROTO_FLAG_INT8_MODE)
+FRAME_FLAGS_TINYOL_MODE = 0x80   # utilise TinyOL autoencoder (bit 7, cohérence pipeline.h PROTO_FLAG_TINYOL_MODE)
+# Sprint 29 — modes INT8 firmware (combinaisons de bits, cohérence pipeline.h)
+FRAME_FLAGS_HDC_INT8    = 0x60   # HDC_MODE|INT8_MODE → HDCInt8 (S2901)
+FRAME_FLAGS_TINYOL_INT8 = 0xC0   # TINYOL_MODE|INT8_MODE → TinyOLEncoderInt8 + OtOHeadInt8 (S2902)
+# Sprint 27 — DUAL_MODE : EWC_REG (RUL) + EWC_MC (faute) simultané
+FRAME_FLAGS_DUAL_MODE   = (FRAME_FLAGS_EWC_MODE | FRAME_FLAGS_HDC_MODE | FRAME_FLAGS_INT8_MODE)  # 0x70
+# Sprint 30 — PAIR_MODE : Mahalanobis + supervisé (valeurs de nibble libres, cohérence pipeline.h)
+FRAME_FLAGS_PAIR_MAHA_EWC    = 0x90   # Mahalanobis + EWC binaire
+FRAME_FLAGS_PAIR_MAHA_HDC    = 0xA0   # Mahalanobis + HDC
+FRAME_FLAGS_PAIR_MAHA_TINYOL = 0xB0   # Mahalanobis + TinyOL recon
+# Sprint 31 — TRIPLE_MODE : PAIR + méta-modèle de stacking (verdict final)
+FRAME_FLAGS_TRIPLE_MAHA_EWC  = 0xD0   # Mahalanobis + EWC + méta
+FRAME_FLAGS_TRIPLE_MAHA_HDC  = 0xE0   # Mahalanobis + HDC + méta
+# Sprint 34 — MAHA_Q15_MODE : Mahalanobis seul, sigma_inv int16 Q15 (réponse V3, S3407).
+# 0xF0 est le SEUL nibble libre (0x10–0xE0 pris) ; cohérence pipeline.h PROTO_FLAG_MAHA_Q15.
+FRAME_FLAGS_MAHA_Q15         = 0xF0
 
 RESPONSE_V2_FMT  = "<BfIHHB"   # pred(u8), conf(f32), lat_us(u32), ram(u16), thr(u16), status(u8)
 RESPONSE_V2_SIZE = struct.calcsize(RESPONSE_V2_FMT)  # 14 B
 
-RESPONSE_V3_FMT  = "<BfIfff"   # pred(u8), conf(f32), lat_us(u32), acc(f32), auroc(f32), forgetting(f32)
-RESPONSE_V3_SIZE = struct.calcsize(RESPONSE_V3_FMT)  # 21 B
+RESPONSE_V3_FMT  = "<BfIHfff"  # pred(u8), conf(f32), lat_us(u32), ram_b(u16), acc(f32), auroc(f32), forgetting(f32)
+RESPONSE_V3_SIZE = struct.calcsize(RESPONSE_V3_FMT)  # 23 B
+
+# Sprint 27 — Réponse DUAL_MODE 25 B
+RESPONSE_DUAL_FMT  = "<BffIfff"  # pred_fault(u8), conf_fault(f32), rul_pred(f32), lat_us(u32), f1_macro(f32), rmse_rul(f32), forgetting(f32)
+RESPONSE_DUAL_SIZE = struct.calcsize(RESPONSE_DUAL_FMT)  # 25 B
+
+# Sprint 30 — Réponse PAIR_MODE 22 B (Mahalanobis + supervisé)
+RESPONSE_PAIR_FMT  = "<BfBfIff"  # pred_maha(u8), score_maha(f32), pred_sup(u8), conf_sup(f32), lat_us(u32), auroc_maha(f32), f1_sup(f32)
+RESPONSE_PAIR_SIZE = struct.calcsize(RESPONSE_PAIR_FMT)  # 22 B
+
+# Sprint 31 — Réponse TRIPLE_MODE 27 B (PAIR 22 B + verdict méta)
+RESPONSE_TRIPLE_FMT  = "<BfBfIffBf"  # PAIR + pred_meta(u8), prob_meta(f32) ; conf_sup porte p_sup
+RESPONSE_TRIPLE_SIZE = struct.calcsize(RESPONSE_TRIPLE_FMT)  # 27 B
 
 STATUS_OK         = 0x00
 STATUS_CRC_ERR    = 0x01
@@ -55,19 +90,76 @@ STATUS_UPDATE_DONE = 0x04
 
 
 def parse_response(data: bytes) -> dict:
-    """Parse une réponse firmware UART v2 (14 B) ou v3 (21 B)."""
-    if len(data) == RESPONSE_V2_SIZE:
+    """Parse une réponse firmware UART : triple 27 B (Sprint 31), pair 22 B (Sprint 30), dual 25 B (Sprint 27), v3 23 B, v2 14 B."""
+    if len(data) == RESPONSE_TRIPLE_SIZE:
+        pred_maha, score_maha, pred_sup, p_sup, lat_us, auroc_maha, f1_sup, pred_meta, prob_meta = \
+            struct.unpack(RESPONSE_TRIPLE_FMT, data)
+        return {
+            "mode":        "triple",
+            "pred_maha":   int(pred_maha),
+            "score_maha":  float(score_maha),
+            "pred_sup":    int(pred_sup),
+            "p_sup":       float(p_sup),       # le firmware envoie p_sup dans le slot conf_sup
+            "conf_sup":    float(p_sup),
+            "latency_us":  int(lat_us),
+            "auroc_maha":  float(auroc_maha),
+            "f1_sup":      float(f1_sup),
+            "pred_meta":   int(pred_meta),
+            "prob_meta":   float(prob_meta),
+            # alias pour compat _compute_stats : la métrique d'intérêt est le verdict méta
+            "pred":        int(pred_meta),
+            "confidence":  float(prob_meta),
+            "ram_bytes":   0,
+            "throughput_ips": 0,
+            "status":      STATUS_OK,
+        }
+    if len(data) == RESPONSE_PAIR_SIZE:
+        pred_maha, score_maha, pred_sup, conf_sup, lat_us, auroc_maha, f1_sup = \
+            struct.unpack(RESPONSE_PAIR_FMT, data)
+        return {
+            "mode":        "pair",
+            "pred_maha":   int(pred_maha),
+            "score_maha":  float(score_maha),
+            "pred_sup":    int(pred_sup),
+            "conf_sup":    float(conf_sup),
+            "latency_us":  int(lat_us),
+            "auroc_maha":  float(auroc_maha),
+            "f1_sup":      float(f1_sup),
+            # alias pour compat _compute_stats (accuracy/confidence du modèle supervisé)
+            "pred":        int(pred_sup),
+            "confidence":  float(conf_sup),
+            "ram_bytes":   0,
+            "throughput_ips": 0,
+            "status":      STATUS_OK,
+        }
+    if len(data) == RESPONSE_DUAL_SIZE:
+        pred_fault, conf_fault, rul_pred, lat_us, f1_macro, rmse_rul, forgetting = \
+            struct.unpack(RESPONSE_DUAL_FMT, data)
+        return {
+            "mode":           "dual",
+            "pred":           int(pred_fault),
+            "confidence":     float(conf_fault),
+            "rul_pred":       float(rul_pred),
+            "latency_us":     int(lat_us),
+            "f1_macro":       float(f1_macro),
+            "rmse_rul":       float(rmse_rul),
+            "forgetting":     float(forgetting),
+            "ram_bytes":      0,
+            "throughput_ips": 0,
+            "status":         STATUS_OK,
+        }
+    elif len(data) == RESPONSE_V3_SIZE:
+        pred, conf, lat_us, ram_b, acc, auroc, forgetting = struct.unpack(RESPONSE_V3_FMT, data)
+        return {
+            "pred": pred, "confidence": float(conf), "latency_us": lat_us,
+            "ram_bytes": ram_b, "throughput_ips": 0, "status": STATUS_OK,
+            "acc": float(acc), "auroc": float(auroc), "forgetting": float(forgetting),
+        }
+    elif len(data) == RESPONSE_V2_SIZE:
         pred, conf, lat_us, ram_b, thr, status = struct.unpack(RESPONSE_V2_FMT, data)
         return {
             "pred": pred, "confidence": float(conf), "latency_us": lat_us,
             "ram_bytes": ram_b, "throughput_ips": thr, "status": status,
-        }
-    elif len(data) == RESPONSE_V3_SIZE:
-        pred, conf, lat_us, acc, auroc, forgetting = struct.unpack(RESPONSE_V3_FMT, data)
-        return {
-            "pred": pred, "confidence": float(conf), "latency_us": lat_us,
-            "ram_bytes": 0, "throughput_ips": 0, "status": STATUS_OK,
-            "acc": float(acc), "auroc": float(auroc), "forgetting": float(forgetting),
         }
     raise ValueError(f"Unknown response length: {len(data)}")
 
@@ -105,9 +197,55 @@ def build_frame_v2(features: np.ndarray, label: int, task_id: int,
     return payload + struct.pack("<B", crc8(payload))
 
 
+def _load_paderborn() -> tuple[np.ndarray, np.ndarray]:
+    """Charge Paderborn (3 tâches : K001→KA04→KI04) avec top-5 features FFT."""
+    import yaml as _yaml
+    from src.data.paderborn_loader import get_cl_dataloaders
+
+    subset = _yaml.safe_load(Path("configs/paderborn_feature_subset.yaml").read_text())
+    feature_names = subset["selected_features"]
+
+    tasks = get_cl_dataloaders(
+        data_dir=Path("data/raw/Deep Learning-Based Motor Fault Diagnosis Using the Paderborn Dataset/"),
+        config_path=Path("configs/board_paderborn.yaml"),
+        feature_names=feature_names,
+    )
+    Xs, ys = [], []
+    for t in tasks:  # 3 tâches : healthy → OR → IR
+        for xb, yb in t["train_loader"]:
+            Xs.append(xb.numpy())
+            ys.append(yb.numpy().flatten())
+    return np.concatenate(Xs), np.concatenate(ys).astype(int)
+
+
+def _load_cmapss() -> tuple[np.ndarray, np.ndarray]:
+    """Charge CMAPSS FD001+FD002 avec les 5 features sélectionnées."""
+    import yaml as _yaml
+    from src.data.cmapss_loader import get_cl_dataloaders
+
+    subset = _yaml.safe_load(Path("configs/cmapss_feature_subset.yaml").read_text())
+    feature_names = subset.get("selected_features") or subset.get("features")
+
+    tasks = get_cl_dataloaders(
+        data_dir=Path("data/raw/CMAPSS Jet Engine Simulated Data/"),
+        config_path=Path("configs/board_cmapss.yaml"),
+        feature_names=feature_names,
+    )
+    Xs, ys = [], []
+    for t in tasks[:2]:   # FD001 + FD002 (n_tasks_board=2)
+        for xb, yb in t["train_loader"]:
+            Xs.append(xb.numpy())
+            ys.append(yb.numpy().flatten())
+    return np.concatenate(Xs), np.concatenate(ys).astype(int)
+
+
 def _load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
-    """Charge un dataset Phase 1 (réutilise sensor_sim.py)."""
-    import importlib.util, sys
+    """Charge un dataset (CMAPSS/Paderborn natifs, autres via sensor_sim.py)."""
+    if name == "cmapss":
+        return _load_cmapss()
+    if name == "paderborn":
+        return _load_paderborn()
+    import importlib.util
     spec = importlib.util.spec_from_file_location(
         "sensor_sim", Path(__file__).parent / "sensor_sim.py"
     )
@@ -208,10 +346,21 @@ def _stream_uart(
                 frame = build_frame_v2(features, label, task_id, ts_ms, flags)
 
                 ser.write(frame)
-                if protocol_version >= 3:
-                    resp_fmt, resp_size = RESPONSE_V3_FMT, RESPONSE_V3_SIZE
+                if model_flags in (FRAME_FLAGS_TRIPLE_MAHA_EWC,
+                                   FRAME_FLAGS_TRIPLE_MAHA_HDC):
+                    resp_size = RESPONSE_TRIPLE_SIZE  # Sprint 31 — réponse triple 27 B
+                elif model_flags in (FRAME_FLAGS_PAIR_MAHA_EWC,
+                                   FRAME_FLAGS_PAIR_MAHA_HDC,
+                                   FRAME_FLAGS_PAIR_MAHA_TINYOL):
+                    resp_size = RESPONSE_PAIR_SIZE   # Sprint 30 — réponse paire 22 B
+                elif model_flags == FRAME_FLAGS_DUAL_MODE:
+                    resp_size = RESPONSE_DUAL_SIZE   # Sprint 27 — réponse duale 25 B
+                elif model_flags == FRAME_FLAGS_MAHA_Q15:
+                    resp_size = RESPONSE_V3_SIZE     # Sprint 34 — Q15 réutilise la réponse V3 (23 B)
+                elif protocol_version >= 3:
+                    resp_size = RESPONSE_V3_SIZE
                 else:
-                    resp_fmt, resp_size = RESPONSE_V2_FMT, RESPONSE_V2_SIZE
+                    resp_size = RESPONSE_V2_SIZE
 
                 raw = ser.read(resp_size)
                 if len(raw) != resp_size:
@@ -221,6 +370,7 @@ def _stream_uart(
 
                 entry: dict = {"task_id": task_id, "ts_ms": ts_ms, "true": label}
                 entry.update(parse_response(raw))
+                entry["features"] = [float(v) for v in features]  # parité board↔PC (S3205)
                 results.append(entry)
                 if verbose:
                     pred = entry["pred"]
@@ -252,10 +402,21 @@ def _compute_stats(results: list[dict]) -> dict:
     acc = sum(p == t for p, t in zip(preds, trues)) / len(results)
     n_tasks = len(set(r["task_id"] for r in results))
 
+    # F1 détection de panne (classe faulty=1) — même définition que le PC (S3504).
+    # Dérivé côté hôte depuis les prédictions/labels du flux board : aucun changement
+    # du protocole UART (F1 n'est pas calculé par le firmware).
+    from src.evaluation.metrics import compute_fault_f1
+
+    f1 = compute_fault_f1(np.asarray(trues), np.asarray(preds))
+
     return {
         "n_samples": len(results),
         "n_tasks": n_tasks,
         "accuracy": round(acc, 4),
+        "f1_faulty": round(f1["f1_faulty"], 4),
+        "f1_macro": round(f1["f1_macro"], 4),
+        "precision_faulty": round(f1["precision_faulty"], 4),
+        "recall_faulty": round(f1["recall_faulty"], 4),
         "latency_mean_us": round(float(np.mean(latencies)), 2),
         "latency_p50_us":  round(float(np.percentile(latencies, 50)), 2),
         "latency_p99_us":  round(float(np.percentile(latencies, 99)), 2),
@@ -289,6 +450,7 @@ def _stream_cl_sequence(
     rate_hz: float = 0.0,
     protocol_version: int = 2,
     output_dir: str | None = None,
+    model_flags: int = 0,
 ) -> tuple[list[dict], list[dict]]:
     """Stream une séquence CL domain-incremental tâche par tâche.
 
@@ -337,7 +499,7 @@ def _stream_cl_sequence(
                 features, label = X[idx], int(y[idx])
                 ts_ms = int(time.time() * 1000) - t0_ms
 
-                flags = FRAME_FLAGS_PROFILING
+                flags = FRAME_FLAGS_PROFILING | model_flags
                 if request_update:
                     flags |= FRAME_FLAGS_UPDATE
                 # Dernier sample de la tâche (sauf dernière tâche) → signal consolidation
@@ -424,9 +586,196 @@ def _stream_cl_sequence(
     return all_results, per_task_metrics
 
 
+def _resp_size_for(model_flags: int, protocol_version: int) -> int:
+    """Taille de réponse UART attendue selon le mode/protocole (cf. _stream_uart)."""
+    if model_flags in (FRAME_FLAGS_TRIPLE_MAHA_EWC, FRAME_FLAGS_TRIPLE_MAHA_HDC):
+        return RESPONSE_TRIPLE_SIZE
+    if model_flags in (FRAME_FLAGS_PAIR_MAHA_EWC, FRAME_FLAGS_PAIR_MAHA_HDC,
+                       FRAME_FLAGS_PAIR_MAHA_TINYOL):
+        return RESPONSE_PAIR_SIZE
+    if model_flags == FRAME_FLAGS_DUAL_MODE:
+        return RESPONSE_DUAL_SIZE
+    if model_flags == FRAME_FLAGS_MAHA_Q15:
+        return RESPONSE_V3_SIZE   # Sprint 34 — Q15 réutilise la réponse V3
+    if protocol_version >= 3:
+        return RESPONSE_V3_SIZE
+    return RESPONSE_V2_SIZE
+
+
+def _measure_bss_bytes(elf_path: str | None) -> int | str:
+    """Lit la taille .bss d'un ELF via arm-none-eabi-size. 'à mesurer' si indisponible."""
+    if not elf_path or not Path(elf_path).exists():
+        return "à mesurer"
+    import subprocess
+    try:
+        out = subprocess.run(["arm-none-eabi-size", elf_path],
+                             capture_output=True, text=True, check=True).stdout
+        # En-tête : text data bss dec hex filename ; on lit la 3e colonne de la 2e ligne.
+        cols = out.strip().splitlines()[1].split()
+        return int(cols[2])
+    except (subprocess.CalledProcessError, FileNotFoundError, IndexError, ValueError):
+        return "à mesurer"
+
+
+def _stream_sweep(
+    port: str, baud: int,
+    X: np.ndarray, y: np.ndarray,
+    n_samples: int,
+    profile_path: str,
+    model: str | None,
+    model_flags: int,
+    protocol_version: int,
+    window: int,
+    elf_path: str | None,
+    output_dir: str,
+    verbose: bool,
+) -> dict:
+    """Balayage board (rate_hz × stride) → point de saturation débit/buffer (S3403).
+
+    Pour chaque config, envoie `n_samples` trames à `rate_hz`, compte drops/timeouts/CRC,
+    mesure la latence DWT (réponse UART), compare au modèle analytique S3401 et écrit un
+    JSON par config + un summary.json agrégé. Aucun chiffre inventé : tout vient de la board.
+    """
+    try:
+        import serial
+    except ImportError:
+        raise ImportError("pyserial requis : pip install pyserial")
+
+    from src.evaluation.streaming_model import (
+        debit_max,
+        debit_streaming,
+        marge_temps_reel,
+    )
+
+    prof = _load_streaming_profile(profile_path)
+    sweep = prof.get("sweep", {})
+    rates = sweep.get("rates_hz", [prof.get("f_acq_hz", 100)])
+    strides = sweep.get("strides", [prof.get("stride_s", 1)])
+    latences = prof.get("latences_inf_us", {})
+    lat_inf_us = latences.get(model) if model else None
+
+    resp_size = _resp_size_for(model_flags, protocol_version)
+    bss_bytes = _measure_bss_bytes(elf_path)
+    out_dir = Path(output_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    configs_out: list[dict] = []
+    saturation_first: dict | None = None
+
+    with serial.Serial(port, baud, timeout=UART_TIMEOUT_S,
+                       dsrdtr=False, rtscts=False) as ser:
+        ser.dtr = True
+        time.sleep(0.05)
+        ser.dtr = False
+        time.sleep(0.5)
+
+        t0_ms = int(time.time() * 1000)
+        for rate_hz in rates:
+            for stride in strides:
+                interval_s = 1.0 / rate_hz if rate_hz > 0 else 0.0
+                ser.reset_input_buffer()
+                latencies: list[int] = []
+                drops = 0
+                crc_errors = 0
+                sent = 0
+                idx_pool = np.random.choice(len(X), size=min(n_samples, len(X)),
+                                            replace=False)
+                for k, idx in enumerate(idx_pool):
+                    t_send = time.monotonic()
+                    features = X[idx]
+                    label = int(y[idx])
+                    flags = FRAME_FLAGS_PROFILING | model_flags
+                    ts_ms = int(time.time() * 1000) - t0_ms
+                    frame = build_frame_v2(features, label, k % 256, ts_ms, flags)
+                    ser.write(frame)
+                    sent += 1
+                    raw = ser.read(resp_size)
+                    if len(raw) != resp_size:
+                        drops += 1
+                    else:
+                        entry = parse_response(raw)
+                        latencies.append(int(entry["latency_us"]))
+                        if entry.get("status", 0) & STATUS_CRC_ERR:
+                            crc_errors += 1
+                    elapsed = time.monotonic() - t_send
+                    if interval_s > elapsed:
+                        time.sleep(interval_s - elapsed)
+
+                # Modèle analytique S3401
+                ds = debit_streaming(float(rate_hz), int(stride), int(window))
+                dm = debit_max(lat_inf_us * 1e-6) if lat_inf_us else None
+                marge = marge_temps_reel(ds, dm) if dm else None
+                predicted_sat = (marge is not None) and (not marge["ok"])
+                observed_sat = (drops > 0) or (crc_errors > 0)
+                saturation_atteinte = bool(predicted_sat and observed_sat)
+
+                cfg = {
+                    "model": model,
+                    "rate_hz": rate_hz,
+                    "stride": stride,
+                    "window": window,
+                    "n_sent": sent,
+                    "n_received": len(latencies),
+                    "latence_dwt_us": (round(float(np.median(latencies)), 1)
+                                       if latencies else "à mesurer"),
+                    "latence_dwt_p99_us": (round(float(np.percentile(latencies, 99)), 1)
+                                           if latencies else "à mesurer"),
+                    "drops": drops,
+                    "timeouts": drops,   # drop = réponse incomplète/absente dans le timeout
+                    "crc_errors": crc_errors,
+                    "bss_bytes": bss_bytes,
+                    "debit_streaming_hz": round(ds, 3),
+                    "debit_max_hz": (round(dm, 1) if dm else "à mesurer"),
+                    "marge_pct": (round(marge["marge_pct"], 4) if marge else "à mesurer"),
+                    "saturation_predite": predicted_sat,
+                    "saturation_observee": observed_sat,
+                    "saturation_atteinte": saturation_atteinte,
+                }
+                configs_out.append(cfg)
+                fname = f"{model or 'model'}_rate{int(rate_hz)}_stride{int(stride)}_w{int(window)}.json"
+                (out_dir / fname).write_text(json.dumps(cfg, indent=2))
+                if saturation_atteinte and saturation_first is None:
+                    saturation_first = cfg
+                if verbose:
+                    print(f"  rate={rate_hz}Hz stride={stride} W={window}: "
+                          f"recv={len(latencies)}/{sent} drops={drops} crc={crc_errors} "
+                          f"lat={cfg['latence_dwt_us']}µs sat={saturation_atteinte}")
+
+    summary = {
+        "model": model,
+        "window": window,
+        "bss_bytes": bss_bytes,
+        "latence_inf_us": lat_inf_us if lat_inf_us else "à mesurer",
+        "n_configs": len(configs_out),
+        "saturation_first": saturation_first,
+        "configs": configs_out,
+    }
+    (out_dir / f"summary_{model or 'model'}_w{int(window)}.json").write_text(
+        json.dumps(summary, indent=2))
+    return summary
+
+
+def _load_streaming_profile(path: str) -> dict:
+    """Charge configs/streaming_profile.yaml et renvoie la section 'streaming'."""
+    import yaml
+    with open(path) as f:
+        cfg = yaml.safe_load(f) or {}
+    return cfg.get("streaming", cfg)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Streaming continu de données vers firmware STM32 (protocole v2)")
-    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia"], required=True)
+    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia", "cmapss", "paderborn", "battery"], required=True)
+    parser.add_argument("--model",
+                        choices=["ewc", "ewc-int8", "tinyol", "mahalanobis", "hdc", "dual",
+                                 "hdc-int8", "tinyol-int8",
+                                 "pair-maha-ewc", "pair-maha-hdc", "pair-maha-tinyol",
+                                 "triple-maha-ewc", "triple-maha-hdc", "maha-q15"],
+                        default=None, help="Modèle MCU cible (définit les FLAGS protocole)")
+    parser.add_argument("--condition", choices=["5feat", "all", "best"], default=None,
+                        help="Condition de features Sprint 35 (S3508) : sélectionne côté hôte "
+                             "les colonnes natives envoyées à la board (5feat/all/best-par-modèle), "
+                             "via resolve_feature_indices. Sans valeur : pipeline 5-feat historique.")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--port", default="/dev/ttyACM0")
     parser.add_argument("--baud", type=int, default=115200)
@@ -435,6 +784,9 @@ def main() -> None:
     parser.add_argument("--rate-hz", type=float, default=0.0, help="Rate-limit (0=max speed)")
     parser.add_argument("--update", action="store_true", help="Demande mise à jour incrémentale au firmware")
     parser.add_argument("--output", type=str, help="Chemin JSON pour les statistiques")
+    parser.add_argument("--dump-samples", action="store_true",
+                        help="Inclut la liste par-échantillon (pred/true/confidence) dans le JSON "
+                             "de sortie — requis pour la parité board↔PC (S3205)")
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--protocol-version", type=int, default=2, choices=[2, 3],
                         help="Version du protocole firmware (2=14B, 3=21B avec métriques CL)")
@@ -443,11 +795,85 @@ def main() -> None:
                         help="Séquence CL domain-incremental, ex: pump:167,turbine:167,compressor:166")
     parser.add_argument("--consolidate-on-task-change", action="store_true",
                         help="Envoie FLAGS=0x04 sur le dernier sample de chaque tâche (→ ewc_consolidate firmware)")
+    parser.add_argument("--sweep", type=str, default=None, metavar="PROFILE.yaml",
+                        help="Mode balayage débit/stride S3403 : lit configs/streaming_profile.yaml "
+                             "(rate_hz × stride), mesure latence DWT/drops/CRC et point de saturation")
+    parser.add_argument("--window", type=int, default=5,
+                        help="Taille de fenêtre W de la build firmware (= STREAM_BUF_W) pour le sweep S3403")
+    parser.add_argument("--elf", type=str, default="firmware/stm32f4_blink/build/stm32f4_blink.elf",
+                        help="Chemin de l'ELF flashé (pour mesurer .bss par config W via arm-none-eabi-size)")
     args = parser.parse_args()
 
+    model_flags = 0
+    if args.model == "ewc":
+        model_flags = FRAME_FLAGS_EWC_MODE
+    elif args.model == "ewc-int8":
+        model_flags = FRAME_FLAGS_INT8_MODE
+    elif args.model == "hdc":
+        model_flags = FRAME_FLAGS_HDC_MODE
+    elif args.model == "dual":
+        model_flags = FRAME_FLAGS_DUAL_MODE
+    elif args.model == "hdc-int8":
+        model_flags = FRAME_FLAGS_HDC_INT8
+    elif args.model == "tinyol-int8":
+        model_flags = FRAME_FLAGS_TINYOL_INT8
+    elif args.model == "pair-maha-ewc":
+        model_flags = FRAME_FLAGS_PAIR_MAHA_EWC
+    elif args.model == "pair-maha-hdc":
+        model_flags = FRAME_FLAGS_PAIR_MAHA_HDC
+    elif args.model == "pair-maha-tinyol":
+        model_flags = FRAME_FLAGS_PAIR_MAHA_TINYOL
+    elif args.model == "triple-maha-ewc":
+        model_flags = FRAME_FLAGS_TRIPLE_MAHA_EWC
+    elif args.model == "triple-maha-hdc":
+        model_flags = FRAME_FLAGS_TRIPLE_MAHA_HDC
+    elif args.model == "maha-q15":
+        model_flags = FRAME_FLAGS_MAHA_Q15
+    # tinyol et mahalanobis n'ont pas de flag dédié (pipeline sélectionne via config firmware)
+
     print(f"Chargement dataset '{args.dataset}'...")
-    X, y = _load_dataset(args.dataset)
+    if args.condition:
+        # Sélection de features par condition (S3508) : mêmes colonnes natives que
+        # le modèle de référence board entraîné → parité board↔PC par construction.
+        from src.evaluation.feature_conditions import load_condition_arrays
+
+        base_model = (args.model or "ewc").split("-")[0]  # ewc/mahalanobis/hdc/tinyol
+        if base_model not in ("ewc", "mahalanobis", "hdc", "tinyol"):
+            base_model = "ewc"  # défaut sûr pour all/5feat (indices indépendants du modèle)
+        X, y, idx, names = load_condition_arrays(args.dataset, args.condition, base_model)
+        print(f"  condition={args.condition} model={base_model} → {len(idx)} feats {names}")
+    else:
+        X, y = _load_dataset(args.dataset)
     print(f"  {len(X)} samples, {X.shape[1]} features")
+
+    if args.sweep:
+        if args.dry_run:
+            raise SystemExit("--sweep requiert une board réelle (pas compatible --dry-run)")
+        if not args.output:
+            raise SystemExit("--sweep requiert --output <dir>")
+        print(f"Mode balayage débit/stride (S3403) — profil {args.sweep}, W={args.window}")
+        summary = _stream_sweep(
+            args.port, args.baud, X, y, args.n_samples,
+            profile_path=args.sweep,
+            model=args.model,
+            model_flags=model_flags,
+            protocol_version=args.protocol_version,
+            window=args.window,
+            elf_path=args.elf,
+            output_dir=args.output,
+            verbose=args.verbose,
+        )
+        print("\n--- Balayage terminé ---")
+        print(f"  configs testées : {summary['n_configs']}")
+        print(f"  .bss : {summary['bss_bytes']} B")
+        if summary["saturation_first"]:
+            sf = summary["saturation_first"]
+            print(f"  saturation : rate={sf['rate_hz']}Hz stride={sf['stride']} "
+                  f"(drops={sf['drops']}, crc={sf['crc_errors']})")
+        else:
+            print("  saturation : non atteinte sur la plage testée")
+        print(f"  Sauvegardé dans : {args.output}")
+        return
 
     if args.cl_sequence:
         segments = parse_cl_sequence(args.cl_sequence)
@@ -465,6 +891,7 @@ def main() -> None:
             rate_hz=args.rate_hz,
             protocol_version=args.protocol_version,
             output_dir=args.output,
+            model_flags=model_flags,
         )
         stats = _compute_stats(all_results)
         stats["mode"] = "dry-run" if args.dry_run else "uart"
@@ -487,13 +914,22 @@ def main() -> None:
     elif args.dry_run:
         raw_results = _stream_dry_run(X, y, args.n_samples, args.n_tasks,
                                        args.update, args.verbose,
-                                       protocol_version=args.protocol_version)
+                                       protocol_version=args.protocol_version,
+                                       model_flags=model_flags)
         stats = _compute_stats(raw_results)
         stats["mode"] = "dry-run"
+        if args.dump_samples:
+            stats["samples"] = [
+                {"pred": int(r["pred"]), "true": int(r["true"]),
+                 "confidence": float(r.get("confidence", 0.0)),
+                 "features": r.get("features")}
+                for r in raw_results
+            ]
 
         print("\n--- Résultats streaming ---")
         for k, v in stats.items():
-            print(f"  {k}: {v}")
+            if k != "samples":
+                print(f"  {k}: {v}")
 
         if args.output:
             out = Path(args.output)
@@ -503,14 +939,23 @@ def main() -> None:
     else:
         raw_results = _stream_uart(args.port, args.baud, X, y, args.n_samples,
                                     args.n_tasks, args.rate_hz, args.update, args.verbose,
-                                    protocol_version=args.protocol_version)
+                                    protocol_version=args.protocol_version,
+                                    model_flags=model_flags)
         stats = _compute_stats(raw_results)
         stats["mode"] = "uart"
         stats["port"] = args.port
+        if args.dump_samples:
+            stats["samples"] = [
+                {"pred": int(r["pred"]), "true": int(r["true"]),
+                 "confidence": float(r.get("confidence", 0.0)),
+                 "features": r.get("features")}
+                for r in raw_results
+            ]
 
         print("\n--- Résultats streaming ---")
         for k, v in stats.items():
-            print(f"  {k}: {v}")
+            if k != "samples":
+                print(f"  {k}: {v}")
 
         if args.output:
             out = Path(args.output)

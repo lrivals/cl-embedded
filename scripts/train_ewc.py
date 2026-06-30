@@ -25,7 +25,7 @@ from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 
 from src.evaluation.memory_profiler import full_memory_report
 from src.evaluation.metrics import compute_cl_metrics, format_metrics_report, save_metrics
-from src.models.ewc import EWCMlpClassifier
+from src.models.ewc import EWCMlpClassifier, EWCMlpInt8Classifier
 from src.models.ewc.fisher import compute_fisher_diagonal, update_fisher_online
 from src.training.baselines import evaluate_task, train_joint, train_naive_sequential
 from src.utils.config_loader import get_exp_dir, load_config, save_config_snapshot
@@ -67,6 +67,25 @@ def _get_tasks(cfg: dict) -> list[dict]:
             window_size=cfg["data"].get("window_size", 2560),
             step_size=cfg["data"].get("step_size", 2560),
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+            label_mode=cfg["data"].get("label_mode", "failure_ratio"),
+            faulty_threshold=cfg["data"].get("faulty_threshold"),
+        )
+
+    if dataset == "battery_rul":
+        from src.data.battery_dataset import (
+            RUL_FAILURE_THRESHOLD,
+            get_battery_dataloaders,
+        )
+        return get_battery_dataloaders(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["training"]["batch_size"],
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg["training"]["seed"],
+            n_tasks=cfg["data"].get("n_tasks", 3),
+            rul_failure_threshold=cfg["data"].get(
+                "rul_failure_threshold", RUL_FAILURE_THRESHOLD
+            ),
         )
 
     if dataset == "cwru":
@@ -99,6 +118,20 @@ def _get_tasks(cfg: dict) -> list[dict]:
         )
         st["_single_task_mode"] = True
         return [st]
+
+    if dataset == "cmapss":
+        from src.data.cmapss_loader import get_cl_dataloaders
+        return get_cl_dataloaders(
+            data_dir=Path(cfg["data"]["data_dir"]),
+            config_path=Path(cfg.get("_config_path", "configs/cmapss_config.yaml")),
+        )
+
+    if dataset == "paderborn":
+        from src.data.paderborn_loader import get_cl_dataloaders as get_paderborn_cl_dataloaders
+        return get_paderborn_cl_dataloaders(
+            data_dir=Path(cfg["data"]["data_dir"]),
+            config_path=Path(cfg.get("_config_path", "configs/paderborn_config.yaml")),
+        )
 
     csv_path = Path(cfg["data"]["csv_path"])
     normalizer_path = Path(cfg["data"]["normalizer_path"])
@@ -210,8 +243,48 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--exp_id",
+        "--exp-id",
+        dest="exp_id",
         default=None,
         help="Override exp_id (ex. exp_068_ewc_cwru_single_task)",
+    )
+    parser.add_argument(
+        "--output",
+        dest="exp_dir",
+        default=None,
+        help="Alias de --exp_dir : répertoire expérience override",
+    )
+    parser.add_argument(
+        "--model",
+        choices=["fp32", "int8"],
+        default="fp32",
+        help="fp32 = EWCMlpClassifier standard | int8 = comparaison FP32 vs INT8 (Gap 3)",
+    )
+    parser.add_argument(
+        "--uint8_activations",
+        action="store_true",
+        help="Active la simulation de quantization UINT8 des activations (forward pass seulement)",
+    )
+    parser.add_argument(
+        "--dataset",
+        default=None,
+        help="Dataset override : cwru | pronostia | pump | monitoring | cmapss | paderborn",
+    )
+    parser.add_argument(
+        "--scenario",
+        default=None,
+        help="Scénario CL : by_fault_type | by_condition | temporal | by_equipment | by_severity",
+    )
+    parser.add_argument(
+        "--profile_memory",
+        action="store_true",
+        help="Active le profiling RAM par tracemalloc sur toute la durée du training",
+    )
+    parser.add_argument(
+        "--output_dir",
+        dest="exp_dir",
+        default=None,
+        help="Alias de --exp_dir (compatibilité commandes S2405)",
     )
     return parser.parse_args()
 
@@ -340,13 +413,136 @@ def run_memory_profiling(
     )
 
 
-def _fresh_model(config: dict) -> EWCMlpClassifier:
+def _fresh_model(config: dict, uint8_activations: bool = False) -> EWCMlpClassifier:
     """Crée un nouveau EWCMlpClassifier depuis la config (poids réinitialisés)."""
     return EWCMlpClassifier(
         input_dim=config["model"]["input_dim"],
         hidden_dims=config["model"]["hidden_dims"],
         dropout=config["model"]["dropout"],
+        uint8_activations=uint8_activations,
     )
+
+
+def _fresh_model_int8(config: dict) -> EWCMlpInt8Classifier:
+    """Crée un nouveau EWCMlpInt8Classifier depuis la config (poids réinitialisés)."""
+    return EWCMlpInt8Classifier(
+        input_dim=config["model"]["input_dim"],
+        hidden_dims=config["model"]["hidden_dims"],
+        dropout=config["model"]["dropout"],
+    )
+
+
+def _compute_auroc_after_training(
+    model: nn.Module,
+    tasks: list[dict],
+    device: str,
+) -> float:
+    """
+    Calcule l'AUROC macro-moyen sur toutes les tâches après entraînement complet.
+
+    Utilise test_loader si disponible, sinon val_loader.
+    """
+    model.eval()
+    all_aurocs = []
+    with torch.no_grad():
+        for task in tasks:
+            loader = task.get("test_loader") or task["val_loader"]
+            probs, labels = [], []
+            for x, y in loader:
+                out = model(x.to(device))
+                probs.extend(out.cpu().numpy().ravel())
+                labels.extend(y.numpy().ravel())
+            try:
+                auroc = float(roc_auc_score(np.array(labels), np.array(probs)))
+            except ValueError:
+                auroc = float("nan")
+            all_aurocs.append(auroc)
+    valid = [a for a in all_aurocs if not np.isnan(a)]
+    return float(np.mean(valid)) if valid else float("nan")
+
+
+def _run_int8_comparison(
+    cfg: dict,
+    tasks: list[dict],
+    device: str,
+    results_dir: Path,
+    exp_dir: Path,
+) -> None:
+    """
+    Entraîne EWC FP32 puis INT8 et compare les performances (Gap 3).
+
+    Produit results/results.json avec fp32/int8 AUROC, delta_auroc, gap3_criterion_met.
+    """
+    seed = cfg["training"]["seed"]
+    dataset_name = cfg["data"].get("dataset", "cwru")
+
+    print("\n" + "=" * 60)
+    print("  Gap 3 — Comparaison FP32 vs INT8")
+    print("=" * 60)
+
+    # ── FP32 ──────────────────────────────────────────────────────────
+    print("\n[1/2] Entraînement EWC FP32...")
+    set_seed(seed)
+    fp32_model = _fresh_model(cfg)
+    acc_matrix_fp32 = train_ewc(fp32_model, tasks, cfg, device)
+    metrics_fp32 = compute_cl_metrics(acc_matrix_fp32)
+    auroc_fp32 = _compute_auroc_after_training(fp32_model, tasks, device)
+    mem_fp32 = run_memory_profiling(fp32_model, cfg, device)
+    ram_fp32 = mem_fp32.get("forward", {}).get("ram_peak_bytes", 0)
+    print(f"  FP32 — acc={metrics_fp32.get('aa', float('nan')):.4f} | auroc={auroc_fp32:.4f} | ram={ram_fp32} B")
+
+    # ── INT8 ──────────────────────────────────────────────────────────
+    print("\n[2/2] Entraînement EWC INT8 (fake-quant)...")
+    set_seed(seed)
+    int8_model = _fresh_model_int8(cfg)
+    int8_model.train()
+    acc_matrix_int8 = train_ewc(int8_model, tasks, cfg, device)
+    metrics_int8 = compute_cl_metrics(acc_matrix_int8)
+    auroc_int8 = _compute_auroc_after_training(int8_model, tasks, device)
+    mem_int8 = run_memory_profiling(int8_model, cfg, device)
+    ram_int8 = mem_int8.get("forward", {}).get("ram_peak_bytes", 0)
+    print(f"  INT8 — acc={metrics_int8.get('aa', float('nan')):.4f} | auroc={auroc_int8:.4f} | ram={ram_int8} B")
+
+    # ── Critère Gap 3 ─────────────────────────────────────────────────
+    delta_auroc = abs(auroc_fp32 - auroc_int8)
+    gap3_met = delta_auroc < 0.02
+
+    results: dict = {
+        "exp_id": cfg["exp_id"],
+        "dataset": dataset_name,
+        "fp32": {
+            "auroc_final": round(auroc_fp32, 6),
+            "acc_final": round(float(metrics_fp32.get("aa", float("nan"))), 6),
+            "avg_forgetting": round(float(metrics_fp32.get("af", float("nan"))), 6),
+            "ram_peak_bytes": int(ram_fp32),
+        },
+        "int8": {
+            "auroc_final": round(auroc_int8, 6),
+            "acc_final": round(float(metrics_int8.get("aa", float("nan"))), 6),
+            "avg_forgetting": round(float(metrics_int8.get("af", float("nan"))), 6),
+            "ram_peak_bytes": int(ram_int8),
+        },
+        "delta_auroc": round(delta_auroc, 6),
+        "gap3_criterion_met": gap3_met,
+    }
+
+    results_path = results_dir / "results.json"
+    with open(results_path, "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2)
+
+    # Sauvegarder aussi les matrices d'accuracy pour le notebook
+    np.save(results_dir / "acc_matrix_fp32.npy", acc_matrix_fp32)
+    np.save(results_dir / "acc_matrix_int8.npy", acc_matrix_int8)
+
+    print("\n" + "=" * 60)
+    print(f"  AUROC FP32 : {auroc_fp32:.4f}")
+    print(f"  AUROC INT8 : {auroc_int8:.4f}")
+    print(f"  Δ AUROC    : {delta_auroc:.4f}")
+    print(f"  Gap 3      : {'✅ COMBLÉ' if gap3_met else '❌ NON COMBLÉ'}")
+    if not gap3_met:
+        print("  FIXME(gap3) : Δ > 0.02 — inspecter fq_input / fq_h1 / fq_w1")
+    print(f"\n✅ Résultats → {results_path}")
+    print("=" * 60)
 
 
 def _run_single_task_ewc(
@@ -487,12 +683,15 @@ def _resolve_feature_names_ewc(cfg: dict) -> list[str]:
         FEATURE_NAMES_CWRU,
         FEATURE_NAMES_PRONOSTIA,
         FEATURE_NAMES_MONITORING,
+        FEATURE_NAMES_CMAPSS,
     )
     dataset = cfg["data"].get("dataset", "equipment_monitoring")
     if dataset == "cwru":
         return FEATURE_NAMES_CWRU
     if dataset == "pronostia":
         return FEATURE_NAMES_PRONOSTIA
+    if dataset == "cmapss":
+        return FEATURE_NAMES_CMAPSS
     return FEATURE_NAMES_MONITORING
 
 
@@ -513,6 +712,26 @@ def main() -> None:
     if args.data_config:
         data_cfg = load_config(args.data_config)
         cfg["data"].update(data_cfg.get("data", {}))
+
+    # Résolution --dataset/--scenario → data config (S2405)
+    _DATASET_CONFIG_MAP: dict[tuple[str | None, str | None], str] = {
+        ("cwru", "by_fault_type"):     "configs/cwru_by_fault_config.yaml",
+        ("cwru", "by_severity"):       "configs/cwru_by_severity_config.yaml",
+        ("pronostia", "by_condition"): "configs/pronostia_config.yaml",
+        ("pump", "temporal"):          "configs/pump_by_temporal_window_config.yaml",
+        ("pump", "by_id"):             "configs/pump_by_id_config.yaml",
+        ("cmapss", None):              "configs/cmapss_config.yaml",
+        ("paderborn", None):           "configs/paderborn_config.yaml",
+    }
+    if args.dataset:
+        key = (args.dataset, args.scenario)
+        fallback_key = (args.dataset, None)
+        data_cfg_path = _DATASET_CONFIG_MAP.get(key) or _DATASET_CONFIG_MAP.get(fallback_key)
+        if data_cfg_path:
+            data_cfg = load_config(data_cfg_path)
+            cfg["data"].update(data_cfg.get("data", {}))
+        if args.scenario:
+            cfg["data"]["scenario"] = args.scenario
 
     # Override exp_id depuis --exp_id
     if args.exp_id:
@@ -546,16 +765,27 @@ def main() -> None:
 
     # Chargement données
     dataset = cfg["data"].get("dataset", "equipment_monitoring")
-    if dataset != "pronostia":
+    if dataset == "cmapss":
+        print(f"Dataset : CMAPSS ({cfg['data']['data_dir']})")
+    elif dataset == "pronostia":
+        print(f"Dataset : {cfg['data']['npy_dir']} (FEMTO PRONOSTIA .npy)")
+    elif dataset == "paderborn":
+        print(f"Dataset : Paderborn ({cfg['data']['data_dir']})")
+    else:
         csv_path = Path(cfg["data"]["csv_path"])
         if not csv_path.exists():
             raise FileNotFoundError(f"CSV introuvable : {csv_path}")
         print(f"Dataset : {csv_path}")
-    else:
-        print(f"Dataset : {cfg['data']['npy_dir']} (FEMTO PRONOSTIA .npy)")
 
+    cfg["_config_path"] = args.config
     tasks = _get_tasks(cfg)
+    cfg.pop("_config_path", None)  # éviter la pollution du dump YAML
     T = len(tasks)
+
+    # Mode INT8 comparaison — Gap 3
+    if getattr(args, "model", "fp32") == "int8":
+        _run_int8_comparison(cfg, tasks, device, results_dir, exp_dir)
+        return
 
     # Mode single-task (task_split: no_split) — baseline hors-CL
     if tasks[0].get("_single_task_mode"):
@@ -576,8 +806,20 @@ def main() -> None:
     print("=" * 40)
     print("  Entraînement EWC Online")
     print("=" * 40)
-    model = _fresh_model(cfg)
+    uint8_mode = getattr(args, "uint8_activations", False)
+    model = _fresh_model(cfg, uint8_activations=uint8_mode)
+    if uint8_mode:
+        print("  [UINT8] Calibration des activations sur Task 1...")
+        model.calibrate_uint8(tasks[0]["train_loader"])
+        print("  [UINT8] Calibration OK — fc1/fc2 scales calculées")
+    _training_ram_peak: int | None = None
+    if args.profile_memory:
+        import tracemalloc as _tracemalloc
+        _tracemalloc.start()
     acc_matrix_ewc = train_ewc(model, tasks, cfg, device)
+    if args.profile_memory:
+        _, _training_ram_peak = _tracemalloc.get_traced_memory()
+        _tracemalloc.stop()
     np.save(results_dir / "acc_matrix_ewc.npy", acc_matrix_ewc)
     metrics_ewc = compute_cl_metrics(acc_matrix_ewc)
 
@@ -635,18 +877,27 @@ def main() -> None:
         "model": "ewc",
         "dataset": cfg["data"].get("dataset", "cwru"),
         "scenario": cfg["data"].get("task_split", "by_fault_type"),
+        "uint8_activations": uint8_mode,
         "acc_final": metrics_ewc.get("aa", float("nan")),
         "avg_forgetting": metrics_ewc.get("af", float("nan")),
         "backward_transfer": metrics_ewc.get("bwt", float("nan")),
         "per_task_acc": [float(acc_matrix_ewc[len(tasks) - 1, j]) for j in range(len(tasks))],
         "ram_peak_bytes": memory_report.get("forward", {}).get("ram_peak_bytes", 0),
+        "ram_peak_bytes_uint8": model.estimate_ram_bytes("int8") if uint8_mode else None,
         "inference_latency_ms": memory_report.get("forward", {}).get("inference_latency_ms", 0.0),
         "n_params": n_params,
         "acc_matrix": acc_matrix_ewc.tolist(),
     }
+    if _training_ram_peak is not None:
+        metrics_cl["ram_training_peak_bytes"] = _training_ram_peak
     import json as _json
     with open(results_dir / "metrics_cl.json", "w", encoding="utf-8") as _f:
         _json.dump(metrics_cl, _f, indent=2)
+    # results.json à la racine de exp_dir (format flat Sprint 24 — lu par compare_all_sprints.py)
+    _results_flat = {k: v for k, v in metrics_cl.items() if k != "acc_matrix"}
+    _results_flat["sprint"] = 24
+    with open(exp_dir / "results.json", "w", encoding="utf-8") as _f:
+        _json.dump(_results_flat, _f, indent=2)
 
     # ── Feature importance ────────────────────────────────────────────────────
     try:

@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S22_INT8_01",
+  "dataset": "cwru",
+  "fp32": {
+    "auroc_final": 0.99984,
+    "acc_final": 1.0,
+    "avg_forgetting": 0.0,
+    "ram_peak_bytes": 1171
+  },
+  "int8": {
+    "auroc_final": 0.99968,
+    "acc_final": 1.0,
+    "avg_forgetting": 0.0,
+    "ram_peak_bytes": 4714
+  },
+  "delta_auroc": 0.00016,
+  "gap3_criterion_met": true
+}

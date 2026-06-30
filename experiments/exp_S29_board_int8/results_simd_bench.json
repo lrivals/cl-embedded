@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S29_simd_bench",
+  "model": "ewc_int8_simd",
+  "board": "NUCLEO-F439ZI",
+  "status": "blocked",
+  "blocked_at": "etape_0_toolchain",
+  "cmsis_dsp_available": false,
+  "toolchain_check": {
+    "command": "arm-none-eabi-gcc --print-file-name=libarm_cortexM4lf_math.a",
+    "result": "libarm_cortexM4lf_math.a",
+    "interpretation": "gcc renvoie le nom brut en entree -> bibliotheque introuvable",
+    "arm_math_h_found": false,
+    "arm_math_h_search": "find /usr -name arm_math.h -> aucun resultat"
+  },
+  "scalar_latency_us_p50": 462.0,
+  "scalar_latency_source": "exp_S29_board_int8/results_ewc_int8_cwru.json (Sprint 23, EWC INT8 CWRU)",
+  "scalar_cycles_p50": null,
+  "simd_cycles_p50": null,
+  "ratio_simd_over_scalar": null,
+  "conclusion": "CMSIS-DSP absent (libarm_cortexM4lf_math.a introuvable, pas de arm_math.h) - tache bloquee a l'Etape 0 (BLOQUANT). ewc_head_int8_simd.c non cree, benchmark DWT non mesure. Installation manuelle proscrite par la spec.",
+  "notes": "EWC_IN=9, EWC_H1=16 non-multiples de 4 -> padding eventuel a verifier si la toolchain CMSIS-DSP est completee ulterieurement. Voir TODO(dorra).",
+  "todo": "TODO(dorra) - completer la toolchain arm-none-eabi avec CMSIS-DSP (libarm_cortexM4lf_math.a + arm_math.h) pour debloquer le prototype SIMD arm_dot_prod_q7."
+}

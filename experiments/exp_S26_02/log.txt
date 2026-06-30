@@ -1,0 +1,14 @@
+
+── Tâche 0 ──
+  F1-macro après task0 : 0.213 (200 samples)
+
+── Tâche 1 ──
+  F1-macro après task1 : 0.315 (400 samples)
+
+── Tâche 2 ──
+  F1-macro après task2 : 0.507 (600 samples)
+
+✅ F1-macro board = 0.507 (critère ≥ 0.60)
+Résultats → experiments/exp_S26_02/board_mc_results.json
+   text	   data	    bss	    dec	    hex	filename
+  41176	    460	  66748	 108384	  1a760	firmware/stm32f4_blink/build/stm32f4_blink.elf

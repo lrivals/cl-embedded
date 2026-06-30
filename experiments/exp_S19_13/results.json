@@ -1,0 +1,16 @@
+{
+  "exp_id": "exp_S19_13",
+  "model": "kmeans",
+  "dataset": "cwru",
+  "platform": "pc_python",
+  "date": "2026-06-09",
+  "acc_final": 0.3116883116883117,
+  "avg_forgetting": 0.06493506493506493,
+  "backward_transfer": 0.2012987012987013,
+  "auroc": 0.6268115942028986,
+  "f1_score": null,
+  "ram_peak_bytes": 5386,
+  "inference_latency_ms": 0.30231318997721246,
+  "n_params": 18,
+  "config_snapshot": "experiments/exp_S19_13/config_snapshot.yaml"
+}

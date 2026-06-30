@@ -1,0 +1,25 @@
+{
+  "exp_id": "exp_S35_PC_all_tinyol_monitoring",
+  "condition": "all",
+  "model": "tinyol",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "acc_final": 0.9440080661835571,
+  "f1_faulty": 0.7542857142857143,
+  "f1_macro": 0.8613340336134454,
+  "precision_faulty": 0.6700507614213198,
+  "recall_faulty": 0.8627450980392157,
+  "avg_forgetting": 0.0009861932938856066,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59817781,
+  "n_params": 174,
+  "note": "dims natives"
+}

@@ -29,6 +29,7 @@ Références
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import math
 import sys
@@ -72,8 +73,8 @@ def parse_args() -> argparse.Namespace:
         "--dataset",
         type=str,
         default="monitoring",
-        choices=["monitoring", "pump", "pronostia"],
-        help="Dataset : monitoring (Dataset 2) | pump (Dataset 1) | pronostia (Dataset 3)",
+        choices=["monitoring", "pump", "pronostia", "cwru"],
+        help="Dataset : monitoring (Dataset 2) | pump (Dataset 1) | pronostia (Dataset 3) | cwru (Dataset 3 CWRU)",
     )
     parser.add_argument(
         "--exp_id",
@@ -482,6 +483,29 @@ def run_model(
         json.dump(result, f, indent=2)
     print(f"  Résultats → {metrics_path}")
 
+    # ── results.json racine (format normalisé lu par notebooks) ─────────────
+    exp_dir = results_dir.parent
+    dataset_name = cfg.get("_dataset", dataset_tag)
+    root_results = {
+        "exp_id": exp_dir.name,
+        "model": model_name,
+        "dataset": dataset_name,
+        "platform": "pc_python",
+        "date": datetime.date.today().isoformat(),
+        "acc_final": float(cl_metrics["aa"]),
+        "avg_forgetting": float(cl_metrics["af"]),
+        "backward_transfer": float(cl_metrics["bwt"]),
+        "auroc": auroc_avg,
+        "f1_score": None,
+        "ram_peak_bytes": mem["ram_peak_bytes"],
+        "inference_latency_ms": mem["inference_latency_ms"],
+        "n_params": mem["n_params"],
+        "config_snapshot": str(exp_dir / "config_snapshot.yaml"),
+    }
+    with open(exp_dir / "results.json", "w", encoding="utf-8") as f:
+        json.dump(root_results, f, indent=2)
+    print(f"  results.json → {exp_dir / 'results.json'}")
+
     return result
 
 
@@ -747,9 +771,9 @@ def main() -> None:
     # Override section data depuis --data_config selon le dataset ciblé
     if args.data_config:
         data_cfg = load_config(args.data_config)
-        if args.dataset == "monitoring":
+        if args.dataset in ("monitoring", "pronostia", "cwru"):
             cfg["data"].update(data_cfg.get("data", {}))
-        else:
+        else:  # pump
             if "data_pump" not in cfg:
                 cfg["data_pump"] = {}
             cfg["data_pump"].update(data_cfg.get("data", {}))
@@ -759,6 +783,8 @@ def main() -> None:
         dataset_tag = "dataset1"
     elif args.dataset == "pronostia":
         dataset_tag = "dataset3"
+    elif args.dataset == "cwru":
+        dataset_tag = "cwru"
     else:
         dataset_tag = "dataset2"
     if args.exp_id:
@@ -776,6 +802,10 @@ def main() -> None:
         exp_id = cfg.get("exp_id", "exp_047_kmeans_pronostia_no_split")
         results_dir = Path(f"experiments/{exp_id}/results")
         cfg["_dataset"] = "pronostia"
+    elif args.dataset == "cwru":
+        exp_id = cfg.get("exp_id", "exp_cwru_unsupervised")
+        results_dir = Path(f"experiments/{exp_id}/results")
+        cfg["_dataset"] = "cwru"
     else:
         exp_id = cfg.get("exp_id", "exp_005_unsupervised_dataset2")
         results_dir = Path(f"experiments/{exp_id}/results")
@@ -837,6 +867,18 @@ def main() -> None:
             window_size=cfg["data"].get("window_size", 2560),
             step_size=cfg["data"].get("step_size", 2560),
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+        )
+    elif args.dataset == "cwru":
+        from src.data.cwru_dataset import get_cwru_cl_dataloaders_by_fault_type
+        csv_path = Path(cfg["data"]["csv_path"])
+        task_split = cfg["data"].get("task_split", "by_fault_type")
+        print(f"\nChargement Dataset CWRU — {task_split} ...")
+        tasks = get_cwru_cl_dataloaders_by_fault_type(
+            csv_path=csv_path,
+            batch_size=cfg["data"].get("batch_size", 32),
+            test_ratio=cfg["data"].get("test_ratio", 0.2),
+            val_ratio=cfg["data"].get("val_ratio", 0.1),
+            seed=cfg["data"].get("random_state", 42),
         )
     else:
         csv_path = Path(cfg["data"]["csv_path"])

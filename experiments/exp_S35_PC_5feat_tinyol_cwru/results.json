@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_tinyol_cwru",
+  "condition": "5feat",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    3,
+    4,
+    6,
+    7,
+    8
+  ],
+  "acc_final": 0.7705627705627706,
+  "f1_faulty": 0.853185595567867,
+  "f1_macro": 0.664216560160171,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.7439613526570048,
+  "avg_forgetting": 0.0,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59820361,
+  "n_params": 257,
+  "note": "subset cwru_feature_subset.yaml"
+}

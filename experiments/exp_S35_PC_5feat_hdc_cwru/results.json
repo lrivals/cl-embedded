@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_cwru",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    3,
+    4,
+    6,
+    7,
+    8
+  ],
+  "acc_final": 0.9220779220779222,
+  "f1_faulty": 0.9545454545454546,
+  "f1_macro": 0.8409090909090909,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.9130434782608695,
+  "avg_forgetting": 0.025974025974025983,
+  "backward_transfer": -0.019480519480519487,
+  "ram_peak_bytes": 516785354,
+  "n_params": 2048,
+  "note": "subset cwru_feature_subset.yaml"
+}

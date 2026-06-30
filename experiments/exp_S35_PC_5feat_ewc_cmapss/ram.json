@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_ewc_cmapss",
+  "condition": "5feat",
+  "model": "ewc",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "ram_peak_bytes": 61027782,
+  "n_params": 737,
+  "measure": "tracemalloc"
+}

@@ -1,0 +1,21 @@
+exp_id: exp_S35_PC_best_tinyol_cwru
+condition: best
+model: tinyol
+dataset: cwru
+seed: 42
+feature_indices:
+- 2
+- 8
+- 3
+- 0
+- 1
+- 4
+- 5
+feature_names:
+- mean
+- form
+- sd
+- max
+- min
+- rms
+- skewness

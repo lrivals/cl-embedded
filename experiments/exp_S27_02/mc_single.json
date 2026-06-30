@@ -1,0 +1,9 @@
+{
+  "n_classes": 10,
+  "n_tasks": 3,
+  "n_samples": 300,
+  "mode": "online_update",
+  "f1_macro_board": 0.43445183367849144,
+  "latency_p50_us": 403,
+  "latency_p99_us": 491
+}

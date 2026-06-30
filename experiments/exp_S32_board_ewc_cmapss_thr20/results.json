@@ -1,0 +1,21 @@
+{
+  "exp_id": "exp_S32_board_ewc_cmapss_thr20",
+  "model": "ewc",
+  "dataset": "cmapss",
+  "threshold": 20,
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-23T13:35:16",
+  "bss_bytes": 104596,
+  "n_features": 5,
+  "parity_class": "parity",
+  "latency_us_p50": 50.0,
+  "latency_us_p99": 50.0,
+  "ram_response_bytes": 39060,
+  "online_accuracy": 0.8583,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "parity_ok": true,
+  "n_compared": 120,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

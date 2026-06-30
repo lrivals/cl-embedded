@@ -1,0 +1,37 @@
+# board_cmapss.yaml — Config board NUCLEO-F439ZI pour CMAPSS (domain-incremental)
+# Ne pas modifier — créer une copie pour chaque variante expérimentale.
+
+MODEL: ewc_head      # modèle par défaut (remplacé par --model en CLI)
+PLATFORM: nucleo_f439zi
+
+# Architecture (identique à board_ewc.yaml — même input_dim=5)
+EWC_IN: 5            # top-5 features sélectionnées par mutual_info
+EWC_H1: 32
+EWC_H2: 16
+EWC_OUT: 2
+
+# Hyperparamètres EWC
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0
+FISHER_EMA_DECAY: 0.99
+
+# Dataset CMAPSS
+dataset: "cmapss"
+data_dir: "data/raw/CMAPSS Jet Engine Simulated Data/"
+feature_subset_path: "configs/cmapss_feature_subset.yaml"
+domain_order:
+  - "FD001"
+  - "FD002"
+  - "FD003"
+  - "FD004"
+n_tasks_board: 2          # FD001 + FD002 (FD003/FD004 optionnels — TODO(arnaud))
+n_samples_per_task: 200
+faulty_threshold: 30
+rul_cap: 125
+
+# Budget mémoire (vérification Gap 2)
+ram_budget_bytes: 65536   # 64 Ko
+
+# Export poids C
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
+WEIGHTS_CHECKPOINT: "experiments/exp_S22_cmapss_base/ewc_weights.pkl"

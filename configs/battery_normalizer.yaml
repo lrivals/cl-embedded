@@ -1,0 +1,27 @@
+fit_task: task_1_cycles_1_378
+normalization: zscore
+rul_failure_threshold: 200
+feature_names:
+- Discharge Time (s)
+- Decrement 3.6-3.4V (s)
+- Max. Voltage Dischar. (V)
+- Min. Voltage Charg. (V)
+- Time at 4.15V (s)
+- Time constant current (s)
+- Charging time (s)
+mean:
+  Discharge Time (s): 4581.273960435476
+  Decrement 3.6-3.4V (s): 1239.784671749706
+  Max. Voltage Dischar. (V): 3.9081763807753584
+  Min. Voltage Charg. (V): 3.5779039431757833
+  Time at 4.15V (s): 3768.336170946925
+  Time constant current (s): 5461.26696959639
+  Charging time (s): 10066.496204195433
+std:
+  Discharge Time (s): 33144.01207679762
+  Decrement 3.6-3.4V (s): 15039.589269330254
+  Max. Voltage Dischar. (V): 0.09100338037537431
+  Min. Voltage Charg. (V): 0.12369479017201608
+  Time at 4.15V (s): 9129.552477123627
+  Time constant current (s): 25155.845202077882
+  Charging time (s): 26415.35412093404

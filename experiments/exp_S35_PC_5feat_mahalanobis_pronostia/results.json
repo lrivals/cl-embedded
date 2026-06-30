@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_mahalanobis_pronostia",
+  "condition": "5feat",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    1,
+    2,
+    4,
+    8,
+    12
+  ],
+  "acc_final": 0.9057598328676256,
+  "f1_faulty": 0.3047619047619048,
+  "f1_macro": 0.6263652716967043,
+  "precision_faulty": 0.5423728813559322,
+  "recall_faulty": 0.2119205298013245,
+  "avg_forgetting": 0.004964792934717688,
+  "backward_transfer": -0.004964792934717688,
+  "ram_peak_bytes": 372814,
+  "n_params": 30,
+  "note": "subset pronostia_feature_subset.yaml"
+}

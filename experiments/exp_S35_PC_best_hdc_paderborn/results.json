@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S35_PC_best_hdc_paderborn",
+  "condition": "best",
+  "model": "hdc",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "selected_indices": [
+    0
+  ],
+  "acc_final": 0.5270815404743842,
+  "f1_faulty": 0.6300547873728151,
+  "f1_macro": 0.4875447147025738,
+  "precision_faulty": 0.6589358799454298,
+  "recall_faulty": 0.6035991002249438,
+  "avg_forgetting": 0.31296945418127187,
+  "backward_transfer": -0.25312969454181267,
+  "ram_peak_bytes": 686012,
+  "n_params": 2048,
+  "note": "best hdc_paderborn.yaml"
+}

@@ -1,0 +1,21 @@
+# configs/tinyol_int8_monitoring.yaml — Benchmark INT8 vs FP32 TinyOL, dataset Monitoring (S2808).
+#
+# Hérite de tinyol_monitoring_config.yaml (backbone autoencoder + pretrain + data).
+# Détecteur d'anomalie : score = erreur de reconstruction MSE → AUROC normal-vs-fault.
+# INT8 = TinyOLAutoencoderInt8 (poids INT8 fake-quant, activations UINT8).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model tinyol \
+#   --config configs/tinyol_int8_monitoring.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_tinyol_monitoring.json
+
+extends: configs/tinyol_monitoring_config.yaml
+quantization: int8
+
+# tinyol_monitoring_config.yaml n'a pas de section training/test_split requise par
+# _get_tasks (branche monitoring). On les ajoute (deep-merge préserve data.csv_path).
+training:
+  batch_size: 64
+  seed: 42
+data:
+  test_split: 0.2
+  task_split: by_equipment

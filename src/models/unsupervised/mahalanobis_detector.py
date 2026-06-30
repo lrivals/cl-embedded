@@ -17,7 +17,7 @@ ANOMALY_PERCENTILE_DEFAULT: int = 95
 REG_COVAR_DEFAULT: float = 1e-6  # régularisation Σ : Σ_reg = Σ + reg_covar * I
 CL_STRATEGY_DEFAULT: str = "refit"  # "refit" | "welford" | "accumulate"
 WELFORD_MIN_SAMPLES_DEFAULT: int = 10  # min. samples avant MAJ Σ⁻¹ en mode online
-UPDATE_SIGMA_EVERY_DEFAULT: int = 1    # 1=continu, N=mini-batch
+UPDATE_SIGMA_EVERY_DEFAULT: int = 1  # 1=continu, N=mini-batch
 
 
 class MahalanobisDetector:
@@ -62,7 +62,9 @@ class MahalanobisDetector:
         self.anomaly_percentile: int = config.get("anomaly_percentile", ANOMALY_PERCENTILE_DEFAULT)
         self.reg_covar: float = config.get("reg_covar", REG_COVAR_DEFAULT)
         self.cl_strategy: str = config.get("cl_strategy", CL_STRATEGY_DEFAULT)
-        self.welford_min_samples: int = config.get("welford_min_samples", WELFORD_MIN_SAMPLES_DEFAULT)
+        self.welford_min_samples: int = config.get(
+            "welford_min_samples", WELFORD_MIN_SAMPLES_DEFAULT
+        )
         self.update_sigma_every: int = config.get("update_sigma_every", UPDATE_SIGMA_EVERY_DEFAULT)
 
         self.mu_: np.ndarray | None = None
@@ -103,7 +105,8 @@ class MahalanobisDetector:
         if self.cl_strategy == "accumulate":
             # Refit sur toutes les données cumulées — aucun oubli, RAM croissante (non MCU)
             self._X_accumulated = (
-                X.copy() if self._X_accumulated is None
+                X.copy()
+                if self._X_accumulated is None
                 else np.concatenate([self._X_accumulated, X], axis=0)
             )
             X_fit = self._X_accumulated

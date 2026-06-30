@@ -1,0 +1,16 @@
+{
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "variant": "q15",
+  "config_path": "/home/leonard/Documents/ENAC/cl-embedded/configs/mahalanobis_q15_paderborn.yaml",
+  "timestamp": "2026-06-26T17:46:54",
+  "metric_name": "auroc",
+  "auroc": null,
+  "ram_bytes": 55,
+  "latency_ms": 0.008963,
+  "score_fidelity_vs_fp32": {
+    "mean_abs_error": 8.082713,
+    "max_abs_error": 8.83243,
+    "corr_with_fp32": 0.921001
+  }
+}

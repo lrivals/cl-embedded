@@ -1,0 +1,50 @@
+# hw_profile_f439zi.yaml — Profil matériel NUCLEO-F439ZI (Cortex-M4 @ 180 MHz)
+#
+# Entrée du modèle de coût analytique src/evaluation/hw_cost_model.py.
+# PROXY analytique : ces valeurs servent à ESTIMER le temps/énergie, pas à
+# mesurer (la latence réelle vient du DWT, cf. profiling.c ; le courant réel
+# viendra du PowerShield LPM01A, S3305/S3306).
+#
+# Règle CLAUDE.md : toute constante matérielle vient d'ici, jamais en dur dans
+# le code. hw_cost_model.py ne contient que des formules paramétrées.
+
+hardware:
+  # Référence documentaire — défini dans firmware/stm32f4_blink/src/profiling.c
+  # (#define SYSCLK_HZ 180000000U). NE PAS dupliquer comme source de vérité côté
+  # firmware ; reproduit ici uniquement comme paramètre du modèle de coût.
+  sysclk_hz: 180000000
+
+  # FLOPs/s pic. Le Cortex-M4 possède une FPU simple précision (fpv4-sp-d16)
+  # exécutant un VMUL/VADD/VFMA en ~1 cycle. Hypothèse proxy : 1 FLOP utile par
+  # cycle d'horloge → flops_peak ≈ sysclk_hz. Borne haute optimiste (ignore les
+  # accès mémoire et le pipeline) ; le rendement réel est capturé par `efficacite`.
+  flops_peak_fp32: 180000000      # ≈ sysclk_hz (1 FLOP/cycle, proxy FPU SP)
+
+  # Pas d'accélérateur INT8 dédié sur Cortex-M4 : les MAC INT8 passent par l'ALU
+  # entière (DSP/SIMD possible mais non exploité ici). Même ordre de grandeur
+  # que FP32 en débit d'opérations ; le gain INT8 est en RAM/BOPs, pas en FLOPS/s.
+  flops_peak_int8: 180000000      # FLOPs/s effectif (pas de NPU/accélérateur INT8)
+
+  # Coefficient de rendement effectif ∈ [0.1, 0.6] (proxy documenté, CR 19 mai).
+  # Fraction du pic FLOPs réellement soutenue (overhead mémoire/pipeline).
+  efficacite:
+    fp32: 0.3   # TODO(arnaud) : affiner via cross-check latence DWT réelle
+    int8: 0.3   # TODO(arnaud) : idem
+
+  # Puissance — à croiser avec les mesures LPM01A (S3305/S3306).
+  puissance_watts:
+    actif_mA: null      # <à_mesurer> — courant actif moyen (mA)
+    veille_uA: null     # <à_mesurer> — courant veille (µA)
+    tension_v: 3.3      # tension d'alimentation NUCLEO (V)
+
+# Capacités de batterie typiques pour le calcul d'autonomie (S3307).
+# Règle CLAUDE.md : lues depuis cette config, jamais en dur dans autonomy.py.
+# Autonomie_h = Capacité_mAh / I_moy_mA. Profils usuels embarqué basse conso.
+# TODO(fred) : ancrer sur un profil d'usage industriel réaliste (rapport veille/actif).
+batterie:
+  capacites_mah:
+    - 220     # pile bouton CR2032 (~220 mAh)
+    - 1200    # AA Li-ion / petit pack
+    - 2000    # cellule 18650 partielle
+    - 3000    # cellule 18650 standard
+    - 10000   # power bank compact

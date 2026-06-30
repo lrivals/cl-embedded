@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_tinyol_paderborn",
+  "condition": "all",
+  "model": "tinyol",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 7,
+  "ram_peak_bytes": 59721396,
+  "n_params": 486,
+  "measure": "tracemalloc"
+}

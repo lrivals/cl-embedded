@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_tinyol.yaml
+dataset: pronostia
+date: '2026-06-09T12:12:43.511641'
+dry_run: false
+model: tinyol
+n_samples: 300
+n_tasks: 2
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

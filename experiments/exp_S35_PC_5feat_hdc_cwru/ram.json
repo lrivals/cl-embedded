@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_cwru",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "ram_peak_bytes": 279444,
+  "n_params": 2048,
+  "measure": "tracemalloc"
+}

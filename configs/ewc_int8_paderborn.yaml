@@ -1,0 +1,10 @@
+# configs/ewc_int8_paderborn.yaml — Benchmark INT8 vs FP32 EWC, dataset Paderborn (Sprint 28, S2807).
+#
+# Hérite de paderborn_config.yaml (data + model + ewc).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model ewc \
+#   --config configs/ewc_int8_paderborn.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_ewc_paderborn.json
+
+extends: configs/paderborn_config.yaml
+quantization: int8

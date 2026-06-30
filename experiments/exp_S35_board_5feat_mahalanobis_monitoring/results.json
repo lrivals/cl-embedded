@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_board_5feat_mahalanobis_monitoring",
+  "condition": "5feat",
+  "model": "mahalanobis",
+  "dataset": "monitoring",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-25T09:46:11",
+  "n_features": 4,
+  "bss_bytes": 100096,
+  "online_accuracy": 0.94,
+  "f1_faulty": 0.7097,
+  "f1_macro": 0.8381,
+  "latency_us_p50": 3.0,
+  "latency_us_p99": 3.0,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "stream_mode": "frozen (sans --update \u2192 parit\u00e9 exacte)",
+  "parity_class": "exact",
+  "parity_ok": true,
+  "n_compared": 150,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

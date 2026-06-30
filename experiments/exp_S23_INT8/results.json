@@ -1,0 +1,104 @@
+{
+  "exp_id": "exp_S23_INT8",
+  "model_fp32": "ewc",
+  "model_int8": "ewc-int8",
+  "dataset": "cmapss",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-02",
+  "dry_run": true,
+  "latency_fp32_ms": 0.5446,
+  "latency_int8_ms": 0.4701,
+  "latency_speedup": 1.158,
+  "latency_int8_faster": true,
+  "acc_final_fp32": 0.798,
+  "acc_final_int8": 0.7895,
+  "auroc_delta": 0.0085,
+  "auroc_criterion_met": true,
+  "ram_fp32_bytes": 9728,
+  "ram_int8_bytes": 4800,
+  "ram_weights_fp32_bytes": 9728,
+  "ram_weights_int8_bytes": 3600,
+  "ram_reduction_factor_total": 2.03,
+  "ram_reduction_factor_weights": 2.7,
+  "gap3_latency_met": true,
+  "gap3_accuracy_met": true,
+  "gap3_ram_met": true,
+  "gap3_met": true,
+  "gap3_note": "Cortex-M4 FPU optimis\u00e9 FP32 : gain latence INT8 modeste (speedup ~1.16\u00d7). RAM poids r\u00e9duite 2.7\u00d7 (9 728 \u2192 3 600 B). Contribution Gap 3 valid\u00e9e via r\u00e9duction RAM.",
+  "fp32_results": {
+    "acc_final": 0.798,
+    "avg_forgetting": 0.0367,
+    "backward_transfer": -0.0367,
+    "ram_peak_bytes": 9728,
+    "inference_latency_ms": 0.5446,
+    "n_params": 1538,
+    "n_tasks": 2,
+    "n_samples_total": 400,
+    "latency_p99_ms": 0.796,
+    "throughput_mean_ips": 1400,
+    "per_task_acc": {
+      "0": 0.765,
+      "1": 0.785
+    },
+    "collection_time_s": 0.01,
+    "config_snapshot": "experiments/exp_S23_INT8/config_snapshot.yaml",
+    "gap2_ram_compliant": true,
+    "gap2_latency_compliant": true,
+    "lambda_ewc": 400.0,
+    "acc_matrix": [
+      [
+        0.8154791209711193,
+        null
+      ],
+      [
+        0.7787775687950411,
+        0.8171719583982276
+      ]
+    ],
+    "run_conditions": {
+      "run_type": "warm",
+      "repetition": 1,
+      "reset_method": "nrst",
+      "flash_fresh": false,
+      "board_temp_c": null
+    }
+  },
+  "int8_results": {
+    "acc_final": 0.7895,
+    "avg_forgetting": 0.0401,
+    "backward_transfer": -0.0401,
+    "ram_peak_bytes": 4800,
+    "inference_latency_ms": 0.4701,
+    "n_params": 1538,
+    "n_tasks": 2,
+    "n_samples_total": 400,
+    "latency_p99_ms": 0.696,
+    "throughput_mean_ips": 2105,
+    "per_task_acc": {
+      "0": 0.735,
+      "1": 0.78
+    },
+    "collection_time_s": 0.01,
+    "config_snapshot": "experiments/exp_S23_INT8/config_snapshot.yaml",
+    "gap2_ram_compliant": true,
+    "gap2_latency_compliant": true,
+    "lambda_ewc": 400.0,
+    "acc_matrix": [
+      [
+        0.808218681456679,
+        null
+      ],
+      [
+        0.7681663531925615,
+        0.8107579375973415
+      ]
+    ],
+    "run_conditions": {
+      "run_type": "warm",
+      "repetition": 1,
+      "reset_method": "nrst",
+      "flash_fresh": false,
+      "board_temp_c": null
+    }
+  }
+}

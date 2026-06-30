@@ -1,0 +1,30 @@
+[
+  {
+    "model": "mahalanobis",
+    "dataset": "cwru",
+    "platform": "nucleo_f439zi",
+    "latency_inf_us": 5.0,
+    "latency_inf_update_us": 5.0
+  },
+  {
+    "model": "ewc",
+    "dataset": "cwru",
+    "platform": "nucleo_f439zi",
+    "latency_inf_us": 50.0,
+    "latency_inf_update_us": 251.0
+  },
+  {
+    "model": "hdc",
+    "dataset": "cwru",
+    "platform": "nucleo_f439zi",
+    "latency_inf_us": 585.0,
+    "latency_inf_update_us": 653.0
+  },
+  {
+    "model": "tinyol",
+    "dataset": "cwru",
+    "platform": "nucleo_f439zi",
+    "latency_inf_us": 5.0,
+    "latency_inf_update_us": 5.0
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "experiment_id": "exp_S26_01",
+  "model": "EWC Regression",
+  "dataset": "CMAPSS FD001",
+  "board": "NUCLEO-F439ZI",
+  "n_samples": 200,
+
+  "rmse_board": 21.229115250705558,
+  "rmse_pc": 22.52776527404785,
+  "rmse_ratio_board_over_pc": 0.942,
+
+  "latency_p50_us": 233,
+  "latency_p99_us": 233,
+  "latency_max_us": 233,
+  "latency_criterion_met": true,
+
+  "sram_bss_bytes": 66748,
+  "sram_budget_bytes": 262144,
+  "sram_criterion_met": true,
+
+  "gap2_validated": true,
+  "notes": "Run board réel (2026-06-12) après correction du framing de réponse v3 (RESPONSE_SIZE 21→23 B : le champ ram_b u16 manquait dans simulate_rul_board.py, ce qui désynchronisait la lecture série). RMSE board=21.23 cycles < RMSE PC FD001=22.53 (exp_S25_01 task_id=1, ratio=0.942, critère ≤1.10 ✅). Latence DWT P50=233µs (déterministe : forward MLP + SGD step sans branchement data-dependent) << 100ms ✅. SRAM .bss firmware complet=66.7Ko << 256Ko ✅. Poids init = Sprint 25 (model_weights_rul.h). Label RUL encodé [0,255]/255=[0,1] côté board."
+}

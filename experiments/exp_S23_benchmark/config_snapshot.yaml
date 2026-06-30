@@ -1,0 +1,13 @@
+baud: 115200
+board_config: configs/board_ewc.yaml
+dataset: cwru
+date: '2026-06-02T14:07:16.513679'
+dry_run: false
+lambda_ewc: 400.0
+model: ewc
+n_samples: 300
+n_tasks: 3
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

@@ -1,0 +1,40 @@
+# configs/best_features/mahalanobis_cmapss.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: mahalanobis
+dataset: cmapss
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 21
+n_features_selected: 2
+selected_indices:
+- 0
+- 1
+selected_features:
+- T2
+- T24
+val_f1_by_k:
+  1: 0.0
+  2: 0.34945
+  3: 0.264316
+  4: 0.251909
+  5: 0.251909
+  6: 0.234257
+  7: 0.261241
+  8: 0.266413
+  9: 0.30834
+  10: 0.295357
+  11: 0.28383
+  12: 0.271121
+  13: 0.279985
+  14: 0.322255
+  15: 0.310923
+  16: 0.310923
+  17: 0.298699
+  18: 0.298699
+  19: 0.298699
+  20: 0.288839
+  21: 0.280682
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

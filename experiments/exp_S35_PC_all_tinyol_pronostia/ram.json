@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_tinyol_pronostia",
+  "condition": "all",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 13,
+  "ram_peak_bytes": 59721661,
+  "n_params": 1605,
+  "measure": "tracemalloc"
+}

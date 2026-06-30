@@ -1,0 +1,23 @@
+# configs/best_features/tinyol_monitoring.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: tinyol
+dataset: monitoring
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 4
+n_features_selected: 2
+selected_indices:
+- 0
+- 2
+selected_features:
+- temperature
+- vibration
+val_f1_by_k:
+  1: 0.574074
+  2: 0.823529
+  3: 0.764045
+  4: 0.740947
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

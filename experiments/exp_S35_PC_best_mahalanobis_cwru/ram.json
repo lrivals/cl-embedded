@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_mahalanobis_cwru",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "ram_peak_bytes": 2023994,
+  "n_params": 2,
+  "measure": "tracemalloc"
+}

@@ -1,0 +1,22 @@
+{
+  "model": "ewc",
+  "dataset": "cwru",
+  "config_path": "configs/ewc_int8_cwru.yaml",
+  "timestamp": "2026-06-12T20:16:17",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.99984,
+    "ram_bytes": 3460,
+    "latency_ms": 0.028559
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.99968,
+    "ram_bytes": 865,
+    "latency_ms": 10.330146
+  },
+  "delta_metric": -0.00016,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

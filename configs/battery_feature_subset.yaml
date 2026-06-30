@@ -1,0 +1,25 @@
+# battery_feature_subset.yaml — Top-5 features Battery pour board (N_FEATURES=5)
+# Généré par scripts/battery_feature_selection.py
+method: mutual_info
+n_features_total: 7
+n_features_selected: 5
+feature_indices:
+- 0
+- 1
+- 2
+- 4
+- 5
+feature_names:
+- Discharge Time (s)
+- Decrement 3.6-3.4V (s)
+- Max. Voltage Dischar. (V)
+- Time at 4.15V (s)
+- Time constant current (s)
+ranking:
+  Decrement 3.6-3.4V (s): 0.361
+  Discharge Time (s): 0.3603
+  Time constant current (s): 0.3499
+  Time at 4.15V (s): 0.345
+  Max. Voltage Dischar. (V): 0.343
+  Min. Voltage Charg. (V): 0.312
+  Charging time (s): 0.2182

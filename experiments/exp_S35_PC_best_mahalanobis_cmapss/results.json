@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_PC_best_mahalanobis_cmapss",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 2,
+  "selected_indices": [
+    0,
+    1
+  ],
+  "acc_final": 0.8853042807033435,
+  "f1_faulty": 0.3494498166055352,
+  "f1_macro": 0.6411725935198,
+  "precision_faulty": 0.6541822721598003,
+  "recall_faulty": 0.2383985441310282,
+  "avg_forgetting": 0.003092874222118347,
+  "backward_transfer": 0.013832674477227616,
+  "ram_peak_bytes": 804869,
+  "n_params": 6,
+  "note": "best mahalanobis_cmapss.yaml"
+}

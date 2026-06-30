@@ -317,8 +317,16 @@ def plot_confusion_matrix_grid(
             if (not single_step_mode and j > i) or (i, j) not in preds_dict:
                 # Tâche pas encore vue — cellule grisée
                 ax.set_facecolor("#EEEEEE")
-                ax.text(0.5, 0.5, "N/A", ha="center", va="center",
-                        fontsize=14, color="#AAAAAA", transform=ax.transAxes)
+                ax.text(
+                    0.5,
+                    0.5,
+                    "N/A",
+                    ha="center",
+                    va="center",
+                    fontsize=14,
+                    color="#AAAAAA",
+                    transform=ax.transAxes,
+                )
                 ax.set_xticks([])
                 ax.set_yticks([])
                 continue
@@ -354,7 +362,7 @@ def plot_confusion_matrix_grid(
                     linewidths=0.5,
                 )
             else:
-                im = ax.imshow(cm_display, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
+                ax.imshow(cm_display, cmap="Blues", vmin=vmin, vmax=vmax, aspect="auto")
                 for ri in range(2):
                     for ci in range(2):
                         val = cm_display[ri, ci]
@@ -368,8 +376,7 @@ def plot_confusion_matrix_grid(
             prec = precision_score(y_true.astype(int), y_pred, zero_division=0)
             rec = recall_score(y_true.astype(int), y_pred, zero_division=0)
             ax.set_title(
-                f"Train→T{i + 1} | Eval T{j + 1}\n"
-                f"P={prec:.2f}  R={rec:.2f}",
+                f"Train→T{i + 1} | Eval T{j + 1}\n" f"P={prec:.2f}  R={rec:.2f}",
                 fontsize=FIGURE_FONT_SIZE - 1,
             )
             ax.set_xlabel("Prédit", fontsize=FIGURE_FONT_SIZE - 2)
@@ -445,7 +452,8 @@ def plot_roc_curves_per_task(
             fpr, tpr, _ = roc_curve(y_true.astype(int), scores)
             roc_auc = auc(fpr, tpr)
             ax.plot(
-                fpr, tpr,
+                fpr,
+                tpr,
                 color=colors[i % len(colors)],
                 linewidth=1.8,
                 label=f"Après T{i + 1} (AUC={roc_auc:.3f})",
@@ -499,7 +507,13 @@ def plot_model_radar(
     -------
     plt.Figure
     """
-    AXES_LABELS = ["AA", "Stabilité\n(1−AF)", "BWT\n(1−|BWT|)", "RAM\n(1−peak/budget)", "Vitesse\n(1−lat/budget)"]
+    AXES_LABELS = [
+        "AA",
+        "Stabilité\n(1−AF)",
+        "BWT\n(1−|BWT|)",
+        "RAM\n(1−peak/budget)",
+        "Vitesse\n(1−lat/budget)",
+    ]
     N_AXES = len(AXES_LABELS)
     angles = np.linspace(0, 2 * np.pi, N_AXES, endpoint=False).tolist()
     angles += angles[:1]  # fermeture du polygone
@@ -615,6 +629,7 @@ def plot_anomaly_score_distributions(
                 # KDE
                 try:
                     from scipy.stats import gaussian_kde
+
                     x_kde = np.linspace(0, 1, 200)
                     kde = gaussian_kde(s_cls, bw_method="silverman")
                     ax.fill_between(x_kde, kde(x_kde), alpha=0.35, color=color, label=name)
@@ -766,7 +781,7 @@ def plot_performance_by_task_bar(
 
     ax.set_xticks(x)
     ax.set_xticklabels(task_names, fontsize=FIGURE_FONT_SIZE - 1)
-    ax.tick_params(axis='x', labelrotation=15)
+    ax.tick_params(axis="x", labelrotation=15)
     ax.set_ylabel("Accuracy finale", fontsize=FIGURE_FONT_SIZE)
     ax.set_ylim(0.0, 1.05)
     ax.set_title(title, fontsize=FIGURE_FONT_SIZE + 1, fontweight="bold")
@@ -880,7 +895,9 @@ def plot_performance_heatmap_equipment_location(
             for ei in range(n_eq):
                 for li in range(n_loc):
                     if not np.isnan(matrix[ei, li]):
-                        ax.text(li, ei, f"{matrix[ei, li]:.2f}", ha="center", va="center", fontsize=9)
+                        ax.text(
+                            li, ei, f"{matrix[ei, li]:.2f}", ha="center", va="center", fontsize=9
+                        )
 
         ax.set_title(model_name, fontsize=FIGURE_FONT_SIZE + 1, fontweight="bold")
         ax.set_xlabel("Location", fontsize=FIGURE_FONT_SIZE - 1)

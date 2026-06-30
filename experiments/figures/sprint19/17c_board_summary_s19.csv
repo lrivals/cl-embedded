@@ -1,0 +1,13 @@
+Exp,Modèle,Dataset,acc_final,avg_fgt,lat (ms),RAM (B),n_params,Gap2 RAM,Gap2 Lat
+exp_S19_01,Mahalanobis,CWRU,0.628,0.000,0.004,0,30,✅,✅
+exp_S19_03,Mahalanobis,Pronostia,0.877,0.007,0.005,0,30,✅,✅
+exp_S19_04,Mahalanobis,Monitoring,0.960,0.005,0.004,0,30,✅,✅
+exp_S19_02,EWC λ=400,Monitoring,0.898,0.009,0.248,0,1538,✅,✅
+exp_S19_05,EWC λ=400,CWRU,0.875,0.187,0.251,9728,1538,✅,✅
+exp_S19_06,EWC λ=400,Pronostia,0.922,0.081,0.251,9728,1538,✅,✅
+exp_S19_07,HDC,CWRU,0.900,0.145,0.652,0,7000,✅,✅
+exp_S19_08,HDC,Monitoring,0.910,0.000,0.652,0,7000,✅,✅
+exp_S19_09,HDC,Pronostia,0.887,0.000,0.652,0,7000,✅,✅
+exp_S19_10,TinyOL,CWRU,0.906,0.142,0.126,5800,881,✅,✅
+exp_S19_11,TinyOL,Monitoring,0.957,0.020,0.126,5800,881,✅,✅
+exp_S19_12,TinyOL,Pronostia,0.920,0.040,0.126,5800,881,✅,✅

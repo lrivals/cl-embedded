@@ -1,0 +1,29 @@
+# paderborn_feature_subset.yaml — Top-5 features FFT Paderborn
+# Généré par scripts/paderborn_feature_selection.py — NE PAS éditer manuellement.
+# Fit MI sur K001 + KA04 (healthy + OR). Normalisation sur K001 uniquement.
+all_features_ranked:
+- energy_band_3
+- energy_band_2
+- energy_band_4
+- kurtosis
+- energy_band_1
+- crest_factor
+- rms
+fit_condition: healthy
+label_column: fault_class
+method: mutual_info_classif
+mi_scores:
+  crest_factor: 0.0
+  energy_band_1: 0.0
+  energy_band_2: 0.34981843
+  energy_band_3: 0.41732926
+  energy_band_4: 0.31938578
+  kurtosis: 0.01461265
+  rms: 0.0
+n_features: 5
+selected_features:
+- energy_band_3
+- energy_band_2
+- energy_band_4
+- kurtosis
+- energy_band_1

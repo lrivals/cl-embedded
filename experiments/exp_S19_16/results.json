@@ -1,0 +1,16 @@
+{
+  "exp_id": "exp_S19_16",
+  "model": "dbscan",
+  "dataset": "cwru",
+  "platform": "pc_python",
+  "date": "2026-06-09",
+  "acc_final": 0.8961038961038961,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0,
+  "auroc": 0.9305555555555555,
+  "f1_score": null,
+  "ram_peak_bytes": 57774,
+  "inference_latency_ms": 0.23433428001226275,
+  "n_params": 4806,
+  "config_snapshot": "experiments/exp_S19_16/config_snapshot.yaml"
+}

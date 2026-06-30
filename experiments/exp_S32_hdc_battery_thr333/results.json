@@ -1,0 +1,20 @@
+{
+  "exp_id": "exp_S32_hdc_battery_thr333",
+  "model": "hdc",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "native_int_architecture": true,
+  "acc_final": 0.8630182421227198,
+  "avg_forgetting": 0.01243781094527363,
+  "backward_transfer": -0.010945273631840835,
+  "per_task_acc": [
+    0.9671641791044776,
+    0.9930348258706467,
+    0.6288557213930348
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.05715685996619868,
+  "n_params": 2048,
+  "ram_training_peak_bytes": 311100,
+  "sprint": 24
+}

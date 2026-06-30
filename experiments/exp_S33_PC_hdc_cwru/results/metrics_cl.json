@@ -1,0 +1,35 @@
+{
+  "exp_id": "exp_S33_PC_hdc_cwru",
+  "model": "hdc",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "native_int_architecture": true,
+  "acc_final": 0.935064935064935,
+  "avg_forgetting": 0.04545454545454547,
+  "backward_transfer": -0.038961038961038974,
+  "per_task_acc": [
+    0.974025974025974,
+    0.8701298701298701,
+    0.961038961038961
+  ],
+  "ram_peak_bytes": 7848,
+  "inference_latency_ms": 0.06302242000856495,
+  "n_params": 1024,
+  "acc_matrix": [
+    [
+      0.961038961038961,
+      NaN,
+      NaN
+    ],
+    [
+      0.974025974025974,
+      0.961038961038961,
+      NaN
+    ],
+    [
+      0.974025974025974,
+      0.8701298701298701,
+      0.961038961038961
+    ]
+  ]
+}

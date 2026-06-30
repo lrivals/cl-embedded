@@ -1,0 +1,36 @@
+{
+  "exp_id": "exp_S30_board_maha_ewc",
+  "pair": "maha-ewc",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "mode": "uart",
+  "date": "2026-06-18",
+  "n_params": 1568,
+  "frame_response_bytes": 22,
+  "latency_maha_us": {
+    "n": 300,
+    "p50_us": 5.0,
+    "p99_us": 5.0,
+    "mean_us": 5.0
+  },
+  "latency_supervised_us": {
+    "n": 300,
+    "p50_us": 251.0,
+    "p99_us": 251.0,
+    "mean_us": 251.0
+  },
+  "latency_pair_us": {
+    "n": 300,
+    "p50_us": 256.0,
+    "p99_us": 256.0,
+    "mean_us": 256.0
+  },
+  "online_metrics": {
+    "auroc_maha": 1.0,
+    "f1_supervised": 0.47089946269989014
+  },
+  "bss_bytes": 104576,
+  "collection_time_s": 7.05,
+  "gap2_latency_compliant": true,
+  "gap2_ram_compliant": true
+}

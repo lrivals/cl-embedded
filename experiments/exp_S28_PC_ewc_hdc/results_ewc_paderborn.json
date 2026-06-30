@@ -1,0 +1,22 @@
+{
+  "model": "ewc",
+  "dataset": "paderborn",
+  "config_path": "configs/ewc_int8_paderborn.yaml",
+  "timestamp": "2026-06-12T20:17:57",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": NaN,
+    "ram_bytes": 2948,
+    "latency_ms": 0.031397
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": NaN,
+    "ram_bytes": 737,
+    "latency_ms": 27.372546
+  },
+  "delta_metric": NaN,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": false,
+  "gap3_ram_ok": true
+}

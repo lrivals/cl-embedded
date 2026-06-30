@@ -1,0 +1,59 @@
+_snapshot_timestamp: '2026-06-01T10:28:04.545344'
+data:
+  data_dir: data/raw/Deep Learning-Based Motor Fault Diagnosis Using the Paderborn
+    Dataset/
+  dataset: paderborn
+  domain_labels:
+    K001: 0
+    KA04: 1
+    KI04: 1
+  domain_order:
+  - K001
+  - KA04
+  - KI04
+  feature_subset_path: configs/paderborn_feature_subset.yaml
+  label_column: faulty
+  max_files_per_condition: 20
+  n_features_selected: 5
+  normalizer: minmax
+  normalizer_path: configs/paderborn_normalizer.yaml
+  overlap: 0.5
+  sampling_rate: 64000
+  test_split: 0.2
+  window_size: 1024
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_S22_06/results/
+  seed: 42
+ewc:
+  gamma: 0.9
+  lambda: 1000
+  n_fisher_samples: 200
+exp_id: exp_S22_06
+mahalanobis:
+  anomaly_percentile: 95
+memory:
+  expected_ram_bytes: 9356
+  target_ram_bytes: 262144
+model:
+  activation: relu
+  architecture: mlp
+  dropout: 0.2
+  hidden_dims:
+  - 32
+  - 16
+  input_dim: 5
+  output_dim: 1
+training:
+  batch_size: 32
+  epochs_per_task: 10
+  learning_rate: 0.01
+  momentum: 0.9
+  optimizer: sgd
+  seed: 42

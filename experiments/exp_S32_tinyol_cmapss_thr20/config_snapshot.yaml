@@ -1,0 +1,57 @@
+exp_id: exp_S32_tinyol_cmapss_thr20
+backbone:
+  input_dim: 5
+  encoder_dims:
+  - 16
+  - 8
+  - 4
+  decoder_dims:
+  - 8
+  - 16
+  - 5
+  checkpoint_path: experiments/exp_S22_03/backbone.pt
+oto_head:
+  input_dim: 5
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.9
+pretrain:
+  epochs: 20
+training:
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.9
+  epochs_per_task: 1
+  batch_size: 1
+  seed: 42
+data:
+  dataset: cmapss
+  data_dir: data/raw/CMAPSS Jet Engine Simulated Data/
+  rul_cap: 125
+  faulty_threshold: 20
+  n_features_selected: 5
+  n_features: 5
+  task_split: by_domain
+  feature_subset_path: configs/cmapss_feature_subset.yaml
+  domain_order:
+  - FD001
+  - FD002
+  - FD003
+  - FD004
+  label_column: faulty
+  test_split: 0.2
+  normalizer: minmax
+evaluation:
+  seed: 42
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_S32_tinyol_cmapss_thr20/results
+memory:
+  target_ram_bytes: 262144
+  expected_ram_bytes: 4096
+_profile_memory: true

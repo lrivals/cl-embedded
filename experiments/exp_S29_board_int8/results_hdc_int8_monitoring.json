@@ -1,0 +1,45 @@
+{
+  "model": "hdc_int8",
+  "dataset": "monitoring",
+  "board": "NUCLEO-F439ZI",
+  "precision": "INT8",
+  "n_samples": 300,
+  "metric_name": "accuracy",
+  "metric_value": 0.9267,
+  "latency_dwt_us": {
+    "p50": 2106.0,
+    "p95": 2106.0,
+    "p99": 2106.0
+  },
+  "ram_weights_int8_bytes": 34816,
+  "ram_weights_fp32_bytes": 106496,
+  "ram_bss_total_bytes": 39040,
+  "gap2_compliant": true,
+  "gap3_latency_ok": false,
+  "gap3_ram_ok": true,
+  "fp32_reference": {
+    "n_samples": 300,
+    "metric_value": 0.8967,
+    "accuracy": 0.8967,
+    "auroc": 0.48,
+    "latency_p50_us": 647.0,
+    "latency_p95_us": 647.0,
+    "latency_p99_us": 647.0,
+    "ram_bytes": 39040,
+    "crc_errors": 0
+  },
+  "int8_detail": {
+    "n_samples": 300,
+    "metric_value": 0.9267,
+    "accuracy": 0.9267,
+    "auroc": 0.4792,
+    "latency_p50_us": 2106.0,
+    "latency_p95_us": 2106.0,
+    "latency_p99_us": 2106.0,
+    "ram_bytes": 39040,
+    "crc_errors": 0
+  },
+  "latency_ratio_int8_over_fp32": 3.255,
+  "ram_ratio_fp32_over_int8": 3.059,
+  "crc_errors": 0
+}

@@ -27,12 +27,11 @@ Références :
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa: N812
 from torch.utils.data import DataLoader, TensorDataset
 
 
@@ -67,12 +66,20 @@ class _MLPAutoencoder(nn.Module):
         self.latent_dim = latent_dim
 
         # Encoder
-        self.fc_enc1 = nn.Linear(input_dim, hidden_dim)   # MEM: input_dim*hidden_dim*4 B @ FP32 / input_dim*hidden_dim B @ INT8
-        self.fc_enc2 = nn.Linear(hidden_dim, latent_dim)  # MEM: hidden_dim*latent_dim*4 B @ FP32 / hidden_dim*latent_dim B @ INT8
+        self.fc_enc1 = nn.Linear(
+            input_dim, hidden_dim
+        )  # MEM: input_dim*hidden_dim*4 B @ FP32 / input_dim*hidden_dim B @ INT8
+        self.fc_enc2 = nn.Linear(
+            hidden_dim, latent_dim
+        )  # MEM: hidden_dim*latent_dim*4 B @ FP32 / hidden_dim*latent_dim B @ INT8
 
         # Decoder (symétrique)
-        self.fc_dec1 = nn.Linear(latent_dim, hidden_dim)  # MEM: latent_dim*hidden_dim*4 B @ FP32 / latent_dim*hidden_dim B @ INT8
-        self.fc_dec2 = nn.Linear(hidden_dim, input_dim)   # MEM: hidden_dim*input_dim*4 B @ FP32 / hidden_dim*input_dim B @ INT8
+        self.fc_dec1 = nn.Linear(
+            latent_dim, hidden_dim
+        )  # MEM: latent_dim*hidden_dim*4 B @ FP32 / latent_dim*hidden_dim B @ INT8
+        self.fc_dec2 = nn.Linear(
+            hidden_dim, input_dim
+        )  # MEM: hidden_dim*input_dim*4 B @ FP32 / hidden_dim*input_dim B @ INT8
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         """
@@ -85,10 +92,10 @@ class _MLPAutoencoder(nn.Module):
         z : Tensor [N, latent_dim] — code latent
         x_hat : Tensor [N, input_dim] — reconstruction
         """
-        z = torch.relu(self.fc_enc1(x))   # MEM: N×hidden_dim×4 B @ FP32 (temporaire)
-        z = torch.relu(self.fc_enc2(z))   # MEM: N×latent_dim×4 B @ FP32 (temporaire)
+        z = torch.relu(self.fc_enc1(x))  # MEM: N×hidden_dim×4 B @ FP32 (temporaire)
+        z = torch.relu(self.fc_enc2(z))  # MEM: N×latent_dim×4 B @ FP32 (temporaire)
         x_hat = torch.relu(self.fc_dec1(z))  # MEM: N×hidden_dim×4 B @ FP32 (temporaire)
-        x_hat = self.fc_dec2(x_hat)          # sortie linéaire pour MSE
+        x_hat = self.fc_dec2(x_hat)  # sortie linéaire pour MSE
         return z, x_hat
 
     def count_parameters(self) -> int:
@@ -275,8 +282,7 @@ class EWCOneClassDetector:
 
         self.on_task_end()
         print(
-            f"  [EWCOneClass] Tâche {task_id} terminée — "
-            f"RAM estimée={self.get_ram_bytes()} B"
+            f"  [EWCOneClass] Tâche {task_id} terminée — " f"RAM estimée={self.get_ram_bytes()} B"
         )
         return self
 
@@ -309,14 +315,10 @@ class EWCOneClassDetector:
         if self.fisher_ is None:
             self.fisher_ = {name: f.clone() for name, f in fisher_new.items()}
         else:
-            self.fisher_ = {
-                name: self.fisher_[name] + fisher_new[name]
-                for name in fisher_new
-            }
+            self.fisher_ = {name: self.fisher_[name] + fisher_new[name] for name in fisher_new}
 
         self.params_star_ = {
-            name: param.detach().clone()
-            for name, param in self._model.named_parameters()
+            name: param.detach().clone() for name, param in self._model.named_parameters()
         }
 
     def predict_score(self, X: np.ndarray) -> np.ndarray:
@@ -338,9 +340,7 @@ class EWCOneClassDetector:
         # MEM: N × input_dim × 4 B @ FP32 (activations forward, temporaire)
         """
         if not self._fitted:
-            raise RuntimeError(
-                "EWCOneClassDetector non entraîné. Appeler fit_task() d'abord."
-            )
+            raise RuntimeError("EWCOneClassDetector non entraîné. Appeler fit_task() d'abord.")
         self._model.eval()
         with torch.no_grad():
             x_t = torch.from_numpy(X.astype(np.float32)).to(self._device)
@@ -428,14 +428,10 @@ class EWCOneClassDetector:
         if self.fisher_ is None:
             self.fisher_ = {name: f.clone() for name, f in fisher_new.items()}
         else:
-            self.fisher_ = {
-                name: self.fisher_[name] + fisher_new[name]
-                for name in fisher_new
-            }
+            self.fisher_ = {name: self.fisher_[name] + fisher_new[name] for name in fisher_new}
 
         self.params_star_ = {
-            name: param.detach().clone()
-            for name, param in self._model.named_parameters()
+            name: param.detach().clone() for name, param in self._model.named_parameters()
         }
 
     # ------------------------------------------------------------------

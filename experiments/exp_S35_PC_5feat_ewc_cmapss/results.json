@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_ewc_cmapss",
+  "condition": "5feat",
+  "model": "ewc",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    10,
+    3,
+    11,
+    6,
+    14
+  ],
+  "acc_final": 0.9148646906346243,
+  "f1_faulty": 0.456028249537582,
+  "f1_macro": 0.7002215510132281,
+  "precision_faulty": 0.874274661508704,
+  "recall_faulty": 0.30846223839854414,
+  "avg_forgetting": 0.0005156155048442098,
+  "backward_transfer": 0.000563133146719963,
+  "ram_peak_bytes": 2713161,
+  "n_params": 737,
+  "note": "subset cmapss_feature_subset.yaml"
+}

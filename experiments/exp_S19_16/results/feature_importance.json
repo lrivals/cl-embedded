@@ -1,0 +1,59 @@
+{
+  "model": "dbscan",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "global": {
+    "permutation_importance": {
+      "max": 0.0,
+      "min": 0.0,
+      "mean": 0.0,
+      "sd": 0.0,
+      "rms": 0.0,
+      "skewness": 0.0,
+      "kurtosis": 0.0,
+      "crest": 0.0,
+      "form": 0.0
+    }
+  },
+  "per_task": {
+    "ball": {
+      "permutation_importance": {
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "sd": 0.0,
+        "rms": 0.0,
+        "skewness": 0.0,
+        "kurtosis": 0.0,
+        "crest": 0.0,
+        "form": 0.0
+      }
+    },
+    "inner_race": {
+      "permutation_importance": {
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "sd": 0.0,
+        "rms": 0.0,
+        "skewness": 0.0,
+        "kurtosis": 0.0,
+        "crest": 0.0,
+        "form": 0.0
+      }
+    },
+    "outer_race": {
+      "permutation_importance": {
+        "max": 0.0,
+        "min": 0.0,
+        "mean": 0.0,
+        "sd": 0.0,
+        "rms": 0.0,
+        "skewness": 0.0,
+        "kurtosis": 0.0,
+        "crest": 0.0,
+        "form": 0.0
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "exp_id": "exp_S25_01",
+  "model": "ewc_regression",
+  "dataset": "cmapss",
+  "task_mode": "rul",
+  "n_tasks": 4,
+  "per_task_metrics": [
+    {
+      "task_id": 1,
+      "rmse": 22.52776527404785,
+      "mae": 17.89795684814453,
+      "horizon_score": 76650.62780705714
+    },
+    {
+      "task_id": 2,
+      "rmse": 39.24203109741211,
+      "mae": 33.594173431396484,
+      "horizon_score": 3308607.0571286506
+    },
+    {
+      "task_id": 3,
+      "rmse": 19.254446029663086,
+      "mae": 14.535551071166992,
+      "horizon_score": 57778.6199563243
+    },
+    {
+      "task_id": 4,
+      "rmse": 38.05074691772461,
+      "mae": 32.2759895324707,
+      "horizon_score": 5006996.181633448
+    }
+  ],
+  "avg_forgetting_rmse": 19.972829818725586,
+  "training_time_s": 88.86245369911194,
+  "n_params": 737,
+  "config": "configs/cmapss_rul_config.yaml"
+}

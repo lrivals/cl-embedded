@@ -1,0 +1,25 @@
+{
+  "exp_id": "exp_S35_PC_all_ewc_monitoring",
+  "condition": "all",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "acc_final": 0.9804372577140943,
+  "f1_faulty": 0.8928571428571429,
+  "f1_macro": 0.9410522273425499,
+  "precision_faulty": 0.984251968503937,
+  "recall_faulty": 0.8169934640522876,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0009746588693956837,
+  "ram_peak_bytes": 171535,
+  "n_params": 705,
+  "note": "dims natives"
+}

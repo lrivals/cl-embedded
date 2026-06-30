@@ -1,0 +1,10 @@
+# configs/mahalanobis_int8_paderborn.yaml — Benchmark INT8 vs FP32 Mahalanobis, Paderborn (S2808).
+#
+# Hérite de paderborn_config.yaml (section mahalanobis + data Paderborn).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model mahalanobis \
+#   --config configs/mahalanobis_int8_paderborn.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_paderborn.json
+
+extends: configs/paderborn_config.yaml
+quantization: int8

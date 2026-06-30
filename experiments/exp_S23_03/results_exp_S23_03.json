@@ -1,0 +1,42 @@
+{
+  "exp_id": "exp_S23_03",
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-02",
+  "acc_final": 0.6145,
+  "avg_forgetting": 0.1301,
+  "backward_transfer": -0.1301,
+  "ram_peak_bytes": 1200,
+  "inference_latency_ms": 0.0591,
+  "n_params": 30,
+  "n_tasks": 2,
+  "n_samples_total": 400,
+  "latency_p99_ms": 0.079,
+  "throughput_mean_ips": 16666,
+  "per_task_acc": {
+    "0": 0.53,
+    "1": 0.635
+  },
+  "collection_time_s": 0.01,
+  "config_snapshot": "experiments/exp_S23_03/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "acc_matrix": [
+    [
+      0.678218681456679,
+      null
+    ],
+    [
+      0.5481663531925616,
+      0.6807579375973415
+    ]
+  ],
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 1,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  }
+}

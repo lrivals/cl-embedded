@@ -1,0 +1,51 @@
+{
+  "exp_id": "exp_S31_board_maha_hdc",
+  "pair": "maha-hdc",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "mode": "uart",
+  "date": "2026-06-18",
+  "n_params": 7035,
+  "frame_response_bytes": 27,
+  "latency_maha_us": {
+    "n": 300,
+    "p50_us": 5.0,
+    "p99_us": 5.0,
+    "mean_us": 5.0
+  },
+  "latency_supervised_us": {
+    "n": 300,
+    "p50_us": 653.0,
+    "p99_us": 653.0,
+    "mean_us": 653.0
+  },
+  "latency_pair_us": {
+    "n": 300,
+    "p50_us": 657.0,
+    "p99_us": 657.0,
+    "mean_us": 657.0
+  },
+  "online_metrics": {
+    "auroc_maha": 1.0,
+    "f1_supervised": 0.4727592170238495
+  },
+  "bss_bytes": 104596,
+  "collection_time_s": 10.17,
+  "gap2_latency_compliant": true,
+  "gap2_ram_compliant": true,
+  "latency_triple_us": {
+    "n": 300,
+    "p50_us": 593.0,
+    "p99_us": 593.0,
+    "mean_us": 593.0
+  },
+  "meta": {
+    "kind": "logreg",
+    "f1_meta_online": 0.47322213649749756,
+    "parity": {
+      "n": 300,
+      "parity_rate": 1.0,
+      "max_prob_delta": 0.004043
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_mahalanobis_cmapss",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 2,
+  "ram_peak_bytes": 2697045,
+  "n_params": 6,
+  "measure": "tracemalloc"
+}

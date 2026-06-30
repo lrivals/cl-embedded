@@ -68,6 +68,7 @@ def compute_anomaly_metrics(
 
     if n_pos == 0 or n_neg == 0:
         import warnings
+
         warnings.warn(
             f"compute_anomaly_metrics : y_true constant (pos={n_pos}, neg={n_neg}). "
             "AUROC et AUPRC non définis.",
@@ -141,7 +142,7 @@ def compute_cl_anomaly_metrics(
     bwt_per_task: list[float] = []
 
     for j in range(T - 1):
-        col = auroc_matrix[:j + 1, j]  # valeurs disponibles pour la tâche j
+        col = auroc_matrix[: j + 1, j]  # valeurs disponibles pour la tâche j
         peak = float(np.nanmax(col))
         final = float(auroc_matrix[T - 1, j])
         forgetting_per_task.append(peak - final)
@@ -151,10 +152,7 @@ def compute_cl_anomaly_metrics(
     auroc_bwt = float(np.mean(bwt_per_task)) if bwt_per_task else 0.0
 
     # Sérialisation JSON (NaN → null)
-    matrix_serializable = [
-        [None if np.isnan(v) else float(v) for v in row]
-        for row in auroc_matrix
-    ]
+    matrix_serializable = [[None if np.isnan(v) else float(v) for v in row] for row in auroc_matrix]
 
     return {
         "avg_auroc": avg_auroc,

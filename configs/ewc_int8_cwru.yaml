@@ -1,0 +1,12 @@
+# configs/ewc_int8_cwru.yaml — Benchmark INT8 vs FP32 EWC, dataset CWRU (Sprint 28, S2807).
+#
+# Hérite de cwru_by_fault_config.yaml (config unifiée : data + model + ewc + training).
+# EWCMlpClassifier est binaire → AUROC de détection de panne (labels CWRU binarisés
+# normal-vs-fault par benchmark_int8_fp32.py).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model ewc \
+#   --config configs/ewc_int8_cwru.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_ewc_cwru.json
+
+extends: configs/cwru_by_fault_config.yaml
+quantization: int8

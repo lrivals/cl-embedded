@@ -1,0 +1,13 @@
+# configs/mahalanobis_q15_monitoring.yaml — Benchmark Q15 Mahalanobis, Monitoring (Sprint 34, S3406).
+#
+# Miroir de mahalanobis_int8_monitoring.yaml en mode Q15 (non-régression : Q15 ne doit pas
+# dégrader FP32/INT8 sur ce dataset à faible dynamique).
+
+extends: configs/unsupervised_config.yaml
+quantization: q15
+training:
+  batch_size: 256
+  seed: 42
+data:
+  test_split: 0.2
+  task_split: by_equipment

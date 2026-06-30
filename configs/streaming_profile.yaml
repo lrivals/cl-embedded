@@ -1,0 +1,31 @@
+# streaming_profile.yaml — Profil de streaming/buffer (Sprint 34, S3401/S3403/S3404)
+#
+# Toutes les tailles (W, S, f_acq, sizeof, SRAM) sont définies ICI, jamais en dur dans le
+# code (règle CLAUDE.md). Lu par src/evaluation/streaming_model.py et scripts/sensor_stream.py.
+#
+# Formules instrumentées (CR 19 mai 2026) :
+#   Débit_max       = 1 / Latence_inf
+#   Débit_streaming = f_acq × S / W
+#   Budget buffer   = W × sizeof(sample) ≤ SRAM
+
+streaming:
+  f_acq_hz: 100              # fréquence d'acquisition par défaut (= sensor_stream --rate-hz)
+                            # TODO(fred): f_acq réel du capteur Edge Spectrum
+  window_w: 5               # taille de fenêtre = HDC_N_FEATURES / dims board 5-feat
+  stride_s: 1               # pas entre fenêtres consécutives
+  sizeof_sample_bytes: 4    # float32
+  sram_budget_bytes: 65536  # 64 Ko — budget Gap 2 (pas 256 Ko total)
+
+  # Balayage board S3403 : produit cartésien (rate_hz × stride), .bss par window (rebuild)
+  sweep:
+    rates_hz: [50, 100, 200, 500, 1000, 2000, 5000]
+    strides:  [1, 2, 5]
+    windows:  [5, 10, 25, 50]   # rebuild firmware par STREAM_BUF_W → .bss mesuré
+
+  # Latences d'inférence DWT mesurées (Sprints 30-32, réutilisées — PAS recalculées).
+  # Source : experiments/exp_S31_board_maha_ewc/, exp_S32_board_sweep_summary.json
+  latences_inf_us:
+    mahalanobis: 5     # exp_S31 latency_maha_us P50
+    ewc: 50            # exp_S32 EWC inférence P50 (251 µs en mode online+update)
+    tinyol: 5          # exp_S32 TinyOL P50
+    hdc: 585           # exp_S32 HDC P50 (projection embarquée dim 1000)

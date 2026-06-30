@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S35_PC_best_ewc_cwru",
+  "condition": "best",
+  "model": "ewc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "selected_indices": [
+    3
+  ],
+  "acc_final": 1.0,
+  "f1_faulty": 1.0,
+  "f1_macro": 1.0,
+  "precision_faulty": 1.0,
+  "recall_faulty": 1.0,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0,
+  "ram_peak_bytes": 87496,
+  "n_params": 609,
+  "note": "best ewc_cwru.yaml"
+}

@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_pronostia",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    1,
+    2,
+    4,
+    8,
+    12
+  ],
+  "acc_final": 0.8220197955574681,
+  "f1_faulty": 0.4250559284116331,
+  "f1_macro": 0.6625085013798142,
+  "precision_faulty": 0.32094594594594594,
+  "recall_faulty": 0.6291390728476821,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.015067430480964372,
+  "ram_peak_bytes": 205572,
+  "n_params": 2048,
+  "note": "subset pronostia_feature_subset.yaml"
+}

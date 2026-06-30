@@ -1,0 +1,54 @@
+# configs/board_pair_maha_ewc.yaml — Sprint 30 (S3002) — paire Mahalanobis + EWC.
+#
+# Benchmark fixe « paire = détecteur non-supervisé (Mahalanobis) + modèle supervisé ».
+# Aucun hyperparamètre en dur dans le code (règle CLAUDE.md) : tout vient d'ici.
+#
+# Le script scripts/train_model_pair.py charge, par dataset, la config supervisée
+# *déjà validée* (Sprint 28) référencée dans `supervised_configs` (input_dim,
+# feature_bounds, chemins corrects), puis ajuste Mahalanobis sur les mêmes tâches.
+#
+# Usage :
+#   python scripts/train_model_pair.py --config configs/board_pair_maha_ewc.yaml --dataset monitoring
+#   python scripts/train_model_pair.py --config configs/board_pair_maha_ewc.yaml --dataset cmapss --mode native
+
+pair:
+  name: "maha_ewc"
+  detector: "mahalanobis"
+  supervised: "ewc"
+
+# Règles de fusion : toutes calculées et reportées dans results.json ; la meilleure
+# (max F1) émerge des données (best_rule). TODO(arnaud) : règle de référence à figer.
+fusion:
+  rules: ["or", "and", "soft_vote", "weighted"]
+  weights: [0.5, 0.5]            # [poids_maha, poids_supervisé]
+  ensemble_threshold: 0.5
+
+# Détecteur non-supervisé partagé par toutes les paires (repris de board_mahalanobis.yaml).
+mahalanobis:
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6
+  cl_strategy: "refit"
+
+seed: 42
+
+# --- Partie A (binarisé normal-vs-fault) : config supervisée par dataset ---
+supervised_configs:
+  monitoring: "configs/ewc_int8_monitoring.yaml"
+  cwru:       "configs/ewc_int8_cwru.yaml"
+  pronostia:  "configs/ewc_int8_pronostia.yaml"
+  cmapss:     "configs/ewc_int8_cmapss.yaml"
+  paderborn:  "configs/ewc_int8_paderborn.yaml"
+
+# --- Partie B (tâches natives, S3007) : config native par dataset ---
+native_configs:
+  cmapss: "configs/cmapss_rul_config.yaml"        # RUL régression (EWCMlpRegressor)
+  cwru:   "configs/cwru_multiclass_config.yaml"   # multi-classe (EWCMlpMulticlass)
+
+# Règle native_to_fault : dérive une décision binaire faute oui/non depuis la sortie
+# native, pour le désaccord vs Mahalanobis. Aucun seuil en dur (cf. CLAUDE.md).
+native:
+  cmapss:     { rule: "rul_threshold", threshold: 30 }   # RUL ≤ 30 → faute (seuil Sprint 28)
+  cwru:       { rule: "nonzero_class" }                  # classe ≠ normal(0) → faute
+  monitoring: { rule: "identity" }                       # déjà binaire
+  pronostia:  { rule: "identity" }
+  paderborn:  { rule: "nonzero_class" }

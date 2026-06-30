@@ -1,0 +1,36 @@
+{
+  "note": "bss mesur\u00e9 par arm-none-eabi-size, rebuild STREAM_BUF_W (S3403); stream_buf = W*PROTO_MAX_N(16)*4 octets ; gap2 budget 64 Ko",
+  "bss_base_hors_stream_buf": 104636,
+  "proto_max_n": 16,
+  "sizeof_sample_bytes": 4,
+  "by_window": [
+    {
+      "window": 5,
+      "bss_bytes": 104956,
+      "stream_buf_bytes": 320,
+      "budget_64k_pct": 160.2,
+      "budget_192k_pct": 53.4
+    },
+    {
+      "window": 10,
+      "bss_bytes": 105276,
+      "stream_buf_bytes": 640,
+      "budget_64k_pct": 160.6,
+      "budget_192k_pct": 53.5
+    },
+    {
+      "window": 25,
+      "bss_bytes": 106236,
+      "stream_buf_bytes": 1600,
+      "budget_64k_pct": 162.1,
+      "budget_192k_pct": 54.0
+    },
+    {
+      "window": 50,
+      "bss_bytes": 107836,
+      "stream_buf_bytes": 3200,
+      "budget_64k_pct": 164.5,
+      "budget_192k_pct": 54.8
+    }
+  ]
+}

@@ -19,7 +19,7 @@ from typing import Any
 
 import numpy as np
 import torch
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa: N812
 from torch.utils.data import DataLoader, TensorDataset
 
 from src.models.base_cl_model import BaseCLModel
@@ -79,7 +79,9 @@ class TinyOLAnomalyDetector(BaseCLModel):
         self._batch_size: int = int(pretrain_cfg.get("batch_size", 64))
         self._pretrain_optimizer_name: str = pretrain_cfg.get("optimizer", "adam")
 
-        self.anomaly_percentile: int = int(config.get("anomaly_percentile", ANOMALY_PERCENTILE_DEFAULT))
+        self.anomaly_percentile: int = int(
+            config.get("anomaly_percentile", ANOMALY_PERCENTILE_DEFAULT)
+        )
         self.anomaly_threshold_: float | None = config.get("anomaly_threshold", None)
 
         self._buffer_X: list[np.ndarray] = []
@@ -111,9 +113,7 @@ class TinyOLAnomalyDetector(BaseCLModel):
             Si le seuil n'a pas encore été calculé (appeler on_task_end sur Task 0).
         """
         if self.anomaly_threshold_ is None:
-            raise RuntimeError(
-                "Seuil non calculé. Appeler on_task_end() sur Task 0 d'abord."
-            )
+            raise RuntimeError("Seuil non calculé. Appeler on_task_end() sur Task 0 d'abord.")
         scores = self.anomaly_score(x)
         return (scores >= self.anomaly_threshold_).astype(np.int64)
 

@@ -1,0 +1,23 @@
+# configs/hdc_int8_paderborn.yaml — Benchmark INT8 vs FP32 HDC, dataset Paderborn (Sprint 28, S2807).
+#
+# paderborn_config.yaml ne contient pas de section hdc → on l'ajoute inline (D=512,
+# n_levels=10). base_vectors générés au 1er run si le .npz est absent. n_features=5
+# (top-5 FFT sélectionnées, cf. paderborn_config.yaml).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model hdc \
+#   --config configs/hdc_int8_paderborn.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_hdc_paderborn.json
+
+extends: configs/paderborn_config.yaml
+quantization: int8
+
+hdc:
+  D: 512
+  n_levels: 10
+  seed: 42
+  base_vectors_path: configs/hdc_base_vectors_paderborn.npz
+
+# HDCClassifier exige data.n_classes (taille de la mémoire associative). Paderborn =
+# 3 niveaux de dommage (cf. paderborn_multiclass_config.yaml).
+data:
+  n_classes: 3

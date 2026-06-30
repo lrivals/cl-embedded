@@ -1,0 +1,6 @@
+budget_256ko_bytes: 262144
+exp_id: exp_S25_05
+generated_at: '2026-06-12'
+multiclass_config: configs/cwru_multiclass_config.yaml
+rul_config: configs/cmapss_rul_config.yaml
+sprint: 25

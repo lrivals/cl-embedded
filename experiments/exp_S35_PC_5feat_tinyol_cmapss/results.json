@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_tinyol_cmapss",
+  "condition": "5feat",
+  "model": "tinyol",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    10,
+    3,
+    11,
+    6,
+    14
+  ],
+  "acc_final": 0.7209283321601976,
+  "f1_faulty": 0.1973585310855793,
+  "f1_macro": 0.5305177569621904,
+  "precision_faulty": 0.18690258287573724,
+  "recall_faulty": 0.20905368516833486,
+  "avg_forgetting": 0.02492716779669409,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 61665744,
+  "n_params": 257,
+  "note": "subset cmapss_feature_subset.yaml"
+}

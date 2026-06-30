@@ -1,0 +1,59 @@
+{
+  "model": "hdc",
+  "dataset": "cmapss",
+  "scenario": "by_domain",
+  "global": {
+    "permutation_importance": {
+      "Ps30": 0.0,
+      "T50": 0.0,
+      "Phi": 0.0,
+      "P30": 0.0,
+      "BPR": 0.0
+    },
+    "feature_masking_importance": {
+      "Ps30": 0.0,
+      "T50": 0.0,
+      "Phi": 0.0,
+      "P30": 0.0,
+      "BPR": 0.0
+    }
+  },
+  "per_task": {
+    "FD001": {
+      "permutation_importance": {
+        "Ps30": 0.0,
+        "T50": 0.0,
+        "Phi": 0.0,
+        "P30": 0.0,
+        "BPR": 0.0
+      }
+    },
+    "FD002": {
+      "permutation_importance": {
+        "Ps30": 0.0,
+        "T50": 0.0,
+        "Phi": 0.0,
+        "P30": 0.0,
+        "BPR": 0.0
+      }
+    },
+    "FD003": {
+      "permutation_importance": {
+        "Ps30": 0.0,
+        "T50": 0.0,
+        "Phi": 0.0,
+        "P30": 0.0,
+        "BPR": 0.0
+      }
+    },
+    "FD004": {
+      "permutation_importance": {
+        "Ps30": 0.0,
+        "T50": 0.0,
+        "Phi": 0.0,
+        "P30": 0.0,
+        "BPR": 0.0
+      }
+    }
+  }
+}

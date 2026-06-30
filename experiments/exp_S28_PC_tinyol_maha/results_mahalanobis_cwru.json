@@ -1,0 +1,22 @@
+{
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "config_path": "configs/mahalanobis_int8_cwru.yaml",
+  "timestamp": "2026-06-12T20:19:43",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.47498,
+    "ram_bytes": 360,
+    "latency_ms": 0.003912
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.238689,
+    "ram_bytes": 90,
+    "latency_ms": 0.007988
+  },
+  "delta_metric": -0.236291,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": false,
+  "gap3_ram_ok": true
+}

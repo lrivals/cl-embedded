@@ -1,0 +1,8 @@
+# configs/all_features/cwru.yaml — condition `all` (dims natives) — Sprint 35 / S3502
+# feature_names importés des constantes du loader (src/data/cwru_dataset.FEATURE_COLS).
+# Ne pas éditer à la main : la source de vérité est le loader.
+dataset: cwru
+condition: all
+n_features: 9
+feature_names: [max, min, mean, sd, rms, skewness, kurtosis, crest, form]
+source_loader: src/data/cwru_dataset.py

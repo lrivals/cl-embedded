@@ -1,0 +1,25 @@
+{
+  "exp_id": "exp_S32_mahalanobis_battery_thr200",
+  "model": "mahalanobis",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "acc_final": 0.7983416252072969,
+  "avg_forgetting": 0.0014925373134328512,
+  "backward_transfer": 0.010447761194029848,
+  "per_task_acc": [
+    0.9671641791044776,
+    0.9741293532338309,
+    0.4537313432835821
+  ],
+  "ram_peak_bytes": 1300,
+  "inference_latency_ms": 0.004637560004994157,
+  "n_params": 56,
+  "welford_updates_per_task": [
+    4016,
+    4016,
+    4017
+  ],
+  "cl_strategy": "welford",
+  "ram_training_peak_bytes": 886952,
+  "sprint": 24
+}

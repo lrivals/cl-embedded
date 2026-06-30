@@ -1,0 +1,40 @@
+{
+  "exp_id": "exp_S22_08",
+  "cl_metrics": {
+    "aa": 0.3333333333333333,
+    "af": 0.0,
+    "bwt": 0.0005007511266900133,
+    "fwt": 0.0,
+    "forgetting_per_task": [
+      0.0,
+      0.0
+    ],
+    "bwt_per_task": [
+      0.0010015022533800266,
+      0.0
+    ],
+    "acc_matrix": [
+      [
+        0.99899849774662,
+        null,
+        null
+      ],
+      [
+        1.0,
+        0.0,
+        null
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "n_tasks": 3,
+    "ram_peak_bytes": 14504,
+    "inference_latency_ms": 0.05278698991787678,
+    "n_params": 2048,
+    "estimated_ram_fp32_bytes": 14344,
+    "estimated_ram_int8_bytes": 6152
+  }
+}

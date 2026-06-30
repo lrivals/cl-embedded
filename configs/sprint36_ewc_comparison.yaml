@@ -1,0 +1,45 @@
+# sprint36_ewc_comparison.yaml — Configuration appariée PC ↔ board (S3601)
+#
+# Source de vérité UNIQUE pour toute l'étude Sprint 36 : EWC sur
+#   2 plateformes (PC, NUCLEO-F439ZI) × 2 datasets × 2 conditions × 2 protocoles.
+# Consommée identiquement par :
+#   - scripts/run_sprint36_pc.py     (S3602 — référence PC + checkpoint partagé)
+#   - scripts/run_sprint36_board.py  (S3603 frozen / S3604 online)
+#
+# Règle CLAUDE.md : aucun hyperparamètre dans le code → tout est ici (ou hérité
+# de board_ewc.yaml). Les indices de features ne sont PAS listés : ils sont
+# résolus par src.evaluation.feature_conditions.resolve_feature_indices
+# (source unique introduite au Sprint 35 → parité par construction).
+
+model: ewc
+seed: 42
+
+datasets: [pronostia, monitoring]      # D4 class-incremental · D2 domain-incremental
+conditions: [5feat, all]               # résolues via feature_conditions.resolve_feature_indices
+protocols: [frozen, online]            # frozen = sans --update (parité exacte + lat inférence)
+                                       # online = --update (latence inférence + MAJ CL)
+
+# NOTE : Monitoring n'a PAS de monitoring_feature_subset.yaml → 5feat ≡ all
+# (4 features natives). Les deux cellules monitoring sont donc identiques par
+# construction (documenté, pas un bug). Seul Pronostia donne deux conditions
+# distinctes : 5feat (k=5, [1,2,4,8,12]) vs all (k=13).
+
+# Échantillons appariés : split test/inférence COMPLET des deux côtés (pas de troncature)
+n_inference: full                      # streamer tout le split test
+match_train_inference: true            # mêmes indices/colonnes PC et board (load_condition_arrays, seed=42)
+
+uart:
+  rate_hz: 50
+  proto: 3                             # réponse v3 (acc/auroc/forgetting embarqués)
+  dump_samples: true                   # prédictions par échantillon → parité S3603/S3604
+
+# Hyperparamètres EWC hérités de configs/board_ewc.yaml (ne PAS dupliquer ici)
+ewc_base_config: configs/board_ewc.yaml   # EWC_LR, EWC_LAMBDA, FISHER_EMA_DECAY
+
+# Constantes d'entraînement appariées board (= run_feature_condition_board.train_ewc_board)
+# pour que le checkpoint PC == checkpoint flashé → parité exacte par construction.
+training:
+  n_tasks: 3
+  epochs_per_task: 15
+  batch_size: 32
+  test_ratio: 0.2                      # split déterministe par tâche pour acc_matrix (T×T)

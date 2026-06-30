@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_board_all_ewc_cmapss",
+  "condition": "all",
+  "model": "ewc",
+  "dataset": "cmapss",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-25T09:44:18",
+  "n_features": 21,
+  "bss_bytes": 183936,
+  "online_accuracy": 0.9333,
+  "f1_faulty": 0.6154,
+  "f1_macro": 0.7894,
+  "latency_us_p50": 79.0,
+  "latency_us_p99": 79.0,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "stream_mode": "frozen (sans --update \u2192 parit\u00e9 exacte)",
+  "parity_class": "exact",
+  "parity_ok": true,
+  "n_compared": 150,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

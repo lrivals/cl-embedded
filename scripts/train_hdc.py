@@ -55,6 +55,10 @@ def _get_feature_names(cfg: dict) -> list[str]:
     if dataset == "cwru":
         from src.data.cwru_dataset import FEATURE_COLS
         return list(FEATURE_COLS)
+    if dataset == "cmapss":
+        from src.data.cmapss_loader import _load_feature_selection
+        names = _load_feature_selection()
+        return names if names else ["Ps30", "T50", "Phi", "P30", "BPR"]
     return cfg["data"]["feature_columns"]
 
 
@@ -93,6 +97,27 @@ def _get_tasks(cfg: dict) -> list[dict]:
             window_size=cfg["data"].get("window_size", 2560),
             step_size=cfg["data"].get("step_size", 2560),
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+            label_mode=cfg["data"].get("label_mode", "failure_ratio"),
+            faulty_threshold=cfg["data"].get("faulty_threshold"),
+        )
+
+    if dataset == "battery_rul":
+        from src.data.battery_dataset import (
+            RUL_FAILURE_THRESHOLD,
+            get_battery_dataloaders,
+        )
+        # Forcer recalcul des feature_bounds HDC depuis Task 1
+        cfg["feature_bounds"] = None
+        return get_battery_dataloaders(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["training"]["batch_size"],
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg["training"]["seed"],
+            n_tasks=cfg["data"].get("n_tasks", 3),
+            rul_failure_threshold=cfg["data"].get(
+                "rul_failure_threshold", RUL_FAILURE_THRESHOLD
+            ),
         )
 
     if dataset == "cwru":
@@ -128,6 +153,22 @@ def _get_tasks(cfg: dict) -> list[dict]:
         )
         st["_single_task_mode"] = True
         return [st]
+
+    if dataset == "cmapss":
+        from src.data.cmapss_loader import get_cl_dataloaders
+        return get_cl_dataloaders(
+            data_dir=Path(cfg["data"]["data_dir"]),
+            config_path=Path(cfg.get("_config_path", "configs/cmapss_config.yaml")),
+        )
+
+    if dataset == "paderborn":
+        from src.data.paderborn_loader import get_cl_dataloaders as get_paderborn_cl_dataloaders
+        # Priorité : _data_config_path (quand --data_config est fourni) sinon _config_path
+        paderborn_cfg_path = cfg.get("_data_config_path") or cfg.get("_config_path", "configs/paderborn_config.yaml")
+        return get_paderborn_cl_dataloaders(
+            data_dir=Path(cfg["data"]["data_dir"]),
+            config_path=Path(paderborn_cfg_path),
+        )
 
     csv_path = Path(cfg["data"]["csv_path"])
     normalizer_path = Path(cfg["data"]["normalizer_path"])
@@ -245,6 +286,32 @@ def parse_args() -> argparse.Namespace:
         "--exp_id",
         default=None,
         help="Override exp_id (ex. exp_069_hdc_cwru_single_task)",
+    )
+    parser.add_argument(
+        "--profile_int8",
+        action="store_true",
+        help="Produit un rapport détaillé de l'empreinte INT8 native de l'architecture HDC",
+    )
+    parser.add_argument(
+        "--dataset",
+        default=None,
+        help="Dataset override : cwru | pronostia | pump | monitoring | cmapss | paderborn",
+    )
+    parser.add_argument(
+        "--scenario",
+        default=None,
+        help="Scénario CL : by_fault_type | by_condition | temporal | by_equipment | by_severity",
+    )
+    parser.add_argument(
+        "--profile_memory",
+        action="store_true",
+        help="Active le profiling RAM par tracemalloc sur toute la durée du training",
+    )
+    parser.add_argument(
+        "--output_dir",
+        dest="exp_dir",
+        default=None,
+        help="Alias de --exp_dir (compatibilité commandes S2405)",
     )
     return parser.parse_args()
 
@@ -574,12 +641,15 @@ def _resolve_feature_names_hdc(cfg: dict) -> list[str]:
         FEATURE_NAMES_CWRU,
         FEATURE_NAMES_PRONOSTIA,
         FEATURE_NAMES_MONITORING,
+        FEATURE_NAMES_CMAPSS,
     )
     dataset = cfg["data"].get("dataset", "equipment_monitoring")
     if dataset == "cwru":
         return FEATURE_NAMES_CWRU
     if dataset == "pronostia":
         return FEATURE_NAMES_PRONOSTIA
+    if dataset == "cmapss":
+        return FEATURE_NAMES_CMAPSS
     return FEATURE_NAMES_MONITORING
 
 
@@ -603,6 +673,28 @@ def main() -> None:
         # Forcer recalcul des feature_bounds si scénario avec nouvelles données
         if cfg["data"].get("task_split") in ("by_pump_id", "by_temporal_window"):
             cfg["feature_bounds"] = None
+        # Mémoriser le chemin du data_config pour les loaders qui relisent le YAML
+        cfg["_data_config_path"] = args.data_config
+
+    # Résolution --dataset/--scenario → data config (S2405)
+    _DATASET_CONFIG_MAP: dict[tuple[str | None, str | None], str] = {
+        ("cwru", "by_fault_type"):     "configs/cwru_by_fault_config.yaml",
+        ("cwru", "by_severity"):       "configs/cwru_by_severity_config.yaml",
+        ("pronostia", "by_condition"): "configs/pronostia_config.yaml",
+        ("pump", "temporal"):          "configs/pump_by_temporal_window_config.yaml",
+        ("pump", "by_id"):             "configs/pump_by_id_config.yaml",
+        ("cmapss", None):              "configs/cmapss_config.yaml",
+        ("paderborn", None):           "configs/paderborn_config.yaml",
+    }
+    if args.dataset:
+        key = (args.dataset, args.scenario)
+        fallback_key = (args.dataset, None)
+        data_cfg_path = _DATASET_CONFIG_MAP.get(key) or _DATASET_CONFIG_MAP.get(fallback_key)
+        if data_cfg_path:
+            data_cfg = load_config(data_cfg_path)
+            cfg["data"].update(data_cfg.get("data", {}))
+        if args.scenario:
+            cfg["data"]["scenario"] = args.scenario
 
     # Override exp_id depuis --exp_id
     if args.exp_id:
@@ -635,15 +727,21 @@ def main() -> None:
 
     # --- Chargement données ---
     dataset_name = cfg.get("data", {}).get("dataset", "equipment_monitoring")
-    if dataset_name != "pronostia":
+    if dataset_name == "cmapss":
+        print(f"Dataset : CMAPSS ({cfg['data']['data_dir']})")
+    elif dataset_name == "pronostia":
+        print(f"Dataset : {cfg['data']['npy_dir']} (FEMTO PRONOSTIA .npy)")
+    elif dataset_name == "paderborn":
+        print(f"Dataset : Paderborn ({cfg['data']['data_dir']})")
+    else:
         csv_path = Path(cfg["data"]["csv_path"])
         if not csv_path.exists():
             raise FileNotFoundError(f"CSV introuvable : {csv_path}")
         print(f"Dataset : {csv_path}")
-    else:
-        print(f"Dataset : {cfg['data']['npy_dir']} (FEMTO PRONOSTIA .npy)")
 
+    cfg["_config_path"] = args.config
     tasks = _get_tasks(cfg)
+    cfg.pop("_config_path", None)  # éviter la pollution du dump YAML
     n_tasks = len(tasks)
 
     # Mode single-task (task_split: no_split) — baseline hors-CL
@@ -675,7 +773,14 @@ def main() -> None:
     print("\n" + "=" * 40)
     print("  Entraînement HDC Online")
     print("=" * 40)
+    _training_ram_peak: int | None = None
+    if args.profile_memory:
+        import tracemalloc as _tracemalloc
+        _tracemalloc.start()
     acc_matrix_hdc = train_hdc(model, tasks, cfg)
+    if args.profile_memory:
+        _, _training_ram_peak = _tracemalloc.get_traced_memory()
+        _tracemalloc.stop()
     np.save(results_dir / "acc_matrix_hdc.npy", acc_matrix_hdc)
     model.save(str(checkpoints_dir / "hdc_task3_final.npz"))
     print(f"\nCheckpoint sauvegardé → {checkpoints_dir / 'hdc_task3_final.npz'}")
@@ -687,6 +792,22 @@ def main() -> None:
     memory_report = _profile_hdc_memory(model, n_features=n_features)
     with open(results_dir / "memory_report.json", "w") as f:
         json.dump(memory_report, f, indent=2)
+
+    # --- Rapport INT8 natif (--profile_int8) ---
+    int8_footprint: dict | None = None
+    if getattr(args, "profile_int8", False):
+        int8_footprint = model.get_memory_footprint()
+        print("\n" + "=" * 40)
+        print("  Profil empreinte INT8 native HDC")
+        print("=" * 40)
+        print(f"  Vecteurs de base INT8  : {int8_footprint['base_vectors_int8_bytes']:,} B")
+        print(f"  AM INT32               : {int8_footprint['am_int32_bytes']:,} B")
+        print(f"  Total INT natif        : {int8_footprint['total_int_bytes']:,} B")
+        print(f"  Hypothèse FP32         : {int8_footprint['hypothetical_fp32_bytes']:,} B")
+        print(f"  Ratio compression      : {int8_footprint['compression_ratio']:.2f}×")
+        with open(results_dir / "int8_footprint.json", "w") as f:
+            json.dump(int8_footprint, f, indent=2)
+        print(f"  Rapport → {results_dir / 'int8_footprint.json'}")
 
     # --- Métriques CL ---
     metrics_hdc = compute_cl_metrics(acc_matrix_hdc)
@@ -705,11 +826,12 @@ def main() -> None:
 
     # metrics_cl.json — format unifié S12-05
     import json as _json
-    metrics_cl = {
+    metrics_cl: dict = {
         "exp_id": cfg["exp_id"],
         "model": "hdc",
         "dataset": cfg["data"].get("dataset", "cwru"),
         "scenario": cfg["data"].get("task_split", "by_fault_type"),
+        "native_int_architecture": True,
         "acc_final": metrics_hdc.get("aa", float("nan")),
         "avg_forgetting": metrics_hdc.get("af", float("nan")),
         "backward_transfer": metrics_hdc.get("bwt", float("nan")),
@@ -719,8 +841,17 @@ def main() -> None:
         "n_params": model.count_parameters(),
         "acc_matrix": acc_matrix_hdc.tolist(),
     }
+    if int8_footprint is not None:
+        metrics_cl.update(int8_footprint)
+    if _training_ram_peak is not None:
+        metrics_cl["ram_training_peak_bytes"] = _training_ram_peak
     with open(results_dir / "metrics_cl.json", "w", encoding="utf-8") as _f:
         _json.dump(metrics_cl, _f, indent=2)
+    # results.json à la racine de exp_dir (format flat Sprint 24)
+    _results_flat = {k: v for k, v in metrics_cl.items() if k != "acc_matrix"}
+    _results_flat["sprint"] = 24
+    with open(exp_dir / "results.json", "w", encoding="utf-8") as _f:
+        _json.dump(_results_flat, _f, indent=2)
 
     # ── Feature importance ────────────────────────────────────────────────────
     try:

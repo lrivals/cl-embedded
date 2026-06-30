@@ -1,0 +1,21 @@
+# cmapss_feature_subset.yaml — Top-5 features CMAPSS sélectionnées par mutual info
+# Généré par scripts/cmapss_feature_selection.py — NE PAS éditer manuellement.
+# Fit sur FD001 uniquement.
+# selected_features : lu par sensor_stream.py (S2306)
+# features          : alias lu par cmapss_loader.py (_load_feature_selection)
+selected_features:
+- Ps30
+- T50
+- Phi
+- P30
+- BPR
+features:
+- Ps30
+- T50
+- Phi
+- P30
+- BPR
+n_features: 5
+fit_subset: FD001
+method: mutual_info_classif
+faulty_threshold: 30

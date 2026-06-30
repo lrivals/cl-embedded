@@ -1,0 +1,36 @@
+{
+  "exp_id": "exp_S22_06",
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "scenario": "by_fault_type",
+  "acc_final": 0.35562791959063017,
+  "avg_forgetting": 0.002253380070105171,
+  "backward_transfer": -0.002253380070105171,
+  "per_task_acc": [
+    0.9439158738107161,
+    0.061091637456184275,
+    0.06187624750499002
+  ],
+  "ram_peak_bytes": 1532,
+  "inference_latency_ms": 0.0072976399951585336,
+  "n_params": 30,
+  "acc_matrix": [
+    [
+      0.9484226339509264,
+      NaN,
+      NaN
+    ],
+    [
+      0.942914371557336,
+      0.061091637456184275,
+      NaN
+    ],
+    [
+      0.9439158738107161,
+      0.061091637456184275,
+      0.06187624750499002
+    ]
+  ],
+  "welford_updates_per_task": [],
+  "cl_strategy": "refit"
+}

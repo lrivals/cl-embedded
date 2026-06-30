@@ -1,0 +1,124 @@
+{
+  "exp_id": "exp_S22_05",
+  "cl_metrics": {
+    "ewc": {
+      "aa": 0.6666666666666666,
+      "af": 0.5,
+      "bwt": -0.5,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        1.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        -1.0,
+        0.0
+      ],
+      "acc_matrix": [
+        [
+          1.0,
+          null,
+          null
+        ],
+        [
+          0.0,
+          1.0,
+          null
+        ],
+        [
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "n_tasks": 3
+    },
+    "memory": {
+      "model": "EWCMlpClassifier",
+      "input_shape": [
+        1,
+        5
+      ],
+      "forward": {
+        "ram_peak_bytes": 1171,
+        "ram_current_bytes": 72,
+        "inference_latency_ms": 0.033986619991992484,
+        "inference_latency_std_ms": 0.0015743044012065533,
+        "n_params": 737,
+        "params_fp32_bytes": 2948,
+        "params_int8_bytes": 737,
+        "within_budget_64ko": true
+      },
+      "update": {
+        "ram_peak_bytes_update": 6684,
+        "update_latency_ms": 0.6824172599863232,
+        "update_latency_std_ms": 0.03546261127308463,
+        "within_budget_64ko_update": true
+      }
+    },
+    "naive": {
+      "aa": 0.6666666666666666,
+      "af": 0.5,
+      "bwt": -0.5,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        1.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        -1.0,
+        0.0
+      ],
+      "acc_matrix": [
+        [
+          1.0,
+          null,
+          null
+        ],
+        [
+          0.0,
+          1.0,
+          null
+        ],
+        [
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "n_tasks": 3
+    },
+    "joint": {
+      "aa": 0.6666666666666666,
+      "af": 0.0,
+      "bwt": NaN,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        NaN,
+        NaN
+      ],
+      "acc_matrix": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          0.0,
+          1.0,
+          1.0
+        ]
+      ],
+      "n_tasks": 3
+    }
+  }
+}

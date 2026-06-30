@@ -1,0 +1,37 @@
+{
+  "description": "Campagne énergie S3306 — µJ total par modèle × encodage (LPM01A).",
+  "phases": [
+    "startup",
+    "acquisition",
+    "inference",
+    "idle"
+  ],
+  "per_model": {
+    "ewc": {
+      "fp32": "à mesurer",
+      "int8": "à mesurer",
+      "delta_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer"
+    },
+    "hdc": {
+      "fp32": "à mesurer",
+      "int8": "à mesurer",
+      "delta_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer"
+    },
+    "tinyol": {
+      "fp32": "à mesurer",
+      "int8": "à mesurer",
+      "delta_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer"
+    },
+    "maha": {
+      "fp32": "à mesurer",
+      "int8": "à mesurer",
+      "delta_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer"
+    }
+  },
+  "gap3_note": "Sprint 29 : l'INT8 réduit la RAM sans accélérer la latence (FPU Cortex-M4, pas de NPU INT8). Question énergie : l'INT8 réduit-il néanmoins les µJ (moins d'accès mémoire) ? — réponse via mesures LPM01A réelles, champs 'à mesurer' tant que non capturées.",
+  "timestamp": "2026-06-24T08:57:29.436835+00:00"
+}

@@ -28,7 +28,7 @@ matplotlib.use("Agg")  # backend non-interactif (cohérent avec plots.py)
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.decomposition import KernelPCA, PCA
+from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
 
 COLORS_LABEL: dict[int, str] = {0: "#4CAF50", 1: "#F44336"}  # vert = normal, rouge = faulty
@@ -132,7 +132,7 @@ def fit_tsne2d(
         perplexity=perplexity,
         n_iter=n_iter,
         random_state=42,
-        init="pca",          # initialisation PCA pour reproductibilité
+        init="pca",  # initialisation PCA pour reproductibilité
         learning_rate="auto",
     )
     X_proj = tsne.fit_transform(X)
@@ -140,10 +140,10 @@ def fit_tsne2d(
 
 
 _PROJECTION_LABELS: dict[str, tuple[str, str]] = {
-    "pca":      ("PC1", "PC2"),
+    "pca": ("PC1", "PC2"),
     "kpca_rbf": ("KPCA-RBF 1", "KPCA-RBF 2"),
     "kpca_poly": ("KPCA-Poly 1", "KPCA-Poly 2"),
-    "tsne":     ("t-SNE 1", "t-SNE 2"),
+    "tsne": ("t-SNE 1", "t-SNE 2"),
 }
 
 
@@ -238,7 +238,9 @@ def plot_feature_space_2d(
                     continue
                 color = COLORS_DOMAIN[d_id % len(COLORS_DOMAIN)]
                 marker = MARKERS_LABEL[label]
-                lbl = f"{DOMAIN_NAMES[d_id % len(DOMAIN_NAMES)]} ({'faulty' if label else 'normal'})"
+                lbl = (
+                    f"{DOMAIN_NAMES[d_id % len(DOMAIN_NAMES)]} ({'faulty' if label else 'normal'})"
+                )
                 ax.scatter(
                     X_proj[mask, 0],
                     X_proj[mask, 1],
@@ -312,7 +314,9 @@ def plot_kmeans_voronoi(
     # pcolormesh avec shading='flat' requiert grid_res+1 bords
     x_edges = np.linspace(x_min, x_max, grid_res + 1)
     y_edges = np.linspace(y_min, y_max, grid_res + 1)
-    ax.pcolormesh(x_edges, y_edges, region_labels, cmap=cmap_v, vmin=-0.5, vmax=k - 0.5, shading="flat")
+    ax.pcolormesh(
+        x_edges, y_edges, region_labels, cmap=cmap_v, vmin=-0.5, vmax=k - 0.5, shading="flat"
+    )
 
     # Centroids en étoiles noires
     ax.scatter(
@@ -365,7 +369,7 @@ def plot_mahalanobis_ellipse(
     linestyles = ["-", "--", ":"]
     for i, sigma in enumerate(sigmas):
         width = 2.0 * sigma * np.sqrt(eigenvalues[-1])  # axe majeur
-        height = 2.0 * sigma * np.sqrt(eigenvalues[0])   # axe mineur
+        height = 2.0 * sigma * np.sqrt(eigenvalues[0])  # axe mineur
         ls = linestyles[i % len(linestyles)]
         ellipse = mpatches.Ellipse(
             xy=mu_proj,
@@ -496,9 +500,18 @@ def plot_clustering_with_correctness(
 
     # Palette clusters — jusqu'à 12 clusters distincts
     CLUSTER_COLORS = [
-        "#2196F3", "#FF9800", "#9C27B0", "#009688", "#F44336",
-        "#CDDC39", "#795548", "#00BCD4", "#E91E63", "#3F51B5",
-        "#8BC34A", "#FF5722",
+        "#2196F3",
+        "#FF9800",
+        "#9C27B0",
+        "#009688",
+        "#F44336",
+        "#CDDC39",
+        "#795548",
+        "#00BCD4",
+        "#E91E63",
+        "#3F51B5",
+        "#8BC34A",
+        "#FF5722",
     ]
     NOISE_COLOR = "#BDBDBD"  # gris DBSCAN bruit
 
@@ -527,18 +540,28 @@ def plot_clustering_with_correctness(
             mask_ok = mask_k & correct_mask
             if mask_ok.sum() > 0:
                 ax.scatter(
-                    X_proj[mask_ok, 0], X_proj[mask_ok, 1],
-                    c=color, marker="o", alpha=0.6, s=18,
-                    linewidths=0, label=f"{cluster_label} ✓" if k_idx == 0 else None,
+                    X_proj[mask_ok, 0],
+                    X_proj[mask_ok, 1],
+                    c=color,
+                    marker="o",
+                    alpha=0.6,
+                    s=18,
+                    linewidths=0,
+                    label=f"{cluster_label} ✓" if k_idx == 0 else None,
                 )
 
             # Points incorrects (croix)
             mask_err = mask_k & ~correct_mask
             if mask_err.sum() > 0:
                 ax.scatter(
-                    X_proj[mask_err, 0], X_proj[mask_err, 1],
-                    c=color, marker="x", alpha=0.9, s=30,
-                    linewidths=1.2, label=f"{cluster_label} ✗" if k_idx == 0 else None,
+                    X_proj[mask_err, 0],
+                    X_proj[mask_err, 1],
+                    c=color,
+                    marker="x",
+                    alpha=0.9,
+                    s=30,
+                    linewidths=1.2,
+                    label=f"{cluster_label} ✗" if k_idx == 0 else None,
                 )
 
             # Annotation textuelle au centroïde du cluster dans l'espace projeté
@@ -566,17 +589,27 @@ def plot_clustering_with_correctness(
                     _, combined, _, _ = fit_projection(
                         np.vstack([X_all, centroids_4d]), method=projection
                     )
-                    centroids_proj = combined[-len(centroids_4d):]
+                    centroids_proj = combined[-len(centroids_4d) :]
                 ax.scatter(
-                    centroids_proj[:, 0], centroids_proj[:, 1],
-                    c="black", marker="*", s=220, zorder=6, label="Centroïdes",
+                    centroids_proj[:, 0],
+                    centroids_proj[:, 1],
+                    c="black",
+                    marker="*",
+                    s=220,
+                    zorder=6,
+                    label="Centroïdes",
                 )
 
         # Légende manuelle correct/incorrect
         from matplotlib.lines import Line2D
+
         legend_elems = [
-            Line2D([0], [0], marker="o", color="grey", markersize=6, linewidth=0, label="Correct ✓"),
-            Line2D([0], [0], marker="x", color="grey", markersize=6, linewidth=1.5, label="Incorrect ✗"),
+            Line2D(
+                [0], [0], marker="o", color="grey", markersize=6, linewidth=0, label="Correct ✓"
+            ),
+            Line2D(
+                [0], [0], marker="x", color="grey", markersize=6, linewidth=1.5, label="Incorrect ✗"
+            ),
         ]
         ax.legend(handles=legend_elems, fontsize=8, loc="upper right")
 
@@ -633,7 +666,7 @@ def plot_cl_evolution(
     for col in range(3):
         # Données cumulatives jusqu'à la tâche col (incluse)
         X_cumul = np.concatenate([task_arrays[c][0] for c in range(col + 1)], axis=0)
-        y_cumul = np.concatenate([task_arrays[c][1] for c in range(col + 1)], axis=0)
+        _ = np.concatenate([task_arrays[c][1] for c in range(col + 1)], axis=0)
         domain_cumul = np.concatenate(
             [np.full(len(task_arrays[c][0]), c) for c in range(col + 1)], axis=0
         )

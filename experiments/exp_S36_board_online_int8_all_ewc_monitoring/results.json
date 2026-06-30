@@ -1,0 +1,52 @@
+{
+  "exp_id": "exp_S36_board_online_int8_all_ewc_monitoring",
+  "platform": "nucleo_f439zi",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "condition": "all",
+  "precision": "INT8",
+  "n_features": 4,
+  "feature_names": [
+    "temperature",
+    "pressure",
+    "vibration",
+    "humidity"
+  ],
+  "date": "2026-06-29T11:26:56",
+  "stream_mode": "online (--update + consolidate)",
+  "latency_us_p50": 440.0,
+  "latency_us_p99": 440.0,
+  "latency_us_mean": 440.03,
+  "latency_inference_only_us_p50": 51.0,
+  "latency_update_overhead_us_p50": 389.0,
+  "online_accuracy": 0.8674,
+  "online_accuracy_firmware": 0.8674400448799133,
+  "online_auroc_firmware": 0.567375898361206,
+  "online_forgetting_firmware": 0.00010547041893005371,
+  "pc_online_accuracy": 0.9773201251303442,
+  "online_forgetting": -0.0031286664059444838,
+  "pc_per_task_af": {
+    "0": -0.00430191630817367,
+    "1": -0.005084082909659782,
+    "2": 0.0
+  },
+  "per_task_board_acc": [
+    0.842,
+    0.8733,
+    0.887
+  ],
+  "f1_faulty": 0.06782768102658111,
+  "f1_macro": 0.49823714087110993,
+  "metric_value": 0.06782768102658111,
+  "bss_bytes": 100152,
+  "n_streamed": 7672,
+  "crc_errors": 0,
+  "parity_class": "approx_int8",
+  "parity_rate": 0.8796923879040668,
+  "n_compared": 7672,
+  "gap2_latency_compliant": true,
+  "ram_weights_fp32_bytes": 2688,
+  "ram_weights_int8_bytes": 672,
+  "ram_ratio_fp32_over_int8": 4.0,
+  "agreement_int8_vs_fp32": 0.8753910323253389
+}

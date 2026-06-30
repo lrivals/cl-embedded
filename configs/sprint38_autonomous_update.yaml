@@ -1,0 +1,69 @@
+# sprint38_autonomous_update.yaml — Configuration EWC autonome déclenché par gate (S3801)
+#
+# Source de vérité UNIQUE pour l'étude Sprint 38 : 4 politiques de mise à jour EWC
+#   × 2 datasets × 2 plateformes (PC, NUCLEO-F439ZI).
+# Consommée identiquement par :
+#   - scripts/run_sprint38_pc.py       (S3802 — référence PC + checkpoint + seuils partagés)
+#   - scripts/run_sprint38_board.py    (S3804 frozen/always · S3805 gated_*)
+#   - scripts/aggregate_sprint38.py    (S3807 — agrégat lecture seule)
+#
+# Règle CLAUDE.md : aucun hyperparamètre dans le code → tout est ici (ou hérité de
+# board_ewc.yaml). Indices de features résolus par
+# src.evaluation.feature_conditions.resolve_feature_indices (parité par construction, S35).
+
+model: ewc
+seed: 42
+
+datasets: [monitoring, pronostia]   # D2 drift inter-équipements · D4 temporel/première faute
+condition: 5feat                    # condition d'entrée fixe (board câblé 5-feat) — résolue par feature_conditions
+
+# Les 4 politiques de mise à jour (cœur du sprint). Toutes exécutent le MÊME EWC ;
+# seul change QUI décide d'updater et AVEC QUEL label.
+policies:
+  - frozen              # P0 : aucune MAJ (référence plancher)
+  - always              # P1 : MAJ chaque échantillon, vrai label (référence plafond, flag UART actuel)
+  - gated_truelabel     # P2 : MAJ déclenchée par le gate, vrai label uniquement sur flag (active learning)
+  - gated_pseudolabel   # P3 : MAJ déclenchée par le gate, pseudo-label par verdict (100 % autonome)
+
+# Axe d'initialisation du modèle (décision utilisateur — étude des DEUX stratégies).
+#   pretrained : base CL offline partagée (section `training` ci-dessous, miroir Sprint 36)
+#                → checkpoint flashé ⇒ parité frozen exacte ; frozen = plancher d'un MODÈLE DÉPLOYÉ.
+#   scratch    : pas d'entraînement offline ; le streaming EST l'apprentissage ;
+#                frozen reste ~aléatoire (plancher absolu), always apprend en ligne (plafond).
+init_modes:
+  - pretrained
+  - scratch
+
+# Gate de nouveauté embarqué : SlidingWindowDriftDetector alimenté par maha_score.
+# Seuils calibrés sur l'enrôlement healthy (P95 × multiplicateurs) — voir drift_detector.py.
+drift_detector:
+  window_size: 50         # fenêtre glissante (état O(W) ~200 B @ FP32)
+  fault_multiplier: 2.5   # fault_threshold = P95_healthy × 2.5  (FAULT instantané)
+  drift_multiplier: 1.3   # drift_threshold = P95_healthy × 1.3  (DRIFT progressif)
+  drift_ratio: 0.6        # fraction de la fenêtre > drift_threshold pour déclencher DRIFT
+
+# Enrôlement one-class : les N premiers échantillons SAINS calibrent maha + seuils du gate.
+# (scénario réel : machine neuve = saine ; aucune faute vue au déploiement)
+enrollment:
+  healthy_only: true
+  n_samples: 500          # échantillons sains pour calibrer maha + P95 des seuils
+
+# Échantillons appariés : split test/inférence COMPLET des deux côtés (pas de troncature)
+n_inference: full
+match_train_inference: true   # mêmes indices/colonnes PC et board (load_condition_arrays, seed=42)
+
+uart:
+  rate_hz: 50
+  proto: 3                # réponse v3
+  dump_samples: true      # prédictions + verdict par échantillon → parité S3806
+
+# Hyperparamètres EWC hérités de configs/board_ewc.yaml (ne PAS dupliquer ici)
+ewc_base_config: configs/board_ewc.yaml   # EWC_LR, EWC_LAMBDA, FISHER_EMA_DECAY
+
+# Constantes d'entraînement appariées board (= run_feature_condition_board.train_ewc_board)
+# pour que le checkpoint PC == checkpoint flashé → parité exacte par construction (frozen).
+training:
+  n_tasks: 3
+  epochs_per_task: 15
+  batch_size: 32
+  test_ratio: 0.2

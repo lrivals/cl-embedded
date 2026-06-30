@@ -1,0 +1,15 @@
+exp_id: exp_S35_PC_best_hdc_cwru
+condition: best
+model: hdc
+dataset: cwru
+seed: 42
+feature_indices:
+- 1
+- 6
+- 3
+- 8
+feature_names:
+- min
+- kurtosis
+- sd
+- form

@@ -1,0 +1,26 @@
+{
+  "model": "tinyol_int8",
+  "dataset": "cmapss",
+  "board": "NUCLEO-F439ZI",
+  "precision": "INT8",
+  "n_samples": 0,
+  "metric_name": "auroc",
+  "metric_value": null,
+  "latency_dwt_us": {
+    "p50": null,
+    "p95": null,
+    "p99": null
+  },
+  "ram_weights_int8_bytes": 672,
+  "ram_weights_fp32_bytes": 2688,
+  "ram_bss_total_bytes": null,
+  "gap2_compliant": null,
+  "gap3_latency_ok": null,
+  "gap3_ram_ok": true,
+  "fp32_reference": null,
+  "int8_detail": null,
+  "latency_ratio_int8_over_fp32": null,
+  "ram_ratio_fp32_over_int8": 4.0,
+  "crc_errors": 0,
+  "na_reason": "encodeur TinyOL non exportable pour ce dataset sur board (export limit\u00e9 \u00e0 cwru/monitoring/pronostia) \u2014 limitation de construction, non mesurable"
+}

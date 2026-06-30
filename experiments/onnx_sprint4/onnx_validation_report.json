@@ -1,0 +1,47 @@
+{
+  "_exported_at": "2026-06-01T14:58:47.343928",
+  "onnx_opset": 17,
+  "models": [
+    {
+      "model": "ewc_backbone",
+      "onnx_path": "experiments/onnx_sprint4/ewc_mlp.onnx",
+      "int8_path": "experiments/onnx_sprint4/ewc_mlp_int8.onnx",
+      "onnx_opset": 17,
+      "operators": [
+        "Gemm",
+        "Relu",
+        "Sigmoid"
+      ],
+      "cmsis_nn_compatible": true,
+      "stm32cubeai_compatible": true,
+      "max_deviation_ort_vs_pytorch": 1.1920928955078125e-07,
+      "ort_match_atol_1e5": true,
+      "n_params": 705
+    },
+    {
+      "model": "tinyol_encoder",
+      "onnx_path": "experiments/onnx_sprint4/tinyol_encoder.onnx",
+      "int8_path": "experiments/onnx_sprint4/tinyol_encoder_int8.onnx",
+      "onnx_opset": 17,
+      "operators": [
+        "Gemm",
+        "Relu"
+      ],
+      "cmsis_nn_compatible": true,
+      "stm32cubeai_compatible": true,
+      "max_deviation_ort_vs_pytorch": 1.9073486328125e-06,
+      "ort_match_atol_1e5": true,
+      "n_params": 1112
+    }
+  ],
+  "hdc": {
+    "model": "hdc_classifier",
+    "onnx_exportable": false,
+    "reason": "HDC utilise une accumulation additive de prototypes INT32 sans graphe computationnel diff\u00e9rentiable. Op\u00e9rations \u00e9quivalentes : MatMul (encodage) + ArgMax (inf\u00e9rence).",
+    "pseudo_onnx_ops": [
+      "MatMul",
+      "ArgMax"
+    ],
+    "cmsis_nn_compatible": true
+  }
+}

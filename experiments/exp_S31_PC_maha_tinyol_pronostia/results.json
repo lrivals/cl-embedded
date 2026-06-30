@@ -1,0 +1,65 @@
+{
+  "exp_id": "exp_S31_PC_maha_tinyol_pronostia",
+  "pair": "maha_tinyol",
+  "dataset": "pronostia",
+  "frame": "binary",
+  "n_eval": 1508,
+  "oof": {
+    "meta_fit": 904,
+    "meta_eval": 604,
+    "test_size": 0.4
+  },
+  "input_features": [
+    "p_maha",
+    "p_sup",
+    "disagreement",
+    "conf_sup"
+  ],
+  "meta": {
+    "logreg": {
+      "f1": 0.3090909090909091,
+      "auroc": 0.7351102941176471
+    },
+    "mlp": {
+      "f1": 0.0,
+      "auroc": 0.7342830882352941
+    }
+  },
+  "best_meta": "logreg",
+  "baselines": {
+    "model_a": {
+      "name": "mahalanobis",
+      "f1": 0.3116883116883117,
+      "auroc": 0.7261642156862745
+    },
+    "model_b": {
+      "name": "tinyol",
+      "f1": 0.32,
+      "auroc": 0.6400122549019608
+    },
+    "ensemble": {
+      "or": {
+        "f1": 0.2894736842105263,
+        "auroc": 0.7197610294117647
+      },
+      "and": {
+        "f1": 0.27450980392156865,
+        "auroc": 0.7197610294117647
+      },
+      "soft_vote": {
+        "f1": 0.3142857142857143,
+        "auroc": 0.7197610294117647
+      },
+      "weighted": {
+        "f1": 0.3142857142857143,
+        "auroc": 0.7197610294117647
+      }
+    },
+    "best_ensemble_rule": "soft_vote",
+    "best_individual_f1": 0.32,
+    "best_ensemble_f1": 0.3142857142857143
+  },
+  "delta_vs_best_individual": -0.010909090909090924,
+  "delta_vs_ensemble": -0.0051948051948051965,
+  "timestamp": "2026-06-18T14:42:32"
+}

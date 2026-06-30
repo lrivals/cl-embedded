@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_board_best_mahalanobis_paderborn",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-25T19:54:18",
+  "n_features": 1,
+  "bss_bytes": 85848,
+  "online_accuracy": 0.36,
+  "f1_faulty": 0.0943,
+  "f1_macro": 0.2997,
+  "latency_us_p50": 2.0,
+  "latency_us_p99": 2.0,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "stream_mode": "frozen (sans --update \u2192 parit\u00e9 exacte)",
+  "parity_class": "exact",
+  "parity_ok": true,
+  "n_compared": 150,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

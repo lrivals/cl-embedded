@@ -34,6 +34,10 @@ oto_head:
   learning_rate: 0.01
   momentum: 0.0          # pas de momentum → économise RAM
   loss: "bce"
+  # Buffer UINT8 (S4-02 — activer pour exp_004)
+  use_uint8_buffer: false     # true = compression 4× du buffer de replay
+  buffer_size: 50             # MEM: 50×9×1 = 450 B @ UINT8 / 50×9×4 = 1800 B @ FP32
+  buffer_replay_ratio: 0.2   # 1 replay tous les 5 updates
 
 data:
   dataset: "pump_maintenance"

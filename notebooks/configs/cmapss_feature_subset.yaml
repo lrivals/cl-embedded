@@ -1,0 +1,8 @@
+features:
+- Ps30
+- T50
+- Phi
+- P30
+- BPR
+method: mutual_info_classif
+n_features: 5

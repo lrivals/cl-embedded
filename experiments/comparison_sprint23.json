@@ -1,0 +1,1501 @@
+{
+  "metadata": {
+    "sprint": 23,
+    "date": "2026-06-25",
+    "datasets": [
+      "cwru",
+      "monitoring",
+      "pronostia",
+      "cmapss",
+      "paderborn"
+    ],
+    "models": [
+      "mahalanobis",
+      "ewc",
+      "ewc_int8",
+      "tinyol",
+      "hdc"
+    ],
+    "platforms": [
+      "pc",
+      "nucleo_f439zi"
+    ],
+    "gap2_budget_bytes": 65536,
+    "source": "generate_comparison_sprint23.py",
+    "conditions": [
+      "5feat",
+      "all",
+      "best"
+    ]
+  },
+  "results": {
+    "cwru": {
+      "mahalanobis": {
+        "pc": {
+          "exp": "exp_S33_PC_mahalanobis_cwru",
+          "acc_final": 0.16017316017316016,
+          "avg_forgetting": 0.02597402597402597,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S19_01",
+          "acc_final": 0.6285,
+          "avg_forgetting": 0.0,
+          "latency_ms": 0.004,
+          "ram_bytes": 200.0,
+          "note": "board live, 1 répétition (pré-protocole S2113)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc": {
+        "pc": {
+          "exp": "exp_S33_PC_ewc_cwru",
+          "acc_final": 1.0,
+          "avg_forgetting": 0.0,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S23_benchmark",
+          "acc_final": 0.8833,
+          "avg_forgetting": 0.175,
+          "backward_transfer": -0.175,
+          "latency_ms": 0.2507,
+          "ram_bytes": 0.0,
+          "lambda_ewc": 400.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc_int8": {
+        "pc": {
+          "exp": "exp_S22_INT8_01",
+          "acc_final": 1.0,
+          "avg_forgetting": 0.0,
+          "ram_bytes": 4714.0,
+          "auroc": 0.99968,
+          "gap2_ram_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": null,
+          "note": "pending"
+        }
+      },
+      "tinyol": {
+        "pc": {
+          "exp": "exp_S33_PC_tinyol_cwru",
+          "acc_final": 0.9788452596828939,
+          "avg_forgetting": 0.0,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S33_board_gap1_tinyol_cwru",
+          "acc_final": 0.8933,
+          "latency_ms": 0.005,
+          "ram_bytes": 39420.0,
+          "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "hdc": {
+        "pc": {
+          "exp": "exp_S33_PC_hdc_cwru",
+          "acc_final": 0.935064935064935,
+          "avg_forgetting": 0.04545454545454547,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S33_board_gap1_hdc_cwru",
+          "acc_final": 0.8867,
+          "latency_ms": 0.653,
+          "ram_bytes": 39420.0,
+          "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      }
+    },
+    "monitoring": {
+      "mahalanobis": {
+        "pc": {
+          "exp": "exp_S33_PC_mahalanobis_monitoring",
+          "acc_final": 0.9490328971982424,
+          "avg_forgetting": 0.0008038585209003135,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S21_01",
+          "acc_final": 1.0,
+          "avg_forgetting": 0.0,
+          "backward_transfer": -0.0,
+          "latency_ms": 0.003,
+          "ram_bytes": 200.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc": {
+        "pc": {
+          "exp": "exp_S33_PC_ewc_monitoring",
+          "acc_final": 0.9816856414260793,
+          "avg_forgetting": 0.0008064516129032417,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S19_02",
+          "acc_final": 0.9036,
+          "avg_forgetting": 0.0542,
+          "backward_transfer": -0.0542,
+          "latency_ms": 0.2507,
+          "ram_bytes": 0.0,
+          "lambda_ewc": 0.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc_int8": {
+        "pc": {
+          "exp": null,
+          "note": "pending"
+        },
+        "nucleo_f439zi": {
+          "exp": null,
+          "note": "pending"
+        }
+      },
+      "tinyol": {
+        "pc": {
+          "exp": "exp_S33_PC_tinyol_monitoring",
+          "acc_final": 0.9740799548785306,
+          "avg_forgetting": 0.0,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S21_02",
+          "acc_final": 1.0,
+          "avg_forgetting": 0.0,
+          "backward_transfer": -0.0,
+          "latency_ms": 0.003,
+          "ram_bytes": 200.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "hdc": {
+        "pc": {
+          "exp": "exp_S33_PC_hdc_monitoring",
+          "acc_final": 0.8498242949047279,
+          "avg_forgetting": 0.01530540518069426,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S35_board_all_hdc_monitoring",
+          "acc_final": 0.8667,
+          "latency_ms": 0.653,
+          "ram_bytes": 39420.0,
+          "note": "S3509 : valeur mesurée board (monitoring natif 4-feat, sans zéro-padding) — remplace l'artefact 0.1133",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      }
+    },
+    "pronostia": {
+      "mahalanobis": {
+        "pc": {
+          "exp": "exp_S33_PC_mahalanobis_pronostia",
+          "acc_final": 0.8976641969524408,
+          "avg_forgetting": 0.010204081632653073,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S21_03",
+          "acc_final": 1.0,
+          "avg_forgetting": 0.0,
+          "backward_transfer": -0.0,
+          "latency_ms": 0.003,
+          "ram_bytes": 200.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc": {
+        "pc": {
+          "exp": "exp_S33_PC_ewc_pronostia",
+          "acc_final": 0.9819339347521753,
+          "avg_forgetting": 0.0,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S21_04",
+          "acc_final": 0.9167,
+          "avg_forgetting": 0.11,
+          "backward_transfer": -0.11,
+          "latency_ms": 0.2509,
+          "ram_bytes": 200.0,
+          "lambda_ewc": 400.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc_int8": {
+        "pc": {
+          "exp": null,
+          "note": "pending"
+        },
+        "nucleo_f439zi": {
+          "exp": null,
+          "note": "pending"
+        }
+      },
+      "tinyol": {
+        "pc": {
+          "exp": "exp_S33_PC_tinyol_pronostia",
+          "acc_final": 0.9297033743102157,
+          "avg_forgetting": 0.01983261903706257,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S32_board_tinyol_pronostia_thr72",
+          "acc_final": 0.8833,
+          "latency_ms": 0.005,
+          "ram_bytes": 39060.0,
+          "note": "online_accuracy board, seuil réf. 72 (S32)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "hdc": {
+        "pc": {
+          "exp": "exp_S33_PC_hdc_pronostia",
+          "acc_final": 0.8502762171882768,
+          "avg_forgetting": 0.05552571905955367,
+          "note": "PC CL acc_final (S33)"
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S32_board_hdc_pronostia_thr72",
+          "acc_final": 0.9417,
+          "latency_ms": 0.585,
+          "ram_bytes": 39060.0,
+          "note": "online_accuracy board, seuil réf. 72 (S32)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      }
+    },
+    "cmapss": {
+      "mahalanobis": {
+        "pc": {
+          "exp": "exp_S22_04",
+          "acc_final": 0.5000580234557177,
+          "avg_forgetting": 0.41906874153919427,
+          "backward_transfer": -0.40570110965989375,
+          "latency_ms": 0.005473059973155614,
+          "ram_bytes": 1532.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S32_board_mahalanobis_cmapss_thr30",
+          "acc_final": 0.8,
+          "latency_ms": 0.005,
+          "ram_bytes": 39060.0,
+          "note": "online_accuracy board, seuil réf. 30 (S32)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc": {
+        "pc": {
+          "exp": "exp_S22_INT8_02",
+          "acc_final": 0.914438,
+          "avg_forgetting": 0.000162,
+          "ram_bytes": 1171.0,
+          "auroc": 0.806192,
+          "gap2_ram_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S32_board_ewc_cmapss_thr30",
+          "acc_final": 0.8667,
+          "latency_ms": 0.05,
+          "ram_bytes": 39060.0,
+          "note": "online_accuracy board, seuil réf. 30 (S32)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc_int8": {
+        "pc": {
+          "exp": "exp_S22_INT8_02",
+          "acc_final": 0.914594,
+          "avg_forgetting": 0.000809,
+          "ram_bytes": 5511.0,
+          "auroc": 0.803713,
+          "gap2_ram_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": null,
+          "note": "pending"
+        }
+      },
+      "tinyol": {
+        "pc": {
+          "exp": "exp_S22_03",
+          "acc_final": 0.8944808943637657,
+          "avg_forgetting": 0.018357002468282313,
+          "backward_transfer": -0.018357002468282313,
+          "latency_ms": 0.005986900087009417,
+          "ram_bytes": 3679.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S32_board_tinyol_cmapss_thr30",
+          "acc_final": 0.8,
+          "latency_ms": 0.005,
+          "ram_bytes": 39060.0,
+          "note": "online_accuracy board, seuil réf. 30 (S32)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "hdc": {
+        "pc": {
+          "exp": "exp_S22_02",
+          "acc_final": 0.8620997165671742,
+          "avg_forgetting": 0.042622791630039646,
+          "backward_transfer": -0.03866511454418231,
+          "latency_ms": 0.03634492008131929,
+          "ram_bytes": 14504.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S23_04",
+          "acc_final": 0.8525,
+          "avg_forgetting": 0.0,
+          "backward_transfer": -0.0,
+          "latency_ms": 0.6464,
+          "ram_bytes": 0.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      }
+    },
+    "paderborn": {
+      "mahalanobis": {
+        "pc": {
+          "exp": "exp_S22_06",
+          "acc_final": 0.35562791959063017,
+          "avg_forgetting": 0.002253380070105171,
+          "backward_transfer": -0.002253380070105171,
+          "latency_ms": 0.0072976399951585336,
+          "ram_bytes": 1532.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S23_06",
+          "acc_final": 0.6127,
+          "avg_forgetting": 0.1626,
+          "backward_transfer": -0.1626,
+          "latency_ms": 0.0542,
+          "ram_bytes": 1200.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc": {
+        "pc": {
+          "exp": "exp_S22_05",
+          "acc_final": 0.6666666666666666,
+          "avg_forgetting": 0.5,
+          "backward_transfer": -0.5,
+          "latency_ms": 0.033986619991992484,
+          "ram_bytes": 1171.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S23_05",
+          "acc_final": 0.9311,
+          "avg_forgetting": 0.0767,
+          "backward_transfer": -0.0767,
+          "latency_ms": 0.2507,
+          "ram_bytes": 0.0,
+          "lambda_ewc": 400.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "ewc_int8": {
+        "pc": {
+          "exp": null,
+          "note": "pending"
+        },
+        "nucleo_f439zi": {
+          "exp": null,
+          "note": "pending"
+        }
+      },
+      "tinyol": {
+        "pc": {
+          "exp": "exp_S22_07",
+          "acc_final": 0.6666666666666666,
+          "avg_forgetting": 0.5,
+          "backward_transfer": -0.5,
+          "latency_ms": 0.009136660014519293,
+          "ram_bytes": 4393.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S33_board_gap1_tinyol_paderborn",
+          "acc_final": 0.6667,
+          "latency_ms": 0.005,
+          "ram_bytes": 39420.0,
+          "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      },
+      "hdc": {
+        "pc": {
+          "exp": "exp_S22_08",
+          "acc_final": 0.3333333333333333,
+          "avg_forgetting": 0.0,
+          "backward_transfer": 0.0005007511266900133,
+          "latency_ms": 0.05278698991787678,
+          "ram_bytes": 14504.0,
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        },
+        "nucleo_f439zi": {
+          "exp": "exp_S33_board_gap1_hdc_paderborn",
+          "acc_final": 0.6667,
+          "latency_ms": 0.653,
+          "ram_bytes": 39420.0,
+          "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)",
+          "gap2_ram_compliant": true,
+          "gap2_latency_compliant": true
+        }
+      }
+    }
+  },
+  "gap_summary": {
+    "gap1_datasets": [
+      "cwru",
+      "monitoring",
+      "pronostia",
+      "cmapss",
+      "paderborn"
+    ],
+    "gap1_datasets_count": 5,
+    "gap2_ram_budget_bytes": 65536,
+    "gap2_latency_budget_ms": 100.0,
+    "gap2_board_results_count": 20,
+    "gap2_compliant_count": 20,
+    "gap2_ram_max_observed_bytes": 39420.0,
+    "gap2_latency_max_observed_ms": 0.653,
+    "gap3_int8_exp": "exp_S23_INT8",
+    "gap3_int8_ram_reduction": "2.7x (9728 → 3600 bytes, exp_S22_INT8_01)"
+  },
+  "results_by_condition": {
+    "5feat": {
+      "cwru": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_mahalanobis_cwru",
+            "acc_final": 0.16450216450216448,
+            "f1_faulty": 0.12669683257918551,
+            "n_features": 5,
+            "note": "subset cwru_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_mahalanobis_cwru",
+            "acc_final": 0.16,
+            "f1_faulty": 0.125,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_ewc_cwru",
+            "acc_final": 1.0,
+            "f1_faulty": 1.0,
+            "n_features": 5,
+            "note": "subset cwru_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_ewc_cwru",
+            "acc_final": 0.9933,
+            "f1_faulty": 0.9963,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_tinyol_cwru",
+            "acc_final": 0.7705627705627706,
+            "f1_faulty": 0.853185595567867,
+            "n_features": 5,
+            "note": "subset cwru_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_tinyol_cwru",
+            "acc_final": 0.16,
+            "f1_faulty": 0.125,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_hdc_cwru",
+            "acc_final": 0.9220779220779222,
+            "f1_faulty": 0.9545454545454546,
+            "n_features": 5,
+            "note": "subset cwru_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_hdc_cwru",
+            "acc_final": 0.1,
+            "f1_faulty": 0.0,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "monitoring": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_mahalanobis_monitoring",
+            "acc_final": 0.9537371106072546,
+            "f1_faulty": 0.6978723404255319,
+            "n_features": 4,
+            "note": "pas de subset top-5 (monitoring) → 5feat≡all (4 feats)"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_mahalanobis_monitoring",
+            "acc_final": 0.94,
+            "f1_faulty": 0.7097,
+            "n_features": 4,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_ewc_monitoring",
+            "acc_final": 0.9804372577140943,
+            "f1_faulty": 0.8928571428571429,
+            "n_features": 4,
+            "note": "pas de subset top-5 (monitoring) → 5feat≡all (4 feats)"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_ewc_monitoring",
+            "acc_final": 0.9867,
+            "f1_faulty": 0.9474,
+            "n_features": 4,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_tinyol_monitoring",
+            "acc_final": 0.9440080661835571,
+            "f1_faulty": 0.7542857142857143,
+            "n_features": 4,
+            "note": "pas de subset top-5 (monitoring) → 5feat≡all (4 feats)"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_tinyol_monitoring",
+            "acc_final": 0.94,
+            "f1_faulty": 0.7097,
+            "n_features": 4,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_hdc_monitoring",
+            "acc_final": 0.8697531741411043,
+            "f1_faulty": 0.5652173913043478,
+            "n_features": 4,
+            "note": "pas de subset top-5 (monitoring) → 5feat≡all (4 feats)"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_hdc_monitoring",
+            "acc_final": 0.8667,
+            "f1_faulty": 0.0,
+            "n_features": 4,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "pronostia": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_mahalanobis_pronostia",
+            "acc_final": 0.9057598328676256,
+            "f1_faulty": 0.3047619047619048,
+            "n_features": 5,
+            "note": "subset pronostia_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_mahalanobis_pronostia",
+            "acc_final": 0.8933,
+            "f1_faulty": 0.2727,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_ewc_pronostia",
+            "acc_final": 0.9850275155719741,
+            "f1_faulty": 0.9302325581395349,
+            "n_features": 5,
+            "note": "subset pronostia_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_ewc_pronostia",
+            "acc_final": 0.9933,
+            "f1_faulty": 0.9677,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_tinyol_pronostia",
+            "acc_final": 0.6402757529111698,
+            "f1_faulty": 0.28532235939643347,
+            "n_features": 5,
+            "note": "subset pronostia_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_tinyol_pronostia",
+            "acc_final": 0.8933,
+            "f1_faulty": 0.2727,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_hdc_pronostia",
+            "acc_final": 0.8220197955574681,
+            "f1_faulty": 0.4250559284116331,
+            "n_features": 5,
+            "note": "subset pronostia_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_hdc_pronostia",
+            "acc_final": 0.9,
+            "f1_faulty": 0.0,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "cmapss": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_mahalanobis_cmapss",
+            "acc_final": 0.7446392635218492,
+            "f1_faulty": 0.269375,
+            "n_features": 5,
+            "note": "subset cmapss_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_mahalanobis_cmapss",
+            "acc_final": 0.8533,
+            "f1_faulty": 0.2143,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_ewc_cmapss",
+            "acc_final": 0.9148646906346243,
+            "f1_faulty": 0.456028249537582,
+            "n_features": 5,
+            "note": "subset cmapss_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_ewc_cmapss",
+            "acc_final": 0.9133,
+            "f1_faulty": 0.381,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_tinyol_cmapss",
+            "acc_final": 0.7209283321601976,
+            "f1_faulty": 0.1973585310855793,
+            "n_features": 5,
+            "note": "subset cmapss_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_tinyol_cmapss",
+            "acc_final": 0.8533,
+            "f1_faulty": 0.2143,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_hdc_cmapss",
+            "acc_final": 0.8620997165671742,
+            "f1_faulty": 0.0,
+            "n_features": 5,
+            "note": "subset cmapss_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_hdc_cmapss",
+            "acc_final": 0.8867,
+            "f1_faulty": 0.0,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "paderborn": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_mahalanobis_paderborn",
+            "acc_final": 0.34831213886698315,
+            "f1_faulty": 0.07124198527665637,
+            "n_features": 5,
+            "note": "subset paderborn_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_mahalanobis_paderborn",
+            "acc_final": 0.3733,
+            "f1_faulty": 0.1132,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_ewc_paderborn",
+            "acc_final": 0.6666666666666666,
+            "f1_faulty": 0.8002800280028003,
+            "n_features": 5,
+            "note": "subset paderborn_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_ewc_paderborn",
+            "acc_final": 0.6667,
+            "f1_faulty": 0.8,
+            "n_features": 5,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_tinyol_paderborn",
+            "acc_final": 0.5806749045724274,
+            "f1_faulty": 0.7030474840538625,
+            "n_features": 5,
+            "note": "subset paderborn_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_tinyol_paderborn",
+            "acc_final": 0.3733,
+            "f1_faulty": 0.1132,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_5feat_hdc_paderborn",
+            "acc_final": 0.4946598207357609,
+            "f1_faulty": 0.5648241206030151,
+            "n_features": 5,
+            "note": "subset paderborn_feature_subset.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_5feat_hdc_paderborn",
+            "acc_final": 0.3333,
+            "f1_faulty": 0.0,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      }
+    },
+    "all": {
+      "cwru": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_all_mahalanobis_cwru",
+            "acc_final": 0.16017316017316016,
+            "f1_faulty": 0.12612612612612611,
+            "n_features": 9,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_mahalanobis_cwru",
+            "acc_final": 0.14,
+            "f1_faulty": 0.0851,
+            "n_features": 9,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_ewc_cwru",
+            "acc_final": 0.9956709956709956,
+            "f1_faulty": 0.9975903614457832,
+            "n_features": 9,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_ewc_cwru",
+            "acc_final": 0.9933,
+            "f1_faulty": 0.9963,
+            "n_features": 9,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_all_tinyol_cwru",
+            "acc_final": 0.8528138528138528,
+            "f1_faulty": 0.9105263157894737,
+            "n_features": 9,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_tinyol_cwru",
+            "acc_final": 0.14,
+            "f1_faulty": 0.0851,
+            "n_features": 9,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_hdc_cwru",
+            "acc_final": 0.987012987012987,
+            "f1_faulty": 0.9927007299270073,
+            "n_features": 9,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_hdc_cwru",
+            "acc_final": 0.1,
+            "f1_faulty": 0.0,
+            "n_features": 9,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "monitoring": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_all_mahalanobis_monitoring",
+            "acc_final": 0.9537371106072546,
+            "f1_faulty": 0.6978723404255319,
+            "n_features": 4,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_mahalanobis_monitoring",
+            "acc_final": 0.94,
+            "f1_faulty": 0.7097,
+            "n_features": 4,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_ewc_monitoring",
+            "acc_final": 0.9804372577140943,
+            "f1_faulty": 0.8928571428571429,
+            "n_features": 4,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_ewc_monitoring",
+            "acc_final": 0.9867,
+            "f1_faulty": 0.9474,
+            "n_features": 4,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_all_tinyol_monitoring",
+            "acc_final": 0.9440080661835571,
+            "f1_faulty": 0.7542857142857143,
+            "n_features": 4,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_tinyol_monitoring",
+            "acc_final": 0.94,
+            "f1_faulty": 0.7097,
+            "n_features": 4,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_hdc_monitoring",
+            "acc_final": 0.8697531741411043,
+            "f1_faulty": 0.5652173913043478,
+            "n_features": 4,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_hdc_monitoring",
+            "acc_final": 0.8667,
+            "f1_faulty": 0.0,
+            "n_features": 4,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "pronostia": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_all_mahalanobis_pronostia",
+            "acc_final": 0.8976641969524408,
+            "f1_faulty": 0.23255813953488372,
+            "n_features": 13,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_mahalanobis_pronostia",
+            "acc_final": 0.8667,
+            "f1_faulty": 0.0909,
+            "n_features": 13,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_ewc_pronostia",
+            "acc_final": 0.9616179992573413,
+            "f1_faulty": 0.8493975903614458,
+            "n_features": 13,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_ewc_pronostia",
+            "acc_final": 0.9867,
+            "f1_faulty": 0.9375,
+            "n_features": 13,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_all_tinyol_pronostia",
+            "acc_final": 0.5687055908101563,
+            "f1_faulty": 0.26865671641791045,
+            "n_features": 13,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_tinyol_pronostia",
+            "acc_final": 0.8667,
+            "f1_faulty": 0.0909,
+            "n_features": 13,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_hdc_pronostia",
+            "acc_final": 0.805092556825718,
+            "f1_faulty": 0.43628509719222464,
+            "n_features": 13,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_hdc_pronostia",
+            "acc_final": 0.9,
+            "f1_faulty": 0.0,
+            "n_features": 13,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "cmapss": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_all_mahalanobis_cmapss",
+            "acc_final": 0.6640039253395615,
+            "f1_faulty": 0.28068153757510905,
+            "n_features": 21,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_mahalanobis_cmapss",
+            "acc_final": 0.8867,
+            "f1_faulty": 0.32,
+            "n_features": 21,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_ewc_cmapss",
+            "acc_final": 0.9319295127763974,
+            "f1_faulty": 0.6583021890016018,
+            "n_features": 21,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_ewc_cmapss",
+            "acc_final": 0.9333,
+            "f1_faulty": 0.6154,
+            "n_features": 21,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_all_tinyol_cmapss",
+            "acc_final": 0.7500533797321008,
+            "f1_faulty": 0.22345987724482838,
+            "n_features": 21,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_tinyol_cmapss",
+            "acc_final": 0.8867,
+            "f1_faulty": 0.32,
+            "n_features": 21,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_hdc_cmapss",
+            "acc_final": 0.8191986438821971,
+            "f1_faulty": 0.5145054176861237,
+            "n_features": 21,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_hdc_cmapss",
+            "acc_final": 0.8867,
+            "f1_faulty": 0.0,
+            "n_features": 21,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "paderborn": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_all_mahalanobis_paderborn",
+            "acc_final": 0.35246582448523084,
+            "f1_faulty": 0.09962928637627433,
+            "n_features": 7,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_mahalanobis_paderborn",
+            "acc_final": 0.3533,
+            "f1_faulty": 0.0762,
+            "n_features": 7,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_ewc_paderborn",
+            "acc_final": 0.6666666666666666,
+            "f1_faulty": 0.8002800280028003,
+            "n_features": 7,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_ewc_paderborn",
+            "acc_final": 0.6667,
+            "f1_faulty": 0.8,
+            "n_features": 7,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_all_tinyol_paderborn",
+            "acc_final": 0.3358295094004946,
+            "f1_faulty": 0.010918114143920596,
+            "n_features": 7,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_tinyol_paderborn",
+            "acc_final": 0.3533,
+            "f1_faulty": 0.0762,
+            "n_features": 7,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_all_hdc_paderborn",
+            "acc_final": 0.3333333333333333,
+            "f1_faulty": 0.0,
+            "n_features": 7,
+            "note": "dims natives"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_all_hdc_paderborn",
+            "acc_final": 0.3333,
+            "f1_faulty": 0.0,
+            "n_features": 7,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      }
+    },
+    "best": {
+      "cwru": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_best_mahalanobis_cwru",
+            "acc_final": 0.22943722943722944,
+            "f1_faulty": 0.2457627118644068,
+            "n_features": 1,
+            "note": "best mahalanobis_cwru.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_mahalanobis_cwru",
+            "acc_final": 0.1467,
+            "f1_faulty": 0.0986,
+            "n_features": 1,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_ewc_cwru",
+            "acc_final": 1.0,
+            "f1_faulty": 1.0,
+            "n_features": 1,
+            "note": "best ewc_cwru.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_ewc_cwru",
+            "acc_final": 0.9933,
+            "f1_faulty": 0.9963,
+            "n_features": 1,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_best_tinyol_cwru",
+            "acc_final": 0.8831168831168831,
+            "f1_faulty": 0.9302325581395349,
+            "n_features": 7,
+            "note": "best tinyol_cwru.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_tinyol_cwru",
+            "acc_final": 0.1,
+            "f1_faulty": 0.0,
+            "n_features": 7,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_hdc_cwru",
+            "acc_final": 0.987012987012987,
+            "f1_faulty": 0.9927007299270073,
+            "n_features": 4,
+            "note": "best hdc_cwru.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_hdc_cwru",
+            "acc_final": 0.1,
+            "f1_faulty": 0.0,
+            "n_features": 4,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "monitoring": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_best_mahalanobis_monitoring",
+            "acc_final": 0.9537371106072546,
+            "f1_faulty": 0.6978723404255319,
+            "n_features": 4,
+            "note": "best mahalanobis_monitoring.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_mahalanobis_monitoring",
+            "acc_final": 0.94,
+            "f1_faulty": 0.7097,
+            "n_features": 4,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_ewc_monitoring",
+            "acc_final": 0.9791300229385734,
+            "f1_faulty": 0.8857142857142857,
+            "n_features": 4,
+            "note": "best ewc_monitoring.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_ewc_monitoring",
+            "acc_final": 0.9867,
+            "f1_faulty": 0.9474,
+            "n_features": 4,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_best_tinyol_monitoring",
+            "acc_final": 0.9687513253856296,
+            "f1_faulty": 0.8235294117647058,
+            "n_features": 2,
+            "note": "best tinyol_monitoring.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_tinyol_monitoring",
+            "acc_final": 0.9067,
+            "f1_faulty": 0.4615,
+            "n_features": 2,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_hdc_monitoring",
+            "acc_final": 0.8749719002382026,
+            "f1_faulty": 0.5714285714285714,
+            "n_features": 4,
+            "note": "best hdc_monitoring.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_hdc_monitoring",
+            "acc_final": 0.8667,
+            "f1_faulty": 0.0,
+            "n_features": 4,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "pronostia": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_best_mahalanobis_pronostia",
+            "acc_final": 0.9059744894959382,
+            "f1_faulty": 0.3425925925925926,
+            "n_features": 2,
+            "note": "best mahalanobis_pronostia.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_mahalanobis_pronostia",
+            "acc_final": 0.9267,
+            "f1_faulty": 0.4211,
+            "n_features": 2,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_ewc_pronostia",
+            "acc_final": 0.9990253411306043,
+            "f1_faulty": 0.9966777408637874,
+            "n_features": 1,
+            "note": "best ewc_pronostia.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_ewc_pronostia",
+            "acc_final": 0.9933,
+            "f1_faulty": 0.9677,
+            "n_features": 1,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_best_tinyol_pronostia",
+            "acc_final": 0.7004642863373216,
+            "f1_faulty": 0.3594306049822064,
+            "n_features": 5,
+            "note": "best tinyol_pronostia.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_tinyol_pronostia",
+            "acc_final": 0.8533,
+            "f1_faulty": 0.0833,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_hdc_pronostia",
+            "acc_final": 0.9292020701036279,
+            "f1_faulty": 0.7086614173228346,
+            "n_features": 5,
+            "note": "best hdc_pronostia.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_hdc_pronostia",
+            "acc_final": 0.9,
+            "f1_faulty": 0.0,
+            "n_features": 5,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "cmapss": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_best_mahalanobis_cmapss",
+            "acc_final": 0.8853042807033435,
+            "f1_faulty": 0.3494498166055352,
+            "n_features": 2,
+            "note": "best mahalanobis_cmapss.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_mahalanobis_cmapss",
+            "acc_final": 0.9067,
+            "f1_faulty": 0.4167,
+            "n_features": 2,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_ewc_cmapss",
+            "acc_final": 0.9318237748388184,
+            "f1_faulty": 0.6569751933849026,
+            "n_features": 6,
+            "note": "best ewc_cmapss.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_ewc_cmapss",
+            "acc_final": 0.9333,
+            "f1_faulty": 0.6154,
+            "n_features": 6,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_best_tinyol_cmapss",
+            "acc_final": 0.1379002834328258,
+            "f1_faulty": 0.24108146645095835,
+            "n_features": 1,
+            "note": "best tinyol_cmapss.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_tinyol_cmapss",
+            "acc_final": 0.8867,
+            "f1_faulty": 0.0,
+            "n_features": 1,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_hdc_cmapss",
+            "acc_final": 0.7964270546036274,
+            "f1_faulty": 0.4691115311909263,
+            "n_features": 18,
+            "note": "best hdc_cmapss.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_hdc_cmapss",
+            "acc_final": 0.8867,
+            "f1_faulty": 0.0,
+            "n_features": 18,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      },
+      "paderborn": {
+        "mahalanobis": {
+          "pc": {
+            "exp": "exp_S35_PC_best_mahalanobis_paderborn",
+            "acc_final": 0.35529758376753423,
+            "f1_faulty": 0.10831988937543213,
+            "n_features": 1,
+            "note": "best mahalanobis_paderborn.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_mahalanobis_paderborn",
+            "acc_final": 0.36,
+            "f1_faulty": 0.0943,
+            "n_features": 1,
+            "note": ""
+          }
+        },
+        "ewc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_ewc_paderborn",
+            "acc_final": 0.6666666666666666,
+            "f1_faulty": 0.8002800280028003,
+            "n_features": 1,
+            "note": "best ewc_paderborn.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_ewc_paderborn",
+            "acc_final": 0.6667,
+            "f1_faulty": 0.8,
+            "n_features": 1,
+            "note": ""
+          }
+        },
+        "tinyol": {
+          "pc": {
+            "exp": "exp_S35_PC_best_tinyol_paderborn",
+            "acc_final": 0.6666666666666666,
+            "f1_faulty": 0.8002800280028003,
+            "n_features": 2,
+            "note": "best tinyol_paderborn.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_tinyol_paderborn",
+            "acc_final": 0.36,
+            "f1_faulty": 0.0943,
+            "n_features": 2,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        },
+        "hdc": {
+          "pc": {
+            "exp": "exp_S35_PC_best_hdc_paderborn",
+            "acc_final": 0.5270815404743842,
+            "f1_faulty": 0.6300547873728151,
+            "n_features": 1,
+            "note": "best hdc_paderborn.yaml"
+          },
+          "nucleo_f439zi": {
+            "exp": "exp_S35_board_best_hdc_paderborn",
+            "acc_final": 0.3333,
+            "f1_faulty": 0.0,
+            "n_features": 1,
+            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+          }
+        }
+      }
+    }
+  }
+}

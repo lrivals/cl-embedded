@@ -1,0 +1,45 @@
+{
+  "model": "mahalanobis_int8",
+  "dataset": "cmapss",
+  "board": "NUCLEO-F439ZI",
+  "precision": "INT8",
+  "n_samples": 300,
+  "metric_name": "auroc",
+  "metric_value": 0.2,
+  "latency_dwt_us": {
+    "p50": 6.0,
+    "p95": 6.0,
+    "p99": 6.0
+  },
+  "ram_weights_int8_bytes": 30,
+  "ram_weights_fp32_bytes": 120,
+  "ram_bss_total_bytes": 39560,
+  "gap2_compliant": true,
+  "gap3_latency_ok": false,
+  "gap3_ram_ok": true,
+  "fp32_reference": {
+    "n_samples": 300,
+    "metric_value": 0.7143,
+    "accuracy": 0.85,
+    "auroc": 0.7143,
+    "latency_p50_us": 6.0,
+    "latency_p95_us": 6.0,
+    "latency_p99_us": 6.0,
+    "ram_bytes": 39500,
+    "crc_errors": 0
+  },
+  "int8_detail": {
+    "n_samples": 300,
+    "metric_value": 0.2,
+    "accuracy": 0.77,
+    "auroc": 0.2,
+    "latency_p50_us": 6.0,
+    "latency_p95_us": 6.0,
+    "latency_p99_us": 6.0,
+    "ram_bytes": 39560,
+    "crc_errors": 0
+  },
+  "latency_ratio_int8_over_fp32": 1.0,
+  "ram_ratio_fp32_over_int8": 4.0,
+  "crc_errors": 0
+}

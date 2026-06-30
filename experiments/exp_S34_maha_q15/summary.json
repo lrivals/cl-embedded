@@ -1,0 +1,153 @@
+{
+  "sprint": "S34",
+  "task": "S3406",
+  "timestamp": "2026-06-26T17:46:54",
+  "delta_threshold": 0.02,
+  "datasets": [
+    {
+      "dataset": "cwru",
+      "auroc_fp32": 0.47498,
+      "auroc_int8": 0.238689,
+      "auroc_q15": 0.200799,
+      "delta_int8_vs_fp32": -0.236291,
+      "delta_q15_vs_fp32": -0.274181,
+      "ram_bytes": {
+        "fp32": 360,
+        "int8": 90,
+        "q15": 171
+      },
+      "score_fidelity": {
+        "int8": {
+          "mean_abs_error": 81.140009,
+          "max_abs_error": 294.019275,
+          "corr_with_fp32": 0.409234
+        },
+        "q15": {
+          "mean_abs_error": 6.200185,
+          "max_abs_error": 23.444849,
+          "corr_with_fp32": 0.53575
+        }
+      },
+      "is_target_dataset": true,
+      "q15_recovers_auroc": false,
+      "q15_rank_fidelity_better_than_int8": true,
+      "q15_no_regression_vs_int8_auroc": false
+    },
+    {
+      "dataset": "pronostia",
+      "auroc_fp32": 0.860259,
+      "auroc_int8": 0.74692,
+      "auroc_q15": 0.87291,
+      "delta_int8_vs_fp32": -0.113338,
+      "delta_q15_vs_fp32": 0.012652,
+      "ram_bytes": {
+        "fp32": 728,
+        "int8": 182,
+        "q15": 351
+      },
+      "score_fidelity": {
+        "int8": {
+          "mean_abs_error": 5.150083,
+          "max_abs_error": 143.91848,
+          "corr_with_fp32": 0.64927
+        },
+        "q15": {
+          "mean_abs_error": 0.323699,
+          "max_abs_error": 4.05196,
+          "corr_with_fp32": 0.985094
+        }
+      },
+      "is_target_dataset": true,
+      "q15_recovers_auroc": true,
+      "q15_rank_fidelity_better_than_int8": true,
+      "q15_no_regression_vs_int8_auroc": true
+    },
+    {
+      "dataset": "monitoring",
+      "auroc_fp32": 0.972501,
+      "auroc_int8": 0.972557,
+      "auroc_q15": 0.972501,
+      "delta_int8_vs_fp32": 5.7e-05,
+      "delta_q15_vs_fp32": 0.0,
+      "ram_bytes": {
+        "fp32": 80,
+        "int8": 20,
+        "q15": 36
+      },
+      "score_fidelity": {
+        "int8": {
+          "mean_abs_error": 0.001291,
+          "max_abs_error": 0.013079,
+          "corr_with_fp32": 0.999999
+        },
+        "q15": {
+          "mean_abs_error": 3.1e-05,
+          "max_abs_error": 9.6e-05,
+          "corr_with_fp32": 1.0
+        }
+      },
+      "is_target_dataset": false,
+      "q15_recovers_auroc": true,
+      "q15_rank_fidelity_better_than_int8": true,
+      "q15_no_regression_vs_int8_auroc": false
+    },
+    {
+      "dataset": "cmapss",
+      "auroc_fp32": 0.655093,
+      "auroc_int8": 0.639645,
+      "auroc_q15": 0.660436,
+      "delta_int8_vs_fp32": -0.015448,
+      "delta_q15_vs_fp32": 0.005343,
+      "ram_bytes": {
+        "fp32": 120,
+        "int8": 30,
+        "q15": 55
+      },
+      "score_fidelity": {
+        "int8": {
+          "mean_abs_error": 0.420261,
+          "max_abs_error": 1.600799,
+          "corr_with_fp32": 0.991047
+        },
+        "q15": {
+          "mean_abs_error": 0.417441,
+          "max_abs_error": 0.746378,
+          "corr_with_fp32": 0.996289
+        }
+      },
+      "is_target_dataset": false,
+      "q15_recovers_auroc": true,
+      "q15_rank_fidelity_better_than_int8": true,
+      "q15_no_regression_vs_int8_auroc": true
+    },
+    {
+      "dataset": "paderborn",
+      "auroc_fp32": null,
+      "auroc_int8": null,
+      "auroc_q15": null,
+      "delta_int8_vs_fp32": null,
+      "delta_q15_vs_fp32": null,
+      "ram_bytes": {
+        "fp32": 120,
+        "int8": 30,
+        "q15": 55
+      },
+      "score_fidelity": {
+        "int8": {
+          "mean_abs_error": 0.892838,
+          "max_abs_error": 23.543976,
+          "corr_with_fp32": 0.826769
+        },
+        "q15": {
+          "mean_abs_error": 8.082713,
+          "max_abs_error": 8.83243,
+          "corr_with_fp32": 0.921001
+        }
+      },
+      "is_target_dataset": false,
+      "q15_recovers_auroc": null,
+      "q15_rank_fidelity_better_than_int8": true,
+      "q15_no_regression_vs_int8_auroc": null
+    }
+  ]
+}

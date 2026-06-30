@@ -1,0 +1,6 @@
+2000c170 00000918 B g_ewc_int8
+200031d0 00002108 B g_ewc_reg
+2000ca88 000021cc B g_ewc_head
+200003e4 00002dec B g_ewc_mc
+   text	   data	    bss	    dec	    hex	filename
+  41176	    460	  66748	 108384	  1a760	firmware/stm32f4_blink/build/stm32f4_blink.elf

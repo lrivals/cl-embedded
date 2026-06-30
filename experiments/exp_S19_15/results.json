@@ -1,0 +1,16 @@
+{
+  "exp_id": "exp_S19_15",
+  "model": "kmeans",
+  "dataset": "pronostia",
+  "platform": "pc_python",
+  "date": "2026-06-09",
+  "acc_final": 0.8724792775958975,
+  "avg_forgetting": 0.059201575366988946,
+  "backward_transfer": -0.059201575366988946,
+  "auroc": 0.8549097384592487,
+  "f1_score": null,
+  "ram_peak_bytes": 5620,
+  "inference_latency_ms": 0.30453216998466814,
+  "n_params": 26,
+  "config_snapshot": "experiments/exp_S19_15/config_snapshot.yaml"
+}

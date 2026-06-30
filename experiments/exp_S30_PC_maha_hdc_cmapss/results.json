@@ -1,0 +1,87 @@
+{
+  "exp_id": "exp_S30_PC_maha_hdc_cmapss",
+  "pair": "maha_hdc",
+  "dataset": "cmapss",
+  "frame": "binary",
+  "n_eval": 32073,
+  "model_a": {
+    "name": "mahalanobis",
+    "aa": 0.5000580234557177,
+    "af": 0.41906874153919427,
+    "bwt": -0.40570110965989375,
+    "auroc": 0.5507770024042129,
+    "f1": 0.30308116532789836,
+    "precision": 0.32040557667934094,
+    "recall": 0.2875341219290264
+  },
+  "model_b": {
+    "name": "hdc",
+    "aa": 0.8620997165671742,
+    "af": 0.042622791630039646,
+    "bwt": -0.03866511454418231,
+    "auroc": 0.5,
+    "f1": 0.0,
+    "precision": 0.0,
+    "recall": 0.0
+  },
+  "ensemble": {
+    "by_rule": {
+      "or": {
+        "f1": 0.22371899785975072,
+        "precision": 0.1546562228024369,
+        "recall": 0.40423111919927207,
+        "auroc": 0.550776998294672
+      },
+      "and": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "auroc": 0.550776998294672
+      },
+      "soft_vote": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "auroc": 0.550776998294672
+      },
+      "weighted": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "auroc": 0.550776998294672
+      }
+    },
+    "best_rule": "or"
+  },
+  "disagreement": {
+    "rate": 0.35824525301655596,
+    "kappa": 0.0,
+    "a_correct": 1777,
+    "b_correct": 9713,
+    "both_wrong": 0,
+    "n_disagree": 11490,
+    "origin": {
+      "n_disagree": 11490,
+      "disagreement_rate": 0.35824525301655596,
+      "top_features": [
+        2,
+        4,
+        3,
+        1,
+        0
+      ],
+      "feature_deltas": [
+        0.3533388375175973,
+        0.39092603472985815,
+        0.5983807569265215,
+        0.5905629029973051,
+        0.5926562563717646
+      ],
+      "fault_rate_in": 0.1546562228024369,
+      "fault_rate_out": 0.12724092697857456,
+      "maha_score_in": 5.476022134354261,
+      "maha_score_out": 0.5956061405748214
+    }
+  },
+  "timestamp": "2026-06-17T18:02:20"
+}

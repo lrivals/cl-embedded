@@ -9,6 +9,7 @@
  */
 
 #include "metrics.h"
+#include <math.h>
 #include <string.h>
 
 /* ── Accuracy ───────────────────────────────────────────────────────────── */
@@ -107,6 +108,71 @@ float fgt_backward_transfer(const ForgettingTracker *f)
     /* BWT = mean(current_acc[t] - acc_at_end_of_task_t)
      * Simplifié ici : BWT ≈ -AF (corrélation directe pour détection anomalie) */
     return -fgt_avg_forgetting(f);
+}
+
+/* ── OnlineRMSE (Welford) ─────────────────────────────────────────────────── */
+
+void online_rmse_init(OnlineRMSE *r)
+{
+    r->n    = 0U;
+    r->mean = 0.0f;
+    r->M2   = 0.0f;
+    r->rmse = 0.0f;
+}
+
+/* Welford online : mise à jour en O(1), numériquement stable.
+ * TODO(arnaud) : RMSE = sqrt(E[(ŷ-y)²]) si mean≈0 → aligner convention manuscrit */
+void online_rmse_update(OnlineRMSE *r, float y_pred, float y_true)
+{
+    float err   = y_pred - y_true;
+    float sq    = err * err;
+    r->n++;
+    float delta  = sq - r->mean;
+    r->mean     += delta / (float)r->n;
+    float delta2 = sq - r->mean;
+    r->M2       += delta * delta2;
+    r->rmse      = (r->n > 1U) ? sqrtf(r->M2 / (float)(r->n - 1U)) : 0.0f;
+}
+
+float online_rmse_get(const OnlineRMSE *r) { return r->rmse; }
+
+/* ── OnlineF1Macro ────────────────────────────────────────────────────────── */
+
+void online_f1_init(OnlineF1Macro *f)
+{
+    for (int i = 0; i < MAX_MC_CLASSES; i++)
+        for (int j = 0; j < MAX_MC_CLASSES; j++)
+            f->cm[i][j] = 0;
+    f->n_classes = EWC_MC_N_CLASSES;
+}
+
+void online_f1_update(OnlineF1Macro *f, int pred, int true_label)
+{
+    if (true_label < 0 || true_label >= f->n_classes) return;
+    if (pred       < 0 || pred       >= f->n_classes) return;
+    if (f->cm[true_label][pred] < 32767) f->cm[true_label][pred]++;
+}
+
+/* F1 par classe = 2×TP / (2×TP + FP + FN), macro-average sur classes vues */
+float online_f1_get(const OnlineF1Macro *f)
+{
+    float sum_f1 = 0.0f;
+    int   n_seen = 0;
+
+    for (int c = 0; c < f->n_classes; c++) {
+        int tp = (int)f->cm[c][c];
+        int fp = 0, fn = 0;
+        for (int j = 0; j < f->n_classes; j++) {
+            if (j != c) fp += (int)f->cm[j][c];
+            if (j != c) fn += (int)f->cm[c][j];
+        }
+        int denom = 2 * tp + fp + fn;
+        if (denom > 0) {
+            sum_f1 += (2.0f * (float)tp) / (float)denom;
+            n_seen++;
+        }
+    }
+    return (n_seen > 0) ? sum_f1 / (float)n_seen : 0.0f;
 }
 
 /* ── Snapshot UART ──────────────────────────────────────────────────────── */

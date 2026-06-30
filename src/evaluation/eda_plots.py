@@ -150,7 +150,6 @@ def plot_histograms_by_label(
         if _HAS_SEABORN:
             plot_df = df[[feat, label_col]].copy()
             plot_df[label_col] = plot_df[label_col].astype(str)
-            palette = {str(v): COLORS_LABEL.get(int(v), "#999999") for v in label_vals}
             for v in label_vals:
                 subset = df[df[label_col] == v][feat].dropna()
                 sns.histplot(
@@ -402,8 +401,15 @@ def plot_pairplot_by_label(
                 ax.tick_params(labelsize=7)
 
         handles = [
-            plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=palette[v], markersize=7,
-                       label=label_map[v])
+            plt.Line2D(
+                [0],
+                [0],
+                marker="o",
+                color="w",
+                markerfacecolor=palette[v],
+                markersize=7,
+                label=label_map[v],
+            )
             for v in label_vals
         ]
         fig.legend(handles=handles, loc="upper right", fontsize=FIGURE_FONT_SIZE - 1)
@@ -458,8 +464,13 @@ def plot_label_distribution(
             )
 
         global_rate = df[label_col].mean()
-        ax.axhline(global_rate, color="black", linestyle="--", linewidth=1.2,
-                   label=f"Global ({global_rate:.1%})")
+        ax.axhline(
+            global_rate,
+            color="black",
+            linestyle="--",
+            linewidth=1.2,
+            label=f"Global ({global_rate:.1%})",
+        )
         ax.set_ylabel(f"Taux {label_name}=1", fontsize=FIGURE_FONT_SIZE)
         ax.set_xlabel(group_col, fontsize=FIGURE_FONT_SIZE)
         ax.set_ylim(0, min(1.0, stats["rate"].max() * 1.3))
@@ -560,7 +571,9 @@ def plot_boxplots_by_group_and_label(
                     fontsize=FIGURE_FONT_SIZE - 2,
                 )
             else:
-                data_by_label = [df_grp[df_grp[label_col] == v][feat].dropna().values for v in label_vals]
+                data_by_label = [
+                    df_grp[df_grp[label_col] == v][feat].dropna().values for v in label_vals
+                ]
                 bp = ax.boxplot(
                     data_by_label,
                     patch_artist=True,
@@ -650,8 +663,12 @@ def plot_violin_by_group_and_label(
                     fontsize=FIGURE_FONT_SIZE - 2,
                 )
             else:
-                data_by_label = [df_grp[df_grp[label_col] == v][feat].dropna().values for v in label_vals]
-                parts = ax.violinplot(data_by_label, positions=range(len(label_vals)), showmedians=True)
+                data_by_label = [
+                    df_grp[df_grp[label_col] == v][feat].dropna().values for v in label_vals
+                ]
+                parts = ax.violinplot(
+                    data_by_label, positions=range(len(label_vals)), showmedians=True
+                )
                 for pc, v in zip(parts["bodies"], label_vals):
                     pc.set_facecolor(COLORS_LABEL.get(int(v), "#999999"))
                     pc.set_alpha(0.7)
@@ -707,9 +724,7 @@ def plot_kde_by_group_and_label(
     n_feats = len(feature_cols)
     label_vals = sorted(df[label_col].unique())
 
-    fig, axes = plt.subplots(
-        n_groups, n_feats, figsize=(4 * n_feats, 3 * n_groups), squeeze=False
-    )
+    fig, axes = plt.subplots(n_groups, n_feats, figsize=(4 * n_feats, 3 * n_groups), squeeze=False)
 
     for row_idx, grp in enumerate(groups):
         df_grp = df[df[group_col] == grp]
@@ -895,6 +910,7 @@ def plot_boxplots_by_pump_id(
                 order=[str(p) for p in pump_ids],
             )
             from matplotlib.patches import Patch  # local import — visualisation uniquement
+
             _legend_handles = [
                 Patch(color=COLORS_LABEL[0], label="Normal (0)"),
                 Patch(color=COLORS_LABEL[1], label=f"{label_name} (1)"),
@@ -998,6 +1014,7 @@ def plot_violin_by_pump_id(
                 order=[str(p) for p in pump_ids],
             )
             from matplotlib.patches import Patch  # local import — visualisation uniquement
+
             _legend_handles = [
                 Patch(color=COLORS_LABEL[0], label="Normal (0)"),
                 Patch(color=COLORS_LABEL[1], label=f"{label_name} (1)"),
@@ -1080,9 +1097,7 @@ def plot_operational_hour_windows(
     hour_min = df[hour_col].min()
     hour_max = df[hour_col].max()
     bin_edges = np.linspace(hour_min, hour_max, n_windows + 1)
-    bin_labels = [
-        f"[{int(bin_edges[i])}-{int(bin_edges[i+1])}]" for i in range(n_windows)
-    ]
+    bin_labels = [f"[{int(bin_edges[i])}-{int(bin_edges[i+1])}]" for i in range(n_windows)]
     df["_hour_window"] = pd.cut(
         df[hour_col], bins=bin_edges, labels=bin_labels, include_lowest=True
     )
@@ -1123,6 +1138,7 @@ def plot_operational_hour_windows(
                 legend=False,
             )
             from matplotlib.patches import Patch  # local import — visualisation uniquement
+
             _legend_handles = [
                 Patch(color=COLORS_LABEL[0], label="Normal (0)"),
                 Patch(color=COLORS_LABEL[1], label=f"{label_name} (1)"),
@@ -1217,9 +1233,7 @@ def plot_boxplots_by_pump_id_hour_windows(
     hour_min = df[hour_col].min()
     hour_max = df[hour_col].max()
     bin_edges = np.linspace(hour_min, hour_max, n_windows + 1)
-    bin_labels = [
-        f"[{int(bin_edges[i])}-{int(bin_edges[i + 1])}h]" for i in range(n_windows)
-    ]
+    bin_labels = [f"[{int(bin_edges[i])}-{int(bin_edges[i + 1])}h]" for i in range(n_windows)]
     df["_hour_window"] = pd.cut(
         df[hour_col], bins=bin_edges, labels=bin_labels, include_lowest=True
     )
@@ -1232,7 +1246,10 @@ def plot_boxplots_by_pump_id_hour_windows(
     from matplotlib.patches import Patch  # local import — visualisation uniquement
 
     legend_handles = [
-        Patch(color=COLORS_LABEL.get(int(v), "#999999"), label=f"{'Normal' if int(v) == 0 else label_name} ({v})")
+        Patch(
+            color=COLORS_LABEL.get(int(v), "#999999"),
+            label=f"{'Normal' if int(v) == 0 else label_name} ({v})",
+        )
         for v in hue_order
     ]
 
@@ -1240,7 +1257,8 @@ def plot_boxplots_by_pump_id_hour_windows(
 
     for feat in feature_cols:
         fig, axes = plt.subplots(
-            n_windows, 1,
+            n_windows,
+            1,
             figsize=(max(10, len(df[pump_col].unique()) * 0.8), 4 * n_windows),
             sharex=False,
         )
@@ -1331,9 +1349,7 @@ def plot_fault_rate_heatmap_pump(
     hour_min = df[hour_col].min()
     hour_max = df[hour_col].max()
     bin_edges = np.linspace(hour_min, hour_max, n_windows + 1)
-    bin_labels = [
-        f"[{int(bin_edges[i])}-{int(bin_edges[i+1])}]" for i in range(n_windows)
-    ]
+    bin_labels = [f"[{int(bin_edges[i])}-{int(bin_edges[i+1])}]" for i in range(n_windows)]
     df["_hour_window"] = pd.cut(
         df[hour_col], bins=bin_edges, labels=bin_labels, include_lowest=True
     )
@@ -1367,8 +1383,15 @@ def plot_fault_rate_heatmap_pump(
             for j in range(pivot.shape[1]):
                 val = pivot.values[i, j]
                 if not np.isnan(val):
-                    ax.text(j, i, f"{val:.2f}", ha="center", va="center",
-                            fontsize=FIGURE_FONT_SIZE - 2, color="black")
+                    ax.text(
+                        j,
+                        i,
+                        f"{val:.2f}",
+                        ha="center",
+                        va="center",
+                        fontsize=FIGURE_FONT_SIZE - 2,
+                        color="black",
+                    )
         ax.set_xticks(range(n_windows))
         ax.set_xticklabels(bin_labels, rotation=30, fontsize=FIGURE_FONT_SIZE - 2)
         ax.set_yticks(range(len(pivot)))
@@ -1455,6 +1478,7 @@ def plot_boxplots_by_equipment_location(
                 )
                 if row_idx == 0 and col_idx == n_feats - 1:
                     from matplotlib.patches import Patch  # local import — visualisation uniquement
+
                     _legend_handles = [
                         Patch(color=COLORS_LABEL[0], label="Normal (0)"),
                         Patch(color=COLORS_LABEL[1], label=f"{label_name} (1)"),
@@ -1471,7 +1495,9 @@ def plot_boxplots_by_equipment_location(
                 offsets = np.linspace(-0.2, 0.2, len(label_vals))
                 for v, offset in zip(label_vals, offsets):
                     data_per_loc = [
-                        df_eq[(df_eq[location_col] == loc) & (df_eq[label_col] == v)][feat].dropna().values
+                        df_eq[(df_eq[location_col] == loc) & (df_eq[label_col] == v)][feat]
+                        .dropna()
+                        .values
                         for loc in locations
                     ]
                     positions = np.arange(len(locations)) + offset
@@ -1574,6 +1600,7 @@ def plot_violin_by_location(
                     color="grey",
                 )
             from matplotlib.patches import Patch  # local import — visualisation uniquement
+
             _legend_handles = [
                 Patch(color=COLORS_LABEL[0], label="Normal (0)"),
                 Patch(color=COLORS_LABEL[1], label=f"{label_name} (1)"),
@@ -1645,11 +1672,7 @@ def plot_fault_rate_heatmap_equipment(
     -------
     plt.Figure
     """
-    pivot = (
-        df.groupby([equipment_col, location_col])[label_col]
-        .mean()
-        .unstack(location_col)
-    )
+    pivot = df.groupby([equipment_col, location_col])[label_col].mean().unstack(location_col)
     locations = sorted(df[location_col].unique())
     pivot = pivot.reindex(columns=locations)
 
@@ -1659,7 +1682,9 @@ def plot_fault_rate_heatmap_equipment(
 
     if _HAS_SEABORN:
         # Annotation en pourcentage — compatible pandas < 2.1 (applymap) et >= 2.1 (map)
-        _fmt = lambda v: f"{v:.1%}" if not np.isnan(v) else "—"
+        def _fmt(v: float) -> str:
+            return f"{v:.1%}" if not np.isnan(v) else "—"
+
         annot = pivot.apply(lambda col: col.map(_fmt))
         sns.heatmap(
             pivot,
@@ -1680,8 +1705,15 @@ def plot_fault_rate_heatmap_equipment(
             for j in range(pivot.shape[1]):
                 val = pivot.values[i, j]
                 txt = f"{val:.1%}" if not np.isnan(val) else "—"
-                ax.text(j, i, txt, ha="center", va="center",
-                        fontsize=FIGURE_FONT_SIZE - 2, color="black")
+                ax.text(
+                    j,
+                    i,
+                    txt,
+                    ha="center",
+                    va="center",
+                    fontsize=FIGURE_FONT_SIZE - 2,
+                    color="black",
+                )
         ax.set_xticks(range(n_loc))
         ax.set_xticklabels(list(pivot.columns), rotation=30, fontsize=FIGURE_FONT_SIZE - 2)
         ax.set_yticks(range(n_eq))
@@ -1757,8 +1789,15 @@ def plot_correlation_by_equipment(
                 fig.colorbar(im, ax=ax, label="Corrélation", shrink=0.8)
             for i in range(n_feats):
                 for j in range(n_feats):
-                    ax.text(j, i, f"{corr.values[i, j]:.2f}", ha="center", va="center",
-                            fontsize=FIGURE_FONT_SIZE - 3, color="black")
+                    ax.text(
+                        j,
+                        i,
+                        f"{corr.values[i, j]:.2f}",
+                        ha="center",
+                        va="center",
+                        fontsize=FIGURE_FONT_SIZE - 3,
+                        color="black",
+                    )
             ax.set_xticks(range(n_feats))
             ax.set_xticklabels(feature_cols, rotation=30, fontsize=FIGURE_FONT_SIZE - 2)
             ax.set_yticks(range(n_feats))
@@ -1839,8 +1878,10 @@ def plot_sorted_scatter_by_label(
         ax.grid(True, alpha=0.25)
 
     legend_handles = [
-        Patch(facecolor=COLORS_LABEL.get(int(v), "#999999"),
-              label=f"{label_name}={int(v)} ({'Normal' if int(v) == 0 else 'Faulty'})")
+        Patch(
+            facecolor=COLORS_LABEL.get(int(v), "#999999"),
+            label=f"{label_name}={int(v)} ({'Normal' if int(v) == 0 else 'Faulty'})",
+        )
         for v in label_vals
     ]
     fig.legend(
@@ -1930,7 +1971,9 @@ def plot_pairplot_by_equipment(
                 if i == j:
                     for eq in equipment_types:
                         subset = plot_df[plot_df[equipment_col] == eq][feat_x].dropna()
-                        ax.hist(subset, bins=20, alpha=0.35, color=palette[eq], density=True, label=eq)
+                        ax.hist(
+                            subset, bins=20, alpha=0.35, color=palette[eq], density=True, label=eq
+                        )
                 else:
                     for eq in equipment_types:
                         mask = plot_df[equipment_col] == eq
@@ -1950,8 +1993,15 @@ def plot_pairplot_by_equipment(
                 ax.tick_params(labelsize=7)
 
         handles = [
-            plt.Line2D([0], [0], marker=markers[eq], color="w",
-                       markerfacecolor=palette[eq], markersize=7, label=eq)
+            plt.Line2D(
+                [0],
+                [0],
+                marker=markers[eq],
+                color="w",
+                markerfacecolor=palette[eq],
+                markersize=7,
+                label=eq,
+            )
             for eq in equipment_types
         ]
         fig.legend(handles=handles, loc="upper right", fontsize=FIGURE_FONT_SIZE - 1)

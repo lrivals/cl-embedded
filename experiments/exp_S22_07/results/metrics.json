@@ -1,0 +1,28 @@
+{
+  "exp_id": "exp_S22_07",
+  "model": "tinyol",
+  "dataset": "paderborn",
+  "timestamp": "2026-06-01T10:46:38.512228",
+  "seed": 42,
+  "acc_final": 0.6666666666666666,
+  "avg_forgetting": 0.5,
+  "backward_transfer": -0.5,
+  "acc_matrix": [
+    [
+      1.0
+    ],
+    [
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.0,
+      1.0
+    ]
+  ],
+  "ram_peak_bytes": 4393,
+  "inference_latency_ms": 0.009136660014519293,
+  "n_params_oto": 6,
+  "n_params_encoder": 268
+}

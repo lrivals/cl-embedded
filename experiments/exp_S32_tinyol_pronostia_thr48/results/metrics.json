@@ -1,0 +1,28 @@
+{
+  "exp_id": "exp_S32_tinyol_pronostia_thr48",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "timestamp": "2026-06-22T18:17:19.364190",
+  "seed": 42,
+  "acc_final": 0.8106721039576174,
+  "avg_forgetting": 0.054399062040902946,
+  "backward_transfer": -0.054399062040902946,
+  "acc_matrix": [
+    [
+      0.8564137461721674
+    ],
+    [
+      0.7618237495746852,
+      0.9150805270863837
+    ],
+    [
+      0.751275944198707,
+      0.9114202049780381,
+      0.7693201626961069
+    ]
+  ],
+  "ram_peak_bytes": 7564,
+  "inference_latency_ms": 0.0065960900519712595,
+  "n_params_oto": 10,
+  "n_params_encoder": 532
+}

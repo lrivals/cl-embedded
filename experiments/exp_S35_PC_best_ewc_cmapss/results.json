@@ -1,0 +1,27 @@
+{
+  "exp_id": "exp_S35_PC_best_ewc_cmapss",
+  "condition": "best",
+  "model": "ewc",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 6,
+  "selected_indices": [
+    12,
+    10,
+    8,
+    11,
+    5,
+    13
+  ],
+  "acc_final": 0.9318237748388184,
+  "f1_faulty": 0.6569751933849026,
+  "f1_macro": 0.8057860008726518,
+  "precision_faulty": 0.7940038684719536,
+  "recall_faulty": 0.5602820746132848,
+  "avg_forgetting": 0.0012417169789731657,
+  "backward_transfer": 0.0007088414729491399,
+  "ram_peak_bytes": 61191179,
+  "n_params": 769,
+  "note": "best ewc_cmapss.yaml"
+}

@@ -1,0 +1,22 @@
+{
+  "model": "tinyol",
+  "dataset": "equipment_monitoring",
+  "config_path": "configs/tinyol_int8_monitoring.yaml",
+  "timestamp": "2026-06-12T20:18:58",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.899231,
+    "ram_bytes": 1456,
+    "latency_ms": 0.084346
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.907033,
+    "ram_bytes": 412,
+    "latency_ms": 0.264915
+  },
+  "delta_metric": 0.007802,
+  "ram_ratio": 3.533981,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

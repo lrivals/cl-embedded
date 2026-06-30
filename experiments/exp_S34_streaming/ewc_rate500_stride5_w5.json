@@ -1,0 +1,20 @@
+{
+  "model": "ewc",
+  "rate_hz": 500,
+  "stride": 5,
+  "window": 5,
+  "n_sent": 60,
+  "n_received": 60,
+  "latence_dwt_us": 50.0,
+  "latence_dwt_p99_us": 50.0,
+  "drops": 0,
+  "timeouts": 0,
+  "crc_errors": 0,
+  "bss_bytes": 104956,
+  "debit_streaming_hz": 500.0,
+  "debit_max_hz": 20000.0,
+  "marge_pct": 0.975,
+  "saturation_predite": false,
+  "saturation_observee": false,
+  "saturation_atteinte": false
+}

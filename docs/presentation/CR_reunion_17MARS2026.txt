@@ -1,0 +1,49 @@
+Carte utilisée STM32
+
+Objectifs immediat 
+Etat de l'art des algorithmes / modeles utilisé et comparaisons de leurs incoinvenients avantages.
+
+Contexte utilisation de modeles entrainés avant dêtre mis dans le edge / la carte pour effectuer de l'inference.
+Poyur determiner des informations comme 
+Remaining useful life dans une machine.( predictions sur le temps de vie )
+
+Voir comment on peut faire un entrainement partiel ou reentrainement sur le edge sans devoir passer par le cloud. 
+Problematique : Les données utilisée pour l'entrainement peuvent differer/ evoluer des données auquels les modeles sont exposes par les capteurs. Necessaire de l'adapter
+Determiner quand un modele  a besoin de reentrainement ou du fine tuning pour s'adapter a l'envirronement expose 
+Modeles priorité type KNN plutot que Neural Network NN
+Tester des entrainement non supervisé ou partiellement supervisé
+RNN type Long Short Term Memory ( LSTM )
+Delimiter les use case pour me donner un cadre dans lequel je peux faire mon etat de l'art.
+
+
+Determiner quand un modele  a besoin de reentrainement ou du fine tuning pour s'adapter a l'envirronement expose 
+
+Il faut que je etudie les algos que j'en choisisse un que je l'optimise puis je l'implemente sur machine et sur carte. pour comparer.
+
+L'idee etant de fournir a la fin du stage un modele qui peut facilement remplacer des modele sur carte existant voir les faire marcher en paralle
+
+Voir Mathlab et Python ( priorité python pour le projet pour l'instant )
+
+
+Programmation des prochains temps
+Etape 1 etat de l'art des algo disponibles. 1 a 2 semaines 
+Faire un présentation des algo existant les comparer en choisir un argumenter ( potentiellemnt le 3 avril 9h ) 
+Etape 2 etat de l'art des optimisations 
+
+Pour essayer de faire l'etat de l'art ( 2 etapes ) en environt 1 / 1.5 mois.
+
+Frederic peut fournir dataset / carte d'ici 2 / 3 semaines.
+
+
+
+
+Avec datatset on peut faire sur machine un golden modele qui nous sers de refference.
+
+
+Utiliser envirronement de travail ( Conda )
+
+Se renseigner sur les conferences / presentations qui pourraient etre pertinentes dans le cadre du stage 
+
+12 juin journée des doctorants. ( presentations interressantes , entrer en contact avec dautres chercheurs / doctorants .
+
+Journées FAC Formalisation Activités Concurentes

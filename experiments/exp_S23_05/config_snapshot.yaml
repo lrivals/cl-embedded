@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_paderborn.yaml
+dataset: paderborn
+date: '2026-06-02T14:05:28.316658'
+dry_run: false
+model: ewc
+n_samples: 300
+n_tasks: 3
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

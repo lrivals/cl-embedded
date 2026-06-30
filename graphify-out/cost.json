@@ -11,8 +11,89 @@
       "input_tokens": 0,
       "output_tokens": 0,
       "files": 1453
+    },
+    {
+      "date": "2026-06-01T12:50:16.541838+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 144
+    },
+    {
+      "date": "2026-06-12T18:32:08.764352+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 218,
+      "note": "S28 code-only AST update"
+    },
+    {
+      "date": "2026-06-12T18:51:16.942511+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 10
+    },
+    {
+      "date": "2026-06-15T09:10:51.106623+00:00",
+      "input_tokens": 64513,
+      "output_tokens": 0,
+      "files": 11
+    },
+    {
+      "date": "2026-06-17T16:29:48.335901+00:00",
+      "input_tokens": 58664,
+      "output_tokens": 1500,
+      "files": 116
+    },
+    {
+      "date": "2026-06-18T09:12:36.896780+00:00",
+      "input_tokens": 128432,
+      "output_tokens": 0,
+      "files": 17
+    },
+    {
+      "date": "2026-06-18T12:50:52.494227+00:00",
+      "input_tokens": 2000,
+      "output_tokens": 4000,
+      "files": 67
+    },
+    {
+      "date": "2026-06-18T13:57:16.684316+00:00",
+      "input_tokens": 129904,
+      "output_tokens": 4000,
+      "files": 22
+    },
+    {
+      "date": "2026-06-24T08:48:54.992650+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 642,
+      "note": "AST-only code refresh (semantic skipped)"
+    },
+    {
+      "date": "2026-06-24T09:10:38.676311+00:00",
+      "input_tokens": 118400,
+      "output_tokens": 6000,
+      "files": 20
+    },
+    {
+      "date": "2026-06-25T10:36:25.096485+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 269,
+      "note": "S35 code-only AST update"
+    },
+    {
+      "date": "2026-06-27T17:09:01.481297+00:00",
+      "input_tokens": 9000,
+      "output_tokens": 2500,
+      "files": 45
+    },
+    {
+      "date": "2026-06-27T18:48:11.597255+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 41
     }
   ],
-  "total_input_tokens": 0,
-  "total_output_tokens": 0
+  "total_input_tokens": 510913,
+  "total_output_tokens": 18000
 }

@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S33_PC_tinyol_cwru",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "scenario": "by_fault_type",
+  "acc_final": 0.9788452596828939,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0009328358208954834,
+  "per_task_acc": [
+    0.9533582089552238,
+    1.0,
+    0.983177570093458
+  ],
+  "ram_peak_bytes": 9355,
+  "inference_latency_ms": 0.008394030010094866,
+  "n_params": 478,
+  "sprint": 24
+}

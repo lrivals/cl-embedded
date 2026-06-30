@@ -1,0 +1,24 @@
+# configs/best_features/mahalanobis_paderborn.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: mahalanobis
+dataset: paderborn
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 7
+n_features_selected: 1
+selected_indices:
+- 0
+selected_features:
+- rms
+val_f1_by_k:
+  1: 0.10832
+  2: 0.105798
+  3: 0.1057
+  4: 0.107784
+  5: 0.099652
+  6: 0.099629
+  7: 0.099629
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

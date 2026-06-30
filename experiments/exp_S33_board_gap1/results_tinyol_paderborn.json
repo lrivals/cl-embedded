@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S33_board_gap1_tinyol_paderborn",
+  "model": "tinyol",
+  "dataset": "paderborn",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-24T20:48:26",
+  "parity_class": "hw_only",
+  "parity_note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)",
+  "online_accuracy": 0.6667,
+  "latency_us_p50": 5.0,
+  "latency_us_p99": 5.0,
+  "bss_bytes": 104956,
+  "ram_response_bytes": 39420,
+  "crc_errors": 0,
+  "n_samples": 150,
+  "gap2_latency_compliant": true,
+  "note_feature": null
+}

@@ -16,10 +16,22 @@
  * Référence : Ren2021TinyOL, tinyol_spec.md
  */
 
+/* Features d'entrée — surchargeable au build (S3506) : `make TINYOL_IN=9`.
+ * Défaut 5 (condition board 5feat) → .bss inchangé sans override. */
+#ifndef TINYOL_IN
 #define TINYOL_IN     5U    /* Features d'entrée (Monitoring / CWRU) */
+#endif
 #define TINYOL_H1    32U    /* Couche cachée 1 */
 #define TINYOL_EMB   16U    /* Dimension embedding */
-#define TINYOL_OUT    5U    /* Sortie décodeur (reconstruction) */
+#define TINYOL_OUT  TINYOL_IN  /* Sortie décodeur = entrée (reconstruction) */
+
+/* Dimension native des poids placeholder de model_weights.h (générés à 5 par
+ * export_weights_c.py — header jamais édité à la main). Si la condition de build
+ * change TINYOL_IN/MAHA_DIM, les tableaux figés ne sont plus copiables → init
+ * neutre. Les poids réels par condition sont regénérés en S3507 (S3506). */
+#ifndef WEIGHTS_NATIVE_DIM
+#define WEIGHTS_NATIVE_DIM 5
+#endif
 
 /* MEM: encoder = (5×32+32 + 32×16+16) × 4 = ~3.1 Ko @ FP32 en Flash */
 typedef struct {

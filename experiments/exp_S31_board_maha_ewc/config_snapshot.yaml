@@ -1,0 +1,14 @@
+pair: maha-ewc
+dataset: cwru
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+baud: 115200
+n_samples: 300
+n_tasks: 3
+update: true
+dry_run: false
+triple: true
+sup_flag: 16
+pair_flag: 144
+triple_flag: 208
+firmware_elf: /home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/build/stm32f4_blink.elf

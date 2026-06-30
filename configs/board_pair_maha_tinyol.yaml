@@ -1,0 +1,43 @@
+# configs/board_pair_maha_tinyol.yaml — Sprint 30 (S3002) — paire Mahalanobis + TinyOL.
+#
+# Voir board_pair_maha_ewc.yaml pour la structure. Le slot supervisé utilise
+# TinyOLAnomalyDetector (autoencoder, erreur de reconstruction MSE → seuil), interface
+# BaseCLModel (update / on_task_end / predict / anomaly_score), comme dans le benchmark
+# Sprint 28. Pas de mode natif dédié (détecteur d'anomalie binaire par construction).
+#
+# Usage :
+#   python scripts/train_model_pair.py --config configs/board_pair_maha_tinyol.yaml --dataset cwru
+
+pair:
+  name: "maha_tinyol"
+  detector: "mahalanobis"
+  supervised: "tinyol"
+
+fusion:
+  rules: ["or", "and", "soft_vote", "weighted"]
+  weights: [0.5, 0.5]
+  ensemble_threshold: 0.5
+
+mahalanobis:
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6
+  cl_strategy: "refit"
+
+seed: 42
+
+supervised_configs:
+  monitoring: "configs/tinyol_int8_monitoring.yaml"
+  cwru:       "configs/tinyol_int8_cwru.yaml"
+  pronostia:  "configs/tinyol_int8_pronostia.yaml"
+  cmapss:     "configs/tinyol_int8_cmapss.yaml"
+  paderborn:  "configs/tinyol_int8_paderborn.yaml"
+
+# TinyOL détecteur d'anomalie : pas de tâche native non-binaire.
+native_configs: {}
+
+native:
+  cmapss:     { rule: "rul_threshold", threshold: 30 }
+  cwru:       { rule: "nonzero_class" }
+  monitoring: { rule: "identity" }
+  pronostia:  { rule: "identity" }
+  paderborn:  { rule: "nonzero_class" }

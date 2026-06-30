@@ -107,6 +107,7 @@ int tinyol_predict(const TinyOLEncoder *enc, const TinyOLDecoder *dec,
  * dec_w1[32][16], dec_b1[32], dec_w2[5][32], dec_b2[5] */
 void tinyol_init(TinyOLEncoder *enc, TinyOLDecoder *dec)
 {
+#if (TINYOL_IN == WEIGHTS_NATIVE_DIM)
     memcpy(enc->w_enc1, TINYOL_W_ENC1, sizeof(enc->w_enc1));
     memcpy(enc->b_enc1, TINYOL_B_ENC1, sizeof(enc->b_enc1));
     memcpy(enc->w_enc2, TINYOL_W_ENC2, sizeof(enc->w_enc2));
@@ -115,4 +116,10 @@ void tinyol_init(TinyOLEncoder *enc, TinyOLDecoder *dec)
     memcpy(dec->b_dec1, TINYOL_B_DEC1, sizeof(dec->b_dec1));
     memcpy(dec->w_dec2, TINYOL_W_DEC2, sizeof(dec->w_dec2));
     memcpy(dec->b_dec2, TINYOL_B_DEC2, sizeof(dec->b_dec2));
+#else
+    /* TINYOL_IN ≠ dim native : poids placeholder incopiables → zéro (S3506).
+     * Poids réels par condition regénérés en S3507. */
+    memset(enc, 0, sizeof(*enc));
+    memset(dec, 0, sizeof(*dec));
+#endif
 }

@@ -8,6 +8,7 @@ Pas d'oubli catastrophique par construction (mémoire additive INT32).
 
 Référence : Benatti2019HDC, docs/models/hdc_spec.md
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -226,9 +227,7 @@ class HDCClassifier(BaseCLModel):
 
         if self.one_class_mode:
             if self.anomaly_threshold_ is None:
-                raise RuntimeError(
-                    "Seuil non calculé. Appeler on_task_end() sur Task 0 d'abord."
-                )
+                raise RuntimeError("Seuil non calculé. Appeler on_task_end() sur Task 0 d'abord.")
             scores = self.anomaly_score(x)
             return (scores >= self.anomaly_threshold_).astype(np.int64)
 
@@ -434,6 +433,35 @@ class HDCClassifier(BaseCLModel):
                 + 4 * self.D  # buffer encodage INT32 (temporaire)
                 + self.n_classes * 4  # class_counts INT32
             )
+
+    def get_memory_footprint(self) -> dict[str, int | float]:
+        """Calcule l'empreinte mémoire réelle des structures HDC vs hypothèse FP32.
+
+        H_level [n_levels, D] int8 et AM [n_classes, D] int32 sont les deux structures
+        de stockage distinctes — H_level est absent de estimate_ram_bytes() qui n'expose
+        que les prototypes runtime.
+
+        Returns
+        -------
+        dict avec :
+            base_vectors_int8_bytes  — H_level stocké en INT8
+            am_int32_bytes           — prototypes accumulateurs INT32
+            total_int_bytes          — total architecture native INT
+            hypothetical_fp32_bytes  — même données en FP32
+            compression_ratio        — rapport FP32 / INT natif
+        """
+        D = self.D
+        n_levels = self.n_levels
+        n_classes = self.n_classes
+        int_bytes = D * n_levels * 1 + D * n_classes * 4
+        fp32_bytes = D * (n_levels + n_classes) * 4
+        return {
+            "base_vectors_int8_bytes": D * n_levels * 1,       # MEM: D*n_levels B @ INT8
+            "am_int32_bytes": D * n_classes * 4,               # MEM: D*n_classes*4 B @ INT32
+            "total_int_bytes": int_bytes,
+            "hypothetical_fp32_bytes": fp32_bytes,
+            "compression_ratio": fp32_bytes / int_bytes,
+        }
 
     def save(self, path: str) -> None:
         """Sauvegarde l'état complet (prototypes + counts) en .npz."""

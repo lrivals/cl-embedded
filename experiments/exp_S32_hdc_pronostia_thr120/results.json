@@ -1,0 +1,20 @@
+{
+  "exp_id": "exp_S32_hdc_pronostia_thr120",
+  "model": "hdc",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "native_int_architecture": true,
+  "acc_final": 0.8501791435831874,
+  "avg_forgetting": 0.0156462585034014,
+  "backward_transfer": -0.0156462585034014,
+  "per_task_acc": [
+    0.7918367346938775,
+    1.0,
+    0.7587006960556845
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.08051138996052032,
+  "n_params": 2048,
+  "ram_training_peak_bytes": 390803,
+  "sprint": 24
+}

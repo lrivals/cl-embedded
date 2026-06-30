@@ -1,0 +1,45 @@
+{
+  "model": "hdc",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "global": {
+    "permutation_importance": {
+      "humidity": 0.18978441127694867,
+      "vibration": 0.07747927031509139,
+      "pressure": 0.0005970149253732293,
+      "temperature": 0.0
+    },
+    "feature_masking_importance": {
+      "humidity": 0.030182421227197387,
+      "pressure": 0.0003316749585406953,
+      "temperature": 0.0,
+      "vibration": -0.009618573797678276
+    }
+  },
+  "per_task": {
+    "window_1": {
+      "permutation_importance": {
+        "vibration": 0.09054726368159194,
+        "humidity": 0.08537313432835814,
+        "pressure": 0.00019900497512426174,
+        "temperature": -0.0009950248756218638
+      }
+    },
+    "window_2": {
+      "permutation_importance": {
+        "temperature": -1.1102230246251565e-16,
+        "pressure": -0.00019900497512426174,
+        "humidity": -0.0027860696517413297,
+        "vibration": -0.0035820895522388208
+      }
+    },
+    "window_3": {
+      "permutation_importance": {
+        "humidity": 0.28059701492537314,
+        "vibration": 0.005572139303482548,
+        "temperature": 0.0009950248756218638,
+        "pressure": 0.0009950248756218638
+      }
+    }
+  }
+}

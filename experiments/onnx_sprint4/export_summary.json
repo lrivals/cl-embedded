@@ -1,0 +1,26 @@
+{
+  "_exported_at": "2026-06-01T14:49:28.311986",
+  "_opset_version": 17,
+  "models": [
+    {
+      "model_name": "tinyol_encoder",
+      "onnx_path": "experiments/onnx_sprint4/tinyol_encoder.onnx",
+      "int8_path": "experiments/onnx_sprint4/tinyol_encoder_int8.onnx",
+      "opset_version": 17,
+      "input_dim": 13,
+      "n_params": 1112,
+      "onnx_fp32_bytes": 5146,
+      "onnx_int8_bytes": 4629,
+      "onnx_valid": true,
+      "ort_match_atol_1e5": true,
+      "max_abs_diff": 1.9073486328125e-06,
+      "mean_abs_diff": 4.7639012336730955e-07,
+      "operators": [
+        "Gemm",
+        "Relu"
+      ],
+      "cmsis_nn_compatible": true,
+      "stm32cubeai_compatible": true
+    }
+  ]
+}

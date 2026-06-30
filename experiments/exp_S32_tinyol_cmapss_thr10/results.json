@@ -1,0 +1,20 @@
+{
+  "exp_id": "exp_S32_tinyol_cmapss_thr10",
+  "model": "tinyol",
+  "dataset": "cmapss",
+  "scenario": "by_domain",
+  "acc_final": 0.9603548012048609,
+  "avg_forgetting": 0.002880300605967371,
+  "backward_transfer": -0.002213795516292157,
+  "per_task_acc": [
+    0.9681289384391663,
+    0.9502406584974539,
+    0.965968851132686,
+    0.9570807567501377
+  ],
+  "ram_peak_bytes": 7035,
+  "inference_latency_ms": 0.006266649984354444,
+  "n_params": 274,
+  "ram_training_peak_bytes": 2220757,
+  "sprint": 24
+}

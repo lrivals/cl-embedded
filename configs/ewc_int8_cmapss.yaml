@@ -1,0 +1,12 @@
+# configs/ewc_int8_cmapss.yaml — Benchmark INT8 vs FP32 EWC, dataset CMAPSS (Sprint 28, S2807).
+#
+# Hérite de cmapss_config.yaml (data + model + ewc). CMAPSS = régression RUL ; le modèle
+# EWC binaire évalue une AUROC de détection de panne sur labels binarisés (cf. note table :
+# privilégier le résultat régression de exp_S23_INT8 dans le manuscrit).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model ewc \
+#   --config configs/ewc_int8_cmapss.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_ewc_cmapss.json
+
+extends: configs/cmapss_config.yaml
+quantization: int8

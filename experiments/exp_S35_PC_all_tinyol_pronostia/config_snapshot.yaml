@@ -1,0 +1,33 @@
+exp_id: exp_S35_PC_all_tinyol_pronostia
+condition: all
+model: tinyol
+dataset: pronostia
+seed: 42
+feature_indices:
+- 0
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- 8
+- 9
+- 10
+- 11
+- 12
+feature_names:
+- mean_acc_horiz
+- std_acc_horiz
+- rms_acc_horiz
+- kurtosis_acc_horiz
+- peak_acc_horiz
+- crest_factor_acc_horiz
+- mean_acc_vert
+- std_acc_vert
+- rms_acc_vert
+- kurtosis_acc_vert
+- peak_acc_vert
+- crest_factor_acc_vert
+- temporal_position

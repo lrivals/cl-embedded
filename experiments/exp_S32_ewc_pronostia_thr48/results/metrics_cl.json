@@ -1,0 +1,37 @@
+{
+  "exp_id": "exp_S32_ewc_pronostia_thr48",
+  "model": "ewc",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "uint8_activations": false,
+  "acc_final": 0.8744387023611767,
+  "avg_forgetting": 0.05948800572860724,
+  "backward_transfer": -0.05948800572860724,
+  "per_task_acc": [
+    0.8707482993197279,
+    0.9590643274853801,
+    0.7935034802784223
+  ],
+  "ram_peak_bytes": 1171,
+  "ram_peak_bytes_uint8": null,
+  "inference_latency_ms": 0.02654856002664019,
+  "n_params": 993,
+  "acc_matrix": [
+    [
+      0.9809523809523809,
+      NaN,
+      NaN
+    ],
+    [
+      0.7755102040816326,
+      0.9678362573099415,
+      NaN
+    ],
+    [
+      0.8707482993197279,
+      0.9590643274853801,
+      0.7935034802784223
+    ]
+  ],
+  "ram_training_peak_bytes": 59827215
+}

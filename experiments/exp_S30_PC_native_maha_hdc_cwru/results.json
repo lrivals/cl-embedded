@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S30_PC_native_maha_hdc_cwru",
+  "pair": "maha_hdc",
+  "dataset": "cwru",
+  "frame": "native",
+  "status": "skipped",
+  "reason": "ValueError: mode native non supporté pour supervised='hdc' (EWC uniquement ; configs natives HDC/TinyOL non disponibles).",
+  "model_a": {
+    "name": "mahalanobis"
+  },
+  "model_b": {
+    "name": "hdc"
+  },
+  "disagreement": {
+    "rate": null
+  },
+  "timestamp": "2026-06-17T18:07:45"
+}

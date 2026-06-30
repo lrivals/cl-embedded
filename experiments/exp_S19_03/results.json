@@ -1,0 +1,32 @@
+{
+  "exp_id": "exp_S19_03",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-09",
+  "acc_final": 0.8767,
+  "avg_forgetting": 0.0067,
+  "backward_transfer": -0.0067,
+  "ram_peak_bytes": 0,
+  "inference_latency_ms": 0.005,
+  "n_params": 30,
+  "n_tasks": 2,
+  "n_samples_total": 300,
+  "latency_p99_ms": 0.005,
+  "throughput_mean_ips": 0,
+  "per_task_acc": {
+    "0": 0.88,
+    "1": 0.8733
+  },
+  "collection_time_s": 2.31,
+  "config_snapshot": "experiments/exp_S19_03/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 1,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "variant": "int8",
+  "config_path": "/home/leonard/Documents/ENAC/cl-embedded/configs/mahalanobis_q15_cmapss.yaml",
+  "timestamp": "2026-06-26T17:46:02",
+  "metric_name": "auroc",
+  "auroc": 0.639645,
+  "ram_bytes": 30,
+  "latency_ms": 0.011941,
+  "score_fidelity_vs_fp32": {
+    "mean_abs_error": 0.420261,
+    "max_abs_error": 1.600799,
+    "corr_with_fp32": 0.991047
+  }
+}

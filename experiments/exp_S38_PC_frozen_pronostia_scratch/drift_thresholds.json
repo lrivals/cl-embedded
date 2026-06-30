@@ -1,0 +1,6 @@
+{
+  "fault_threshold": 8.861913084983826,
+  "drift_threshold": 4.60819480419159,
+  "window_size": 50,
+  "drift_ratio": 0.6
+}

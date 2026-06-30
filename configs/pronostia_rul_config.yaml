@@ -1,0 +1,51 @@
+# pronostia_rul_config.yaml — Config EWC Régression RUL sur Pronostia
+# Sprint 25 — mode natif RUL par condition opératoire.
+
+# --- Identité ---
+task_mode: rul
+model: ewc_regression
+dataset: pronostia
+sprint: 25
+
+# --- Dataset Pronostia ---
+npy_dir: "data/raw/Pronostia dataset/binaries"
+normalizer_path: "configs/pronostia_normalizer.yaml"
+condition_order:
+  - 1   # 1 800 rpm, 4 000 N
+  - 2   # 1 650 rpm, 4 200 N
+  - 3   # 1 500 rpm, 5 000 N
+n_tasks: 3
+val_ratio: 0.2
+window_duration_s: 0.1  # WINDOW_DURATION_S = 2560 / 25600 Hz
+rul_cap: 300            # max RUL Pronostia en s (~condition 1 max=280)
+seed: 42
+
+# --- Architecture EWCMlpRegressor ---
+INPUT_DIM: 13           # 12 features statistiques + position temporelle (Pronostia)
+HIDDEN_DIMS:
+  - 32
+  - 16
+DROPOUT: 0.2
+OUTPUT_DIM: 1
+
+# --- Hyperparamètres EWC ---
+EWC_LR: 0.005           # LR plus faible — RUL Pronostia en secondes (valeurs élevées)
+EWC_LAMBDA: 400.0
+FISHER_N_SAMPLES: 200
+FISHER_EMA_DECAY: 0.99
+
+# --- Entraînement ---
+N_EPOCHS_PER_TASK: 20
+BATCH_SIZE: 32
+OPTIMIZER: sgd
+MOMENTUM: 0.9
+
+# --- Métriques ---
+primary_metric: rmse
+report_metrics:
+  - rmse
+  - mae
+  - avg_forgetting_rmse
+
+# --- Budget mémoire ---
+ram_budget_bytes: 262144

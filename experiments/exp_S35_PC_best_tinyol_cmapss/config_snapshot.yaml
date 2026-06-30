@@ -1,0 +1,9 @@
+exp_id: exp_S35_PC_best_tinyol_cmapss
+condition: best
+model: tinyol
+dataset: cmapss
+seed: 42
+feature_indices:
+- 0
+feature_names:
+- T2

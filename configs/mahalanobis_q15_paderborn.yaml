@@ -1,0 +1,6 @@
+# configs/mahalanobis_q15_paderborn.yaml — Benchmark Q15 Mahalanobis, Paderborn (Sprint 34, S3406).
+#
+# Miroir de mahalanobis_int8_paderborn.yaml en mode Q15 (non-régression).
+
+extends: configs/paderborn_config.yaml
+quantization: q15

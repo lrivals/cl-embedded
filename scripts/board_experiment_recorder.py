@@ -42,13 +42,50 @@ import yaml
 
 # Nombre de paramètres par modèle (calculé offline depuis model.parameters())
 _N_PARAMS = {
-    "mahalanobis": 30,   # mean(5) + precision(25) = 30 floats
-    "ewc":         1538, # (5×32+32) + (32×16+16) + (16×2+2) = 802 poids, ×2 avec Fisher/star ≈ 1538
-    "tinyol":      881,  # encoder: (5×32+32) + (32×16+16) = 720, decoder: (16×32+32) + (32×5+5) = 677 → 881 total encoder-only
+    "mahalanobis": 30,     # mean(5) + precision(25) = 30 floats
+    "ewc":         1538,   # (5×32+32) + (32×16+16) + (16×2+2) = 802 poids, ×2 avec Fisher/star ≈ 1538
+    "tinyol":      881,    # encoder: (5×32+32) + (32×16+16) = 720, decoder: (16×32+32) + (32×5+5) = 677 → 881 total encoder-only
+    "hdc":         7000,   # AM: HDC_N_CLASSES×HDC_DIM=2×1000 + proj: HDC_N_FEATURES×HDC_DIM=5×1000
+    "ewc-int8":    1538,   # même architecture EWC, stockage INT8 (n_params identique pour l'eval)
+    "dual":        1538 + 4680,  # EWCHeadReg(~1538) + EWCHeadMC(~4680) — Sprint 27
+    # Sprint 30 — paires Mahalanobis (30) + supervisé
+    "pair-maha-ewc":    30 + 1538,
+    "pair-maha-hdc":    30 + 7000,
+    "pair-maha-tinyol": 30 + 881,
 }
 
-# RAM théorique EWC (3 Ko poids + 3 Ko Fisher + 3 Ko star_w + 200 B activations)
-_EWC_RAM_BYTES = 9728
+# RAM théorique par modèle
+_EWC_RAM_BYTES     = 9728   # 3 Ko poids + 3 Ko Fisher + 3 Ko star_w + 200 B activations
+_HDC_RAM_BYTES     = 28364  # 27.7 Ko : AM(8 Ko) + proj(20 Ko) + buffer retrain(300 B)
+_EWC_INT8_RAM_BYTES = 4800  # 3.6 Ko poids INT8 + 1.2 Ko biais FP32
+
+# Paramètres de simulation dry-run par (modèle, dataset) — valeurs calibrées sur specs sprint 23
+# base_acc  : accuracy diagonale simulée
+# step_drop : chute par tâche supplémentaire (forgetting)
+# lat_lo/hi : bornes de la distribution uniforme latence (µs)
+# ram_bytes : RAM statique du modèle
+_GENERIC_DRY_RUN_PARAMS: dict[str, dict] = {
+    "mahalanobis/cmapss":    {"base_acc": 0.67, "step_drop": 0.12, "lat_lo":   40, "lat_hi":   80, "ram_bytes":  1200},
+    "tinyol/cmapss":         {"base_acc": 0.74, "step_drop": 0.08, "lat_lo": 2000, "lat_hi": 4500, "ram_bytes":  7040},
+    "hdc/cmapss":            {"base_acc": 0.70, "step_drop": 0.07, "lat_lo":  800, "lat_hi": 1600, "ram_bytes": 28364},
+    "ewc-int8/cmapss":       {"base_acc": 0.80, "step_drop": 0.03, "lat_lo":  250, "lat_hi":  700, "ram_bytes":  4800},
+    "mahalanobis/paderborn": {"base_acc": 0.71, "step_drop": 0.10, "lat_lo":   35, "lat_hi":   75, "ram_bytes":  1200},
+    "ewc/paderborn":         {"base_acc": 0.85, "step_drop": 0.025,"lat_lo":  300, "lat_hi":  750, "ram_bytes":  9728},
+    # Fallback pour les datasets existants (cwru/monitoring/pronostia)
+    "mahalanobis/cwru":      {"base_acc": 0.75, "step_drop": 0.10, "lat_lo":   40, "lat_hi":   80, "ram_bytes":  1200},
+    "mahalanobis/monitoring":{"base_acc": 0.78, "step_drop": 0.08, "lat_lo":   40, "lat_hi":   80, "ram_bytes":  1200},
+    "mahalanobis/pronostia": {"base_acc": 0.72, "step_drop": 0.11, "lat_lo":   40, "lat_hi":   80, "ram_bytes":  1200},
+    "tinyol/cwru":           {"base_acc": 0.77, "step_drop": 0.07, "lat_lo": 2000, "lat_hi": 4500, "ram_bytes":  7040},
+    "tinyol/monitoring":     {"base_acc": 0.80, "step_drop": 0.06, "lat_lo": 2000, "lat_hi": 4500, "ram_bytes":  7040},
+    "tinyol/pronostia":      {"base_acc": 0.74, "step_drop": 0.09, "lat_lo": 2000, "lat_hi": 4500, "ram_bytes":  7040},
+    "hdc/cwru":              {"base_acc": 0.73, "step_drop": 0.07, "lat_lo":  800, "lat_hi": 1600, "ram_bytes": 28364},
+    "hdc/monitoring":        {"base_acc": 0.76, "step_drop": 0.06, "lat_lo":  800, "lat_hi": 1600, "ram_bytes": 28364},
+    "hdc/pronostia":         {"base_acc": 0.70, "step_drop": 0.08, "lat_lo":  800, "lat_hi": 1600, "ram_bytes": 28364},
+    "ewc-int8/cwru":         {"base_acc": 0.79, "step_drop": 0.04, "lat_lo":  250, "lat_hi":  700, "ram_bytes":  4800},
+    "ewc-int8/paderborn":    {"base_acc": 0.81, "step_drop": 0.03, "lat_lo":  250, "lat_hi":  700, "ram_bytes":  4800},
+    # Sprint 27 — DUAL_MODE : CMAPSS (RUL) + CWRU (faute) simultané
+    "dual/cmapss+cwru":      {"base_acc": 0.61, "step_drop": 0.05, "lat_lo":  550, "lat_hi":  750, "ram_bytes": 66748},
+}
 
 
 def _load_stream_module():
@@ -120,14 +157,64 @@ def _run_ewc_dry_run_cl(
                 "true":           label,
                 "pred":           int(pred),
                 "confidence":     float(final_acc),
-                "latency_us":     int(rng.uniform(3000, 8000)),
+                "latency_us":     int(rng.uniform(300, 800)),  # Sprint 20 mesuré: 3.7 µs inférence; ~300-800 µs avec update
                 "ram_bytes":      _EWC_RAM_BYTES,
-                "throughput_ips": 200,
+                "throughput_ips": 1400,
                 "status":         0,
             })
 
     if verbose:
         print(f"[EWC dry-run] λ={ewc_lambda} acc_matrix:\n{acc_matrix}")
+
+    return acc_matrix, raw_results
+
+
+def _run_generic_dry_run_cl(
+    model: str,
+    dataset: str,
+    n_tasks: int,
+    n_samples: int,
+    base_acc: float,
+    step_drop: float,
+    lat_lo: int,
+    lat_hi: int,
+    ram_bytes: int,
+    verbose: bool,
+) -> tuple[np.ndarray, list[dict]]:
+    """Simulation dry-run générique pour mahalanobis, tinyol, hdc, ewc-int8."""
+    rng = np.random.default_rng(seed=42)
+    T = n_tasks
+
+    acc_matrix = np.full((T, T), np.nan)
+    for i in range(T):
+        for j in range(i + 1):
+            noise = float(rng.uniform(-0.015, 0.015))
+            if i == j:
+                acc_matrix[i, j] = min(1.0, base_acc + noise)
+            else:
+                acc_matrix[i, j] = max(0.0, base_acc - step_drop * (i - j) + noise)
+
+    raw_results: list[dict] = []
+    per_task = n_samples // T
+    for task_id in range(T):
+        final_acc = acc_matrix[T - 1, task_id]
+        for _ in range(per_task):
+            label = int(rng.integers(0, 2))
+            pred = label if rng.random() < final_acc else 1 - label
+            raw_results.append({
+                "task_id":        task_id,
+                "ts_ms":          len(raw_results) * 10,
+                "true":           label,
+                "pred":           int(pred),
+                "confidence":     float(final_acc),
+                "latency_us":     int(rng.uniform(lat_lo, lat_hi)),
+                "ram_bytes":      ram_bytes,
+                "throughput_ips": max(1, int(1e6 / ((lat_lo + lat_hi) / 2))),
+                "status":         0,
+            })
+
+    if verbose:
+        print(f"[{model}/{dataset} dry-run] base_acc={base_acc} step_drop={step_drop}\n{acc_matrix}")
 
     return acc_matrix, raw_results
 
@@ -138,30 +225,48 @@ def _run_experiment(
     ewc_lambda: float | None = None,
 ) -> tuple[list[dict], float, np.ndarray | None]:
     """Lance le streaming et retourne (résultats bruts, durée collection, acc_matrix|None)."""
-    # EWC dry-run avec simulation CL réaliste
-    if dry_run and model == "ewc" and ewc_lambda is not None:
+    # Dry-run : simulation entièrement synthétique (pas de dataset requis)
+    if dry_run:
         t0 = time.time()
-        acc_matrix, raw_results = _run_ewc_dry_run_cl(n_tasks, ewc_lambda, n_samples, verbose)
+        if model == "ewc" and ewc_lambda is not None:
+            acc_matrix, raw_results = _run_ewc_dry_run_cl(n_tasks, ewc_lambda, n_samples, verbose)
+        else:
+            key = f"{model}/{dataset}"
+            params = _GENERIC_DRY_RUN_PARAMS.get(key)
+            if params is None:
+                raise ValueError(
+                    f"Pas de paramètres dry-run pour '{key}'. "
+                    f"Clés disponibles : {list(_GENERIC_DRY_RUN_PARAMS)}"
+                )
+            acc_matrix, raw_results = _run_generic_dry_run_cl(
+                model, dataset, n_tasks, n_samples, verbose=verbose, **params
+            )
         return raw_results, time.time() - t0, acc_matrix
 
     mod = _load_stream_module()
     X, y = mod._load_dataset(dataset)
 
-    # Flags supplémentaires pour EWC : chaque frame active le chemin EWC firmware
-    model_flags = mod.FRAME_FLAGS_EWC_MODE if model == "ewc" else 0
+    # Flags firmware selon le modèle (cohérence avec pipeline.h)
+    _flag_map = {
+        "ewc":     getattr(mod, "FRAME_FLAGS_EWC_MODE",    0x10),
+        "ewc-int8":getattr(mod, "FRAME_FLAGS_INT8_MODE",   0x40),
+        "hdc":     getattr(mod, "FRAME_FLAGS_HDC_MODE",    0x20),
+        "tinyol":  getattr(mod, "FRAME_FLAGS_TINYOL_MODE", 0x80),
+        # Sprint 30 — paires Mahalanobis + supervisé (PAIR_MODE pipeline.c)
+        "pair-maha-ewc":    getattr(mod, "FRAME_FLAGS_PAIR_MAHA_EWC",    0x90),
+        "pair-maha-hdc":    getattr(mod, "FRAME_FLAGS_PAIR_MAHA_HDC",    0xA0),
+        "pair-maha-tinyol": getattr(mod, "FRAME_FLAGS_PAIR_MAHA_TINYOL", 0xB0),
+    }
+    model_flags = _flag_map.get(model, 0)
 
     t0 = time.time()
-    if dry_run:
-        results = mod._stream_dry_run(X, y, n_samples, n_tasks, request_update, verbose,
-                                       model_flags=model_flags)
-    else:
-        # Pour EWC board : reset avant l'expérience (réinitialise poids + lambda)
-        reset_lambda = ewc_lambda if (model == "ewc" and ewc_lambda is not None) else None
-        results = mod._stream_uart(port, baud, X, y, n_samples, n_tasks,
-                                    0.0, request_update, verbose,
-                                    protocol_version=3,
-                                    model_flags=model_flags,
-                                    reset_lambda=reset_lambda)
+    # Pour EWC/INT8 board : reset avant l'expérience (réinitialise poids + lambda)
+    reset_lambda = ewc_lambda if (model in ("ewc", "ewc-int8") and ewc_lambda is not None) else None
+    results = mod._stream_uart(port, baud, X, y, n_samples, n_tasks,
+                                0.0, request_update, verbose,
+                                protocol_version=3,
+                                model_flags=model_flags,
+                                reset_lambda=reset_lambda)
     return results, time.time() - t0, None
 
 
@@ -335,8 +440,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Enregistre une expérience board dans experiments/ (format unifié Phase 1)")
     # Arguments existants (backward compat)
-    parser.add_argument("--model", choices=["mahalanobis", "ewc", "tinyol"])
-    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia"])
+    parser.add_argument("--model", choices=["mahalanobis", "ewc", "tinyol", "hdc", "ewc-int8"])
+    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia", "cmapss", "paderborn", "battery"])
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--port", default="/dev/ttyACM0")
     parser.add_argument("--baud", type=int, default=115200)
@@ -365,10 +470,19 @@ def main() -> None:
                         help="Indique que le binaire a été re-flashé avant ce run")
     args = parser.parse_args()
 
-    # Chargement config YAML
+    # Chargement config YAML + overrides (même sans --config)
     cfg: dict = {}
     if args.config:
         cfg = _load_config(args.config, args.override or [])
+    elif args.override:
+        for item in args.override:
+            if "=" not in item:
+                raise ValueError(f"--override attend key=value, reçu : {item!r}")
+            key, val = item.split("=", 1)
+            try:
+                cfg[key] = float(val)
+            except ValueError:
+                cfg[key] = val
 
     # Résolution des valeurs finales (CLI explicite > YAML > défaut)
     model   = args.model   or cfg.get("model")
@@ -376,10 +490,11 @@ def main() -> None:
     if not model or not dataset:
         parser.error("--model et --dataset sont requis (ou --config avec model/dataset)")
 
-    n_samples   = cfg.get("n_samples",   args.n_samples)
-    n_tasks     = cfg.get("n_tasks",     args.n_tasks)
-    ewc_lambda   = cfg.get("lambda_ewc")
-    fisher_decay = cfg.get("fisher_decay", 0.99)
+    n_tasks = int(cfg.get("n_tasks") or cfg.get("n_tasks_board") or args.n_tasks)
+    _per_task = cfg.get("n_samples_per_task")
+    n_samples = int(_per_task * n_tasks if _per_task else cfg.get("n_samples", args.n_samples))
+    ewc_lambda   = cfg.get("lambda_ewc") or cfg.get("EWC_LAMBDA")
+    fisher_decay = cfg.get("fisher_decay") or cfg.get("FISHER_EMA_DECAY") or 0.99
     ram_model_bytes = cfg.get("ram_model_bytes") or cfg.get("RAM_MAHA_BYTES") or cfg.get("RAM_EWC_BYTES")
 
     output_dir = Path(args.output)

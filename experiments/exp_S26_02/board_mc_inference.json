@@ -1,0 +1,9 @@
+{
+  "n_classes": 10,
+  "n_tasks": 3,
+  "n_samples": 600,
+  "mode": "inference_only",
+  "f1_macro_board": 0.24312348958820804,
+  "latency_p50_us": 130,
+  "latency_p99_us": 130
+}

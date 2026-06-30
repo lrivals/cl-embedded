@@ -43,7 +43,48 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data_config", default=None, help="Config data override (ex. configs/monitoring_by_location_config.yaml)")
     parser.add_argument("--exp_id", default=None, help="Override exp_id")
     parser.add_argument("--exp_dir", default=None, help="Override répertoire expérience")
+    parser.add_argument(
+        "--dataset",
+        default=None,
+        help="Dataset override : cwru | pronostia | pump | monitoring | cmapss | paderborn",
+    )
+    parser.add_argument(
+        "--scenario",
+        default=None,
+        help="Scénario CL : by_fault_type | by_condition | temporal | by_equipment | by_severity",
+    )
+    parser.add_argument(
+        "--profile_memory",
+        action="store_true",
+        help="Active le profiling RAM par tracemalloc sur toute la durée du training",
+    )
+    parser.add_argument(
+        "--output_dir",
+        dest="exp_dir",
+        default=None,
+        help="Alias de --exp_dir (compatibilité commandes S2405)",
+    )
     return parser.parse_args()
+
+
+def _dump_checkpoint(model: MahalanobisDetector, exp_dir: Path, task_id: int) -> None:
+    """Sérialise le détecteur fitté (pickle) pour l'export poids board.
+
+    S3205 : ``export_weights_c.py --mahal`` lit ce ``.pkl`` (attrs ``mu_`` /
+    ``sigma_inv_`` / ``threshold_``) pour générer ``model_weights.h`` et garantir
+    la parité numérique board↔PC. Sans checkpoint, aucun poids exportable.
+    """
+    import pickle  # noqa: PLC0415
+
+    if model.mu_ is None or model.sigma_inv_ is None:
+        print("  [checkpoint] modèle non fitté — pickle ignoré")
+        return
+    ckpt_dir = exp_dir / "checkpoints"
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    ckpt_path = ckpt_dir / f"mahalanobis_task{task_id}.pkl"
+    with open(ckpt_path, "wb") as f:
+        pickle.dump(model, f)
+    print(f"  [checkpoint] détecteur Mahalanobis → {ckpt_path}")
 
 
 def _extract_numpy(loader) -> tuple[np.ndarray, np.ndarray]:
@@ -85,6 +126,12 @@ def _resolve_feature_names(cfg: dict) -> list[str]:
         return FEATURE_NAMES_CWRU
     if dataset == "pronostia":
         return FEATURE_NAMES_PRONOSTIA
+    if dataset == "paderborn":
+        import yaml as _yaml
+        subset_path = cfg["data"].get("feature_subset_path", "configs/paderborn_feature_subset.yaml")
+        with open(subset_path) as _f:
+            _subset = _yaml.safe_load(_f)
+        return _subset.get("selected_features", [])
     return FEATURE_NAMES_MONITORING
 
 
@@ -113,6 +160,11 @@ def _run_cl(
     acc_matrix = np.full((n_tasks, n_tasks), np.nan)
     X_train_last = None
 
+    _training_ram_peak: int | None = None
+    if cfg.get("_profile_memory"):
+        import tracemalloc as _tracemalloc
+        _tracemalloc.start()
+
     for i, task in enumerate(tasks):
         domain = task.get("domain", f"Task {i}")
         print(f"\n--- Tâche {i + 1}/{n_tasks} : {domain} ---")
@@ -137,6 +189,10 @@ def _run_cl(
     cl_metrics = compute_cl_metrics(acc_matrix)
     print(f"\nAA={cl_metrics['aa']:.4f} | AF={cl_metrics['af']:.4f} | BWT={cl_metrics['bwt']:.4f}")
 
+    if cfg.get("_profile_memory"):
+        _, _training_ram_peak = _tracemalloc.get_traced_memory()
+        _tracemalloc.stop()
+
     mem = _profile_model(model, X_train_last, n_runs=n_latency_runs)
     print(f"  RAM peak: {mem['ram_peak_bytes'] / 1024:.1f} Ko  |  "
           f"Latence: {mem['inference_latency_ms']:.3f} ms  |  "
@@ -159,10 +215,20 @@ def _run_cl(
         "cl_strategy": model.cl_strategy,
     }
 
+    if _training_ram_peak is not None:
+        metrics["ram_training_peak_bytes"] = _training_ram_peak
     metrics_path = results_dir / "metrics_cl.json"
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print(f"\n  Résultats → {metrics_path}")
+
+    # Checkpoint du détecteur fitté (S3205 : requis pour l'export poids board → parité).
+    _dump_checkpoint(model, exp_dir, task_id=n_tasks - 1)
+    # results.json à la racine de exp_dir (format flat Sprint 24)
+    _results_flat = {k: v for k, v in metrics.items() if k != "acc_matrix"}
+    _results_flat["sprint"] = 24
+    with open(exp_dir / "results.json", "w", encoding="utf-8") as f:
+        json.dump(_results_flat, f, indent=2)
 
     # ── Feature importance ────────────────────────────────────────────────────
     from src.evaluation.feature_importance import (
@@ -216,6 +282,28 @@ def main() -> None:
         data_cfg = load_config(args.data_config)
         cfg["data"].update(data_cfg.get("data", {}))
 
+    # Résolution --dataset/--scenario → data config (S2405)
+    _DATASET_CONFIG_MAP: dict[tuple[str | None, str | None], str] = {
+        ("cwru", "by_fault_type"):     "configs/cwru_by_fault_config.yaml",
+        ("cwru", "by_severity"):       "configs/cwru_by_severity_config.yaml",
+        ("pronostia", "by_condition"): "configs/pronostia_config.yaml",
+        ("pump", "temporal"):          "configs/pump_by_temporal_window_config.yaml",
+        ("pump", "by_id"):             "configs/pump_by_id_config.yaml",
+        ("cmapss", None):              "configs/cmapss_config.yaml",
+        ("paderborn", None):           "configs/paderborn_config.yaml",
+    }
+    if args.dataset:
+        key = (args.dataset, args.scenario)
+        fallback_key = (args.dataset, None)
+        data_cfg_path = _DATASET_CONFIG_MAP.get(key) or _DATASET_CONFIG_MAP.get(fallback_key)
+        if data_cfg_path:
+            data_cfg = load_config(data_cfg_path)
+            cfg["data"].update(data_cfg.get("data", {}))
+        if args.scenario:
+            cfg["data"]["scenario"] = args.scenario
+
+    cfg["_profile_memory"] = args.profile_memory
+
     set_seed(cfg.get("evaluation", {}).get("seed", 42))
 
     if args.exp_id:
@@ -231,6 +319,23 @@ def main() -> None:
     results_dir.mkdir(parents=True, exist_ok=True)
 
     save_config_snapshot(cfg, str(exp_dir))
+
+    dataset = cfg["data"].get("dataset", "")
+    if dataset == "paderborn":
+        print(f"\n{'=' * 60}")
+        print(f"  Mahalanobis CL domain-incremental (Paderborn) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+        from src.data.paderborn_loader import get_cl_dataloaders as get_paderborn_cl_dataloaders
+        tasks = get_paderborn_cl_dataloaders(
+            data_dir=Path(cfg["data"]["data_dir"]),
+            config_path=Path(args.config),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+        model = MahalanobisDetector(cfg["mahalanobis"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
 
     task_split = cfg["data"].get("task_split", "no_split")
 
@@ -292,6 +397,36 @@ def main() -> None:
             window_size=cfg["data"].get("window_size", 2560),
             step_size=cfg["data"].get("step_size", 2560),
             failure_ratio=cfg["data"].get("failure_ratio", 0.10),
+            label_mode=cfg["data"].get("label_mode", "failure_ratio"),
+            faulty_threshold=cfg["data"].get("faulty_threshold"),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = MahalanobisDetector(cfg["mahalanobis"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_temporal_window":
+        print(f"\n{'=' * 60}")
+        print(f"  Mahalanobis CL by_temporal_window (Battery) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.battery_dataset import (
+            RUL_FAILURE_THRESHOLD,
+            get_battery_dataloaders,
+        )
+        tasks = get_battery_dataloaders(
+            csv_path=Path(cfg["data"]["csv_path"]),
+            normalizer_path=Path(cfg["data"]["normalizer_path"]),
+            batch_size=cfg["data"].get("batch_size", 32),
+            val_ratio=cfg["data"].get("val_ratio", 0.2),
+            seed=cfg.get("evaluation", {}).get("seed", 42),
+            n_tasks=cfg["data"].get("n_tasks", 3),
+            rul_failure_threshold=cfg["data"].get(
+                "rul_failure_threshold", RUL_FAILURE_THRESHOLD
+            ),
         )
         for t in tasks:
             print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
@@ -335,6 +470,24 @@ def main() -> None:
             val_ratio=cfg["data"].get("val_ratio", 0.2),
             seed=cfg.get("evaluation", {}).get("seed", 42),
             location_order=cfg["data"].get("location_order"),
+        )
+        for t in tasks:
+            print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
+
+        model = MahalanobisDetector(cfg["mahalanobis"])
+        _run_cl(tasks, model, cfg, exp_id, results_dir, exp_dir)
+        return
+
+    elif task_split == "by_domain":
+        print(f"\n{'=' * 60}")
+        print(f"  Mahalanobis CL by_domain (CMAPSS) — {exp_id}")
+        print(f"  Sortie : {exp_dir}")
+        print(f"{'=' * 60}\n")
+
+        from src.data.cmapss_loader import get_cl_dataloaders
+        tasks = get_cl_dataloaders(
+            data_dir=Path(cfg["data"]["data_dir"]),
+            config_path=Path(args.config),
         )
         for t in tasks:
             print(f"  Task {t['task_id']} ({t['domain']}): {t['n_train']} train | {t['n_val']} val")
@@ -403,6 +556,7 @@ def main() -> None:
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print(f"\n  Résultats → {metrics_path}")
+    _dump_checkpoint(model, exp_dir, task_id=0)
     print(f"✅ Mahalanobis single-task terminé → {exp_dir}")
 
 

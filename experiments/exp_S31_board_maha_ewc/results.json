@@ -1,0 +1,51 @@
+{
+  "exp_id": "exp_S31_board_maha_ewc",
+  "pair": "maha-ewc",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "mode": "uart",
+  "date": "2026-06-18",
+  "n_params": 1573,
+  "frame_response_bytes": 27,
+  "latency_maha_us": {
+    "n": 300,
+    "p50_us": 5.0,
+    "p99_us": 5.0,
+    "mean_us": 5.0
+  },
+  "latency_supervised_us": {
+    "n": 300,
+    "p50_us": 252.0,
+    "p99_us": 252.0,
+    "mean_us": 251.52
+  },
+  "latency_pair_us": {
+    "n": 300,
+    "p50_us": 256.0,
+    "p99_us": 256.0,
+    "mean_us": 256.0
+  },
+  "online_metrics": {
+    "auroc_maha": 1.0,
+    "f1_supervised": 0.47089946269989014
+  },
+  "bss_bytes": 104596,
+  "collection_time_s": 9.75,
+  "gap2_latency_compliant": true,
+  "gap2_ram_compliant": true,
+  "latency_triple_us": {
+    "n": 300,
+    "p50_us": 258.0,
+    "p99_us": 259.0,
+    "mean_us": 258.04
+  },
+  "meta": {
+    "kind": "logreg",
+    "f1_meta_online": 0.47414547204971313,
+    "parity": {
+      "n": 300,
+      "parity_rate": 1.0,
+      "max_prob_delta": 0.0
+    }
+  }
+}

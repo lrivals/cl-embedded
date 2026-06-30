@@ -1,0 +1,22 @@
+{
+  "model": "mahalanobis",
+  "dataset": "equipment_monitoring",
+  "config_path": "configs/mahalanobis_int8_monitoring.yaml",
+  "timestamp": "2026-06-12T20:19:43",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.972409,
+    "ram_bytes": 80,
+    "latency_ms": 0.004283
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.972437,
+    "ram_bytes": 20,
+    "latency_ms": 0.008053
+  },
+  "delta_metric": 2.8e-05,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

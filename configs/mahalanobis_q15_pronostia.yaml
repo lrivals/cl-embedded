@@ -1,0 +1,10 @@
+# configs/mahalanobis_q15_pronostia.yaml — Benchmark Q15 Mahalanobis, Pronostia (Sprint 34, S3406).
+#
+# Miroir de mahalanobis_int8_pronostia.yaml en mode Q15. Pronostia est la 2e cible du bug INT8
+# (AUROC −0.238 Sprint 28).
+
+extends: configs/mahalanobis_pronostia_by_condition_config.yaml
+quantization: q15
+training:
+  batch_size: 32
+  seed: 42

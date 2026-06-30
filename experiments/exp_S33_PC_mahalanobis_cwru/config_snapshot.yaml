@@ -1,0 +1,44 @@
+_profile_memory: false
+_snapshot_timestamp: '2026-06-24T20:37:52.369637'
+data:
+  batch_size: 1
+  csv_path: data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv
+  dataset: cwru
+  feature_columns:
+  - max
+  - min
+  - mean
+  - sd
+  - rms
+  - skewness
+  - kurtosis
+  - crest
+  - form
+  n_classes: 2
+  n_features: 9
+  random_state: 42
+  task_split: by_fault_type
+  test_ratio: 0.2
+  val_ratio: 0.1
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - auroc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_S33_PC_mahalanobis_cwru/results/
+  seed: 42
+exp_id: exp_S33_PC_mahalanobis_cwru
+mahalanobis:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: welford
+  reg_covar: 1.0e-06
+  update_sigma_every: 1
+  welford_min_samples: 10
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000

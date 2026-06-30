@@ -1,0 +1,9 @@
+{
+  "exp_id": "exp_S31_PC_maha_hdc_paderborn",
+  "pair": "maha_hdc",
+  "dataset": "paderborn",
+  "frame": "binary",
+  "status": "skipped",
+  "reason": "ValueError: feature_bounds is empty or missing in config.",
+  "timestamp": "2026-06-18T14:42:11"
+}

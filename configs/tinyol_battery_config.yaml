@@ -1,0 +1,58 @@
+# configs/tinyol_battery_config.yaml
+# Sprint 32 — TinyOL sur Dataset 4 (Battery RUL), scénario by_temporal_window.
+# Créé par analogie à cmapss_tinyol_config.yaml (backbone/oto_head/pretrain/training),
+# input_dim adapté à 7 features Battery + section data de battery_config.yaml.
+# Le backbone est pré-entraîné si le checkpoint est absent. NE PAS modifier à la main.
+
+exp_id: "exp_S32_tinyol_battery"
+
+backbone:
+  input_dim: 7
+  encoder_dims: [16, 8, 4]
+  decoder_dims: [8, 16, 7]
+  checkpoint_path: experiments/exp_S32_tinyol_battery/backbone.pt
+
+oto_head:
+  input_dim: 5            # embedding_dim (dernier encoder_dim=4) + 1 (MSE scalaire)
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.9
+
+pretrain:
+  epochs: 20
+
+training:
+  optimizer: sgd
+  learning_rate: 0.01
+  momentum: 0.9
+  epochs_per_task: 1
+  batch_size: 1
+  seed: 42
+
+data:
+  dataset: battery_rul
+  task_split: by_temporal_window
+  csv_path: "data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv"
+  normalizer_path: configs/battery_normalizer.yaml
+  n_tasks: 3
+  rul_failure_threshold: 200
+  val_ratio: 0.2
+  n_features: 7
+  n_classes: 2
+  label_column: faulty
+  feature_columns:
+    - "Discharge Time (s)"
+    - "Decrement 3.6-3.4V (s)"
+    - "Max. Voltage Dischar. (V)"
+    - "Min. Voltage Charg. (V)"
+    - "Time at 4.15V (s)"
+    - "Time constant current (s)"
+    - "Charging time (s)"
+
+memory:
+  target_ram_bytes: 262144
+  expected_ram_bytes: 4096
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]

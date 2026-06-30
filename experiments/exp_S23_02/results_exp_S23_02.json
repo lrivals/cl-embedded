@@ -1,0 +1,42 @@
+{
+  "exp_id": "exp_S23_02",
+  "model": "tinyol",
+  "dataset": "cmapss",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-02",
+  "acc_final": 0.7045,
+  "avg_forgetting": 0.0901,
+  "backward_transfer": -0.0901,
+  "ram_peak_bytes": 7040,
+  "inference_latency_ms": 3.2248,
+  "n_params": 881,
+  "n_tasks": 2,
+  "n_samples_total": 400,
+  "latency_p99_ms": 4.482,
+  "throughput_mean_ips": 307,
+  "per_task_acc": {
+    "0": 0.665,
+    "1": 0.705
+  },
+  "collection_time_s": 0.01,
+  "config_snapshot": "experiments/exp_S23_02/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "acc_matrix": [
+    [
+      0.7482186814566789,
+      null
+    ],
+    [
+      0.6581663531925616,
+      0.7507579375973414
+    ]
+  ],
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 1,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  }
+}

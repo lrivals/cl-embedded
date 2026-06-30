@@ -1,0 +1,40 @@
+{
+  "exp_id": "exp_S32_hdc_pronostia_thr120",
+  "cl_metrics": {
+    "aa": 0.8501791435831874,
+    "af": 0.0156462585034014,
+    "bwt": -0.0156462585034014,
+    "fwt": 0.0,
+    "forgetting_per_task": [
+      0.0312925170068028,
+      0.0
+    ],
+    "bwt_per_task": [
+      -0.0312925170068028,
+      0.0
+    ],
+    "acc_matrix": [
+      [
+        0.8231292517006803,
+        null,
+        null
+      ],
+      [
+        0.8068027210884354,
+        1.0,
+        null
+      ],
+      [
+        0.7918367346938775,
+        1.0,
+        0.7587006960556845
+      ]
+    ],
+    "n_tasks": 3,
+    "ram_peak_bytes": 14504,
+    "inference_latency_ms": 0.08051138996052032,
+    "n_params": 2048,
+    "estimated_ram_fp32_bytes": 14344,
+    "estimated_ram_int8_bytes": 6152
+  }
+}

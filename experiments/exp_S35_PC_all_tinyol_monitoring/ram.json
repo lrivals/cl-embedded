@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_tinyol_monitoring",
+  "condition": "all",
+  "model": "tinyol",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "ram_peak_bytes": 59816386,
+  "n_params": 174,
+  "measure": "tracemalloc"
+}

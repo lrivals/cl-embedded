@@ -1,0 +1,16 @@
+# configs/tinyol_int8_pronostia.yaml — Benchmark INT8 vs FP32 TinyOL, dataset Pronostia (S2808).
+#
+# Hérite de tinyol_pronostia_by_condition_config.yaml (backbone + pretrain + data Pronostia).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model tinyol \
+#   --config configs/tinyol_int8_pronostia.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_tinyol_pronostia.json
+
+extends: configs/tinyol_pronostia_by_condition_config.yaml
+quantization: int8
+
+# _get_tasks (branche pronostia) lit cfg["training"]["batch_size"]/["seed"], absents de
+# la config tinyol pronostia → on les ajoute.
+training:
+  batch_size: 32
+  seed: 42

@@ -1,0 +1,10 @@
+# configs/mahalanobis_int8_cwru.yaml — Benchmark INT8 vs FP32 Mahalanobis, CWRU (Sprint 28, S2808).
+#
+# Hérite de cwru_by_fault_config.yaml (config unifiée : section mahalanobis + data + training).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model mahalanobis \
+#   --config configs/mahalanobis_int8_cwru.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_cwru.json
+
+extends: configs/cwru_by_fault_config.yaml
+quantization: int8

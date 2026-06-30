@@ -1,0 +1,15 @@
+# configs/ewc_int8_monitoring.yaml — Benchmark INT8 vs FP32 EWC (Sprint 28, S2801)
+#
+# Hérite de ewc_config.yaml (sections data/training/ewc/model/evaluation requises
+# par scripts/train_ewc.py::_get_tasks + train_ewc). Le spec S2801 montrait
+# `extends: configs/board_ewc.yaml`, mais board_ewc.yaml est plat (pas de section
+# data/training) et incompatible avec la boucle d'entraînement EWC — on hérite donc
+# de ewc_config.yaml. Dataset monitoring (faulty binaire) → AUROC propre.
+#
+# Usage :
+#   python scripts/benchmark_int8_fp32.py --model ewc \
+#       --config configs/ewc_int8_monitoring.yaml \
+#       --output experiments/exp_S28_PC_ewc_hdc/results_ewc_monitoring.json
+
+extends: configs/ewc_config.yaml
+quantization: int8

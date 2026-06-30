@@ -1,0 +1,9 @@
+# configs/all_features/monitoring.yaml — condition `all` (dims natives) — Sprint 35 / S3502
+# feature_names = features numériques du loader (src/data/monitoring_dataset.py).
+# Note : monitoring n'a que 4 features natives → pas de subset top-5 ; pour ce dataset
+# la condition `5feat` est équivalente à `all` (cf. run_feature_condition_sweep.py).
+dataset: monitoring
+condition: all
+n_features: 4
+feature_names: [temperature, pressure, vibration, humidity]
+source_loader: src/data/monitoring_dataset.py

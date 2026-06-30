@@ -1,0 +1,60 @@
+meta:
+  kinds:
+  - logreg
+  - mlp
+  hidden_size: 8
+  class_weight: balanced
+  input_features:
+  - p_maha
+  - p_sup
+  - disagreement
+  - conf_sup
+  oof_test_size: 0.4
+  seed: 42
+pairs:
+  maha_ewc: configs/board_pair_maha_ewc.yaml
+  maha_hdc: configs/board_pair_maha_hdc.yaml
+  maha_tinyol: configs/board_pair_maha_tinyol.yaml
+_pair_config:
+  pair:
+    name: maha_ewc
+    detector: mahalanobis
+    supervised: ewc
+  fusion:
+    rules:
+    - or
+    - and
+    - soft_vote
+    - weighted
+    weights:
+    - 0.5
+    - 0.5
+    ensemble_threshold: 0.5
+  mahalanobis:
+    anomaly_percentile: 95
+    reg_covar: 1.0e-06
+    cl_strategy: refit
+  seed: 42
+  supervised_configs:
+    monitoring: configs/ewc_int8_monitoring.yaml
+    cwru: configs/ewc_int8_cwru.yaml
+    pronostia: configs/ewc_int8_pronostia.yaml
+    cmapss: configs/ewc_int8_cmapss.yaml
+    paderborn: configs/ewc_int8_paderborn.yaml
+  native_configs:
+    cmapss: configs/cmapss_rul_config.yaml
+    cwru: configs/cwru_multiclass_config.yaml
+  native:
+    cmapss:
+      rule: rul_threshold
+      threshold: 30
+    cwru:
+      rule: nonzero_class
+    monitoring:
+      rule: identity
+    pronostia:
+      rule: identity
+    paderborn:
+      rule: nonzero_class
+_dataset: paderborn
+_mode: binary

@@ -1,0 +1,10 @@
+# configs/hdc_int8_pronostia.yaml — Benchmark INT8 vs FP32 HDC, dataset Pronostia (Sprint 28, S2807).
+#
+# Hérite de hdc_pronostia_by_condition_config.yaml (hdc + data + feature_bounds Pronostia).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model hdc \
+#   --config configs/hdc_int8_pronostia.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_hdc_pronostia.json
+
+extends: configs/hdc_pronostia_by_condition_config.yaml
+quantization: int8

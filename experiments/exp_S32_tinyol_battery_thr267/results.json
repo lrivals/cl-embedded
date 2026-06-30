@@ -1,0 +1,19 @@
+{
+  "exp_id": "exp_S32_tinyol_battery_thr267",
+  "model": "tinyol",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "acc_final": 0.8624158250410522,
+  "avg_forgetting": 0.013446215139442275,
+  "backward_transfer": -0.013446215139442275,
+  "per_task_acc": [
+    0.9982569721115537,
+    0.9748505976095617,
+    0.6141399054020413
+  ],
+  "ram_peak_bytes": 7443,
+  "inference_latency_ms": 0.007436059995598043,
+  "n_params": 306,
+  "ram_training_peak_bytes": 410722,
+  "sprint": 24
+}

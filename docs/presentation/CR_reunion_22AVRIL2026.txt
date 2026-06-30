@@ -1,0 +1,49 @@
+
+**CR Réunion Update resultats experiences 2 dtatasets — 23 avril 2026, 15 à 16h30**
+
+**Participants :** tous en visio TEAMS
+
+* Arnaud Dion (ISAE-SUPAERO)
+* Dorra Ben Khalifa (ENAC/LII)
+* Frédéric Zbierski (Edge Spectrum)
+* Léonard (stagiaire)
+
+Presentation :
+Recap des modeles 
+Proposition axe amelioration pour modeles non supervisé.
+Recap des données.
+Overview rapide des resultats des modeles sur les données en mode single task.
+Overview resultats des modeles sur les données scenarios CL 
+Focus de modeles supervisé / non supervisé les plus performants sur jeu de données Equipement monitoring Scénario traiter les données equipement par equipement,
+EWC et Mahalanobis
+Pronostia Datatset
+
+Discussion qui a suivi:
+
+Piste a Explorer 
+ENtrainer modele sur données normales seulement et tester avec données normales et deffectueuses. 
+Comment un modele peut il determiner a partir d'un ensemble de bonne données une facon d'identifier une donnée deffectueuse sans en avoir apprise. 
+Un modele supervisé performe til moins bien quun modele non supervisé.
+Chercher dans la litterature des cas similaires.
+
+Piste a explorer Jeu de données Equipement monitoring
+Plots des valeurs des variables avec hue faulty ( coloriation des points en fonction du status deffectuex de la donnée ). Etudier si les données deffectueuses sont auxextremes des distributions
+Contribution individuelle des features aux classifications (single task, et scenarios CL).
+Reentrainer les modeles en prenant les variables individuellement
+Pour determiner si une source simple peut performer en partie aussi bien que les données de source multiple. 
+
+Pousser les plots qui montrent le nombre de calcul effectue par le modele en fonction de la précision.
+Inclure les calculs durant l'entrainement par modele.
+Essayer detablir un facon de calculer ( fonction ) qui a partir des données et du modele serait capable d'estimer ou determiner le nombre de calculs que vas effetuer le modele à la fois pour l'entrainement et pour l'inference.
+
+
+Etudier / rechercher la possibilité d'introduire de nouveau dataset avec la possibilité de classfier létat des données important avoir une notion temporelle ( series temporelles)  dans les données. Regarder dans la litterature.
+
+Prochaine meeting pourrait etre mercredi 29 avril approuvé par tous . heure du rdv A confirmer , mettre en place le lien visio TEAMS
+
+Mettre en place un rdv avec Dorra Ben Khalifa pour préparer la presentation du 19 mai.
+Envoyer lien pour datatset Femto Pronostia a Frederic. 
+
+Rappel sur le GITLAB a mettre en place avec mise a disposition du code des graphiques et des compte rendus plus acces facile a tout les encadrants.
+
+

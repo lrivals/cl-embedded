@@ -1,0 +1,9 @@
+{
+  "model": "hdc",
+  "dataset": "paderborn",
+  "config_path": "configs/hdc_int8_paderborn.yaml",
+  "timestamp": "2026-06-12T20:24:29",
+  "status": "n_a",
+  "error": "ValueError: feature_bounds is empty or missing in config.",
+  "note": "HDC exige des feature_bounds calibres par dataset (etape type S2-01). Non disponibles pour Paderborn -> cellule N/A. Hors perimetre S2807 (calibration HDC Paderborn = tache separee)."
+}

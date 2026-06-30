@@ -1,0 +1,47 @@
+_profile_memory: false
+_snapshot_timestamp: '2026-06-24T20:39:00.387573'
+data:
+  batch_size: 32
+  csv_path: /home/leonard/Documents/ENAC/cl-embedded/data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  dataset: equipment_monitoring
+  equipment_col: equipment
+  feature_cols:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  label_col: faulty
+  location_col: location
+  location_order:
+  - Atlanta
+  - Chicago
+  - Houston
+  - New York
+  - San Francisco
+  n_features: 4
+  normalizer_path: configs/monitoring_normalizer.yaml
+  task_split: by_location
+  test_split: 0.2
+  val_ratio: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - auroc
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_S33_PC_mahalanobis_monitoring/results/
+  seed: 42
+exp_id: exp_S33_PC_mahalanobis_monitoring
+mahalanobis:
+  anomaly_percentile: 95
+  anomaly_threshold: null
+  cl_strategy: welford
+  reg_covar: 1.0e-06
+  update_sigma_every: 1
+  welford_min_samples: 10
+memory:
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000

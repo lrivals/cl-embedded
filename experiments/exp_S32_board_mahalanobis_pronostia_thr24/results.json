@@ -1,0 +1,21 @@
+{
+  "exp_id": "exp_S32_board_mahalanobis_pronostia_thr24",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "threshold": 24,
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-23T13:51:29",
+  "bss_bytes": 104596,
+  "n_features": 5,
+  "parity_class": "parity",
+  "latency_us_p50": 5.0,
+  "latency_us_p99": 5.0,
+  "ram_response_bytes": 39060,
+  "online_accuracy": 0.9167,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "parity_ok": true,
+  "n_compared": 120,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S33_board_gap1_hdc_cwru",
+  "model": "hdc",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-24T20:48:30",
+  "parity_class": "hw_only",
+  "parity_note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)",
+  "online_accuracy": 0.8867,
+  "latency_us_p50": 653.0,
+  "latency_us_p99": 653.0,
+  "bss_bytes": 104956,
+  "ram_response_bytes": 39420,
+  "crc_errors": 0,
+  "n_samples": 150,
+  "gap2_latency_compliant": true,
+  "note_feature": null
+}

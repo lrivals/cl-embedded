@@ -1,0 +1,19 @@
+exp_id: exp_S35_PC_best_ewc_cmapss
+condition: best
+model: ewc
+dataset: cmapss
+seed: 42
+feature_indices:
+- 12
+- 10
+- 8
+- 11
+- 5
+- 13
+feature_names:
+- NRf
+- Ps30
+- Nc
+- Phi
+- P15
+- NRc

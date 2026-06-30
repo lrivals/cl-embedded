@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_ewc_cwru",
+  "condition": "all",
+  "model": "ewc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 9,
+  "ram_peak_bytes": 59806597,
+  "n_params": 865,
+  "measure": "tracemalloc"
+}

@@ -1,0 +1,43 @@
+# configs/board_pair_maha_hdc.yaml — Sprint 30 (S3002) — paire Mahalanobis + HDC.
+#
+# Voir board_pair_maha_ewc.yaml pour la structure complète. HDC est nativement
+# multi-classe ; en Partie A les labels sont binarisés (n_classes=2 des configs
+# hdc_int8_* héritées de Sprint 28). En mode native CWRU il prédit la classe brute.
+#
+# Usage :
+#   python scripts/train_model_pair.py --config configs/board_pair_maha_hdc.yaml --dataset cwru
+
+pair:
+  name: "maha_hdc"
+  detector: "mahalanobis"
+  supervised: "hdc"
+
+fusion:
+  rules: ["or", "and", "soft_vote", "weighted"]
+  weights: [0.5, 0.5]
+  ensemble_threshold: 0.5
+
+mahalanobis:
+  anomaly_percentile: 95
+  reg_covar: 1.0e-6
+  cl_strategy: "refit"
+
+seed: 42
+
+supervised_configs:
+  monitoring: "configs/hdc_int8_monitoring.yaml"
+  cwru:       "configs/hdc_int8_cwru.yaml"
+  pronostia:  "configs/hdc_int8_pronostia.yaml"
+  cmapss:     "configs/hdc_int8_cmapss.yaml"
+  paderborn:  "configs/hdc_int8_paderborn.yaml"
+
+# HDC natif : multi-classe CWRU (cwru_multiclass_config réutilise la section hdc).
+native_configs:
+  cwru:   "configs/cwru_multiclass_config.yaml"
+
+native:
+  cmapss:     { rule: "rul_threshold", threshold: 30 }
+  cwru:       { rule: "nonzero_class" }
+  monitoring: { rule: "identity" }
+  pronostia:  { rule: "identity" }
+  paderborn:  { rule: "nonzero_class" }

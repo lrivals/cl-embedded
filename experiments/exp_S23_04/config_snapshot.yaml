@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_hdc.yaml
+dataset: cmapss
+date: '2026-06-02T14:00:47.333582'
+dry_run: false
+model: hdc
+n_samples: 400
+n_tasks: 2
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

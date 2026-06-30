@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_tinyol_cmapss",
+  "condition": "5feat",
+  "model": "tinyol",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "ram_peak_bytes": 61764113,
+  "n_params": 257,
+  "measure": "tracemalloc"
+}

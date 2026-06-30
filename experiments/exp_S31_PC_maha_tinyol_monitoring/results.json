@@ -1,0 +1,65 @@
+{
+  "exp_id": "exp_S31_PC_maha_tinyol_monitoring",
+  "pair": "maha_tinyol",
+  "dataset": "monitoring",
+  "frame": "binary",
+  "n_eval": 1535,
+  "oof": {
+    "meta_fit": 921,
+    "meta_eval": 614,
+    "test_size": 0.4
+  },
+  "input_features": [
+    "p_maha",
+    "p_sup",
+    "disagreement",
+    "conf_sup"
+  ],
+  "meta": {
+    "logreg": {
+      "f1": 0.9152542372881356,
+      "auroc": 0.9799602762873151
+    },
+    "mlp": {
+      "f1": 0.8518518518518519,
+      "auroc": 0.9799306317256099
+    }
+  },
+  "best_meta": "logreg",
+  "baselines": {
+    "model_a": {
+      "name": "mahalanobis",
+      "f1": 0.9090909090909091,
+      "auroc": 0.9799602762873151
+    },
+    "model_b": {
+      "name": "tinyol",
+      "f1": 0.68,
+      "auroc": 0.7877597604719414
+    },
+    "ensemble": {
+      "or": {
+        "f1": 0.7021276595744681,
+        "auroc": 0.9799306317256099
+      },
+      "and": {
+        "f1": 0.0,
+        "auroc": 0.9799306317256099
+      },
+      "soft_vote": {
+        "f1": 0.6881720430107527,
+        "auroc": 0.9799306317256099
+      },
+      "weighted": {
+        "f1": 0.6881720430107527,
+        "auroc": 0.9799306317256099
+      }
+    },
+    "best_ensemble_rule": "or",
+    "best_individual_f1": 0.9090909090909091,
+    "best_ensemble_f1": 0.7021276595744681
+  },
+  "delta_vs_best_individual": 0.006163328197226536,
+  "delta_vs_ensemble": 0.2131265777136675,
+  "timestamp": "2026-06-18T14:42:18"
+}

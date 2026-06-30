@@ -65,3 +65,32 @@ typedef struct {
 /* Encode [acc:f32][auroc:f32][forgetting:f32] = 12 B dans buf */
 void metrics_encode_snapshot(const MetricsSnapshot *s, uint8_t *buf);
 #define METRICS_SNAPSHOT_SIZE 12U
+
+/* ── RMSE online (Welford en ligne) ─────────────────────────────────────────
+ * MEM: 16 B @ FP32+uint32 en .bss                                          */
+
+typedef struct {
+    uint32_t n;       /* Nombre de samples vus */
+    float    mean;    /* Welford M1 de (ŷ - y)² */
+    float    M2;      /* Welford M2 */
+    float    rmse;    /* sqrt(M2 / (n-1)) — mis à jour à chaque step */
+} OnlineRMSE;
+
+void  online_rmse_init(OnlineRMSE *r);
+void  online_rmse_update(OnlineRMSE *r, float y_pred, float y_true);
+float online_rmse_get(const OnlineRMSE *r);
+
+/* ── F1-macro online (matrice de confusion compacte) ─────────────────────────
+ * MEM: MAX_MC_CLASSES² × 2 B = 200 B pour N=10 en .bss                    */
+
+#include "ewc_head_multiclass.h"
+#define MAX_MC_CLASSES EWC_MC_N_CLASSES
+
+typedef struct {
+    int16_t cm[MAX_MC_CLASSES][MAX_MC_CLASSES]; /* cm[true][pred] */
+    int      n_classes;
+} OnlineF1Macro;
+
+void  online_f1_init(OnlineF1Macro *f);
+void  online_f1_update(OnlineF1Macro *f, int pred, int true_label);
+float online_f1_get(const OnlineF1Macro *f);

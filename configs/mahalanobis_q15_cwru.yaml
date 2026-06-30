@@ -1,0 +1,9 @@
+# configs/mahalanobis_q15_cwru.yaml — Benchmark Q15 vs INT8 vs FP32 Mahalanobis, CWRU (Sprint 34, S3406).
+#
+# Miroir de mahalanobis_int8_cwru.yaml en mode Q15 : sigma_inv_ en int16 (fallback grande
+# dynamique, TODO arnaud). CWRU est une des deux cibles du bug INT8 (AUROC −0.236 Sprint 28).
+#
+# Usage : python scripts/run_s34_maha_q15.py  (ou benchmark direct)
+
+extends: configs/cwru_by_fault_config.yaml
+quantization: q15

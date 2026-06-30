@@ -1,0 +1,76 @@
+CR Réunion de lancement — 17 mars 2026, 9h–10h
+
+Participants : Arnaud Dion (ISAE-SUPAERO), Dorra Ben Khalifa (ENAC/LII),
+               Frédéric Zbierski (Edge Spectrum), Léonard (stagiaire)
+
+Matériel cible : STM32N6
+Environnement de travail : Conda + Python (priorité Python ; MATLAB en option)
+
+
+CONTEXTE & PROBLÉMATIQUE
+
+On part du principe que les modèles sont entraînés en amont (PC / Cloud) puis
+déployés sur la carte pour faire de l'inférence en local (edge).
+
+Le cas d'usage central est la prédiction du Remaining Useful Life (RUL) —
+estimer combien de temps il reste avant la panne d'une machine, à partir des
+données capteurs.
+
+Le vrai problème : les données d'entraînement peuvent dériver par rapport à
+ce que les capteurs voient réellement en production. Il faut donc pouvoir
+adapter le modèle sans tout réentraîner depuis le Cloud.
+
+Question clé soulevée en réunion : comment savoir qu'un modèle a besoin d'un
+réentraînement ou d'un fine-tuning ? C'est une des problématiques à explorer.
+
+
+ORIENTATIONS TECHNIQUES
+
+Modèles à explorer, par ordre de priorité :
+  1. Modèles légers type KNN — à privilégier avant les réseaux de neurones
+  2. RNN / LSTM pour les séries temporelles
+  3. Approches non supervisées ou partiellement supervisées
+
+La logique du stage est assez claire :
+  étudier les algos → en choisir un → l'optimiser → l'implémenter sur PC
+  → l'implémenter sur carte → comparer les deux
+
+À terme, l'idée est de livrer un modèle qui puisse remplacer facilement un
+modèle existant sur carte, voire tourner en parallèle de celui-ci.
+
+
+PLANNING PRÉVISIONNEL
+
+Étape 1 — État de l'art des algorithmes   (~1–2 semaines)
+  - Recenser les algos d'apprentissage incrémental
+  - Comparer avantages / inconvénients, délimiter les use cases
+  - Présentation intermédiaire envisagée le 3 avril à 9h
+    (choix d'un algo + argumentation)
+
+Étape 2 — État de l'art des optimisations  (dans la foulée)
+  - Quantification, compression, adaptation embarquée
+  - Objectif global : boucler les deux étapes en ~1–1,5 mois
+
+Côté données : Frédéric fournit le dataset + la carte d'ici 2–3 semaines.
+À réception, on construira un "golden model" sur PC pour servir de référence.
+
+
+ÉVÉNEMENTS À NOTER
+
+- 12 juin — Journée des doctorants
+    Présente de l'intérêt : prendre contact avec d'autres chercheurs / doctorants
+
+- Journées FAC (Formalisation des Activités Concurrentes)
+    8 et 9 avril 2026
+
+- Garder un œil sur les conférences en lien avec le stage
+
+
+ACTIONS IMMÉDIATES
+
+[x] Démarrer la revue biblio des algos d'apprentissage incrémental
+[ ] Délimiter les use cases pour cadrer l'état de l'art
+[ ] Préparer la présentation intermédiaire (~3 avril)
+[ ] Mettre en place l'environnement Conda
+[ ] Attendre le dataset et la carte de Frédéric (sous 2–3 semaines)
+[ ] Identifier les conférences pertinentes à venir

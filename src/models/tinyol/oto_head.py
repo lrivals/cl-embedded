@@ -14,6 +14,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F  # noqa: N812
 
+from src.utils.quantization import dequantize_uint8, quantize_buffer
+
 
 class OtOHead(nn.Module):
     """
@@ -98,6 +100,79 @@ class TinyOLOnlineTrainer:
             momentum=config["oto_head"]["momentum"],  # doit être 0.0
         )
 
+        # --- Buffer UINT8 (S4-02) ---
+        oto_cfg = config.get("oto_head", {})
+        self.use_uint8_buffer: bool = oto_cfg.get("use_uint8_buffer", False)
+        self.buffer_size: int = oto_cfg.get("buffer_size", 50)
+        self.buffer_replay_ratio: float = oto_cfg.get("buffer_replay_ratio", 0.2)
+
+        self._buffer_fp32: list[torch.Tensor] = []
+        self._buffer_labels_raw: list[float] = []  # labels parallèles à _buffer_fp32
+        self._buffer_uint8: torch.Tensor | None = None  # MEM: buffer_size×embed_dim×1 B @ UINT8
+        self._buffer_labels: torch.Tensor | None = None  # MEM: buffer_size×4 B @ FP32
+        self._buffer_scale: float = 1.0
+        self._buffer_zero_point: int = 0
+        self._step_counter: int = 0
+
+    def _add_to_buffer(self, embedding: torch.Tensor, label: float) -> None:
+        """
+        Ajoute un embedding au buffer FIFO. Si use_uint8_buffer, requantifie le buffer complet.
+
+        Stratégie FIFO — l'embedding le plus ancien est supprimé si buffer_size atteint.
+        """
+        self._buffer_fp32.append(embedding.detach())
+        self._buffer_labels_raw.append(label)
+        if len(self._buffer_fp32) > self.buffer_size:
+            self._buffer_fp32.pop(0)
+            self._buffer_labels_raw.pop(0)
+
+        if self.use_uint8_buffer and len(self._buffer_fp32) >= 2:
+            buf_uint8, scale, zp = quantize_buffer(self._buffer_fp32)
+            self._buffer_uint8 = buf_uint8  # MEM: len×embed_dim×1 B @ UINT8
+            self._buffer_labels = torch.tensor(
+                self._buffer_labels_raw, dtype=torch.float32
+            )  # MEM: len×4 B @ FP32
+            self._buffer_scale = scale
+            self._buffer_zero_point = zp
+
+    def _replay_from_buffer(self) -> None:
+        """
+        Mini-replay : tire 1 embedding UINT8 du buffer, reconstruit en FP32,
+        et effectue un step SGD sur la tête OtO.
+        """
+        if self._buffer_uint8 is None or len(self._buffer_uint8) == 0:
+            return
+        idx = int(torch.randint(0, len(self._buffer_uint8), (1,)).item())
+        emb_uint8 = self._buffer_uint8[idx]  # MEM: embed_dim×1 B @ UINT8
+        emb_fp32 = dequantize_uint8(  # MEM: embed_dim×4 B @ FP32
+            emb_uint8.unsqueeze(0),
+            self._buffer_scale,
+            self._buffer_zero_point,
+        ).squeeze(0)
+        label = self._buffer_labels[idx]
+        self.optimizer.zero_grad()
+        pred = self.oto_head(emb_fp32)
+        loss = F.binary_cross_entropy(pred.squeeze(), label)
+        loss.backward()
+        self.optimizer.step()
+
+    def get_buffer_ram_bytes(self) -> dict[str, int | float]:
+        """
+        Retourne l'empreinte RAM du buffer (utile pour profile_memory.py).
+
+        Returns
+        -------
+        dict avec clés : "uint8_bytes", "fp32_equivalent_bytes", "compression_ratio"
+        """
+        if self._buffer_uint8 is None:
+            return {"uint8_bytes": 0, "fp32_equivalent_bytes": 0, "compression_ratio": 1}
+        n = self._buffer_uint8.numel()
+        return {
+            "uint8_bytes": n,  # MEM: N×embed_dim×1 B @ UINT8
+            "fp32_equivalent_bytes": n * 4,  # MEM: N×embed_dim×4 B @ FP32
+            "compression_ratio": 4.0,
+        }
+
     def update(self, x: torch.Tensor, y: torch.Tensor) -> float:
         """
         Effectue un pas d'apprentissage online sur un seul échantillon.
@@ -129,7 +204,15 @@ class TinyOLOnlineTrainer:
         loss.backward()
         self.optimizer.step()
 
-        # 4. Discard x, y — pas de stockage (online learning)
+        # 4. Buffer UINT8 + replay conditionnel (S4-02)
+        # On stocke l'entrée OtO complète (z + MSE) pour pouvoir la rejouer directement.
+        self._add_to_buffer(oto_input.detach(), float(y.item() if hasattr(y, "item") else y))
+
+        self._step_counter += 1
+        replay_every = max(1, int(1 / self.buffer_replay_ratio))
+        if self.use_uint8_buffer and self._step_counter % replay_every == 0:
+            self._replay_from_buffer()
+
         return loss.item()
 
     def predict(self, x: torch.Tensor) -> tuple[float, float]:

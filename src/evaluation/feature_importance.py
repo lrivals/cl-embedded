@@ -13,23 +13,52 @@ Références :
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
+
+if TYPE_CHECKING:
+    import matplotlib.pyplot as plt
 
 import numpy as np
 
 FEATURE_NAMES_MONITORING: list[str] = ["temperature", "pressure", "vibration", "humidity"]
+FEATURE_NAMES_CMAPSS: list[str] = ["Ps30", "T50", "Phi", "P30", "BPR"]
 
-from src.data.cwru_dataset import FEATURE_COLS as FEATURE_NAMES_CWRU
-from src.data.pronostia_dataset import FEATURE_NAMES as FEATURE_NAMES_PRONOSTIA
+from src.data.cwru_dataset import FEATURE_COLS as FEATURE_NAMES_CWRU  # noqa: E402
+from src.data.paderborn_loader import (  # noqa: E402
+    FEATURE_NAMES_RAW as _PADERBORN_FEATURE_NAMES_RAW,
+)
+from src.data.pronostia_dataset import FEATURE_NAMES as FEATURE_NAMES_PRONOSTIA  # noqa: E402
+
+
+def _load_paderborn_feature_names() -> list[str]:
+    import yaml as _yaml
+
+    try:
+        with open("configs/paderborn_feature_subset.yaml") as _f:
+            _s = _yaml.safe_load(_f)
+        return _s.get("selected_features", _PADERBORN_FEATURE_NAMES_RAW)
+    except FileNotFoundError:
+        return _PADERBORN_FEATURE_NAMES_RAW
+
+
+FEATURE_NAMES_PADERBORN: list[str] = _load_paderborn_feature_names()
 
 CHANNEL_GROUPS_PRONOSTIA: dict[str, list[str]] = {
     "acc_horiz": [
-        "mean_acc_horiz", "std_acc_horiz", "rms_acc_horiz",
-        "kurtosis_acc_horiz", "peak_acc_horiz", "crest_factor_acc_horiz",
+        "mean_acc_horiz",
+        "std_acc_horiz",
+        "rms_acc_horiz",
+        "kurtosis_acc_horiz",
+        "peak_acc_horiz",
+        "crest_factor_acc_horiz",
     ],
     "acc_vert": [
-        "mean_acc_vert", "std_acc_vert", "rms_acc_vert",
-        "kurtosis_acc_vert", "peak_acc_vert", "crest_factor_acc_vert",
+        "mean_acc_vert",
+        "std_acc_vert",
+        "rms_acc_vert",
+        "kurtosis_acc_vert",
+        "peak_acc_vert",
+        "crest_factor_acc_vert",
     ],
     "temporal": ["temporal_position"],
 }
@@ -60,6 +89,7 @@ def resolve_feature_names(dataset: str) -> list[str]:
         "monitoring": FEATURE_NAMES_MONITORING,
         "cwru": FEATURE_NAMES_CWRU,
         "pronostia": FEATURE_NAMES_PRONOSTIA,
+        "paderborn": FEATURE_NAMES_PADERBORN,
     }
     if dataset not in _map:
         raise ValueError(f"Unknown dataset '{dataset}'. Expected one of {list(_map)}")
@@ -303,7 +333,9 @@ def plot_feature_importance(
         fig = ax.get_figure()
 
     bar_colors = ["#4CAF50" if s >= 0 else "#F44336" for s in scores]
-    bars = ax.barh(features[::-1], scores[::-1], color=bar_colors[::-1], alpha=0.85, edgecolor="white")
+    bars = ax.barh(
+        features[::-1], scores[::-1], color=bar_colors[::-1], alpha=0.85, edgecolor="white"
+    )
     ax.axvline(0, color="black", linewidth=0.8, linestyle="--")
 
     if show_values and scores:

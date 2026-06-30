@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_ewc_monitoring",
+  "condition": "best",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "ram_peak_bytes": 59828909,
+  "n_params": 705,
+  "measure": "tracemalloc"
+}

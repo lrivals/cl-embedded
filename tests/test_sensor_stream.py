@@ -149,7 +149,8 @@ def test_compute_stats_empty():
 # ── Tests parse_response v3 / rétrocompatibilité v2 ─────────────────────────
 
 def test_sensor_stream_parse_v3():
-    data = struct.pack("<BfIfff", 1, 0.9, 1234, 0.8, 0.75, 0.02)
+    # "<BfIHfff": pred(u8), conf(f32), lat_us(u32), ram_b(u16), acc(f32), auroc(f32), forgetting(f32)
+    data = struct.pack("<BfIHfff", 1, 0.9, 1234, 512, 0.8, 0.75, 0.02)
     assert len(data) == RESPONSE_V3_SIZE
     result = parse_response(data)
     assert "acc" in result and "auroc" in result and "forgetting" in result

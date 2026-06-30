@@ -1,0 +1,22 @@
+{
+  "model": "ewc",
+  "dataset": "equipment_monitoring",
+  "config_path": "configs/ewc_int8_monitoring.yaml",
+  "timestamp": "2026-06-12T20:11:57",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.939425,
+    "ram_bytes": 2820,
+    "latency_ms": 0.042129
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.938679,
+    "ram_bytes": 705,
+    "latency_ms": 7.936254
+  },
+  "delta_metric": -0.000746,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

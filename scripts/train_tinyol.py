@@ -65,6 +65,44 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Override exp_id (ex. exp_070_tinyol_cwru_single_task)",
     )
+    parser.add_argument(
+        "--uint8_buffer",
+        type=str,
+        default="false",
+        help="Active le buffer UINT8 dans TinyOLOnlineTrainer (true/false)",
+    )
+    parser.add_argument(
+        "--compare_fp32",
+        type=str,
+        default="false",
+        help="Exécute aussi un run FP32 pour comparer avec UINT8 (true/false)",
+    )
+    parser.add_argument(
+        "--dataset",
+        default=None,
+        help="Dataset override : cwru | pronostia | pump | monitoring | cmapss | paderborn",
+    )
+    parser.add_argument(
+        "--scenario",
+        default=None,
+        help="Scénario CL : by_fault_type | by_condition | temporal | by_equipment | by_severity",
+    )
+    parser.add_argument(
+        "--profile_memory",
+        action="store_true",
+        help="Active le profiling RAM par tracemalloc sur toute la durée du training",
+    )
+    parser.add_argument(
+        "--output_dir",
+        dest="exp_dir",
+        default=None,
+        help="Alias de --exp_dir (compatibilité commandes S2405)",
+    )
+    parser.add_argument(
+        "--uint8_activations",
+        action="store_true",
+        help="Alias de --uint8_buffer (compatibilité commandes S2405)",
+    )
     return parser.parse_args()
 
 
@@ -166,6 +204,24 @@ def _load_tasks(config: dict, seed: int) -> list[dict]:
             window_size=config["data"].get("window_size", 2560),
             step_size=config["data"].get("step_size", 2560),
             failure_ratio=config["data"].get("failure_ratio", 0.10),
+            label_mode=config["data"].get("label_mode", "failure_ratio"),
+            faulty_threshold=config["data"].get("faulty_threshold"),
+        )
+    if dataset == "battery_rul":
+        from src.data.battery_dataset import (
+            RUL_FAILURE_THRESHOLD,
+            get_battery_dataloaders,
+        )
+        return get_battery_dataloaders(
+            csv_path=Path(config["data"]["csv_path"]),
+            normalizer_path=Path(config["data"]["normalizer_path"]),
+            batch_size=1,  # TinyOL : online, un échantillon à la fois
+            val_ratio=config["data"].get("val_ratio", 0.2),
+            seed=seed,
+            n_tasks=config["data"].get("n_tasks", 3),
+            rul_failure_threshold=config["data"].get(
+                "rul_failure_threshold", RUL_FAILURE_THRESHOLD
+            ),
         )
     if dataset == "equipment_monitoring":
         task_split = config["data"].get("task_split", "by_equipment")
@@ -196,6 +252,34 @@ def _load_tasks(config: dict, seed: int) -> list[dict]:
             batch_size=1,
             seed=seed,
         )
+    if dataset == "cmapss":
+        from src.data.cmapss_loader import get_cl_dataloaders
+        from torch.utils.data import DataLoader
+        tasks = get_cl_dataloaders(
+            data_dir=Path(config["data"]["data_dir"]),
+            config_path=Path(config.get("_config_path", "configs/cmapss_tinyol_config.yaml")),
+        )
+        # TinyOL : online — rebatcher à batch_size=1
+        for t in tasks:
+            ds_train = t["train_loader"].dataset
+            ds_val = t["val_loader"].dataset
+            t["train_loader"] = DataLoader(ds_train, batch_size=1, shuffle=True)
+            t["val_loader"] = DataLoader(ds_val, batch_size=1, shuffle=False)
+        return tasks
+    if dataset == "paderborn":
+        from src.data.paderborn_loader import get_cl_dataloaders as get_paderborn_cl_dataloaders
+        from torch.utils.data import DataLoader
+        tasks = get_paderborn_cl_dataloaders(
+            data_dir=Path(config["data"]["data_dir"]),
+            config_path=Path(config.get("_config_path", "configs/paderborn_tinyol_config.yaml")),
+        )
+        # TinyOL : online — rebatcher à batch_size=1
+        for t in tasks:
+            ds_train = t["train_loader"].dataset
+            ds_val = t["val_loader"].dataset
+            t["train_loader"] = DataLoader(ds_train, batch_size=1, shuffle=True)
+            t["val_loader"] = DataLoader(ds_val, batch_size=1, shuffle=False)
+        return tasks
     task_split = config["data"].get("task_split", "chronological")
     if task_split == "by_pump_id":
         from src.data.pump_dataset import get_pump_dataloaders_by_id
@@ -382,6 +466,7 @@ def run_experiment(config: dict) -> None:
     # --- Données ---
     print(f"[{exp_id}] Chargement des données...")
     task_loaders = _load_tasks(config, seed)
+    config.pop("_config_path", None)  # éviter la pollution du dump YAML
     n_tasks = len(task_loaders)
 
     # Mode single-task (task_split: no_split) — baseline hors-CL
@@ -446,6 +531,11 @@ def run_experiment(config: dict) -> None:
     # acc_matrix[i][j] = accuracy sur tâche j après entraînement sur tâches 0..i
     acc_matrix: list[list[float]] = []
 
+    _training_ram_peak: int | None = None
+    if config.get("_profile_memory"):
+        import tracemalloc as _tracemalloc
+        _tracemalloc.start()
+
     for task_id in range(n_tasks):
         print(f"\n--- Tâche {task_id + 1}/{n_tasks} ---")
 
@@ -487,6 +577,10 @@ def run_experiment(config: dict) -> None:
     print(f"\n[{exp_id}] AA  = {cl_metrics['aa']:.4f}")
     print(f"[{exp_id}] AF  = {cl_metrics['af']:.4f}")
     print(f"[{exp_id}] BWT = {cl_metrics['bwt']:.4f}")
+
+    if config.get("_profile_memory"):
+        _, _training_ram_peak = _tracemalloc.get_traced_memory()
+        _tracemalloc.stop()
 
     # --- Profiling RAM et latence ---
     # Inférence : tête OtO seule (ce qui tourne sur le MCU)
@@ -552,14 +646,136 @@ def run_experiment(config: dict) -> None:
         "n_params": oto_head.n_params() + autoencoder.n_encoder_params(),
         "acc_matrix": acc_matrix,
     }
+    if _training_ram_peak is not None:
+        metrics_cl["ram_training_peak_bytes"] = _training_ram_peak
     with open(output_dir / "metrics_cl.json", "w") as f:
         json.dump(metrics_cl, f, indent=2)
     print(f"[{exp_id}] metrics_cl.json → {output_dir / 'metrics_cl.json'}")
+    # results.json à la racine de exp_dir (format flat Sprint 24)
+    _results_flat = {k: v for k, v in metrics_cl.items() if k != "acc_matrix"}
+    _results_flat["sprint"] = 24
+    with open(output_dir.parent / "results.json", "w") as f:
+        json.dump(_results_flat, f, indent=2)
 
     _save_accuracy_matrix(acc_matrix, output_dir / "cl_accuracy_matrix.png", exp_id=exp_id)
     _save_config_snapshot(config, output_dir.parent / "config_snapshot.yaml", exp_id=exp_id)
 
     print(f"[{exp_id}] Terminé ✓")
+
+
+def _run_uint8_comparison(config: dict, use_uint8_buffer: bool = True) -> None:
+    """
+    Exécute deux runs (FP32 baseline + UINT8 buffer) et sauvegarde les métriques comparatives.
+
+    Sorties dans experiments/{exp_id}/results/ :
+        metrics.json       — fp32_baseline, uint8_buffer, delta_aa, gap3_target_met
+        memory_report.json — bytes FP32 vs UINT8, within_budget_256ko
+        acc_matrix_uint8.npy — matrice accuracy du run UINT8
+
+    Adresse Gap 3 : quantification pendant l'entraînement incrémental.
+    Budget RAM : NUCLEO-F439ZI = 256 Ko (262 144 B).
+    """
+    import copy
+
+    exp_id = config.get("exp_id", "exp")
+    output_dir = Path(config["evaluation"]["output_dir"])
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # --- Run FP32 baseline ---
+    print(f"\n[{exp_id}] === Run FP32 baseline ===")
+    cfg_fp32 = copy.deepcopy(config)
+    cfg_fp32["oto_head"]["use_uint8_buffer"] = False
+    cfg_fp32["exp_id"] = exp_id + "_fp32"
+    cfg_fp32["evaluation"]["output_dir"] = str(output_dir / "fp32")
+    cfg_fp32["_config_path"] = config.get("_config_path", "")
+    run_experiment(cfg_fp32)
+
+    fp32_metrics_path = output_dir / "fp32" / "metrics.json"
+    with open(fp32_metrics_path) as f:
+        fp32_results = json.load(f)
+    aa_fp32 = fp32_results.get("acc_final", float("nan"))
+    ram_fp32 = fp32_results.get("ram_peak_bytes", 0)
+
+    # --- Run UINT8 buffer ---
+    print(f"\n[{exp_id}] === Run UINT8 buffer ===")
+    cfg_uint8 = copy.deepcopy(config)
+    cfg_uint8["oto_head"]["use_uint8_buffer"] = True
+    cfg_uint8["exp_id"] = exp_id + "_uint8"
+    cfg_uint8["evaluation"]["output_dir"] = str(output_dir / "uint8")
+    cfg_uint8["_config_path"] = config.get("_config_path", "")
+    run_experiment(cfg_uint8)
+
+    uint8_metrics_path = output_dir / "uint8" / "metrics.json"
+    with open(uint8_metrics_path) as f:
+        uint8_results = json.load(f)
+    aa_uint8 = uint8_results.get("acc_final", float("nan"))
+    ram_uint8 = uint8_results.get("ram_peak_bytes", 0)
+
+    # --- Delta AA et seuil Gap 3 ---
+    delta_aa = aa_uint8 - aa_fp32
+    gap3_target_met = abs(delta_aa) <= 0.005
+
+    # --- Buffer RAM théorique (taille configurée) ---
+    buffer_size = config["oto_head"].get("buffer_size", 50)
+    oto_input_dim = config["oto_head"].get("input_dim", 9)
+    fp32_buffer_bytes = buffer_size * oto_input_dim * 4   # FP32
+    uint8_buffer_bytes = buffer_size * oto_input_dim * 1  # UINT8
+    nucleo_budget = 262_144  # 256 Ko NUCLEO-F439ZI
+
+    # --- Sauvegarde metrics.json comparatif ---
+    metrics_comparison = {
+        "exp_id": exp_id,
+        "dataset": config["data"].get("dataset", "unknown"),
+        "model": "tinyol",
+        "seed": config["evaluation"]["seed"],
+        "config": {
+            "use_uint8_buffer": True,
+            "buffer_size": buffer_size,
+            "buffer_replay_ratio": config["oto_head"].get("buffer_replay_ratio", 0.2),
+        },
+        "fp32_baseline": {
+            "aa": aa_fp32,
+            "af": fp32_results.get("avg_forgetting", None),
+            "bwt": fp32_results.get("backward_transfer", None),
+        },
+        "uint8_buffer": {
+            "aa": aa_uint8,
+            "af": uint8_results.get("avg_forgetting", None),
+            "bwt": uint8_results.get("backward_transfer", None),
+        },
+        "delta_aa": round(delta_aa, 6),
+        "gap3_target_met": gap3_target_met,
+    }
+    with open(output_dir / "metrics.json", "w") as f:
+        json.dump(metrics_comparison, f, indent=2)
+
+    # --- Sauvegarde memory_report.json ---
+    memory_report = {
+        "fp32_buffer_bytes": fp32_buffer_bytes,
+        "uint8_buffer_bytes": uint8_buffer_bytes,
+        "compression_ratio": 4.0,
+        "total_ram_fp32_bytes": ram_fp32,
+        "total_ram_uint8_bytes": ram_uint8,
+        "within_budget_64ko": ram_uint8 <= 65_536,
+        "within_budget_256ko": ram_uint8 <= nucleo_budget,
+    }
+    with open(output_dir / "memory_report.json", "w") as f:
+        json.dump(memory_report, f, indent=2)
+
+    # --- Matrice accuracy UINT8 ---
+    acc_matrix_uint8 = uint8_results.get("acc_matrix", [])
+    if acc_matrix_uint8:
+        np.save(output_dir / "acc_matrix_uint8.npy", np.array(acc_matrix_uint8, dtype=object))
+
+    _save_config_snapshot(config, output_dir.parent / "config_snapshot.yaml", exp_id=exp_id)
+
+    print(f"\n[{exp_id}] === Comparaison FP32 vs UINT8 ===")
+    print(f"  AA FP32   : {aa_fp32:.4f}")
+    print(f"  AA UINT8  : {aa_uint8:.4f}")
+    print(f"  Delta AA  : {delta_aa:+.4f} ({'✅ Gap 3 OK' if gap3_target_met else '❌ Seuil dépassé'})")
+    print(f"  Buffer FP32 : {fp32_buffer_bytes} B → UINT8 : {uint8_buffer_bytes} B (4×)")
+    print(f"  RAM totale UINT8 : {ram_uint8} B / 256 Ko ({'OK' if ram_uint8 <= nucleo_budget else 'OVER'})")
+    print(f"  Résultats → {output_dir}")
 
 
 def main() -> None:
@@ -572,6 +788,26 @@ def main() -> None:
         data_cfg = load_config(args.data_config)
         config["data"].update(data_cfg.get("data", {}))
 
+    # Résolution --dataset/--scenario → data config (S2405)
+    _DATASET_CONFIG_MAP: dict[tuple[str | None, str | None], str] = {
+        ("cwru", "by_fault_type"):     "configs/cwru_by_fault_config.yaml",
+        ("cwru", "by_severity"):       "configs/cwru_by_severity_config.yaml",
+        ("pronostia", "by_condition"): "configs/pronostia_config.yaml",
+        ("pump", "temporal"):          "configs/pump_by_temporal_window_config.yaml",
+        ("pump", "by_id"):             "configs/pump_by_id_config.yaml",
+        ("cmapss", None):              "configs/cmapss_config.yaml",
+        ("paderborn", None):           "configs/paderborn_config.yaml",
+    }
+    if args.dataset:
+        key = (args.dataset, args.scenario)
+        fallback_key = (args.dataset, None)
+        data_cfg_path = _DATASET_CONFIG_MAP.get(key) or _DATASET_CONFIG_MAP.get(fallback_key)
+        if data_cfg_path:
+            data_cfg = load_config(data_cfg_path)
+            config["data"].update(data_cfg.get("data", {}))
+        if args.scenario:
+            config["data"]["scenario"] = args.scenario
+
     # Override exp_id depuis --exp_id
     if args.exp_id:
         config["exp_id"] = args.exp_id
@@ -582,7 +818,19 @@ def main() -> None:
         config["evaluation"]["output_dir"] = str(Path(args.exp_dir) / "results")
         config["exp_id"] = Path(args.exp_dir).name
 
-    run_experiment(config)
+    config["_config_path"] = args.config
+    config["_profile_memory"] = args.profile_memory
+
+    use_uint8 = args.uint8_buffer.lower() == "true" or args.uint8_activations
+    compare_fp32 = args.compare_fp32.lower() == "true"
+
+    if use_uint8:
+        config["oto_head"]["use_uint8_buffer"] = True
+
+    if compare_fp32:
+        _run_uint8_comparison(config, use_uint8_buffer=use_uint8)
+    else:
+        run_experiment(config)
 
 
 if __name__ == "__main__":

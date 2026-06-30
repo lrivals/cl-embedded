@@ -1,0 +1,25 @@
+{
+  "exp_id": "exp_S35_PC_best_hdc_cwru",
+  "condition": "best",
+  "model": "hdc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "selected_indices": [
+    1,
+    6,
+    3,
+    8
+  ],
+  "acc_final": 0.987012987012987,
+  "f1_faulty": 0.9927007299270073,
+  "f1_macro": 0.9669386002576212,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.9855072463768116,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.012987012987012991,
+  "ram_peak_bytes": 82762,
+  "n_params": 2048,
+  "note": "best hdc_cwru.yaml"
+}

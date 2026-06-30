@@ -36,6 +36,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
+import datetime
+
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 
 from src.evaluation.metrics import compute_cl_metrics
@@ -118,6 +120,7 @@ def _run_cl(
     n_latency_runs = cfg.get("evaluation", {}).get("n_latency_runs", 100)
 
     acc_matrix = np.full((n_tasks, n_tasks), np.nan)
+    auroc_matrix = np.full((n_tasks, n_tasks), np.nan)
     X_train_last = None
     thresholds_per_task: dict[int, float] = {}
 
@@ -142,11 +145,17 @@ def _run_cl(
             y_pred = (scores > threshold_j).astype(int)
             acc = float(accuracy_score(y_val, y_pred))
             acc_matrix[i, j] = acc
+            try:
+                auroc_matrix[i, j] = float(roc_auc_score(y_val, scores))
+            except ValueError:
+                auroc_matrix[i, j] = float("nan")
             lbl = tasks[j].get("domain", f"T{j + 1}")
             print(f"  Acc tâche {j + 1} ({lbl}) [seuil={threshold_j:.4f}]: {acc:.4f}")
 
     cl_metrics = compute_cl_metrics(acc_matrix)
-    print(f"\nAA={cl_metrics['aa']:.4f} | AF={cl_metrics['af']:.4f} | BWT={cl_metrics['bwt']:.4f}")
+    auroc_final_row = auroc_matrix[n_tasks - 1, :n_tasks]
+    auroc_avg = float(np.nanmean(auroc_final_row))
+    print(f"\nAA={cl_metrics['aa']:.4f} | AF={cl_metrics['af']:.4f} | BWT={cl_metrics['bwt']:.4f} | AUROC={auroc_avg:.4f}")
 
     mem = _profile_model(model, X_train_last, n_runs=n_latency_runs)
     print(f"  RAM peak: {mem['ram_peak_bytes'] / 1024:.1f} Ko  |  "
@@ -165,7 +174,9 @@ def _run_cl(
         "acc_final": cl_metrics["aa"],
         "avg_forgetting": cl_metrics["af"],
         "backward_transfer": cl_metrics["bwt"],
+        "auroc": auroc_avg,
         "per_task_acc": [float(acc_matrix[n_tasks - 1, j]) for j in range(n_tasks)],
+        "auroc_per_task": [None if np.isnan(v) else float(v) for v in auroc_final_row],
         "ram_peak_bytes": mem["ram_peak_bytes"],
         "inference_latency_ms": mem["inference_latency_ms"],
         "n_params": mem["n_params"],
@@ -178,6 +189,27 @@ def _run_cl(
     with open(metrics_path, "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2)
     print(f"\n  Résultats → {metrics_path}")
+
+    # ── results.json racine (format normalisé lu par notebooks) ─────────────
+    root_results = {
+        "exp_id": exp_id,
+        "model": "dbscan",
+        "dataset": dataset_name,
+        "platform": "pc_python",
+        "date": datetime.date.today().isoformat(),
+        "acc_final": cl_metrics["aa"],
+        "avg_forgetting": cl_metrics["af"],
+        "backward_transfer": cl_metrics["bwt"],
+        "auroc": auroc_avg,
+        "f1_score": None,
+        "ram_peak_bytes": mem["ram_peak_bytes"],
+        "inference_latency_ms": mem["inference_latency_ms"],
+        "n_params": mem["n_params"],
+        "config_snapshot": str(exp_dir / "config_snapshot.yaml"),
+    }
+    with open(exp_dir / "results.json", "w", encoding="utf-8") as f:
+        json.dump(root_results, f, indent=2)
+    print(f"  results.json → {exp_dir / 'results.json'}")
 
     # ── Feature importance ────────────────────────────────────────────────────
     from src.evaluation.feature_importance import (

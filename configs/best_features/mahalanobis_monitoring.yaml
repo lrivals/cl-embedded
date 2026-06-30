@@ -1,0 +1,27 @@
+# configs/best_features/mahalanobis_monitoring.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: mahalanobis
+dataset: monitoring
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 4
+n_features_selected: 4
+selected_indices:
+- 1
+- 0
+- 2
+- 3
+selected_features:
+- pressure
+- temperature
+- vibration
+- humidity
+val_f1_by_k:
+  1: 0.533333
+  2: 0.627803
+  3: 0.686695
+  4: 0.697872
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

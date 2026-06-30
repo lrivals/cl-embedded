@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_mahalanobis_monitoring",
+  "condition": "5feat",
+  "model": "mahalanobis",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "ram_peak_bytes": 2139544,
+  "n_params": 20,
+  "measure": "tracemalloc"
+}

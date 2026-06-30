@@ -1,0 +1,33 @@
+{
+  "exp_id": "exp_S19_04",
+  "model": "mahalanobis",
+  "dataset": "monitoring",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-09",
+  "acc_final": 0.96,
+  "avg_forgetting": 0.005,
+  "backward_transfer": -0.005,
+  "ram_peak_bytes": 0,
+  "inference_latency_ms": 0.004,
+  "n_params": 30,
+  "n_tasks": 3,
+  "n_samples_total": 300,
+  "latency_p99_ms": 0.004,
+  "throughput_mean_ips": 0,
+  "per_task_acc": {
+    "0": 0.96,
+    "1": 0.95,
+    "2": 0.97
+  },
+  "collection_time_s": 2.15,
+  "config_snapshot": "experiments/exp_S19_04/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 1,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  }
+}

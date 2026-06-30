@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_mahalanobis.yaml
+dataset: cmapss
+date: '2026-06-02T14:00:32.798484'
+dry_run: false
+model: mahalanobis
+n_samples: 400
+n_tasks: 2
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: false

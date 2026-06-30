@@ -39,9 +39,8 @@ import pandas as pd
 import torch
 import yaml
 from scipy.stats import kurtosis as scipy_kurtosis
-from torch.utils.data import DataLoader, TensorDataset
-
 from sklearn.model_selection import StratifiedShuffleSplit
+from torch.utils.data import DataLoader, TensorDataset
 
 from src.utils.config_loader import load_config
 from src.utils.reproducibility import set_seed
@@ -642,7 +641,7 @@ def get_pump_dataloaders_by_id(
     # 3. Normalisation Z-score (stats fixes, calculées sur Task 1 chronologique)
     normalizer = load_pump_normalizer(Path(normalizer_path))
     mean_vec = normalizer["mean"]  # [N_FEATURES]
-    std_vec = normalizer["std"]    # [N_FEATURES]
+    std_vec = normalizer["std"]  # [N_FEATURES]
 
     result: list[dict] = []
 
@@ -781,7 +780,7 @@ def get_pump_dataloaders_by_temporal_window(
     # 2. Chargement du normaliseur fixe (ajusté sur T1 chronologique)
     normalizer = load_pump_normalizer(Path(normalizer_path))
     mean_vec = normalizer["mean"]  # [N_FEATURES]
-    std_vec = normalizer["std"]    # [N_FEATURES]
+    std_vec = normalizer["std"]  # [N_FEATURES]
 
     result: list[dict] = []
 
@@ -939,22 +938,16 @@ def get_pump_dataloaders_single_task(
     X_test = (X_test - mean_vec) / std_vec
 
     # 6. Conversion en tenseurs et DataLoaders
-    x_tr = torch.from_numpy(X_train.astype(np.float32))   # MEM: n_train×25×4 B @ FP32
+    x_tr = torch.from_numpy(X_train.astype(np.float32))  # MEM: n_train×25×4 B @ FP32
     y_tr = torch.from_numpy(y_train.astype(np.float32)).unsqueeze(1)
     x_va = torch.from_numpy(X_val.astype(np.float32))
     y_va = torch.from_numpy(y_val.astype(np.float32)).unsqueeze(1)
     x_te = torch.from_numpy(X_test.astype(np.float32))
     y_te = torch.from_numpy(y_test.astype(np.float32)).unsqueeze(1)
 
-    train_loader = DataLoader(
-        TensorDataset(x_tr, y_tr), batch_size=batch_size, shuffle=True
-    )
-    val_loader = DataLoader(
-        TensorDataset(x_va, y_va), batch_size=batch_size, shuffle=False
-    )
-    test_loader = DataLoader(
-        TensorDataset(x_te, y_te), batch_size=batch_size, shuffle=False
-    )
+    train_loader = DataLoader(TensorDataset(x_tr, y_tr), batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(TensorDataset(x_va, y_va), batch_size=batch_size, shuffle=False)
+    test_loader = DataLoader(TensorDataset(x_te, y_te), batch_size=batch_size, shuffle=False)
 
     return {
         "train_loader": train_loader,

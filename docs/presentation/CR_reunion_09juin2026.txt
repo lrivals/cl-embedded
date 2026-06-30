@@ -1,0 +1,104 @@
+CR Réunion de suivi — Microcontrôleurs, FP32 vs INT8, préparation du rapport
+9 juin 2026 | Dorra en présentiel, Arnaud et Frédéric en visio
+
+Participants
+- Dorra Ben Khalifa (ENAC/LII) — présentiel
+- Arnaud Dion (ISAE-SUPAERO) — visio
+- Frédéric Zbierski (Edge Spectrum) — visio
+- Léonard (stagiaire)
+
+
+====================================================================
+POINTS À EXPLORER (pistes issues de la réunion / pour la suite)
+====================================================================
+
+Microcontrôleur
+- Utiliser STM32 Monitor Power pour le profilage énergétique.
+- Étudier l'utilisation de données en FP32 et en INT8.
+- Comparer les métriques selon ces deux encodages, côté modèles comme côté hardware.
+- Mesurer l'énergie utilisée. Aussi : combien d'accuracy perd-on pour gagner en RAM ?
+- Identifier les axes d'optimisation.
+
+Préparation du compte rendu, de l'état de l'art et du rapport de stage
+- Faire un tri parmi ce que j'ai accompli pour garder l'essentiel.
+- Garder ce qui répond bien à la problématique.
+- Décider quels modèles, datasets et expériences je mets en avant.
+
+Dates importantes
+- Vendredi 26 juin, 9h–12h : présentation ONERA.
+- Mardi 30 juin, 10h45 : présentation Sandbox ENAC.
+- Faire un RDV présentiel fin juin pour conclure le travail.
+
+Autre
+- Étudier les candidatures en thèse sur le GDR.
+
+
+====================================================================
+ÉLÉMENTS DE RÉPONSE (issus de mon travail)
+====================================================================
+
+FP32 vs INT8 — comparaison sur modèles
+  Rappel : 4 octets → 1 octet par poids, soit ×4 sur la mémoire des poids, pour
+  un coût en précision à quantifier modèle par modèle. Benchmark 4 modèles × 5
+  datasets (n=600/tâche, seed=42). Métrique = AUROC détection de panne (labels
+  binarisés normal-vs-fault), F1 macro pour HDC. RAM = octets de poids.
+
+  Modèle        Dataset      FP32     INT8     Δ          RAM FP32   RAM INT8   Ratio
+  -----------   ----------   ------   ------   --------   --------   --------   ------
+  EWC           CMAPSS       0.768    0.773    +0.006     2 948 B    737 B      4.00×
+  EWC           Monitoring   0.939    0.939    -0.001     2 820 B    705 B      4.00×
+  EWC           CWRU         1.000    1.000    -0.000     3 460 B    865 B      4.00×
+  EWC           Pronostia    0.988    0.988    -0.000     3 972 B    993 B      4.00×
+  HDC           CMAPSS       0.723    0.723     0.000     14 344 B   6 152 B    2.33×
+  HDC           Monitoring   0.758    0.758     0.000     14 344 B   6 152 B    2.33×
+  HDC           CWRU         0.929    0.929     0.000     7 176 B    3 080 B    2.33×
+  HDC           Pronostia    0.709    0.709     0.000     14 344 B   6 152 B    2.33×
+  TinyOL        CMAPSS       0.720    0.741    +0.020     2 148 B    585 B      3.67×
+  TinyOL        Monitoring   0.899    0.907    +0.008     1 456 B    412 B      3.53×
+  TinyOL        CWRU         0.707    0.762    +0.055     3 148 B    835 B      3.77×
+  TinyOL        Pronostia    0.716    0.715    -0.001     4 276 B    1 117 B    3.83×
+  Mahalanobis   CMAPSS       0.655    0.649    -0.006     120 B      30 B       4.00×
+  Mahalanobis   Monitoring   0.972    0.972     0.000     80 B       20 B       4.00×
+  Mahalanobis   CWRU         0.475    0.239    -0.236     360 B      90 B       4.00×
+  Mahalanobis   Pronostia    0.857    0.620    -0.238     728 B      182 B      4.00×
+
+  - EWC : ×4 de RAM, métrique quasi intacte (Δ ≤ 0.006) → meilleur compromis.
+  - HDC : Δ = 0.000 partout, mais l'AM reste en int16 → ratio 2.33×.
+  - TinyOL : sur CMAPSS et CWRU l'INT8 améliore l'AUROC (+0.020 / +0.055) — effet
+    régularisant de la fake-quantization, pas une dégradation.
+  - Mahalanobis : ×4 OK mais grosse chute sur CWRU (-0.236) et Pronostia (-0.238) ;
+    la quantif int8 de sigma_inv_ (grande dynamique) casse la distance → fallback
+    Q15 (int16) recommandé sur ces datasets (TODO arnaud).
+
+
+Combien d'accuracy pour combien de RAM ? (synthèse Gap 3)
+  - Compression RAM : OK sur les 18 cellules mesurées, de 2.33× (HDC) à 4.00× (EWC/Maha).
+  - Métrique préservée : 12/16 cellules (|Δ| < 0.02). Exceptions = 2 TinyOL (gain)
+    + 2 Mahalanobis (sigma_inv_ → Q15).
+  - Réponse concrète : pour EWC et HDC, on ne perd quasiment rien pour ×4 / ×2.33
+    de RAM gagnée ; seul Mahalanobis demande un traitement Q15.
+  - Trous assumés : Paderborn → AUROC N/A (tâches de test mono-classe) ;
+    HDC × Paderborn → N/A (feature_bounds non calibrés). La RAM reste mesurée.
+
+Énergie
+  - Profilage par phases (démarrage / acquisition / inférence / veille) prévu avec
+    STM32 Monitor Power. Pas encore de chiffres µJ consolidés à reporter.
+
+Tri pour le rapport — ce que je mets en avant
+  - Modèles : EWC (régularisation), HDC (architecture, non-neuronal), TinyOL,
+    Mahalanobis (baseline non supervisée).
+  - Datasets : CWRU, Pronostia, CMAPSS, Monitoring (Paderborn en complément).
+  - Contributions clés : métriques de coût (MACs/BOPs/latence/énergie), comparaison
+    FP32 vs INT8 sur matériel réel, compromis accuracy/RAM, pipeline de streaming.
+  - À synthétiser sans développer : revue de littérature (triple gap) et contexte
+    général de l'apprentissage incrémental.
+
+
+Actions / Prochaines étapes
+[ ] Lancer la campagne de mesures énergétiques (STM32 Monitor Power) et reporter les µJ
+[ ] Intégrer le tableau FP32 vs INT8 dans le rapport
+[ ] Implémenter le fallback Q15 sur sigma_inv_ pour Mahalanobis (CWRU / Pronostia)
+[ ] Sélectionner les expériences finales à mettre en avant
+[ ] Préparer les slides ONERA (26 juin) et Sandbox ENAC (30 juin)
+[ ] Fixer le RDV présentiel de conclusion fin juin
+[ ] Consulter les offres de thèse GDR

@@ -1,0 +1,52 @@
+# configs/cmapss_tinyol_config.yaml
+# TinyOL sur CMAPSS (NASA C-MAPSS Turbofan — domain-incremental FD001→FD004)
+# Backbone autoencoder 5→8D, tête OtO en ligne.
+# NE PAS modifier : créer une copie pour chaque variante expérimentale.
+
+exp_id: "exp_S22_03"
+
+backbone:
+  input_dim: 5              # top-5 capteurs CMAPSS (Ps30, T50, Phi, P30, BPR)
+  encoder_dims: [16, 8, 4]  # embedding 4D  # MEM: 5×16+16×8+8×4 = 272 params @ FP32
+  decoder_dims: [8, 16, 5]
+  checkpoint_path: "experiments/exp_S22_03/backbone.pt"
+
+oto_head:
+  input_dim: 5              # 4D embedding + 1 MSE scalaire
+  optimizer: "sgd"
+  learning_rate: 0.01
+  momentum: 0.9
+
+pretrain:
+  epochs: 20
+
+training:
+  optimizer: "sgd"
+  learning_rate: 0.01
+  momentum: 0.9
+  epochs_per_task: 1        # TinyOL : online, 1 passe par tâche
+  batch_size: 1
+  seed: 42
+
+data:
+  dataset: "cmapss"
+  data_dir: "data/raw/CMAPSS Jet Engine Simulated Data/"
+  rul_cap: 125
+  faulty_threshold: 30
+  n_features_selected: 5
+  n_features: 5
+  task_split: "by_domain"
+  feature_subset_path: "configs/cmapss_feature_subset.yaml"
+  domain_order: ["FD001", "FD002", "FD003", "FD004"]
+  label_column: "faulty"
+  test_split: 0.2
+  normalizer: "minmax"
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]
+  output_dir: "experiments/exp_S22_03/results/"
+
+memory:
+  target_ram_bytes: 262144   # 256 Ko NUCLEO-F439ZI
+  expected_ram_bytes: 4096   # backbone 5→8D + OtO head

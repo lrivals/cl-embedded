@@ -105,3 +105,45 @@ void test_bss_size_within_limit(void)
     profiling_init();
     TEST_ASSERT_LESS_THAN_UINT32(65535U, (uint32_t)profiling_get_bss_bytes());
 }
+
+/* ── Test 7 : scan high-water — région à moitié utilisée ────────────────── */
+
+void test_stack_peak_partial_usage(void)
+{
+    /* Région de 8 mots peinte avec la sentinelle ; la pile (qui croît vers le
+     * haut de la région) a écrasé les 3 mots du haut. Le pic attendu = 3 mots
+     * = 12 octets (high - premier_mot_non_sentinelle). */
+    uint32_t region[8];
+    for (int i = 0; i < 8; i++) region[i] = STACK_PAINT_SENTINEL;
+    region[5] = 0x12345678U;   /* premier mot écrasé (scan bas → haut) */
+    region[6] = 0xCAFEBABEU;
+    region[7] = 0x00000001U;
+
+    uint32_t used = profiling_stack_peak_from_region(region, region + 8,
+                                                     STACK_PAINT_SENTINEL);
+    TEST_ASSERT_EQUAL_UINT32(3U * sizeof(uint32_t), used);
+}
+
+/* ── Test 8 : scan high-water — région intacte → pic nul ────────────────── */
+
+void test_stack_peak_untouched_is_zero(void)
+{
+    uint32_t region[16];
+    for (int i = 0; i < 16; i++) region[i] = STACK_PAINT_SENTINEL;
+
+    uint32_t used = profiling_stack_peak_from_region(region, region + 16,
+                                                     STACK_PAINT_SENTINEL);
+    TEST_ASSERT_EQUAL_UINT32(0U, used);
+}
+
+/* ── Test 9 : scan high-water — région saturée → pic = taille totale ────── */
+
+void test_stack_peak_fully_used(void)
+{
+    uint32_t region[4];
+    for (int i = 0; i < 4; i++) region[i] = 0xAAAAAAAAU;   /* aucun sentinel */
+
+    uint32_t used = profiling_stack_peak_from_region(region, region + 4,
+                                                     STACK_PAINT_SENTINEL);
+    TEST_ASSERT_EQUAL_UINT32(4U * sizeof(uint32_t), used);
+}

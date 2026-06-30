@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_cmapss",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    10,
+    3,
+    11,
+    6,
+    14
+  ],
+  "acc_final": 0.8620997165671742,
+  "f1_faulty": 0.0,
+  "f1_macro": 0.4632133891213389,
+  "precision_faulty": 0.0,
+  "recall_faulty": 0.0,
+  "avg_forgetting": 0.042622791630039646,
+  "backward_transfer": -0.03866511454418231,
+  "ram_peak_bytes": 2664653,
+  "n_params": 2048,
+  "note": "subset cmapss_feature_subset.yaml"
+}

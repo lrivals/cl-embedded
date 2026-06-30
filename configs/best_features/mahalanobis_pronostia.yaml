@@ -1,0 +1,32 @@
+# configs/best_features/mahalanobis_pronostia.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: mahalanobis
+dataset: pronostia
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 13
+n_features_selected: 2
+selected_indices:
+- 0
+- 1
+selected_features:
+- mean_acc_horiz
+- std_acc_horiz
+val_f1_by_k:
+  1: 0.137931
+  2: 0.342593
+  3: 0.308411
+  4: 0.221154
+  5: 0.219048
+  6: 0.188679
+  7: 0.209091
+  8: 0.230415
+  9: 0.235294
+  10: 0.239631
+  11: 0.240741
+  12: 0.238532
+  13: 0.232558
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

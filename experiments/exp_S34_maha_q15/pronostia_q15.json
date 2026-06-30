@@ -1,0 +1,16 @@
+{
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "variant": "q15",
+  "config_path": "/home/leonard/Documents/ENAC/cl-embedded/configs/mahalanobis_q15_pronostia.yaml",
+  "timestamp": "2026-06-26T17:45:59",
+  "metric_name": "auroc",
+  "auroc": 0.87291,
+  "ram_bytes": 351,
+  "latency_ms": 0.008723,
+  "score_fidelity_vs_fp32": {
+    "mean_abs_error": 0.323699,
+    "max_abs_error": 4.05196,
+    "corr_with_fp32": 0.985094
+  }
+}

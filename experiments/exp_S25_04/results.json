@@ -1,0 +1,41 @@
+{
+  "exp_id": "exp_S25_04",
+  "model": "hdc_regressor",
+  "dataset": "cmapss",
+  "task_mode": "rul",
+  "n_tasks": 4,
+  "per_task_metrics": [
+    {
+      "task_id": 1,
+      "rmse": 23.433170318603516,
+      "mae": 18.350826263427734,
+      "horizon_score": 72317.64745995775
+    },
+    {
+      "task_id": 2,
+      "rmse": 39.24094772338867,
+      "mae": 33.85565948486328,
+      "horizon_score": 2734009.134259686
+    },
+    {
+      "task_id": 3,
+      "rmse": 20.13792610168457,
+      "mae": 14.90059757232666,
+      "horizon_score": 61354.091439717435
+    },
+    {
+      "task_id": 4,
+      "rmse": 37.74717330932617,
+      "mae": 31.898481369018555,
+      "horizon_score": 4976537.236639138
+    }
+  ],
+  "avg_forgetting_rmse": 20.166897455851238,
+  "training_time_s": 493.29498171806335,
+  "n_params": 1024,
+  "config": "configs/cmapss_rul_config.yaml",
+  "comparison_vs_ewc_regression": {
+    "exp_S25_01_rmse_task1": 22.52776527404785,
+    "exp_S25_04_rmse_task1": 23.433170318603516
+  }
+}

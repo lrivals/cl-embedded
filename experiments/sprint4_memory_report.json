@@ -1,0 +1,46 @@
+{
+  "generated": "2026-06-01",
+  "budget_64ko_bytes": 65536,
+  "budget_256ko_bytes": 262144,
+  "models": {
+    "ewc": {
+      "n_params": 705,
+      "ram_static_bytes": 2820,
+      "ram_ewc_state_bytes": 5640,
+      "ram_inference_bytes": 1627,
+      "ram_update_bytes": 27892,
+      "inference_latency_ms": 0.022,
+      "update_latency_ms": 0.235,
+      "within_budget_64ko": true,
+      "within_budget_256ko": true
+    },
+    "hdc": {
+      "n_params": 2048,
+      "ram_static_bytes": 14344,
+      "ram_inference_bytes": 14544,
+      "ram_update_bytes": null,
+      "inference_latency_ms": 0.038,
+      "update_latency_ms": null,
+      "within_budget_64ko": true,
+      "within_budget_256ko": true
+    },
+    "tinyol_fp32": {
+      "n_params": 3019,
+      "n_params_encoder": 3009,
+      "n_params_oto": 10,
+      "ram_static_bytes": 12076,
+      "ram_inference_bytes": 5332,
+      "ram_update_bytes": 6362,
+      "inference_latency_ms": 0.053,
+      "update_latency_ms": 0.206,
+      "within_budget_64ko": true,
+      "within_budget_256ko": true
+    },
+    "tinyol_uint8": null
+  },
+  "gap2_summary": {
+    "all_within_256ko": true,
+    "tightest_model": "ewc",
+    "margin_256ko_percent": 89.4
+  }
+}

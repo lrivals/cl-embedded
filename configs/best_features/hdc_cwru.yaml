@@ -1,0 +1,32 @@
+# configs/best_features/hdc_cwru.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: hdc
+dataset: cwru
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 9
+n_features_selected: 4
+selected_indices:
+- 1
+- 6
+- 3
+- 8
+selected_features:
+- min
+- kurtosis
+- sd
+- form
+val_f1_by_k:
+  1: 0.975248
+  2: 0.962406
+  3: 0.965
+  4: 0.992701
+  5: 0.975248
+  6: 0.995146
+  7: 0.985294
+  8: 0.997579
+  9: 0.992701
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

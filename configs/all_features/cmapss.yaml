@@ -1,0 +1,30 @@
+# configs/all_features/cmapss.yaml — condition `all` (dims natives) — Sprint 35 / S3502
+# feature_names = 21 capteurs importés des constantes du loader (src/data/cmapss_loader.SENSOR_NAMES).
+# NOTE BOARD : all=21 > PROTO_MAX_N=16 (protocole UART firmware). Hors périmètre PC ;
+# côté board, dépend de la décision S3506 (relever PROTO_MAX_N ou restreindre `all`).
+dataset: cmapss
+condition: all
+n_features: 21
+feature_names:
+  - T2
+  - T24
+  - T30
+  - T50
+  - P2
+  - P15
+  - P30
+  - Nf
+  - Nc
+  - epr
+  - Ps30
+  - Phi
+  - NRf
+  - NRc
+  - BPR
+  - farB
+  - htBleed
+  - Nf_dmd
+  - PCNfR_dmd
+  - W31
+  - W32
+source_loader: src/data/cmapss_loader.py

@@ -1,0 +1,21 @@
+{
+  "exp_id": "exp_S33_PC_hdc_monitoring",
+  "model": "hdc",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_location",
+  "native_int_architecture": true,
+  "acc_final": 0.8498242949047279,
+  "avg_forgetting": 0.01530540518069426,
+  "backward_transfer": -0.009675802442389081,
+  "per_task_acc": [
+    0.8498402555910544,
+    0.8360128617363344,
+    0.864516129032258,
+    0.8300653594771242,
+    0.8686868686868687
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.03573218994461058,
+  "n_params": 2048,
+  "sprint": 24
+}

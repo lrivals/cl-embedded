@@ -1,0 +1,74 @@
+CR Réunion de suivi — Métriques de coût, latence, buffer, consommation
+19 mai 2026 | Visio
+
+Participants
+- Dorra Ben Khalifa (ENAC/LII) — visio
+- Frédéric Zbierski (Edge Spectrum) — visio
+- Léonard (stagiaire)
+
+
+====================================================================
+POINTS À EXPLORER (pistes issues de la réunion / pour la suite)
+====================================================================
+
+- Détailler les MACs, FLOPs et les autres métriques pour évaluer le nombre
+  d'opérations faites par les modèles.
+- Expliquer pourquoi j'ai choisi ces métriques pour comparer les modèles.
+- Définir une formule pour estimer le nombre de calculs en fonction du matériel,
+  du modèle et du nombre de données.
+- Évaluer la latence pour estimer combien de données on peut streamer sur la
+  carte en même temps, par modèle.
+- Étudier le remplissage du buffer pour le traitement de ces données.
+- Étudier la consommation électrique et la capacité d'autonomie.
+
+
+====================================================================
+ÉLÉMENTS DE RÉPONSE 
+====================================================================
+
+Métriques retenues
+- Indépendant du matériel : MAC (a ← a + b × c, unité de base), FLOP (1 MAC ≈ 2
+  FLOPs), Params (proxy de la taille mémoire), BOPs = FLOPs × b² (généralise aux
+  bits → rend la comparaison FP32/INT8 plus facile).
+- Dépendant du matériel : latence (bout en bout), throughput (inf/s), FLOPS/W.
+- Pourquoi : les MACs/FLOPs donnent une comparaison matériel-agnostique calculable
+  a priori (savoir si un modèle est déployable avant de coder) ; latence et énergie
+  l'ancrent dans le réel. Sur MCU en apprentissage incrémental, le budget de calcul
+  est une contrainte dure.
+
+Formule d'estimation des calculs
+  MACs_total = MACs_inférence × N_échantillons
+  Par couche :  Conv2D = K² × C_in × C_out × H_out × W_out
+                Dense  = C_in × C_out
+                GRU/LSTM ≈ 4 × (C_in + C_out) × C_out  par timestep
+  Du calcul au temps réel :
+                Temps_inférence ≈ MACs / (FLOPS_peak × efficacité_matérielle)
+                avec efficacité_matérielle ∈ [0.1, 0.6]
+
+Latence et débit de streaming
+  Débit_max (samples/s) = 1 / Latence_inférence
+  Débit_streaming = f_acquisition × S / W   (fenêtre W, stride S)
+  → doit rester ≤ Débit_max pour le temps réel.
+  Mesures board (NUCLEO-F439ZI) : la latence d'inférence est très en dessous du
+  seuil des 100 ms — la marge de streaming est large. La contrainte réelle est
+  la RAM et l'énergie, pas la latence.
+  (NB : valeurs board consolidées plus tard — inférence ~130 µs,
+  inférence + mise à jour ~403 µs selon le modèle.)
+
+Remplissage du buffer
+  Buffer circulaire d'au moins W échantillons ; on accumule jusqu'à W puis on
+  infère toutes les S nouvelles valeurs. Contrainte : W × sizeof(sample) doit
+  tenir en SRAM. Impact du stride S sur latence perçue et charge CPU à étudier.
+
+Consommation et autonomie
+  Autonomie (h) = Capacité_batterie (mAh) / Courant_moyen (mA)
+  I_moy = I_veille × t_veille + I_inférence × t_inférence  (normalisé sur T_cycle)
+  Leviers : réduire t_inférence (INT8) et augmenter le rapport veille/actif (sleep).
+  → Pas encore de mesure de puissance à reporter : banc à mettre en place.
+
+
+Actions / Prochaines étapes
+[ ] Mesurer les MACs effectifs des modèles retenus (torchinfo, compteurs CMSIS-NN)
+[ ] Instrumenter la latence sur la carte cible
+[ ] Dimensionner le buffer et valider la contrainte SRAM
+[ ] Mettre en place le banc de mesure de puissance

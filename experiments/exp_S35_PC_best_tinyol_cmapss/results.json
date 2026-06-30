@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S35_PC_best_tinyol_cmapss",
+  "condition": "best",
+  "model": "tinyol",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "selected_indices": [
+    0
+  ],
+  "acc_final": 0.1379002834328258,
+  "f1_faulty": 0.24108146645095835,
+  "f1_macro": 0.12054073322547917,
+  "precision_faulty": 0.13706232656751785,
+  "recall_faulty": 1.0,
+  "avg_forgetting": 0.0,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 60290629,
+  "n_params": 61,
+  "note": "best tinyol_cmapss.yaml"
+}

@@ -1,0 +1,21 @@
+{
+  "exp_id": "exp_S35_board_all_tinyol_cwru",
+  "condition": "all",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-25T09:40:50",
+  "n_features": 9,
+  "bss_bytes": 124484,
+  "online_accuracy": 0.14,
+  "f1_faulty": 0.0851,
+  "f1_macro": 0.1369,
+  "latency_us_p50": 9.0,
+  "latency_us_p99": 9.0,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "stream_mode": "frozen (sans --update \u2192 parit\u00e9 exacte)",
+  "parity_class": "hw_only",
+  "parity_ok": null,
+  "parity_note": "N/A par construction (HDC projection embarqu\u00e9e / TinyOL init en ligne)"
+}

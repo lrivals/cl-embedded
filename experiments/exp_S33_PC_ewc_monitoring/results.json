@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S33_PC_ewc_monitoring",
+  "model": "ewc",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_location",
+  "uint8_activations": false,
+  "acc_final": 0.9816856414260793,
+  "avg_forgetting": 0.0008064516129032417,
+  "backward_transfer": 0.003197431563082692,
+  "per_task_acc": [
+    0.987220447284345,
+    0.9839228295819936,
+    0.9870967741935484,
+    0.9771241830065359,
+    0.9730639730639731
+  ],
+  "ram_peak_bytes": 1171,
+  "ram_peak_bytes_uint8": null,
+  "inference_latency_ms": 0.029529800040108967,
+  "n_params": 705,
+  "sprint": 24
+}

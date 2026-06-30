@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S33_PC_tinyol_pronostia",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "acc_final": 0.9297033743102157,
+  "avg_forgetting": 0.01983261903706257,
+  "backward_transfer": -0.01983261903706257,
+  "per_task_acc": [
+    0.9333106498809118,
+    0.931918008784773,
+    0.9238814642649622
+  ],
+  "ram_peak_bytes": 7411,
+  "inference_latency_ms": 0.0072756300050969,
+  "n_params": 542,
+  "sprint": 24
+}

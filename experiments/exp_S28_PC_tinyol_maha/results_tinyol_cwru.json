@@ -1,0 +1,22 @@
+{
+  "model": "tinyol",
+  "dataset": "cwru",
+  "config_path": "configs/tinyol_int8_cwru.yaml",
+  "timestamp": "2026-06-12T20:18:59",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.707434,
+    "ram_bytes": 3148,
+    "latency_ms": 0.103135
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.76195,
+    "ram_bytes": 835,
+    "latency_ms": 0.325438
+  },
+  "delta_metric": 0.054516,
+  "ram_ratio": 3.77006,
+  "gap3_metric_ok": false,
+  "gap3_ram_ok": true
+}

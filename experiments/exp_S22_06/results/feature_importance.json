@@ -1,0 +1,43 @@
+{
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "scenario": "by_fault_type",
+  "global": {
+    "permutation_importance": {
+      "energy_band_4": 0.001800600200066671,
+      "energy_band_2": 0.0013671223741247296,
+      "energy_band_3": 0.0011003667889296076,
+      "rms": -0.20946982327442482,
+      "energy_band_1": -0.212870956985662
+    }
+  },
+  "per_task": {
+    "K001": {
+      "permutation_importance": {
+        "rms": 0.6299449173760641,
+        "energy_band_1": 0.6271407110665999,
+        "energy_band_3": 0.08212318477716574,
+        "energy_band_4": 0.08212318477716574,
+        "energy_band_2": 0.08142213319979974
+      }
+    },
+    "KA04": {
+      "permutation_importance": {
+        "energy_band_4": -0.010816224336504768,
+        "energy_band_3": -0.01091637456184276,
+        "energy_band_2": -0.011016524787180779,
+        "rms": -0.6300450676014021,
+        "energy_band_1": -0.6319479218828242
+      }
+    },
+    "KI04": {
+      "permutation_importance": {
+        "energy_band_2": -0.021057884231536927,
+        "energy_band_4": -0.02165668662674651,
+        "energy_band_3": -0.022355289421157692,
+        "rms": -0.6305389221556886,
+        "energy_band_1": -0.6353293413173654
+      }
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "exp_id": "exp_S32_hdc_battery_thr200",
+  "model": "hdc",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "native_int_architecture": true,
+  "acc_final": 0.918407960199005,
+  "avg_forgetting": 0.024875621890547317,
+  "backward_transfer": -0.024378109452736385,
+  "per_task_acc": [
+    0.9522388059701492,
+    0.981094527363184,
+    0.8218905472636816
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.05707004998839693,
+  "n_params": 2048,
+  "acc_matrix": [
+    [
+      0.991044776119403,
+      NaN,
+      NaN
+    ],
+    [
+      0.9920398009950249,
+      0.991044776119403,
+      NaN
+    ],
+    [
+      0.9522388059701492,
+      0.981094527363184,
+      0.8218905472636816
+    ]
+  ],
+  "ram_training_peak_bytes": 310998
+}

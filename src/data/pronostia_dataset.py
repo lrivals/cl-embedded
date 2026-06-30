@@ -34,6 +34,7 @@ Citation : Nectoux et al., IEEE PHM 2012.
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 import torch
@@ -74,6 +75,9 @@ FEATURE_NAMES: list[str] = [
 # Choix : 10% ≈ protocole PRONOSTIA standard (dégradation accélérée phase finale)
 FAILURE_RATIO: float = 0.10
 
+# Durée d'une fenêtre en secondes : 2560 points @ 25 600 Hz = 0.1 s
+WINDOW_DURATION_S: float = 0.1
+
 # Nombre de conditions opératoires (tâches CL)
 N_CONDITIONS: int = 3
 
@@ -97,11 +101,22 @@ VAL_RATIO: float = 0.2
 # ---------------------------------------------------------------------------
 
 
+def _compute_rul_labels(n_windows: int) -> np.ndarray:
+    """RUL décroissant en secondes pour chaque fenêtre d'un roulement."""
+    return np.array(
+        [(n_windows - i) * WINDOW_DURATION_S for i in range(n_windows)],
+        dtype=np.float32,
+    )
+
+
 def load_bearing_features(
     npy_path: Path,
     window_size: int = WINDOW_SIZE,
     step_size: int = STEP_SIZE,
     failure_ratio: float = FAILURE_RATIO,
+    mode: Literal["binary", "rul"] = "binary",
+    label_mode: Literal["failure_ratio", "rul_threshold"] = "failure_ratio",
+    faulty_threshold: float | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Charge un fichier .npy et extrait les features statistiques par fenêtre.
@@ -119,12 +134,22 @@ def load_bearing_features(
         Pas entre fenêtres. Default : STEP_SIZE (2 560) — sans overlap.
     failure_ratio : float
         Fraction terminale du signal étiquetée pré-défaillance. Default : FAILURE_RATIO (0.10).
+    mode : {"binary", "rul"}
+        "binary" (défaut) : label 0/1.
+        "rul" : RUL décroissant en secondes (float32). Prioritaire sur label_mode.
+    label_mode : {"failure_ratio", "rul_threshold"}
+        Stratégie de binarisation en mode "binary". Default : "failure_ratio"
+        (dernières failure_ratio fenêtres = pré-défaillance, comportement historique).
+        "rul_threshold" : binarise le RUL en secondes via faulty_threshold
+        (faulty = RUL <= faulty_threshold) — balayage de seuil Sprint 32.
+    faulty_threshold : float | None
+        Seuil RUL (secondes) requis si label_mode == "rul_threshold".
 
     Returns
     -------
     tuple[np.ndarray, np.ndarray]
         - features : shape [N_windows, 13], dtype float32
-        - labels   : shape [N_windows], dtype float32 — 1.0 = pré-défaillance
+        - labels   : shape [N_windows], dtype float32 — 1.0 = pré-défaillance (binary) ou RUL (rul)
 
     Notes
     -----
@@ -163,6 +188,15 @@ def load_bearing_features(
         # MEM: vecteur features 13×4 = 52 B @ FP32 / 13 B @ INT8
         features[i] = np.append(channel_feats, temporal_pos)
         labels[i] = np.float32(1.0 if i >= failure_start_idx else 0.0)
+
+    if mode == "rul":
+        labels = _compute_rul_labels(n_windows)
+    elif label_mode == "rul_threshold":
+        if faulty_threshold is None:
+            raise ValueError("label_mode='rul_threshold' requiert faulty_threshold (secondes).")
+        # MEM: labels [N] × 4 B @ FP32 — RUL binarisé au seuil (Sprint 32)
+        rul = _compute_rul_labels(n_windows)
+        labels = (rul <= faulty_threshold).astype(np.float32)
 
     return features, labels
 
@@ -216,6 +250,9 @@ def load_condition_features(
     window_size: int = WINDOW_SIZE,
     step_size: int = STEP_SIZE,
     failure_ratio: float = FAILURE_RATIO,
+    mode: Literal["binary", "rul"] = "binary",
+    label_mode: Literal["failure_ratio", "rul_threshold"] = "failure_ratio",
+    faulty_threshold: float | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Charge et concatène les features des 2 roulements d'une condition opératoire.
@@ -232,6 +269,12 @@ def load_condition_features(
         Pas entre fenêtres. Default : STEP_SIZE (2 560).
     failure_ratio : float
         Fraction terminale pré-défaillance. Default : FAILURE_RATIO (0.10).
+    mode : {"binary", "rul"}
+        Propagé à load_bearing_features. Default : "binary".
+    label_mode : {"failure_ratio", "rul_threshold"}
+        Propagé à load_bearing_features. Default : "failure_ratio".
+    faulty_threshold : float | None
+        Propagé à load_bearing_features (requis si label_mode == "rul_threshold").
 
     Returns
     -------
@@ -248,7 +291,15 @@ def load_condition_features(
 
     for bearing_idx in CONDITION_BEARING_MAP[condition]:
         npy_path = npy_dir / f"{bearing_idx}.npy"
-        feats, lbls = load_bearing_features(npy_path, window_size, step_size, failure_ratio)
+        feats, lbls = load_bearing_features(
+            npy_path,
+            window_size,
+            step_size,
+            failure_ratio,
+            mode,
+            label_mode=label_mode,
+            faulty_threshold=faulty_threshold,
+        )
         all_features.append(feats)
         all_labels.append(lbls)
 
@@ -326,15 +377,17 @@ def _features_to_dataloader(
     shuffle: bool,
     seed: int,
     val_ratio: float = VAL_RATIO,
+    continuous_labels: bool = False,
 ) -> tuple[DataLoader, DataLoader, int, int]:
-    """Split stratifié (ou chronologique) et conversion en DataLoaders."""
+    """Split stratifié (ou chronologique si labels continus) et conversion en DataLoaders."""
     n = len(features)
     unique_classes = np.unique(labels)
 
-    if len(unique_classes) >= 2 and int(n * val_ratio) >= 2:
+    if not continuous_labels and len(unique_classes) >= 2 and int(n * val_ratio) >= 2:
         sss = StratifiedShuffleSplit(n_splits=1, test_size=val_ratio, random_state=seed)
         train_idx, val_idx = next(sss.split(features, labels))
     else:
+        # Fallback chronologique pour labels continus ou classes insuffisantes
         n_val = max(1, int(n * val_ratio))
         train_idx = np.arange(n - n_val)
         val_idx = np.arange(n - n_val, n)
@@ -348,9 +401,7 @@ def _features_to_dataloader(
     train_loader = DataLoader(
         TensorDataset(x_train, y_train), batch_size=batch_size, shuffle=shuffle
     )
-    val_loader = DataLoader(
-        TensorDataset(x_val, y_val), batch_size=batch_size, shuffle=False
-    )
+    val_loader = DataLoader(TensorDataset(x_val, y_val), batch_size=batch_size, shuffle=False)
     return train_loader, val_loader, len(train_idx), len(val_idx)
 
 
@@ -368,13 +419,16 @@ def get_pronostia_dataloaders(
     window_size: int = WINDOW_SIZE,
     step_size: int = STEP_SIZE,
     failure_ratio: float = FAILURE_RATIO,
+    mode: Literal["binary", "rul"] = "binary",
+    label_mode: Literal["failure_ratio", "rul_threshold"] = "failure_ratio",
+    faulty_threshold: float | None = None,
 ) -> list[dict]:
     """
     Point d'entrée principal pour l'entraînement CL sur le Dataset 3 (PRONOSTIA).
 
     Pipeline :
         load_condition_features × 3 → load_pronostia_normalizer
-        → apply Z-score → split stratifié → DataLoader
+        → apply Z-score → split → DataLoader
 
     Parameters
     ----------
@@ -394,6 +448,14 @@ def get_pronostia_dataloaders(
         Pas entre fenêtres. Default : STEP_SIZE (2 560).
     failure_ratio : float
         Fraction terminale pré-défaillance. Default : FAILURE_RATIO (0.10).
+    mode : {"binary", "rul"}
+        "binary" (défaut) : labels 0/1.
+        "rul" : RUL décroissant en secondes (float32, split chronologique).
+    label_mode : {"failure_ratio", "rul_threshold"}
+        Stratégie de binarisation en mode "binary". Default : "failure_ratio".
+        "rul_threshold" : faulty = RUL <= faulty_threshold (balayage Sprint 32).
+    faulty_threshold : float | None
+        Seuil RUL (secondes) requis si label_mode == "rul_threshold".
 
     Returns
     -------
@@ -422,7 +484,14 @@ def get_pronostia_dataloaders(
 
     for condition in range(1, N_CONDITIONS + 1):
         feats, lbls = load_condition_features(
-            npy_dir, condition, window_size, step_size, failure_ratio
+            npy_dir,
+            condition,
+            window_size,
+            step_size,
+            failure_ratio,
+            mode,
+            label_mode=label_mode,
+            faulty_threshold=faulty_threshold,
         )
 
         # Normalisation Z-score avec stats fixes (Condition 1)
@@ -430,7 +499,13 @@ def get_pronostia_dataloaders(
         feats = (feats - mean_vec) / std_vec
 
         train_loader, val_loader, n_train, n_val = _features_to_dataloader(
-            feats, lbls, batch_size, shuffle=True, seed=seed, val_ratio=val_ratio
+            feats,
+            lbls,
+            batch_size,
+            shuffle=True,
+            seed=seed,
+            val_ratio=val_ratio,
+            continuous_labels=(mode == "rul"),
         )
 
         tasks.append(
@@ -517,9 +592,7 @@ def get_pronostia_dataloaders_anomaly_detection(
     tasks: list[dict] = []
 
     for condition in range(1, N_CONDITIONS + 1):
-        feats, lbls = load_condition_features(
-            npy_dir, condition, failure_ratio=failure_ratio
-        )
+        feats, lbls = load_condition_features(npy_dir, condition, failure_ratio=failure_ratio)
 
         # Normalisation Z-score avec stats fixes (Condition 1)
         # MEM: X [N_windows, 13] × 4 B @ FP32

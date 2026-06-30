@@ -1,0 +1,18 @@
+{
+  "dataset": "cmapss",
+  "threshold": 30.0,
+  "model": "maha_q15",
+  "flag": "0xF0",
+  "status": "ok",
+  "bss_bytes": 105036,
+  "n_samples": 300,
+  "latency_us_mean": 5.0,
+  "latency_us_p50": 5.0,
+  "latency_us_p99": 5.0,
+  "gap2_ok": true,
+  "parity_ok": true,
+  "n_compared": 300,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0,
+  "max_score_abs_error": 9.643538060988277e-06
+}

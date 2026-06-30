@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_paderborn",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    5,
+    4,
+    6,
+    1,
+    3
+  ],
+  "acc_final": 0.4946598207357609,
+  "f1_faulty": 0.5648241206030151,
+  "f1_macro": 0.4811797009296133,
+  "precision_faulty": 0.6636302294197031,
+  "recall_faulty": 0.49162709322669335,
+  "avg_forgetting": 0.24912368552829245,
+  "backward_transfer": -0.24912368552829245,
+  "ram_peak_bytes": 690977,
+  "n_params": 2048,
+  "note": "subset paderborn_feature_subset.yaml"
+}

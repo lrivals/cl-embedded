@@ -24,6 +24,8 @@ from pathlib import Path
 import torch
 import torch.nn as nn
 
+from src.utils.quantization import compute_scale_zero_point, dequantize_uint8, quantize_uint8
+
 
 class EWCMlpClassifier(nn.Module):
     """
@@ -59,6 +61,7 @@ class EWCMlpClassifier(nn.Module):
         input_dim: int = 6,
         hidden_dims: list[int] | None = None,
         dropout: float = 0.2,
+        uint8_activations: bool = False,
     ):
         super().__init__()
 
@@ -67,6 +70,9 @@ class EWCMlpClassifier(nn.Module):
 
         self.input_dim = input_dim
         self.hidden_dims = hidden_dims
+        self.uint8_activations = uint8_activations
+        self._scales: dict[str, float] = {}
+        self._zero_points: dict[str, int] = {}
 
         # --- Architecture MLP ---
         # MEM: Linear(6→32)  = (6×32 + 32) × 4 = 896 B @ FP32 / 224 B @ INT8
@@ -84,6 +90,26 @@ class EWCMlpClassifier(nn.Module):
     # Forward pass
     # ------------------------------------------------------------------
 
+    def calibrate_uint8(self, dataloader) -> None:
+        """Calibre les paramètres UINT8 sur un batch représentatif (Task 1).
+
+        Doit être appelé avant le premier appel à forward() en mode uint8_activations,
+        typiquement sur le train_loader de la tâche 1.
+        """
+        all_h1: list[torch.Tensor] = []
+        all_h2: list[torch.Tensor] = []
+        self.eval()
+        with torch.no_grad():
+            for x, _ in dataloader:
+                h1 = torch.relu(self.fc1(x))
+                all_h1.append(h1)
+                h2 = torch.relu(self.fc2(self.drop1(h1)))
+                all_h2.append(h2)
+        h1_cat = torch.cat(all_h1, dim=0)
+        h2_cat = torch.cat(all_h2, dim=0)
+        self._scales["fc1"], self._zero_points["fc1"] = compute_scale_zero_point(h1_cat)
+        self._scales["fc2"], self._zero_points["fc2"] = compute_scale_zero_point(h2_cat)
+
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         Parameters
@@ -95,13 +121,19 @@ class EWCMlpClassifier(nn.Module):
         Tensor [batch_size, 1]
             Probabilité de défaut ŷ ∈ [0, 1].
         """
-        # MEM activations: 32 × 4 = 128 B @ FP32
+        # MEM activations: 32 × 4 = 128 B @ FP32 / 32 B @ UINT8
         hidden = torch.relu(self.fc1(x))
         hidden = self.drop1(hidden)
+        if self.uint8_activations and "fc1" in self._scales:
+            s, zp = self._scales["fc1"], self._zero_points["fc1"]
+            hidden = dequantize_uint8(quantize_uint8(hidden, s, zp), s, zp)
 
-        # MEM activations: 16 × 4 = 64 B @ FP32
+        # MEM activations: 16 × 4 = 64 B @ FP32 / 16 B @ UINT8
         hidden = torch.relu(self.fc2(hidden))
         hidden = self.drop2(hidden)
+        if self.uint8_activations and "fc2" in self._scales:
+            s, zp = self._scales["fc2"], self._zero_points["fc2"]
+            hidden = dequantize_uint8(quantize_uint8(hidden, s, zp), s, zp)
 
         # MEM activations: 1 × 4 = 4 B @ FP32
         out = torch.sigmoid(self.fc3(hidden))

@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_ewc_paderborn",
+  "condition": "best",
+  "model": "ewc",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "ram_peak_bytes": 59818003,
+  "n_params": 609,
+  "measure": "tracemalloc"
+}

@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-06-02",
+  "sprint": 24,
+  "sprint_filter": "S24",
+  "n_experiments": 3,
+  "models": [
+    "ewc",
+    "hdc"
+  ],
+  "datasets": [
+    "monitoring"
+  ],
+  "sprints": [
+    24
+  ],
+  "experiments": [
+    {
+      "exp_id": "exp_S24_01",
+      "model": "ewc",
+      "dataset": "monitoring",
+      "scenario": "by_fault_type",
+      "sprint": 24,
+      "uint8_activations": true,
+      "acc_final": 0.911411304773725,
+      "avg_forgetting": null,
+      "bwt": null,
+      "auroc": null,
+      "ram_peak_bytes": 1230.0,
+      "inference_latency_ms": 0.058636390131141525,
+      "n_params": 705.0,
+      "compression_ratio": null,
+      "delta_acc_vs_fp32": null,
+      "reference_exp": null,
+      "notes": null,
+      "gap2_compliant": true,
+      "ram_training_peak_bytes": null,
+      "ram_peak_kb": 1.2
+    },
+    {
+      "exp_id": "exp_S24_02",
+      "model": "hdc",
+      "dataset": "monitoring",
+      "scenario": "by_fault_type",
+      "sprint": 24,
+      "uint8_activations": null,
+      "acc_final": 0.8697531741411043,
+      "avg_forgetting": null,
+      "bwt": 0.001949317738791423,
+      "auroc": null,
+      "ram_peak_bytes": 14504.0,
+      "inference_latency_ms": 0.031486289917666,
+      "n_params": 2048.0,
+      "compression_ratio": 2.6666666666666665,
+      "delta_acc_vs_fp32": null,
+      "reference_exp": null,
+      "notes": null,
+      "gap2_compliant": true,
+      "ram_training_peak_bytes": null,
+      "ram_peak_kb": 14.16
+    },
+    {
+      "exp_id": "exp_S24_03",
+      "model": null,
+      "dataset": null,
+      "scenario": null,
+      "sprint": 24,
+      "uint8_activations": null,
+      "acc_final": null,
+      "avg_forgetting": null,
+      "bwt": null,
+      "auroc": null,
+      "ram_peak_bytes": null,
+      "inference_latency_ms": null,
+      "n_params": null,
+      "compression_ratio": null,
+      "delta_acc_vs_fp32": null,
+      "reference_exp": null,
+      "notes": null,
+      "gap2_compliant": null,
+      "ram_training_peak_bytes": null,
+      "ram_peak_kb": null
+    }
+  ]
+}

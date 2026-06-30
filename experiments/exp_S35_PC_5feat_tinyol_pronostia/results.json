@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_tinyol_pronostia",
+  "condition": "5feat",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    1,
+    2,
+    4,
+    8,
+    12
+  ],
+  "acc_final": 0.6402757529111698,
+  "f1_faulty": 0.28532235939643347,
+  "f1_macro": 0.5287565010799395,
+  "precision_faulty": 0.17993079584775087,
+  "recall_faulty": 0.6887417218543046,
+  "avg_forgetting": 0.26608187134502925,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59728754,
+  "n_params": 257,
+  "note": "subset pronostia_feature_subset.yaml"
+}

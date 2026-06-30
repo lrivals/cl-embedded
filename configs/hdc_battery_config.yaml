@@ -1,0 +1,44 @@
+# configs/hdc_battery_config.yaml
+# Sprint 32 — HDC sur Dataset 4 (Battery RUL), scénario by_temporal_window.
+# Créé par analogie à hdc_pronostia_by_condition_config.yaml (section hdc + training)
+# + section data de battery_config.yaml. feature_bounds recalculés sur Task 1
+# (le train_hdc force feature_bounds=None pour battery_rul). base_vectors générés
+# au seed si le .npz est absent. NE PAS modifier à la main hors balayage.
+
+exp_id: "exp_S32_hdc_battery"
+
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors_battery.npz
+  n_levels: 10
+  seed: 42
+
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42
+
+data:
+  dataset: battery_rul
+  task_split: by_temporal_window
+  csv_path: "data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv"
+  normalizer_path: configs/battery_normalizer.yaml
+  n_tasks: 3
+  rul_failure_threshold: 200
+  val_ratio: 0.2
+  n_features: 7
+  n_classes: 2
+  label_column: faulty
+  feature_columns:
+    - "Discharge Time (s)"
+    - "Decrement 3.6-3.4V (s)"
+    - "Max. Voltage Dischar. (V)"
+    - "Min. Voltage Charg. (V)"
+    - "Time at 4.15V (s)"
+    - "Time constant current (s)"
+    - "Charging time (s)"
+
+evaluation:
+  seed: 42
+  metrics: ["aa", "af", "bwt", "ram_peak_bytes", "n_params", "inference_latency_ms"]

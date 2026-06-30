@@ -1,0 +1,16 @@
+{
+  "model": "mahalanobis",
+  "dataset": "monitoring",
+  "variant": "q15",
+  "config_path": "/home/leonard/Documents/ENAC/cl-embedded/configs/mahalanobis_q15_monitoring.yaml",
+  "timestamp": "2026-06-26T17:46:00",
+  "metric_name": "auroc",
+  "auroc": 0.972501,
+  "ram_bytes": 36,
+  "latency_ms": 0.008948,
+  "score_fidelity_vs_fp32": {
+    "mean_abs_error": 3.1e-05,
+    "max_abs_error": 9.6e-05,
+    "corr_with_fp32": 1.0
+  }
+}

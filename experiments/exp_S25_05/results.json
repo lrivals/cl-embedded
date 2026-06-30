@@ -1,0 +1,42 @@
+{
+  "exp_id": "exp_S25_05",
+  "sprint": 25,
+  "generated_at": "2026-06-12",
+  "models": {
+    "ewc_regression": {
+      "dataset": "cmapss",
+      "input_dim": 5,
+      "n_params": 737,
+      "ram_peak_bytes": 27892,
+      "inference_latency_ms": 0.026,
+      "gap2_compliant": true
+    },
+    "ewc_multiclass": {
+      "dataset": "cwru",
+      "input_dim": 9,
+      "n_classes": 10,
+      "n_params": 1018,
+      "ram_peak_bytes": 10037,
+      "inference_latency_ms": 0.063,
+      "gap2_compliant": true
+    },
+    "hdc_regressor": {
+      "dataset": "cmapss",
+      "D": 1024,
+      "n_features": 5,
+      "n_params": 1024,
+      "ram_peak_bytes": 19185,
+      "inference_latency_ms": 0.11,
+      "gap2_compliant": true
+    }
+  },
+  "reference_ewc_binary": {
+    "exp_id": "exp_S23_01",
+    "ram_peak_bytes": 9728,
+    "note": "r\u00e9f\u00e9rence mode binaire pour comparaison"
+  },
+  "criteria": {
+    "ewc_regression_vs_binary_20pct": false,
+    "all_under_256ko": true
+  }
+}

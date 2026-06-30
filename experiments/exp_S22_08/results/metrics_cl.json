@@ -1,0 +1,34 @@
+{
+  "exp_id": "exp_S22_08",
+  "model": "hdc",
+  "dataset": "paderborn",
+  "scenario": "by_fault_type",
+  "acc_final": 0.3333333333333333,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0005007511266900133,
+  "per_task_acc": [
+    1.0,
+    0.0,
+    0.0
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.05278698991787678,
+  "n_params": 2048,
+  "acc_matrix": [
+    [
+      0.99899849774662,
+      NaN,
+      NaN
+    ],
+    [
+      1.0,
+      0.0,
+      NaN
+    ],
+    [
+      1.0,
+      0.0,
+      0.0
+    ]
+  ]
+}

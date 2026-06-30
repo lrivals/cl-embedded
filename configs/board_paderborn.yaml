@@ -1,0 +1,33 @@
+# board_paderborn.yaml — Config board NUCLEO-F439ZI pour Paderborn (domain-incremental)
+# Ne pas modifier — créer une copie pour chaque variante expérimentale.
+# Scénario CL : healthy (K001) → OR fault (KA04) → IR fault (KI04)
+
+MODEL: ewc_head
+PLATFORM: nucleo_f439zi
+
+# Architecture EWC MLP
+EWC_IN: 5            # top-5 features FFT
+EWC_H1: 32
+EWC_H2: 16
+EWC_OUT: 2           # 0=sain, 1=faulty (OR ou IR)
+
+# Hyperparamètres EWC (inchangés vs Monitoring)
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0
+FISHER_EMA_DECAY: 0.99
+
+# Dataset Paderborn
+dataset: "paderborn"
+data_dir: "data/raw/Deep Learning-Based Motor Fault Diagnosis Using the Paderborn Dataset/"
+feature_subset_path: "configs/paderborn_feature_subset.yaml"
+condition_order: ["healthy", "OR", "IR"]
+n_tasks_board: 3
+n_samples_per_task: 150
+label_column: "fault_class"
+
+# Budget mémoire NUCLEO-F439ZI
+ram_budget_bytes: 65536
+
+# Export poids C
+WEIGHTS_HEADER: "firmware/stm32f4_blink/inc/model_weights.h"
+WEIGHTS_CHECKPOINT: "experiments/exp_S22_paderborn_base/ewc_weights.pkl"

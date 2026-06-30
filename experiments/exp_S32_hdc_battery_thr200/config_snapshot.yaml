@@ -1,0 +1,41 @@
+_snapshot_timestamp: '2026-06-22T18:19:16.092180'
+data:
+  csv_path: data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv
+  dataset: battery_rul
+  feature_columns:
+  - Discharge Time (s)
+  - Decrement 3.6-3.4V (s)
+  - Max. Voltage Dischar. (V)
+  - Min. Voltage Charg. (V)
+  - Time at 4.15V (s)
+  - Time constant current (s)
+  - Charging time (s)
+  label_column: faulty
+  n_classes: 2
+  n_features: 7
+  n_tasks: 3
+  normalizer_path: configs/battery_normalizer.yaml
+  rul_failure_threshold: 200
+  task_split: by_temporal_window
+  val_ratio: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_S32_hdc_battery_thr200/results
+  seed: 42
+exp_id: exp_S32_hdc_battery_thr200
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors_battery.npz
+  n_levels: 10
+  seed: 42
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42

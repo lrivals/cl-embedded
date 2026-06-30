@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_monitoring",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "ram_peak_bytes": 363158,
+  "n_params": 2048,
+  "measure": "tracemalloc"
+}

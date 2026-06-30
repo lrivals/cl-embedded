@@ -1,0 +1,38 @@
+# configs/best_features/tinyol_cwru.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: tinyol
+dataset: cwru
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 9
+n_features_selected: 7
+selected_indices:
+- 2
+- 8
+- 3
+- 0
+- 1
+- 4
+- 5
+selected_features:
+- mean
+- form
+- sd
+- max
+- min
+- rms
+- skewness
+val_f1_by_k:
+  1: 0.472727
+  2: 0.795389
+  3: 0.838889
+  4: 0.767857
+  5: 0.898936
+  6: 0.810345
+  7: 0.930233
+  8: 0.924675
+  9: 0.904762
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

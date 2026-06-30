@@ -1,0 +1,33 @@
+# exp_S27_02 — Comparaison latence single vs dual (NUCLEO-F439ZI)
+# Date : 2026-06-12
+experiment:    exp_S27_02
+sprint:        27
+objectif:      mesurer l'overhead du mode DUAL vs les modes single Sprint 26
+board:         NUCLEO-F439ZI (Cortex-M4 @ 180 MHz, 256 Ko SRAM)
+firmware:      stm32f4_blink_sprint27
+protocol_v:    3
+n_samples:     100        # par mode
+mode_config:   tous modes avec UPDATE (online learning) — comparaison apples-to-apples
+
+modes:
+  rul_single:
+    flags_hex: "0x51"      # RUL_MODE (0x50) | UPDATE
+    response_size: 21
+    dataset: CMAPSS_FD001
+  mc_single:
+    flags_hex: "0x31"      # MULTICLASS_MODE (0x30) | UPDATE
+    response_size: 21
+    dataset: CWRU (10 classes, 3 tasks)
+  dual:
+    flags_hex: "0x71"      # DUAL_MODE (0x70) | UPDATE | PROFILING
+    response_size: 25
+    dataset: CMAPSS_FD001 (RUL) + CWRU task0 (faute)
+
+# Commandes d'exécution :
+# python scripts/simulate_rul_board.py --port /dev/ttyACM0 \
+#     --data-dir "data/raw/CMAPSS Jet Engine Simulated Data" \
+#     --n-samples 100 --output experiments/exp_S27_02/rul_single.json
+# python scripts/simulate_multiclass_board.py --port /dev/ttyACM0 \
+#     --n-samples-per-task 100 --output experiments/exp_S27_02/mc_single.json
+# python scripts/board_dual_pipeline.py --port /dev/ttyACM0 \
+#     --n-samples 100 --update --output experiments/exp_S27_02

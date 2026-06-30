@@ -1,0 +1,65 @@
+{
+  "exp_id": "exp_S31_PC_maha_hdc_pronostia",
+  "pair": "maha_hdc",
+  "dataset": "pronostia",
+  "frame": "binary",
+  "n_eval": 1508,
+  "oof": {
+    "meta_fit": 904,
+    "meta_eval": 604,
+    "test_size": 0.4
+  },
+  "input_features": [
+    "p_maha",
+    "p_sup",
+    "disagreement",
+    "conf_sup"
+  ],
+  "meta": {
+    "logreg": {
+      "f1": 0.5465116279069767,
+      "auroc": 0.853875612745098
+    },
+    "mlp": {
+      "f1": 0.0,
+      "auroc": 0.8559129901960785
+    }
+  },
+  "best_meta": "logreg",
+  "baselines": {
+    "model_a": {
+      "name": "mahalanobis",
+      "f1": 0.3116883116883117,
+      "auroc": 0.7261642156862745
+    },
+    "model_b": {
+      "name": "hdc",
+      "f1": 0.5465116279069767,
+      "auroc": 0.831924019607843
+    },
+    "ensemble": {
+      "or": {
+        "f1": 0.3686274509803922,
+        "auroc": 0.8227787990196078
+      },
+      "and": {
+        "f1": 0.5076923076923077,
+        "auroc": 0.8227787990196078
+      },
+      "soft_vote": {
+        "f1": 0.5465116279069767,
+        "auroc": 0.8227787990196078
+      },
+      "weighted": {
+        "f1": 0.5465116279069767,
+        "auroc": 0.8227787990196078
+      }
+    },
+    "best_ensemble_rule": "soft_vote",
+    "best_individual_f1": 0.5465116279069767,
+    "best_ensemble_f1": 0.5465116279069767
+  },
+  "delta_vs_best_individual": 0.0,
+  "delta_vs_ensemble": 0.0,
+  "timestamp": "2026-06-18T14:41:07"
+}

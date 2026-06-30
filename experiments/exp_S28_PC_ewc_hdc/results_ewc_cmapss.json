@@ -1,0 +1,22 @@
+{
+  "model": "ewc",
+  "dataset": "cmapss",
+  "config_path": "configs/ewc_int8_cmapss.yaml",
+  "timestamp": "2026-06-12T20:11:46",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.767843,
+    "ram_bytes": 2948,
+    "latency_ms": 0.027353
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.773394,
+    "ram_bytes": 737,
+    "latency_ms": 116.55069
+  },
+  "delta_metric": 0.005551,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

@@ -1,0 +1,26 @@
+# configs/best_features/mahalanobis_cwru.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: mahalanobis
+dataset: cwru
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 9
+n_features_selected: 1
+selected_indices:
+- 0
+selected_features:
+- max
+val_f1_by_k:
+  1: 0.245763
+  2: 0.109589
+  3: 0.109589
+  4: 0.176211
+  5: 0.1
+  6: 0.1
+  7: 0.126126
+  8: 0.151111
+  9: 0.126126
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

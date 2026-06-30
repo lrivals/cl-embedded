@@ -1,0 +1,22 @@
+{
+  "model": "ewc",
+  "dataset": "pronostia",
+  "config_path": "configs/ewc_int8_pronostia.yaml",
+  "timestamp": "2026-06-12T20:16:45",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.988443,
+    "ram_bytes": 3972,
+    "latency_ms": 0.023105
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.988336,
+    "ram_bytes": 993,
+    "latency_ms": 25.85956
+  },
+  "delta_metric": -0.000107,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

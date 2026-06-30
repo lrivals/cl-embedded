@@ -1,0 +1,42 @@
+{
+  "exp_id": "exp_S23_04",
+  "model": "hdc",
+  "dataset": "cmapss",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-02",
+  "acc_final": 0.6695,
+  "avg_forgetting": 0.0801,
+  "backward_transfer": -0.0801,
+  "ram_peak_bytes": 28364,
+  "inference_latency_ms": 1.1916,
+  "n_params": 7000,
+  "n_tasks": 2,
+  "n_samples_total": 400,
+  "latency_p99_ms": 1.594,
+  "throughput_mean_ips": 833,
+  "per_task_acc": {
+    "0": 0.615,
+    "1": 0.67
+  },
+  "collection_time_s": 0.01,
+  "config_snapshot": "experiments/exp_S23_04/config_snapshot.yaml",
+  "gap2_ram_compliant": true,
+  "gap2_latency_compliant": true,
+  "acc_matrix": [
+    [
+      0.7082186814566789,
+      null
+    ],
+    [
+      0.6281663531925614,
+      0.7107579375973414
+    ]
+  ],
+  "run_conditions": {
+    "run_type": "warm",
+    "repetition": 1,
+    "reset_method": "nrst",
+    "flash_fresh": false,
+    "board_temp_c": null
+  }
+}

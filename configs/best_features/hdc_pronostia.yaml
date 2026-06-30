@@ -1,0 +1,38 @@
+# configs/best_features/hdc_pronostia.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: hdc
+dataset: pronostia
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 13
+n_features_selected: 5
+selected_indices:
+- 5
+- 9
+- 6
+- 3
+- 12
+selected_features:
+- crest_factor_acc_horiz
+- kurtosis_acc_vert
+- mean_acc_vert
+- kurtosis_acc_horiz
+- temporal_position
+val_f1_by_k:
+  1: 0.170163
+  2: 0.169767
+  3: 0.18742
+  4: 0.232667
+  5: 0.708661
+  6: 0.443137
+  7: 0.467327
+  8: 0.604317
+  9: 0.576744
+  10: 0.483721
+  11: 0.493888
+  12: 0.407407
+  13: 0.392079
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

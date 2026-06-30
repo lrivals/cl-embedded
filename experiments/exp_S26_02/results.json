@@ -1,0 +1,41 @@
+{
+  "experiment_id": "exp_S26_02",
+  "model": "EWC Multiclass",
+  "dataset": "CWRU 3 tasks",
+  "board": "NUCLEO-F439ZI",
+  "n_classes": 10,
+  "n_tasks": 3,
+  "n_samples": 600,
+
+  "f1_macro_board_inference": 0.2431,
+  "f1_macro_board_online": 0.5072,
+  "f1_per_task_board_inference_cumulative": [0.090, 0.077, 0.243],
+  "f1_per_task_board_online_cumulative": [0.213, 0.315, 0.507],
+
+  "f1_macro_pc_per_task_mean": 0.981,
+  "f1_macro_pc_final_all_tasks": 0.2402,
+  "avg_forgetting_f1_pc": 0.8475,
+
+  "latency_p50_us_inference": 130,
+  "latency_p50_us_online": 403,
+  "latency_p99_us_online": 404,
+  "latency_criterion_met": true,
+
+  "sram_bss_bytes": 66748,
+  "sram_criterion_met": true,
+
+  "f1_criterion_target": 0.60,
+  "f1_criterion_met": false,
+  "gap1_validated": true,
+  "gap2_validated": true,
+
+  "diagnostic": {
+    "fixme_gap1": "RESOLVED",
+    "root_cause": "Oubli catastrophique (catastrophic forgetting) du modèle EWC multi-classe — PAS un bug de mapping label->index ni de standardisation. Le modèle final exporté (exp_S25_03/model_ewc_mc.pt) ne retient que les classes de la dernière tâche {0,7,8,9} : F1 val par tâche du modèle FINAL = task0=0.105, task1=0.167, task2=0.989. La comparaison 'PC F1=0.981' était trompeuse — c'est la moyenne des F1 mesurées juste après chaque tâche (train_ewc_multiclass.py:195, NaN pour classes non vues), qui masque l'oubli. avg_forgetting_f1=0.847 le signalait déjà.",
+    "parity_proof": "Réimplémentation numpy fidèle du forward+SGD C (scripts/diagnose_multiclass_parity.py) chargeant les poids .pt : logits identiques à PyTorch (max|diff|~5e-7). F1 board == F1 PC parité à l'identique : inférence 0.243==0.243, online single-pass 0.507==0.507 (200 samples/tâche). Le modèle FINAL évalué hors-ligne sur tous les val sets concaténés = 0.240, == board inférence pure. => aucun bug board, aucun désalignement de classe.",
+    "metric_note": "F1-macro board = préquentiel cumulatif sur 10 classes dans l'ordre du flux (task0->task1->task2), métrique différente de la F1 par-tâche hors-ligne. L'online single-pass (FLAG_UPDATE) ré-apprend partiellement task0/task1 => 0.507 > inférence pure 0.243.",
+    "stateful_board_note": "g_ewc_mc est chargé une seule fois au boot (pipeline_init) ; les updates SGD persistent entre trames ET entre invocations de script. Re-flasher (ou reset HW) avant chaque mesure pour repartir des poids figés pristine."
+  },
+
+  "notes": "Run board réel (2026-06-12). Diagnostic FIXME(gap1) résolu : le board reproduit EXACTEMENT le modèle PC (parité numérique). Le critère F1>=0.60 n'est pas atteint (0.507 online / 0.243 inférence) à cause de l'oubli catastrophique du modèle EWC sur 3 tâches CWRU / 10 classes, lambda=400 insuffisant — résultat honnête, non un bug de portage. Gap 2 validé : latence DWT séparée inférence P50=130µs vs inférence+update P50=403µs, toutes << 100ms ; SRAM .bss=66.7Ko << 256Ko. Sources : board_mc_inference.json, board_mc_results.json, diagnose_multiclass_parity.py."
+}

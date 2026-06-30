@@ -1,0 +1,31 @@
+{
+  "exp_id": "exp_S36_board_frozen_5feat_ewc_monitoring",
+  "platform": "nucleo_f439zi",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "n_features": 4,
+  "feature_names": [
+    "temperature",
+    "pressure",
+    "vibration",
+    "humidity"
+  ],
+  "date": "2026-06-27T18:28:40",
+  "stream_mode": "frozen (sans --update)",
+  "online_accuracy": 0.9846,
+  "f1_faulty": 0.9194,
+  "f1_macro": 0.9554,
+  "latency_us_p50": 48.0,
+  "latency_us_p99": 48.0,
+  "latency_us_mean": 48.0,
+  "bss_bytes": 100152,
+  "n_streamed": 7671,
+  "crc_errors": 0,
+  "parity_class": "exact",
+  "parity_ok": true,
+  "parity_rate": 1.0,
+  "parity_mismatch_count": 0,
+  "n_compared": 7671,
+  "gap2_latency_compliant": true
+}

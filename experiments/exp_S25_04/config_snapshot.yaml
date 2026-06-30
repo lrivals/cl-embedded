@@ -1,0 +1,37 @@
+BATCH_SIZE: 32
+DROPOUT: 0.2
+EWC_LAMBDA: 400.0
+EWC_LR: 0.01
+FISHER_EMA_DECAY: 0.99
+FISHER_N_SAMPLES: 200
+HIDDEN_DIMS:
+- 32
+- 16
+INPUT_DIM: 5
+MOMENTUM: 0.9
+N_EPOCHS_PER_TASK: 20
+OPTIMIZER: sgd
+OUTPUT_DIM: 1
+data_dir: data/raw/CMAPSS Jet Engine Simulated Data/
+dataset: cmapss
+domain_order:
+- FD001
+- FD002
+- FD003
+- FD004
+exp_id: exp_S25_04
+feature_subset_path: configs/cmapss_feature_subset.yaml
+model: hdc_regressor
+n_tasks: 4
+primary_metric: rmse
+ram_budget_bytes: 262144
+report_metrics:
+- rmse
+- mae
+- horizon_score
+- avg_forgetting_rmse
+rul_cap: 125
+seed: 42
+sprint: 25
+task_mode: rul
+val_ratio: 0.2

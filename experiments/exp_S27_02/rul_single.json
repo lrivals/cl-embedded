@@ -1,0 +1,7 @@
+{
+  "n_samples": 100,
+  "rmse_board": 22.22058880312588,
+  "latency_p50_us": 234,
+  "latency_p99_us": 234,
+  "latency_max_us": 234
+}

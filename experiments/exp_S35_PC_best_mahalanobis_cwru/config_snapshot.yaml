@@ -1,0 +1,9 @@
+exp_id: exp_S35_PC_best_mahalanobis_cwru
+condition: best
+model: mahalanobis
+dataset: cwru
+seed: 42
+feature_indices:
+- 0
+feature_names:
+- max

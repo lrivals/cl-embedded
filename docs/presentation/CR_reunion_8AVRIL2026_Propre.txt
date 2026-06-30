@@ -1,0 +1,71 @@
+**CR Réunion intermédiaire — 03 avril 2026, 10h00 à 11h30**
+
+**Participants :**
+
+* Arnaud Dion (ISAE-SUPAERO) – vision
+* Dorra Ben Khalifa (ENAC/LII)
+* Frédéric Zbierski (Edge Spectrum)
+* Léonard (stagiaire)
+
+
+### Points de la réunion
+
+**Présentation de Léonard :**
+
+* Contexte sur l’apprentissage incrémental
+* Présentation des méthodes d’apprentissage incrémental avec exemples
+* Contexte du stage : dataset et carte microcontrôleur
+
+
+### Discussions
+
+* Discussion sur l’utilisation de l’apprentissage non supervisé dans le cadre du stage
+* Mention de pistes et approches au niveau des modèles
+
+
+### Notes de la réunion
+
+* Limiter le nombre de modèles à implémenter
+  → L’implémentation sur carte risque de prendre du temps
+
+* Focus sur 2 « golden modèles » en apprentissage non supervisé (prochain objectif)
+  → Implémentation sur ordinateur
+  → Réfléchir à des axes d’amélioration sur ces modèles
+
+  * Un modèle KNN
+  * Un autre modèle avec fort risque de surapprentissage (pour comparaison)
+
+* Arnaud Dion a mentionné un modèle gaussien à retrouver, potentiellement adapté au besoin
+
+* Prendre en main l’utilisation de la carte avec l’ordinateur
+  → Contacter Frédéric en cas de difficultés
+
+* Définir la méthodologie pour le transfert des données vers la carte
+
+* Définir les critères que les modèles doivent respecter pour fonctionner sur la carte
+
+
+### Conseils de Dorra pour les slides
+
+* Pour les images : ajouter le nom et le contenu de la conférence / de l’article
+* Ajouter les numéros de slides
+* Ajouter une bibliographie
+
+
+### Organisation
+
+* Mardi 19 mai 2026 : présentation des stagiaires à l’ENAC
+  → 10 minutes sur le sujet du stage
+  → Pas besoin d’approfondir les aspects techniques
+
+* 24 juin : présentation ANITI - ENAC (public spécialisé)
+  → Présentation plus longue
+  → Possibilité d’entrer dans les détails
+
+
+### Code
+
+* Héberger le code sur le GitLab de SUPAERO / ISAE
+* Donner accès à Arnaud et Dorra
+
+

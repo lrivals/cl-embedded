@@ -1,0 +1,124 @@
+{
+  "exp_id": "exp_S32_ewc_battery_thr267",
+  "cl_metrics": {
+    "ewc": {
+      "aa": 0.9223880597014925,
+      "af": 0.04079601990049753,
+      "bwt": -0.04079601990049753,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.01691542288557213,
+        0.06467661691542292
+      ],
+      "bwt_per_task": [
+        -0.01691542288557213,
+        -0.06467661691542292
+      ],
+      "acc_matrix": [
+        [
+          1.0,
+          null,
+          null
+        ],
+        [
+          1.0,
+          1.0,
+          null
+        ],
+        [
+          0.9830845771144279,
+          0.9353233830845771,
+          0.8487562189054726
+        ]
+      ],
+      "n_tasks": 3
+    },
+    "memory": {
+      "model": "EWCMlpClassifier",
+      "input_shape": [
+        1,
+        7
+      ],
+      "forward": {
+        "ram_peak_bytes": 1171,
+        "ram_current_bytes": 72,
+        "inference_latency_ms": 0.025780439991649473,
+        "inference_latency_std_ms": 0.0011736520693331042,
+        "n_params": 801,
+        "params_fp32_bytes": 3204,
+        "params_int8_bytes": 801,
+        "within_budget_64ko": true
+      },
+      "update": {
+        "ram_peak_bytes_update": 6684,
+        "update_latency_ms": 0.5046219999712775,
+        "update_latency_std_ms": 0.01671852974487929,
+        "within_budget_64ko_update": true
+      }
+    },
+    "naive": {
+      "aa": 0.9233830845771145,
+      "af": 0.03980099502487566,
+      "bwt": -0.03980099502487566,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.014925373134328401,
+        0.06467661691542292
+      ],
+      "bwt_per_task": [
+        -0.014925373134328401,
+        -0.06467661691542292
+      ],
+      "acc_matrix": [
+        [
+          1.0,
+          null,
+          null
+        ],
+        [
+          1.0,
+          1.0,
+          null
+        ],
+        [
+          0.9850746268656716,
+          0.9353233830845771,
+          0.8497512437810946
+        ]
+      ],
+      "n_tasks": 3
+    },
+    "joint": {
+      "aa": 0.9373134328358209,
+      "af": 0.0,
+      "bwt": NaN,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        NaN,
+        NaN
+      ],
+      "acc_matrix": [
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          null,
+          null,
+          null
+        ],
+        [
+          1.0,
+          0.9701492537313433,
+          0.8417910447761194
+        ]
+      ],
+      "n_tasks": 3
+    }
+  }
+}

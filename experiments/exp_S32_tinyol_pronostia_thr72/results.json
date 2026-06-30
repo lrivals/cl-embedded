@@ -1,0 +1,19 @@
+{
+  "exp_id": "exp_S32_tinyol_pronostia_thr72",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "acc_final": 0.7748712632812088,
+  "avg_forgetting": 0.08502720270686992,
+  "backward_transfer": -0.08502720270686992,
+  "per_task_acc": [
+    0.7356243620279006,
+    0.8074670571010248,
+    0.7815223707147008
+  ],
+  "ram_peak_bytes": 7360,
+  "inference_latency_ms": 0.008528489952368545,
+  "n_params": 542,
+  "ram_training_peak_bytes": 383947,
+  "sprint": 24
+}

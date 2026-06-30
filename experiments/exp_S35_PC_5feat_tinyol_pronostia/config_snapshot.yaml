@@ -1,0 +1,17 @@
+exp_id: exp_S35_PC_5feat_tinyol_pronostia
+condition: 5feat
+model: tinyol
+dataset: pronostia
+seed: 42
+feature_indices:
+- 1
+- 2
+- 4
+- 8
+- 12
+feature_names:
+- std_acc_horiz
+- rms_acc_horiz
+- peak_acc_horiz
+- rms_acc_vert
+- temporal_position

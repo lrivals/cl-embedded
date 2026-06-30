@@ -1,0 +1,48 @@
+# configs/best_features/ewc_cmapss.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: ewc
+dataset: cmapss
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 21
+n_features_selected: 6
+selected_indices:
+- 12
+- 10
+- 8
+- 11
+- 5
+- 13
+selected_features:
+- NRf
+- Ps30
+- Nc
+- Phi
+- P15
+- NRc
+val_f1_by_k:
+  1: 0.360109
+  2: 0.589809
+  3: 0.61262
+  4: 0.621032
+  5: 0.632562
+  6: 0.656975
+  7: 0.63049
+  8: 0.659198
+  9: 0.64912
+  10: 0.64609
+  11: 0.642628
+  12: 0.65996
+  13: 0.604019
+  14: 0.663617
+  15: 0.603212
+  16: 0.65046
+  17: 0.649454
+  18: 0.654452
+  19: 0.649183
+  20: 0.657254
+  21: 0.659744
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

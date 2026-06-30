@@ -1,0 +1,36 @@
+{
+  "exp_id": "exp_S24_01",
+  "model": "ewc",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_fault_type",
+  "uint8_activations": true,
+  "acc_final": 0.911411304773725,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0,
+  "per_task_acc": [
+    0.9151873767258383,
+    0.9044834307992202,
+    0.9145631067961165
+  ],
+  "ram_peak_bytes": 1230,
+  "ram_peak_bytes_uint8": 705,
+  "inference_latency_ms": 0.058636390131141525,
+  "n_params": 705,
+  "acc_matrix": [
+    [
+      0.9151873767258383,
+      NaN,
+      NaN
+    ],
+    [
+      0.9151873767258383,
+      0.9044834307992202,
+      NaN
+    ],
+    [
+      0.9151873767258383,
+      0.9044834307992202,
+      0.9145631067961165
+    ]
+  ]
+}

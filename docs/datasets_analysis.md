@@ -456,3 +456,53 @@ du seuil précédent — amélioration réelle par rapport à v1.
 6. **L'oubli catastrophique est réel** : sur Pronostia by_condition, Naive perd 10,8% d'accuracy — EWC le réduit à 0%. Sur CWRU by_severity, Naive perd 3,9% — EWC le réduit à 0%.
 
 7. **DBSCAN est à exclure sur CWRU** : l'auto-estimation eps (knn_elbow) produit des eps trop grands sur ce dataset, rendant le seuil de décision nul et les résultats artificiels (AA=89,6% = proportion de défauts, pas une performance réelle). De plus, avec ~57 Ko de RAM sur un budget de 64 Ko, la marge est insuffisante pour une intégration MCU sécurisée.
+
+---
+
+## CMAPSS — NASA C-MAPSS Turbofan Engine Degradation
+
+| Propriété | Valeur |
+|-----------|--------|
+| Source | NASA Prognostics Center / Kaggle |
+| Taille | ~10 Mo, 4 fichiers (FD001–FD004) |
+| Type | Séries temporelles multivariées (21 capteurs) |
+| Label | RUL continu → binarisé : faulty = (RUL ≤ 30) |
+| Scénario CL | Domain-incremental : FD001→FD002→FD003→FD004 |
+| Sprint d'ajout | Sprint 22 |
+
+**Preprocessing** : RUL capping cap=125, top-5 mutual info (T50, Ps30, htBleed, …), MinMax normalization fit sur FD001.
+
+**Résultats CL Sprint 22** (à remplir après exp_S22_01–04) :
+
+| Modèle | acc_final | avg_forgetting |
+|--------|:---------:|:--------------:|
+| EWC    | TBD | TBD |
+| HDC    | TBD | TBD |
+| TinyOL | TBD | TBD |
+| Maha   | TBD | TBD |
+
+**Contribution Gap 1** : 4e dataset industriel indépendant, premier avec RUL continu binarisé, scénario 4 tâches.
+
+---
+
+## Paderborn — Bearing Electrical Fault Dataset
+
+| Propriété | Valeur |
+|-----------|--------|
+| Source | Paderborn University KAt-DataCenter |
+| Taille | ~500 Mo (subset K001 + KA04 + KI04) |
+| Type | Signaux courant moteur + vibration (64 kHz) |
+| Label | État roulement → faulty = (KA04 ou KI04) |
+| Scénario CL | Domain-incremental : K001 (sain) → KA04 (OR) → KI04 (IR) |
+| Sprint d'ajout | Sprint 22 |
+
+**Preprocessing** : FFT fenêtrage 1024 samples @ 64 kHz, features : rms, kurtosis, crest_factor, energy_band_1–4 (7 features brutes → top-5).
+
+**Résultats CL Sprint 22** (à remplir après exp_S22_05–06) :
+
+| Modèle | acc_final | avg_forgetting |
+|--------|:---------:|:--------------:|
+| EWC    | TBD | TBD |
+| Maha   | TBD | TBD |
+
+**Contribution Gap 1** : 5e dataset, apporte la diversité du signal courant moteur (absent de CWRU/Pronostia).

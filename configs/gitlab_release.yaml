@@ -1,0 +1,95 @@
+# gitlab_release.yaml — Source de vérité pour la transformation "version GitLab".
+#
+# Pilote scripts/check_ai_traces.py (scanner) et scripts/prepare_gitlab_release.py
+# (export sanitisé vers un dépôt séparé). Toute nouvelle trace introduite par un
+# ajout futur se gère ICI (ajouter un chemin ou un pattern) sans toucher au code.
+#
+# Voir docs/gitlab_publication.md pour le mode d'emploi complet.
+
+# ── Répertoire de sortie (dépôt git séparé, hors du repo courant) ──────────────
+# Surchargeable en CLI via --output-dir. Chemin relatif = relatif à la racine repo.
+output_dir: "../cl-embedded-gitlab"
+
+# ── Chemins exclus de la version GitLab ────────────────────────────────────────
+# Fichiers et répertoires spécifiques à l'assistant / outillage interne, retirés
+# entièrement de l'export. Un préfixe se terminant par "/" exclut tout le sous-arbre.
+exclude_paths:
+  - "CLAUDE.md"
+  - ".claude/"
+  - "skills/"
+  - "graphify-out/"
+  - "docs/gitlab/"                            # gabarits sources des docs neutres (déjà déposés à la racine)
+  # ── Outillage de publication GitLab : interne, et contient lui-même les mots
+  #    proscrits (patterns, docstrings). Ne doit pas figurer dans la version GitLab.
+  - "configs/gitlab_release.yaml"
+  - "scripts/check_ai_traces.py"
+  - "scripts/prepare_gitlab_release.py"
+  - "tests/test_gitlab_release.py"
+  - "docs/gitlab_publication.md"
+  - "docs/sprints/sprint_37/"                 # décrit la transformation elle-même
+  - "Makefile"                                # uniquement des cibles gitlab-release
+  - ".github/workflows/ai-trace-guard.yml"    # garde-fou interne, inutile sur GitLab
+
+# ── Patterns interdits (regex, insensibles à la casse) ─────────────────────────
+# Recherchés dans tous les fichiers texte de l'export APRÈS exclusions/réécritures.
+# Un seul match restant => l'export échoue (gate dur).
+# Les frontières de mot (\b) évitent les faux positifs dans les blobs base64 des
+# notebooks (ex. "…claude…" au milieu d'une image PNG encodée).
+forbidden_patterns:
+  - "\\bclaude\\b"
+  - "\\banthropic\\b"
+  - "\\bco-authored-by\\b"
+  - "\\bclaude-[a-z0-9._-]+"
+  - "\\bgraphify\\b"
+  - "\\.claude/"
+  - "noreply@anthropic\\.com"
+  - "\U0001F916"                              # emoji robot 🤖
+  - "generated with .*claude"
+
+# ── Réécritures sur les fichiers CONSERVÉS ─────────────────────────────────────
+# Appliquées avant le scan. Permet de garder un fichier utile en retirant ses
+# mentions d'outillage interne. Chaque règle agit sur les fichiers dont le chemin
+# matche "files" (fnmatch : "*" traverse les "/", donc "*.md" = tout .md à toute
+# profondeur, "*" = tous les fichiers texte). Ordre appliqué : replace → drop_blocks
+# → drop_line_patterns.
+#   - "replace" : substitution regex→texte (neutralise une mention sans casser la ligne)
+#   - "drop_blocks" : supprime une section markdown délimitée par deux titres
+#   - "drop_line_patterns" : supprime toute ligne matchant un regex
+rewrite_rules:
+  # (1) Tous les fichiers texte (.py, .ipynb, .md, .c, …) : neutraliser les
+  #     références au fichier de conventions interne, qui n'existe pas sur GitLab.
+  - files: "*"
+    replace:
+      - pattern: "CLAUDE\\.md"
+        repl: "les conventions du projet"
+  # (2) Markdown uniquement : retirer lignes/sections d'outillage interne.
+  - files: "*.md"
+    drop_line_patterns:
+      - "(?i).*graphify.*"
+      - "(?i).*\\.claude/.*"
+      - "(?i).*\\bclaude\\b.*"
+      - "(?i).*\\banthropic\\b.*"
+      - "(?i)^.*skills/.*$"
+    drop_blocks:
+      # Retire la section "Graphe de connaissance" (du titre jusqu'au prochain "## " / "---")
+      - start: "(?i)^#+\\s*Graphe de connaissance"
+        end: "^(#{1,2}\\s|---\\s*$)"
+
+# ── Allowlist : faux positifs légitimes (chemin glob → patterns tolérés) ───────
+# Ex. une clé biblio ou un mot anglais contenant une sous-chaîne interdite.
+allowlist: []
+
+# ── Docs neutres générées dans l'export (source → destination dans l'export) ───
+# Remplacent le rôle de CLAUDE.md pour les prochains utilisateurs (onboarding pro).
+neutral_docs:
+  - source: "docs/gitlab/README_gitlab.md"
+    dest: "README.md"
+  - source: "docs/gitlab/CONTRIBUTING.md"
+    dest: "CONTRIBUTING.md"
+
+# ── Métadonnées de release (commit du dépôt séparé) ────────────────────────────
+release:
+  commit_message: "Release snapshot"          # message neutre, sans footer
+  git_user_name: "CL-Embedded"
+  git_user_email: "cl-embedded@isae-supaero.fr"
+  remote_name: "gitlab"                        # remote à préconfigurer côté utilisateur

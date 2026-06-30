@@ -1,0 +1,33 @@
+# exp_S26_02 — EWC Multi-class board / CWRU 3 tâches
+# Date : 2026-07-29
+experiment_id: exp_S26_02
+model: ewc_head_multiclass
+dataset: CWRU bearing fault (3 tasks)
+task: multi-class fault classification (10 classes)
+board: NUCLEO-F439ZI
+firmware: ewc_head_multiclass.c (EWC_MC_N_CLASSES=10) + pipeline.c (Sprint 26)
+model_weights: experiments/exp_S25_03/model_ewc_mc.pt
+
+firmware_config:
+  EWC_MC_IN: 9
+  EWC_MC_H1: 32
+  EWC_MC_H2: 16
+  EWC_MC_N_CLASSES: 10
+  EWC_MC_LR: 0.01
+  EWC_MC_FISHER_DECAY: 0.99
+  EWC_LAMBDA: 400.0
+
+n_samples_per_task: 100
+n_tasks: 3
+# Tasks : task0=outer, task1=inner, task2=ball
+
+# Commande d'exécution :
+# make -C firmware/stm32f4_blink all CFLAGS="-DEWC_MC_N_CLASSES=10"
+# make -C firmware/stm32f4_blink flash
+# python scripts/simulate_multiclass_board.py \
+#     --port /dev/ttyACM0 \
+#     --config configs/cwru_by_fault_config.yaml \
+#     --n-samples-per-task 100 \
+#     --n-classes 10 \
+#     --output experiments/exp_S26_02/board_mc_results.json \
+#     2>&1 | tee experiments/exp_S26_02/log.txt

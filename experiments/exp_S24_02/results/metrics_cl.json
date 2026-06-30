@@ -1,0 +1,40 @@
+{
+  "exp_id": "exp_S24_02",
+  "model": "hdc",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_fault_type",
+  "native_int_architecture": true,
+  "acc_final": 0.8697531741411043,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.001949317738791423,
+  "per_task_acc": [
+    0.8816568047337278,
+    0.8576998050682261,
+    0.8699029126213592
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.031486289917666,
+  "n_params": 2048,
+  "acc_matrix": [
+    [
+      0.8816568047337278,
+      NaN,
+      NaN
+    ],
+    [
+      0.8698224852071006,
+      0.8538011695906432,
+      NaN
+    ],
+    [
+      0.8816568047337278,
+      0.8576998050682261,
+      0.8699029126213592
+    ]
+  ],
+  "base_vectors_int8_bytes": 10240,
+  "am_int32_bytes": 8192,
+  "total_int_bytes": 18432,
+  "hypothetical_fp32_bytes": 49152,
+  "compression_ratio": 2.6666666666666665
+}

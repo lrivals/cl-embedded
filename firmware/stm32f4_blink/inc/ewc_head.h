@@ -7,7 +7,11 @@
  *   Fisher  : identique aux poids                  = ~3 Ko
  *   star_w  : identique aux poids                  = ~3 Ko  */
 
+/* Dimension d'entrée — surchargeable au build (S3506) : `make EWC_IN=9`.
+ * Défaut 5 (condition board 5feat, Sprint 32) → .bss inchangé sans override. */
+#ifndef EWC_IN
 #define EWC_IN   5     /* Dimension d'entrée — features Monitoring dataset */
+#endif
 #define EWC_H1  32     /* Neurons couche cachée 1 */
 #define EWC_H2  16     /* Neurons couche cachée 2 */
 #define EWC_OUT  2     /* Sorties (logits — softmax + CE en inférence) */

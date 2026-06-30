@@ -1,0 +1,59 @@
+{
+  "exp_id": "exp_S30_PC_native_maha_ewc_cwru",
+  "pair": "maha_ewc",
+  "dataset": "cwru",
+  "frame": "native",
+  "native_rule": {
+    "rule": "nonzero_class"
+  },
+  "n_eval": 462,
+  "model_a": {
+    "name": "mahalanobis",
+    "aa": 0.3398268398268398,
+    "af": 0.0,
+    "bwt": 0.288961038961039,
+    "auroc": 0.5714432196872595,
+    "f1": 0.5771812080536913
+  },
+  "model_b": {
+    "name": "ewc_native",
+    "native_metric": "f1_macro_mean",
+    "value": 0.9814420474301935,
+    "f1_fault": 0.9840881272949816
+  },
+  "disagreement": {
+    "rate": 0.6406926406926406,
+    "kappa": 0.05927026580815564,
+    "a_correct": 2,
+    "b_correct": 294,
+    "both_wrong": 0,
+    "n_disagree": 296,
+    "origin": {
+      "n_disagree": 296,
+      "disagreement_rate": 0.6406926406926406,
+      "top_features": [
+        3,
+        4,
+        8,
+        1,
+        0
+      ],
+      "feature_deltas": [
+        3.381576292383298,
+        3.619471972485152,
+        1.7245912576246167,
+        3.756204790738635,
+        3.7539791336866832,
+        0.27298011353907126,
+        0.1973826310762108,
+        0.016260120287037605,
+        3.666892275972186
+      ],
+      "fault_rate_in": 0.9864864864864865,
+      "fault_rate_out": 0.7409638554216867,
+      "maha_score_in": 2.8361922603201224,
+      "maha_score_out": 6.0477269808930085
+    }
+  },
+  "timestamp": "2026-06-17T17:59:10"
+}

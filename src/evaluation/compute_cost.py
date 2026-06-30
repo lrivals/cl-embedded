@@ -19,9 +19,7 @@ réels sur Cortex-M55 dépendent du compilateur, du pipeline, et de l'usage
 from __future__ import annotations
 
 
-def macs_ewc_mlp(
-    n_features: int, hidden_dims: list[int] | tuple[int, ...], n_classes: int
-) -> int:
+def macs_ewc_mlp(n_features: int, hidden_dims: list[int] | tuple[int, ...], n_classes: int) -> int:
     """MACs par inférence d'un MLP (EWC Online).
 
     Architecture : chaîne Linear(n_features, h1) → ReLU → Linear(h1, h2) → ...
@@ -175,6 +173,137 @@ def macs_tinyol_ae(
 
 
 # ---------------------------------------------------------------------------
+# FLOPs / BOPs (S3301 — CR 19 mai 2026, comparaison FP32/INT8 honnête)
+# ---------------------------------------------------------------------------
+
+
+def compute_flops(macs: int) -> int:
+    """FLOPs = 2 × MACs (1 multiplication + 1 addition par MAC).
+
+    Fonction additionnelle : consomme une valeur MACs déjà calculée par les
+    `macs_*()` / `compute_macs()` existants, sans réimplémenter le compte.
+
+    Parameters
+    ----------
+    macs : int
+        Nombre de multiply-accumulates.
+
+    Returns
+    -------
+    int
+        Nombre d'opérations flottantes (mult + add).
+    """
+    return 2 * macs
+
+
+def compute_bops(macs: int, n_bits: int) -> int:
+    """BOPs = FLOPs × n_bits² — rend la comparaison FP32 vs INT8 honnête.
+
+    En pondérant chaque opération par le carré du nombre de bits, on capture le
+    coût matériel relatif d'un MAC selon sa précision. Pour les mêmes FLOPs :
+
+        BOPs_INT8 / BOPs_FP32 = (8 / 32)² = 1 / 16
+
+    Concrètement, le facteur appliqué aux FLOPs vaut ×1024 en FP32 (32²) contre
+    ×64 en INT8 (8²) — c'est l'argument central du CR du 19 mai 2026 pour
+    comparer les modèles quantifiés et FP32 sur une base commune.
+
+    Parameters
+    ----------
+    macs : int
+        Nombre de multiply-accumulates.
+    n_bits : int
+        Largeur des opérandes (32 pour FP32, 8 pour INT8).
+
+    Returns
+    -------
+    int
+        Bit-operations (FLOPs pondérés par n_bits²).
+    """
+    return compute_flops(macs) * (n_bits**2)
+
+
+# ---------------------------------------------------------------------------
+# Comptage de paramètres (S3301)
+# ---------------------------------------------------------------------------
+#
+# Chaque params_*() lit les mêmes kwargs de dimensions que le macs_*()
+# correspondant, pour rester cohérent couche par couche. Le drapeau `trainable`
+# distingue les paramètres mis à jour par gradient (modèles torch : EWC, TinyOL)
+# des structures non-paramétriques au sens gradient (HDC, KMeans, Mahalanobis,
+# DBSCAN) — pour ces dernières, inférence == entraînables (rien n'est figé).
+
+
+def _linear_params(dims: list[int]) -> int:
+    """Paramètres d'une chaîne de Linear : Σ (in·out poids + out biais)."""
+    return sum(dims[i] * dims[i + 1] + dims[i + 1] for i in range(len(dims) - 1))
+
+
+def params_ewc_mlp(
+    n_features: int, hidden_dims: list[int] | tuple[int, ...], n_classes: int
+) -> int:
+    """Paramètres entraînables d'un MLP EWC (poids + biais de chaque Linear)."""
+    dims = [n_features, *hidden_dims, n_classes]
+    # MEM: (n_features+1)·h1 + ... + (h_last+1)·n_classes paramètres @ FP32 (×4 B)
+    return _linear_params(dims)
+
+
+def params_tinyol(
+    n_features: int,
+    encoder_dims: list[int] | tuple[int, ...],
+    n_classes: int,
+) -> int:
+    """Paramètres TinyOL (encodeur + tête OtO), poids + biais par Linear."""
+    dims = [n_features, *encoder_dims, n_classes]
+    # MEM: encodeur figé + tête OtO entraînable @ FP32 (×4 B)
+    return _linear_params(dims)
+
+
+def params_tinyol_ae(
+    n_features: int,
+    encoder_dims: list[int] | tuple[int, ...],
+    decoder_dims: list[int] | tuple[int, ...] | None = None,
+) -> int:
+    """Paramètres TinyOL Autoencoder (encodeur + décodeur, poids + biais)."""
+    enc_dims = [n_features, *encoder_dims]
+    bottleneck = encoder_dims[-1]
+    if decoder_dims is None:
+        dec_dims = [bottleneck, *list(reversed(encoder_dims[:-1])), n_features]
+    else:
+        dec_dims = [bottleneck, *decoder_dims]
+    # MEM: encodeur + décodeur symétrique @ FP32 (×4 B)
+    return _linear_params(enc_dims) + _linear_params(dec_dims)
+
+
+def params_hdc(n_features: int, dim_hv: int, n_classes: int) -> int:
+    """Paramètres HDC : item vectors (encoding) + prototypes de classe.
+
+    Cohérent avec macs_hdc : dim_hv × n_features (item vectors liés aux features)
+    + dim_hv × n_classes (un hypervecteur prototype par classe).
+    """
+    # MEM: dim_hv·(n_features + n_classes) éléments @ INT8/bipolaire pour les HV
+    return dim_hv * n_features + dim_hv * n_classes
+
+
+def params_kmeans(n_features: int, n_clusters: int) -> int:
+    """Paramètres KMeans : coordonnées des centroïdes (n_clusters × n_features)."""
+    # MEM: n_clusters·n_features centroïdes @ FP32 (×4 B)
+    return n_clusters * n_features
+
+
+def params_mahalanobis(n_features: int) -> int:
+    """Paramètres Mahalanobis : moyenne μ (n_features) + Σ⁻¹ (n_features²)."""
+    # MEM: μ (n_features) + Σ⁻¹ (n_features²) @ FP32 (×4 B)
+    return n_features + n_features * n_features
+
+
+def params_dbscan(n_features: int, n_core_samples: int) -> int:
+    """Paramètres DBSCAN : core samples retenus (n_core_samples × n_features)."""
+    # MEM: n_core_samples·n_features @ FP32 (×4 B)
+    return n_core_samples * n_features
+
+
+# ---------------------------------------------------------------------------
 # Coûts d'entraînement
 # ---------------------------------------------------------------------------
 
@@ -259,10 +388,7 @@ def training_macs_kmeans(
     max_iter : int
         Nombre maximum d'itérations Lloyd.
     """
-    k_select = sum(
-        n_init * max_iter * n_samples * k * n_features
-        for k in range(k_min, k_max + 1)
-    )
+    k_select = sum(n_init * max_iter * n_samples * k * n_features for k in range(k_min, k_max + 1))
     silhouette = (k_max - k_min + 1) * n_samples**2 * n_features
     final_fit = n_init * max_iter * n_samples * n_clusters * n_features
     return k_select + silhouette + final_fit
@@ -404,10 +530,7 @@ def compute_macs(model_name: str, **kwargs: int) -> int:
         Si `model_name` n'est pas reconnu.
     """
     if model_name not in _DISPATCH:
-        raise KeyError(
-            f"Modèle inconnu: {model_name!r}. "
-            f"Attendu parmi: {sorted(_DISPATCH)}."
-        )
+        raise KeyError(f"Modèle inconnu: {model_name!r}. " f"Attendu parmi: {sorted(_DISPATCH)}.")
     return _DISPATCH[model_name](**kwargs)
 
 
@@ -434,7 +557,81 @@ def compute_training_macs(model_name: str, **kwargs) -> int:
     """
     if model_name not in _TRAINING_DISPATCH:
         raise KeyError(
-            f"Modèle inconnu: {model_name!r}. "
-            f"Attendu parmi: {sorted(_TRAINING_DISPATCH)}."
+            f"Modèle inconnu: {model_name!r}. " f"Attendu parmi: {sorted(_TRAINING_DISPATCH)}."
         )
     return _TRAINING_DISPATCH[model_name](**kwargs)
+
+
+# ---------------------------------------------------------------------------
+# Dispatchers FLOPs / BOPs / Params (S3301)
+# ---------------------------------------------------------------------------
+
+_PARAMS_DISPATCH = {
+    "EWC": params_ewc_mlp,
+    "TinyOL": params_tinyol,
+    "TinyOL_AE": params_tinyol_ae,
+    "HDC": params_hdc,
+    "KMeans": params_kmeans,
+    "Mahalanobis": params_mahalanobis,
+    "DBSCAN": params_dbscan,
+}
+
+
+def compute_flops_for_model(model_name: str, **kwargs: int) -> int:
+    """Dispatcher — FLOPs d'une inférence (= 2 × MACs) pour un modèle.
+
+    Réutilise `compute_macs` puis applique `compute_flops` : aucune
+    réimplémentation du compte de MACs.
+
+    Parameters
+    ----------
+    model_name : str
+        Un parmi : "EWC", "TinyOL", "TinyOL_AE", "HDC", "KMeans",
+        "Mahalanobis", "DBSCAN".
+    **kwargs
+        Paramètres propres au modèle (cf. fonctions macs_*).
+    """
+    return compute_flops(compute_macs(model_name, **kwargs))
+
+
+def compute_bops_for_model(model_name: str, n_bits: int, **kwargs: int) -> int:
+    """Dispatcher — BOPs d'une inférence (FLOPs × n_bits²) pour un modèle.
+
+    Parameters
+    ----------
+    model_name : str
+        Un parmi : "EWC", "TinyOL", "TinyOL_AE", "HDC", "KMeans",
+        "Mahalanobis", "DBSCAN".
+    n_bits : int
+        Largeur des opérandes (32 pour FP32, 8 pour INT8). Cf. compute_bops.
+    **kwargs
+        Paramètres propres au modèle (cf. fonctions macs_*).
+    """
+    return compute_bops(compute_macs(model_name, **kwargs), n_bits)
+
+
+def compute_params_for_model(model_name: str, trainable: bool = True, **kwargs: int) -> int:
+    """Dispatcher — nombre de paramètres pour un modèle du benchmark.
+
+    Parameters
+    ----------
+    model_name : str
+        Un parmi : "EWC", "TinyOL", "TinyOL_AE", "HDC", "KMeans",
+        "Mahalanobis", "DBSCAN".
+    trainable : bool
+        Conservé pour l'API ; les `params_*()` actuels comptent les paramètres
+        du modèle inféré (== entraînables pour les modèles non figés). Le
+        backbone figé éventuel (TinyOL) reste inclus dans le total inférence.
+    **kwargs
+        Paramètres de dimensions, mêmes clés que macs_*().
+
+    Raises
+    ------
+    KeyError
+        Si `model_name` n'est pas reconnu.
+    """
+    if model_name not in _PARAMS_DISPATCH:
+        raise KeyError(
+            f"Modèle inconnu: {model_name!r}. " f"Attendu parmi: {sorted(_PARAMS_DISPATCH)}."
+        )
+    return _PARAMS_DISPATCH[model_name](**kwargs)

@@ -1,0 +1,45 @@
+{
+  "model": "hdc",
+  "dataset": "paderborn",
+  "scenario": "by_fault_type",
+  "global": {
+    "permutation_importance": {
+      "temperature": 0.0,
+      "pressure": 0.0,
+      "vibration": 0.0,
+      "humidity": 0.0
+    },
+    "feature_masking_importance": {
+      "temperature": 0.0,
+      "pressure": 0.0,
+      "vibration": 0.0,
+      "humidity": 0.0
+    }
+  },
+  "per_task": {
+    "K001": {
+      "permutation_importance": {
+        "temperature": 0.0,
+        "pressure": 0.0,
+        "vibration": 0.0,
+        "humidity": 0.0
+      }
+    },
+    "KA04": {
+      "permutation_importance": {
+        "temperature": 0.0,
+        "pressure": 0.0,
+        "vibration": 0.0,
+        "humidity": 0.0
+      }
+    },
+    "KI04": {
+      "permutation_importance": {
+        "temperature": 0.0,
+        "pressure": 0.0,
+        "vibration": 0.0,
+        "humidity": 0.0
+      }
+    }
+  }
+}

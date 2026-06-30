@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S32_mahalanobis_cmapss_thr10",
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "scenario": "by_domain",
+  "acc_final": 0.489212940672203,
+  "avg_forgetting": 0.5265371318773494,
+  "backward_transfer": -0.5182244835606121,
+  "per_task_acc": [
+    0.17761085534286405,
+    0.8356584821428571,
+    0.11468446601941748,
+    0.8288979591836735
+  ],
+  "ram_peak_bytes": 1532,
+  "inference_latency_ms": 0.006423850013561605,
+  "n_params": 30,
+  "welford_updates_per_task": [],
+  "cl_strategy": "refit",
+  "ram_training_peak_bytes": 3594612,
+  "sprint": 24
+}

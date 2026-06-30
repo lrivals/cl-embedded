@@ -1,0 +1,34 @@
+{
+  "experiment_id": "exp_S26_03",
+  "description": "Comparaison footprint .bss des 3 têtes EWC sur NUCLEO-F439ZI",
+
+  "ewc_head_fp32_binary": {
+    "struct": "EWCHead",
+    "bss_bytes": 8652,
+    "bss_bytes_estimated": 9500,
+    "comment": "EWC_IN=5, H1=32, H2=16, OUT=2 — baseline existant (0x21cc)"
+  },
+  "ewc_head_regression": {
+    "struct": "EWCHeadReg",
+    "bss_bytes": 8456,
+    "bss_bytes_estimated": 8884,
+    "comment": "EWC_REG_IN=5, H1=32, H2=16, OUT=1 — Sprint 26 (0x2108) — légèrement plus petit ✅"
+  },
+  "ewc_head_multiclass_n10": {
+    "struct": "EWCHeadMC",
+    "bss_bytes": 11756,
+    "bss_bytes_estimated": 14072,
+    "comment": "EWC_MC_IN=9, H1=32, H2=16, N_CLASSES=10 — Sprint 26 (0x2dec) — plus grand que binaire"
+  },
+  "ewc_head_int8_binary": {
+    "struct": "EWCHeadInt8",
+    "bss_bytes": 2328,
+    "bss_bytes_estimated": 2400,
+    "comment": "INT8 quantifié — Sprint 22 (0x918) — 3.7× plus compact que FP32"
+  },
+
+  "total_firmware_bss_bytes": 66748,
+  "budget_bytes": 262144,
+  "margin_bytes": 195396,
+  "notes": "Mesuré via arm-none-eabi-nm sur build/stm32f4_blink.elf (firmware Sprint 26 complet). Total .bss=65.2Ko — 74.5% du budget 256Ko disponible en marge. Régression FP32 (8456B) < binaire FP32 (8652B) : -196B (-2.3%) car 1 neurone output au lieu de 2. Multiclass N=10 (11756B) : +36% vs binaire car IN=9>5 et N_CLASSES=10."
+}

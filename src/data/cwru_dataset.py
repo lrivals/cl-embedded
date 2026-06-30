@@ -26,7 +26,17 @@ from sklearn.preprocessing import StandardScaler
 # Constantes de configuration
 # ---------------------------------------------------------------------------
 
-FEATURE_COLS: list[str] = ["max", "min", "mean", "sd", "rms", "skewness", "kurtosis", "crest", "form"]
+FEATURE_COLS: list[str] = [
+    "max",
+    "min",
+    "mean",
+    "sd",
+    "rms",
+    "skewness",
+    "kurtosis",
+    "crest",
+    "form",
+]
 N_FEATURES: int = len(FEATURE_COLS)  # 9
 
 FAULT_COL: str = "fault"
@@ -37,25 +47,38 @@ N_TASKS: int = 3
 FAULT_TYPE_ORDER: list[str] = ["ball", "inner_race", "outer_race"]
 
 FAULT_TYPE_LABELS: dict[str, list[str]] = {
-    "ball":        ["Ball_007_1", "Ball_014_1", "Ball_021_1"],
-    "inner_race":  ["IR_007_1",   "IR_014_1",   "IR_021_1"],
-    "outer_race":  ["OR_007_6_1", "OR_014_6_1", "OR_021_6_1"],
+    "ball": ["Ball_007_1", "Ball_014_1", "Ball_021_1"],
+    "inner_race": ["IR_007_1", "IR_014_1", "IR_021_1"],
+    "outer_race": ["OR_007_6_1", "OR_014_6_1", "OR_021_6_1"],
 }
+
+# Mapping global stable pour le mode multiclass (10 classes CWRU)
+MULTICLASS_LABEL_MAP: dict[str, int] = {
+    "Normal_1":   0,
+    "Ball_007_1": 1,
+    "Ball_014_1": 2,
+    "Ball_021_1": 3,
+    "IR_007_1":   4,
+    "IR_014_1":   5,
+    "IR_021_1":   6,
+    "OR_007_6_1": 7,
+    "OR_014_6_1": 8,
+    "OR_021_6_1": 9,
+}
+N_CLASSES_MULTICLASS: int = 10
 
 # Ordre des tâches — by_severity
 SEVERITY_ORDER: list[str] = ["007", "014", "021"]
 
 SEVERITY_LABELS: dict[str, list[str]] = {
-    "007": ["Ball_007_1", "IR_007_1",  "OR_007_6_1"],
-    "014": ["Ball_014_1", "IR_014_1",  "OR_014_6_1"],
-    "021": ["Ball_021_1", "IR_021_1",  "OR_021_6_1"],
+    "007": ["Ball_007_1", "IR_007_1", "OR_007_6_1"],
+    "014": ["Ball_014_1", "IR_014_1", "OR_014_6_1"],
+    "021": ["Ball_021_1", "IR_021_1", "OR_021_6_1"],
 }
 
 # Toutes les étiquettes de défaut attendues dans le CSV
 _ALL_FAULT_LABELS: set[str] = {
-    label
-    for labels in FAULT_TYPE_LABELS.values()
-    for label in labels
+    label for labels in FAULT_TYPE_LABELS.values() for label in labels
 } | {NORMAL_LABEL}
 
 
@@ -181,7 +204,7 @@ class CWRUFaultTypeStream:
     ) -> Generator[tuple[int, str, np.ndarray, np.ndarray], None, None]:
         ds = self._dataset
         normal_mask = ds.fault_labels == NORMAL_LABEL
-        normal_splits_X = np.array_split(ds.X[normal_mask], N_TASKS)   # [77, 77, 76]
+        normal_splits_X = np.array_split(ds.X[normal_mask], N_TASKS)  # [77, 77, 76]
         normal_splits_y = np.array_split(ds.y[normal_mask], N_TASKS)
 
         for task_id, task_name in enumerate(FAULT_TYPE_ORDER):
@@ -225,7 +248,7 @@ class CWRUSeverityStream:
     ) -> Generator[tuple[int, str, np.ndarray, np.ndarray], None, None]:
         ds = self._dataset
         normal_mask = ds.fault_labels == NORMAL_LABEL
-        normal_splits_X = np.array_split(ds.X[normal_mask], N_TASKS)   # [77, 77, 76]
+        normal_splits_X = np.array_split(ds.X[normal_mask], N_TASKS)  # [77, 77, 76]
         normal_splits_y = np.array_split(ds.y[normal_mask], N_TASKS)
 
         for task_id, task_name in enumerate(SEVERITY_ORDER):
@@ -305,17 +328,19 @@ def get_cwru_cl_dataloaders_by_fault_type(
             yt = torch.from_numpy(y_arr).unsqueeze(1)
             return DataLoader(TensorDataset(Xt, yt), batch_size=batch_size, shuffle=shuffle)
 
-        tasks.append({
-            "task_id": task_id,
-            "task_name": task_name,
-            "domain": task_name,
-            "train_loader": _make_loader(X_train, y_train, shuffle=True),
-            "val_loader": _make_loader(X_val, y_val, shuffle=False),
-            "test_loader": _make_loader(X_test, y_test, shuffle=False),
-            "n_train": len(X_train),
-            "n_val": len(X_val),
-            "n_test": len(X_test),
-        })
+        tasks.append(
+            {
+                "task_id": task_id,
+                "task_name": task_name,
+                "domain": task_name,
+                "train_loader": _make_loader(X_train, y_train, shuffle=True),
+                "val_loader": _make_loader(X_val, y_val, shuffle=False),
+                "test_loader": _make_loader(X_test, y_test, shuffle=False),
+                "n_train": len(X_train),
+                "n_val": len(X_val),
+                "n_test": len(X_test),
+            }
+        )
 
     return tasks
 
@@ -385,17 +410,19 @@ def get_cwru_cl_dataloaders_by_severity(
             yt = torch.from_numpy(y_arr).unsqueeze(1)
             return DataLoader(TensorDataset(Xt, yt), batch_size=batch_size, shuffle=shuffle)
 
-        tasks.append({
-            "task_id": task_id,
-            "task_name": task_name,
-            "domain": task_name,
-            "train_loader": _make_loader(X_train, y_train, shuffle=True),
-            "val_loader": _make_loader(X_val, y_val, shuffle=False),
-            "test_loader": _make_loader(X_test, y_test, shuffle=False),
-            "n_train": len(X_train),
-            "n_val": len(X_val),
-            "n_test": len(X_test),
-        })
+        tasks.append(
+            {
+                "task_id": task_id,
+                "task_name": task_name,
+                "domain": task_name,
+                "train_loader": _make_loader(X_train, y_train, shuffle=True),
+                "val_loader": _make_loader(X_val, y_val, shuffle=False),
+                "test_loader": _make_loader(X_test, y_test, shuffle=False),
+                "n_train": len(X_train),
+                "n_val": len(X_val),
+                "n_test": len(X_test),
+            }
+        )
 
     return tasks
 
@@ -467,14 +494,14 @@ def get_cwru_dataloaders_anomaly_detection(
         task_order = SEVERITY_ORDER
         task_fault_labels = SEVERITY_LABELS
     else:
-        raise ValueError(f"scenario doit être 'by_fault_type' ou 'by_severity', reçu : {scenario!r}")
+        raise ValueError(
+            f"scenario doit être 'by_fault_type' ou 'by_severity', reçu : {scenario!r}"
+        )
 
     # Répartition déterministe des normaux en 3 thirds
     normal_mask = ds.fault_labels == NORMAL_LABEL
     X_normal = ds.X[normal_mask]
-    y_normal = ds.y[normal_mask]
     normal_splits_X = np.array_split(X_normal, N_TASKS)
-    normal_splits_y = np.array_split(y_normal, N_TASKS)
 
     scaler: StandardScaler | None = None
     tasks: list[dict] = []
@@ -535,17 +562,119 @@ def get_cwru_dataloaders_anomaly_detection(
             shuffle=False,
         )
 
-        tasks.append({
-            "task_id": task_id,
-            "task_name": task_name,
-            "domain": task_name,
-            "train_loader": train_loader,
-            "test_loader_mixed": test_loader_mixed,
-            "n_train": len(X_norm_train),
-            "n_test": len(X_test_all),
-            "n_test_normal": len(X_norm_test),
-            "n_test_faulty": len(X_faulty),
-        })
+        tasks.append(
+            {
+                "task_id": task_id,
+                "task_name": task_name,
+                "domain": task_name,
+                "train_loader": train_loader,
+                "test_loader_mixed": test_loader_mixed,
+                "n_train": len(X_norm_train),
+                "n_test": len(X_test_all),
+                "n_test_normal": len(X_norm_test),
+                "n_test_faulty": len(X_faulty),
+            }
+        )
+
+    return tasks
+
+
+def get_cl_splits(
+    csv_path: str | Path = "data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv",
+    scenario: Literal["by_fault_type", "by_severity"] = "by_fault_type",
+    mode: Literal["binary", "multiclass"] = "binary",
+    test_size: float = 0.2,
+    random_state: int = 42,
+) -> list[dict]:
+    """
+    Retourne les splits numpy (sans DataLoader) pour les scénarios CL CWRU.
+
+    Fournit une interface légère pour l'évaluation, la feature importance et
+    les tests — sans dépendance PyTorch dans la boucle principale.
+
+    Parameters
+    ----------
+    csv_path : str | Path
+        Chemin vers feature_time_48k_2048_load_1.csv.
+    scenario : {"by_fault_type", "by_severity"}
+        Scénario CL. Default : "by_fault_type".
+    mode : {"binary", "multiclass"}
+        "binary" (défaut) : y float32 0/1.
+        "multiclass" : y int64 0–9 (MULTICLASS_LABEL_MAP).
+    test_size : float
+        Fraction test par tâche. Default : 0.2.
+    random_state : int
+        Seed. Default : 42.
+
+    Returns
+    -------
+    list[dict]
+        Liste de 3 dicts (une tâche par élément) :
+
+        .. code-block:: python
+
+            {
+                "task_id": int,
+                "task_name": str,
+                "X_train": np.ndarray,  # float32, [N_train, 9]
+                "y_train": np.ndarray,  # float32 (binary) ou int64 (multiclass)
+                "X_val": np.ndarray,
+                "y_val": np.ndarray,
+            }
+    """
+    ds = CWRUDataset(csv_path, random_state=random_state)
+
+    if scenario == "by_fault_type":
+        task_order = FAULT_TYPE_ORDER
+        task_fault_labels_map = FAULT_TYPE_LABELS
+    elif scenario == "by_severity":
+        task_order = SEVERITY_ORDER
+        task_fault_labels_map = SEVERITY_LABELS
+    else:
+        raise ValueError(
+            f"scenario doit être 'by_fault_type' ou 'by_severity', reçu : {scenario!r}"
+        )
+
+    normal_mask = ds.fault_labels == NORMAL_LABEL
+    normal_splits_X = np.array_split(ds.X[normal_mask], N_TASKS)
+    normal_splits_fl = np.array_split(ds.fault_labels[normal_mask], N_TASKS)
+
+    scaler: StandardScaler | None = None
+    tasks: list[dict] = []
+
+    for task_id, task_name in enumerate(task_order):
+        fault_mask = np.isin(ds.fault_labels, task_fault_labels_map[task_name])
+        X_task = np.concatenate([ds.X[fault_mask], normal_splits_X[task_id]])
+        fl_task = np.concatenate([ds.fault_labels[fault_mask], normal_splits_fl[task_id]])
+
+        if mode == "multiclass":
+            y_task = np.array(
+                [MULTICLASS_LABEL_MAP[lbl] for lbl in fl_task], dtype=np.int64
+            )
+        else:
+            y_task = (fl_task != NORMAL_LABEL).astype(np.float32)
+
+        X_train, X_val, y_train, y_val = train_test_split(
+            X_task, y_task, test_size=test_size, random_state=random_state
+        )
+
+        if task_id == 0:
+            scaler = StandardScaler()
+            X_train = scaler.fit_transform(X_train).astype(np.float32)
+        else:
+            X_train = scaler.transform(X_train).astype(np.float32)  # type: ignore[union-attr]
+        X_val = scaler.transform(X_val).astype(np.float32)  # type: ignore[union-attr]
+
+        tasks.append(
+            {
+                "task_id": task_id,
+                "task_name": task_name,
+                "X_train": X_train,
+                "y_train": y_train,
+                "X_val": X_val,
+                "y_val": y_val,
+            }
+        )
 
     return tasks
 

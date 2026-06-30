@@ -1,0 +1,37 @@
+exp_id: exp_S32_mahalanobis_battery_thr200
+mahalanobis:
+  anomaly_threshold: null
+  anomaly_percentile: 95
+  reg_covar: 1.0e-06
+  cl_strategy: welford
+  welford_min_samples: 10
+  update_sigma_every: 1
+data:
+  dataset: battery_rul
+  task_split: by_temporal_window
+  csv_path: data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv
+  normalizer_path: configs/battery_normalizer.yaml
+  n_tasks: 3
+  rul_failure_threshold: 200
+  val_ratio: 0.2
+  n_features: 7
+  n_classes: 2
+  label_column: faulty
+  feature_columns:
+  - Discharge Time (s)
+  - Decrement 3.6-3.4V (s)
+  - Max. Voltage Dischar. (V)
+  - Min. Voltage Charg. (V)
+  - Time at 4.15V (s)
+  - Time constant current (s)
+  - Charging time (s)
+evaluation:
+  seed: 42
+  n_latency_runs: 100
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms

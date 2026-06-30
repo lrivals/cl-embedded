@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_mahalanobis.yaml
+dataset: paderborn
+date: '2026-06-02T14:07:07.319053'
+dry_run: false
+model: mahalanobis
+n_samples: 450
+n_tasks: 3
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: false

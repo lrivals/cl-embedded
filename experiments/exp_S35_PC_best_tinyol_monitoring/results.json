@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_PC_best_tinyol_monitoring",
+  "condition": "best",
+  "model": "tinyol",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 2,
+  "selected_indices": [
+    0,
+    2
+  ],
+  "acc_final": 0.9687513253856296,
+  "f1_faulty": 0.8235294117647058,
+  "f1_macro": 0.903187150485641,
+  "precision_faulty": 0.9411764705882353,
+  "recall_faulty": 0.7320261437908496,
+  "avg_forgetting": 0.0,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59817345,
+  "n_params": 70,
+  "note": "best tinyol_monitoring.yaml"
+}

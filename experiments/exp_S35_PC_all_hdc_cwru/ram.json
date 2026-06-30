@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_hdc_cwru",
+  "condition": "all",
+  "model": "hdc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 9,
+  "ram_peak_bytes": 284883,
+  "n_params": 2048,
+  "measure": "tracemalloc"
+}

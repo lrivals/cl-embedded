@@ -70,8 +70,8 @@ def compute_cl_metrics(
     # Pour chaque tâche j < T : chute entre le pic de performance et la performance finale
     forgetting_per_task = []
     for j in range(T - 1):
-        max_acc_j = float(np.nanmax(acc_matrix[:, j]))      # meilleure performance sur tâche j
-        final_acc_j = float(acc_matrix[T - 1, j])           # performance finale sur tâche j
+        max_acc_j = float(np.nanmax(acc_matrix[:, j]))  # meilleure performance sur tâche j
+        final_acc_j = float(acc_matrix[T - 1, j])  # performance finale sur tâche j
         forgetting_per_task.append(max_acc_j - final_acc_j)
 
     af = float(np.mean(forgetting_per_task)) if forgetting_per_task else 0.0
@@ -81,8 +81,8 @@ def compute_cl_metrics(
     # BWT_j = acc_final(j) - acc_just_after_training(j)
     bwt_per_task = []
     for j in range(T - 1):
-        acc_just_after = float(acc_matrix[j, j])    # diagonale
-        acc_final = float(acc_matrix[T - 1, j])     # fin de tout l'entraînement
+        acc_just_after = float(acc_matrix[j, j])  # diagonale
+        acc_final = float(acc_matrix[T - 1, j])  # fin de tout l'entraînement
         bwt_per_task.append(acc_final - acc_just_after)
 
     bwt = float(np.mean(bwt_per_task)) if bwt_per_task else 0.0
@@ -90,11 +90,15 @@ def compute_cl_metrics(
     # --- Forward Transfer ---
     # Impact de l'apprentissage passé sur l'apprentissage d'une nouvelle tâche
     if random_baseline is None:
-        random_baseline = np.full(T, 0.5)   # classifieur aléatoire binaire
+        random_baseline = np.full(T, 0.5)  # classifieur aléatoire binaire
 
     fwt_per_task = []
     for j in range(1, T):
-        acc_before_j = float(acc_matrix[j - 1, j]) if not np.isnan(acc_matrix[j - 1, j]) else random_baseline[j]
+        acc_before_j = (
+            float(acc_matrix[j - 1, j])
+            if not np.isnan(acc_matrix[j - 1, j])
+            else random_baseline[j]
+        )
         fwt_per_task.append(acc_before_j - float(random_baseline[j]))
 
     fwt = float(np.mean(fwt_per_task)) if fwt_per_task else 0.0
@@ -138,8 +142,8 @@ def format_metrics_report(
         f"{'=' * 60}",
         f"  RÉSULTATS CL — {model_name}",
         f"{'=' * 60}",
-        f"",
-        f"PRÉCISION :",
+        "",
+        "PRÉCISION :",
         f"  AA  = {metrics['aa']:.4f}",
     ]
 
@@ -149,8 +153,8 @@ def format_metrics_report(
         lines.append(f"        (Joint training  : {baseline_joint['aa']:.4f}  ← borne sup.)")
 
     lines += [
-        f"",
-        f"OUBLI (Average Forgetting) :",
+        "",
+        "OUBLI (Average Forgetting) :",
         f"  AF  = {metrics['af']:.4f}  (0 = aucun oubli | + = oubli important)",
     ]
 
@@ -159,13 +163,13 @@ def format_metrics_report(
             lines.append(f"        Tâche {i + 1} : {f:+.4f}")
 
     lines += [
-        f"",
-        f"TRANSFERT :",
+        "",
+        "TRANSFERT :",
         f"  BWT = {metrics['bwt']:.4f}  (< 0 = oubli | > 0 = transfert positif)",
         f"  FWT = {metrics['fwt']:.4f}  (> 0 = facilitation apprentissage futur)",
-        f"",
-        f"TRIPLE GAP :",
-        f"  Gap 2 (RAM) : voir memory_profiler.py pour les chiffres mesurés",
+        "",
+        "TRIPLE GAP :",
+        "  Gap 2 (RAM) : voir memory_profiler.py pour les chiffres mesurés",
         f"{'=' * 60}",
     ]
 
@@ -236,6 +240,50 @@ def evaluate_task_with_preds(
     y_pred = np.concatenate(all_preds)
     acc = accuracy_binary(y_true, y_pred)
     return acc, y_true, y_pred
+
+
+def compute_fault_f1(y_true: np.ndarray, y_pred: np.ndarray) -> dict:
+    """
+    F1 (classe positive = `faulty`=1) + F1 macro pour la détection de panne.
+
+    Définition de référence **partagée PC ↔ board** (Sprint 35 / S3504) : la même
+    fonction est appelée côté PC (sweep de features) et côté hôte board
+    (``sensor_stream.py``), garantissant une comparaison honnête. L'accuracy seule
+    masque l'effondrement de la classe minoritaire (cf. Sprint 26, ``F1_MC=0.243``).
+
+    Parameters
+    ----------
+    y_true : np.ndarray [N]
+        Labels vrais binaires : 0=normal, 1=faulty.
+    y_pred : np.ndarray [N]
+        Prédictions binaires (déjà seuillées : 0/1).
+
+    Returns
+    -------
+    dict avec clés :
+        f1_faulty        : float — F1 de la classe positive (faulty=1)
+        f1_macro         : float — F1 moyenné sur les deux classes
+        precision_faulty : float
+        recall_faulty    : float
+
+    Notes
+    -----
+    ``zero_division=0`` : si une classe est absente des prédictions ou des labels,
+    la métrique vaut 0.0 plutôt que de lever une exception (cas mono-classe).
+    """
+    from sklearn.metrics import f1_score, precision_score, recall_score
+
+    y_true = np.asarray(y_true).astype(np.int64).flatten()
+    y_pred = np.asarray(y_pred).astype(np.int64).flatten()
+
+    return {
+        "f1_faulty": float(f1_score(y_true, y_pred, pos_label=1, zero_division=0)),
+        "f1_macro": float(f1_score(y_true, y_pred, average="macro", zero_division=0)),
+        "precision_faulty": float(
+            precision_score(y_true, y_pred, pos_label=1, zero_division=0)
+        ),
+        "recall_faulty": float(recall_score(y_true, y_pred, pos_label=1, zero_division=0)),
+    }
 
 
 def accuracy_binary(y_true: np.ndarray, y_pred: np.ndarray, threshold: float = 0.5) -> float:

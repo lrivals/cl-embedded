@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S22_INT8_02",
+  "dataset": "cmapss",
+  "fp32": {
+    "auroc_final": 0.806192,
+    "acc_final": 0.914438,
+    "avg_forgetting": 0.000162,
+    "ram_peak_bytes": 1171
+  },
+  "int8": {
+    "auroc_final": 0.803713,
+    "acc_final": 0.914594,
+    "avg_forgetting": 0.000809,
+    "ram_peak_bytes": 5511
+  },
+  "delta_auroc": 0.00248,
+  "gap3_criterion_met": true
+}

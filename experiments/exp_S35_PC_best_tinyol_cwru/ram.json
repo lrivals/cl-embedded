@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_tinyol_cwru",
+  "condition": "best",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 7,
+  "ram_peak_bytes": 59815025,
+  "n_params": 486,
+  "measure": "tracemalloc"
+}

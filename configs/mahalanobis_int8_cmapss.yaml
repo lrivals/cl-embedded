@@ -1,0 +1,10 @@
+# configs/mahalanobis_int8_cmapss.yaml — Benchmark INT8 vs FP32 Mahalanobis, CMAPSS (S2808).
+#
+# Hérite de cmapss_config.yaml (section mahalanobis + data CMAPSS).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model mahalanobis \
+#   --config configs/mahalanobis_int8_cmapss.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_cmapss.json
+
+extends: configs/cmapss_config.yaml
+quantization: int8

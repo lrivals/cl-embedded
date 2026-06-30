@@ -1,0 +1,99 @@
+{
+  "description": "Autonomie estimée (S3307) — I_moy + balayage capacités batterie.",
+  "capacites_mah": [
+    220.0,
+    1200.0,
+    2000.0,
+    3000.0,
+    10000.0
+  ],
+  "tension_v": 3.3,
+  "per_model": {
+    "ewc_fp32": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "ewc_int8": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "hdc_fp32": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "hdc_int8": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "tinyol_fp32": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "tinyol_int8": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "maha_fp32": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    },
+    "maha_int8": {
+      "i_moy_ma": "à mesurer",
+      "autonomy_h_by_mah": {
+        "220.0": "à mesurer",
+        "1200.0": "à mesurer",
+        "2000.0": "à mesurer",
+        "3000.0": "à mesurer",
+        "10000.0": "à mesurer"
+      }
+    }
+  },
+  "ram_profiling": {
+    "note": "RAM peak du calcul autonomy.py (tracemalloc PC, proxy).",
+    "ram_peak_bytes": 208,
+    "within_budget_64ko": true
+  },
+  "timestamp": "2026-06-24"
+}

@@ -1,0 +1,41 @@
+pair:
+  name: maha_hdc
+  detector: mahalanobis
+  supervised: hdc
+fusion:
+  rules:
+  - or
+  - and
+  - soft_vote
+  - weighted
+  weights:
+  - 0.5
+  - 0.5
+  ensemble_threshold: 0.5
+mahalanobis:
+  anomaly_percentile: 95
+  reg_covar: 1.0e-06
+  cl_strategy: refit
+seed: 42
+supervised_configs:
+  monitoring: configs/hdc_int8_monitoring.yaml
+  cwru: configs/hdc_int8_cwru.yaml
+  pronostia: configs/hdc_int8_pronostia.yaml
+  cmapss: configs/hdc_int8_cmapss.yaml
+  paderborn: configs/hdc_int8_paderborn.yaml
+native_configs:
+  cwru: configs/cwru_multiclass_config.yaml
+native:
+  cmapss:
+    rule: rul_threshold
+    threshold: 30
+  cwru:
+    rule: nonzero_class
+  monitoring:
+    rule: identity
+  pronostia:
+    rule: identity
+  paderborn:
+    rule: nonzero_class
+_dataset: cwru
+_mode: native

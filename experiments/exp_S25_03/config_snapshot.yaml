@@ -1,0 +1,44 @@
+BATCH_SIZE: 32
+DROPOUT: 0.2
+EWC_LAMBDA: 400.0
+EWC_LR: 0.01
+FISHER_EMA_DECAY: 0.99
+FISHER_N_SAMPLES: 200
+HIDDEN_DIMS:
+- 32
+- 16
+INPUT_DIM: 9
+MOMENTUM: 0.9
+N_CLASSES: 10
+N_EPOCHS_PER_TASK: 30
+OPTIMIZER: sgd
+class_names:
+  0: Normal
+  1: Ball_007
+  2: Ball_014
+  3: Ball_021
+  4: IR_007
+  5: IR_014
+  6: IR_021
+  7: OR_007
+  8: OR_014
+  9: OR_021
+data_path: data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv
+dataset: cwru
+exp_id: exp_S25_03
+f1_macro_min_task1: 0.7
+model: ewc_multiclass
+n_classes: 10
+n_tasks: 3
+primary_metric: f1_macro
+ram_budget_bytes: 262144
+report_metrics:
+- f1_macro
+- confusion_matrix
+- per_class_accuracy
+- avg_forgetting_f1
+scenario: by_fault_type
+seed: 42
+sprint: 25
+task_mode: multiclass
+val_ratio: 0.2

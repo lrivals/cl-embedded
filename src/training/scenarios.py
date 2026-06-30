@@ -289,7 +289,6 @@ def _train_anomaly_model(
         X_train = np.concatenate([b[0].numpy() for b in train_loader])
         model.fit_task(X_train, task_id=task_id - 1)  # task_id 1-based → 0-based
     else:
-        y_zeros = np.zeros(1, dtype=np.float32)  # placeholder (ignoré en one-class)
         for x_batch, y_batch in train_loader:
             x_np = x_batch.numpy()
             y_np = y_batch.numpy().flatten()

@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_ewc_cwru",
+  "condition": "5feat",
+  "model": "ewc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "ram_peak_bytes": 59809833,
+  "n_params": 737,
+  "measure": "tracemalloc"
+}

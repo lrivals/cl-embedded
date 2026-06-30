@@ -1,0 +1,22 @@
+{
+  "model": "hdc",
+  "dataset": "pronostia",
+  "config_path": "configs/hdc_int8_pronostia.yaml",
+  "timestamp": "2026-06-12T20:18:08",
+  "fp32": {
+    "metric_name": "f1_macro",
+    "metric_value": 0.708736,
+    "ram_bytes": 14344,
+    "latency_ms": 0.101908
+  },
+  "int8": {
+    "metric_name": "f1_macro",
+    "metric_value": 0.708736,
+    "ram_bytes": 6152,
+    "latency_ms": 0.08646
+  },
+  "delta_metric": 0.0,
+  "ram_ratio": 2.331599,
+  "gap3_metric_ok": true,
+  "gap3_ram_ok": true
+}

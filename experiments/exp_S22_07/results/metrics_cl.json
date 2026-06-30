@@ -1,0 +1,31 @@
+{
+  "exp_id": "exp_S22_07",
+  "model": "tinyol",
+  "dataset": "paderborn",
+  "scenario": "by_fault_type",
+  "acc_final": 0.6666666666666666,
+  "avg_forgetting": 0.5,
+  "backward_transfer": -0.5,
+  "per_task_acc": [
+    0.0,
+    1.0,
+    1.0
+  ],
+  "ram_peak_bytes": 4393,
+  "inference_latency_ms": 0.009136660014519293,
+  "n_params": 274,
+  "acc_matrix": [
+    [
+      1.0
+    ],
+    [
+      0.0,
+      1.0
+    ],
+    [
+      0.0,
+      1.0,
+      1.0
+    ]
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "exp_id": "exp_S32_ewc_battery_thr267",
+  "model": "ewc",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "uint8_activations": false,
+  "acc_final": 0.9223880597014925,
+  "avg_forgetting": 0.04079601990049753,
+  "backward_transfer": -0.04079601990049753,
+  "per_task_acc": [
+    0.9830845771144279,
+    0.9353233830845771,
+    0.8487562189054726
+  ],
+  "ram_peak_bytes": 1171,
+  "ram_peak_bytes_uint8": null,
+  "inference_latency_ms": 0.025780439991649473,
+  "n_params": 801,
+  "ram_training_peak_bytes": 59926994,
+  "sprint": 24
+}

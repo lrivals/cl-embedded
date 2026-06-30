@@ -1,0 +1,76 @@
+DATASETS:
+  pronostia:
+    base_vectors_path: configs/hdc_base_vectors_pronostia.npz
+    n_features: 13
+_data_config_path: configs/paderborn_config.yaml
+_snapshot_timestamp: '2026-06-01T11:07:19.855297'
+data:
+  categorical_columns:
+  - equipment
+  csv_path: data/raw/equipment_monitoring/Industrial_Equipment_Monitoring_Dataset/equipment_anomaly_data.csv
+  data_dir: data/raw/Deep Learning-Based Motor Fault Diagnosis Using the Paderborn
+    Dataset/
+  dataset: paderborn
+  domain_column: equipment
+  domain_labels:
+    K001: 0
+    KA04: 1
+    KI04: 1
+  domain_order:
+  - K001
+  - KA04
+  - KI04
+  feature_columns:
+  - temperature
+  - pressure
+  - vibration
+  - humidity
+  feature_subset_path: configs/paderborn_feature_subset.yaml
+  label_column: faulty
+  max_files_per_condition: 20
+  n_classes: 2
+  n_features: 5
+  n_features_selected: 5
+  normalizer: minmax
+  normalizer_path: configs/paderborn_normalizer.yaml
+  overlap: 0.5
+  sampling_rate: 64000
+  test_split: 0.2
+  window_size: 1024
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  output_dir: experiments/exp_S22_08/results
+  seed: 42
+exp_id: exp_S22_08
+feature_bounds:
+  humidity:
+  - -3.3623745441436768
+  - 3.3421783447265625
+  pressure:
+  - -2.898953437805176
+  - 4.20745325088501
+  temperature:
+  - -3.8249363899230957
+  - 4.989019870758057
+  vibration:
+  - -2.757283926010132
+  - 4.817769527435303
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors.npz
+  n_levels: 10
+  seed: 42
+memory:
+  expected_ram_bytes: 14344
+  target_ram_bytes: 65536
+  warn_if_above_bytes: 52000
+training:
+  batch_size: 1
+  epochs_per_task: 1
+  optimizer: null
+  seed: 42

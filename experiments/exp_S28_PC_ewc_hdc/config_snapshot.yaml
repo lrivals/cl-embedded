@@ -1,0 +1,25 @@
+# config_snapshot.yaml — exp_S28_PC_ewc_hdc (Sprint 28, S2807)
+# Campagne PC FP32 vs INT8 : EWC + HDC × 5 datasets.
+sprint: 28
+task: S2807
+script: scripts/benchmark_int8_fp32.py
+driver: scripts/run_s28_pc_benchmarks.py
+n_samples_per_task: 600   # RAM exacte (indep. du nb d'echantillons) ; metrique sur 600/tache
+seed: 42
+configs:
+  ewc:
+    cmapss: configs/ewc_int8_cmapss.yaml
+    monitoring: configs/ewc_int8_monitoring.yaml
+    cwru: configs/ewc_int8_cwru.yaml
+    pronostia: configs/ewc_int8_pronostia.yaml
+    paderborn: configs/ewc_int8_paderborn.yaml
+  hdc:
+    cmapss: configs/hdc_int8_cmapss.yaml
+    monitoring: configs/hdc_int8_monitoring.yaml
+    cwru: configs/hdc_int8_cwru.yaml
+    pronostia: configs/hdc_int8_pronostia.yaml
+    paderborn: configs/hdc_int8_paderborn.yaml
+metric: auroc (EWC, detection de panne, labels binarises normal-vs-fault) / f1_macro (HDC)
+gap3_criteria:
+  metric_ok: abs(delta_metric) < 0.02
+  ram_ok: ram_ratio > 1.0

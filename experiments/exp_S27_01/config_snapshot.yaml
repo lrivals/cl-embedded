@@ -1,0 +1,54 @@
+# exp_S27_01 — DUAL_MODE board / CMAPSS FD001 (RUL) + CWRU task 0 (faute)
+# Date : 2026-06-12
+experiment:      exp_S27_01
+sprint:          27
+mode:            dual
+dataset_rul:     CMAPSS_FD001
+dataset_fault:   CWRU_task0
+board:           NUCLEO-F439ZI (Cortex-M4 @ 180 MHz, 256 Ko SRAM)
+firmware:        stm32f4_blink_sprint27 (pipeline.c DUAL_MODE + ewc_head_regression.c + ewc_head_multiclass.c)
+
+n_samples:       200
+update:          true
+consolidate_at:  50
+flags_hex:       "0x71"  # DUAL_MODE (0x70) | UPDATE (0x01) | PROFILING
+protocol_v:      3
+response_size:   25
+rul_cap:         125     # = RUL_CAP réel (board_dual_pipeline.py:35) — doit matcher l'entraînement/export ewc_reg
+
+# Construction des features DUAL_MODE (9 slots)
+#   features[0:5] = top-5 CMAPSS FD001 (z-score)   → consommées par g_ewc_reg (RUL)
+#   features[5:9] = 4 features CWRU extra           → g_ewc_mc reçoit 5/9 slots hors-domaine
+feature_layout:
+  cmapss_feat: 5   # slots [0:5]
+  cwru_feat:   4   # slots [5:9]
+  total:       9
+
+firmware_config_reg:
+  EWC_REG_IN: 5
+  EWC_REG_H1: 32
+  EWC_REG_H2: 16
+  EWC_REG_OUT: 1
+  EWC_REG_LR: 0.001
+  EWC_REG_FISHER_DECAY: 0.99
+  EWC_LAMBDA: 400.0
+
+firmware_config_mc:
+  EWC_MC_IN: 9
+  EWC_MC_H1: 32
+  EWC_MC_H2: 16
+  EWC_MC_OUT: 10
+  EWC_MC_LR: 0.01
+  EWC_MC_FISHER_DECAY: 0.99
+  EWC_LAMBDA: 400.0
+
+loader_config_rul: configs/cmapss_feature_subset.yaml
+
+# Commande d'exécution :
+# python scripts/board_dual_pipeline.py \
+#     --port /dev/ttyACM0 \
+#     --n-samples 200 \
+#     --update \
+#     --consolidate-at 50 \
+#     --output experiments/exp_S27_01 \
+#     --verbose

@@ -1,0 +1,36 @@
+{
+  "exp_id": "exp_S32_hdc_pronostia_thr24",
+  "model": "hdc",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "native_int_architecture": true,
+  "acc_final": 0.7647139614587236,
+  "avg_forgetting": 0.008843537414965963,
+  "backward_transfer": 0.0020706528225324927,
+  "per_task_acc": [
+    0.8435374149659864,
+    0.631578947368421,
+    0.8190255220417634
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.08866726004271186,
+  "n_params": 2048,
+  "acc_matrix": [
+    [
+      0.8598639455782313,
+      NaN,
+      NaN
+    ],
+    [
+      0.8612244897959184,
+      0.6111111111111112,
+      NaN
+    ],
+    [
+      0.8435374149659864,
+      0.631578947368421,
+      0.8190255220417634
+    ]
+  ],
+  "ram_training_peak_bytes": 385311
+}

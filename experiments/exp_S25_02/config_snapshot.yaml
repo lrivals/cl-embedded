@@ -1,0 +1,36 @@
+BATCH_SIZE: 32
+DROPOUT: 0.2
+EWC_LAMBDA: 400.0
+EWC_LR: 0.005
+FISHER_EMA_DECAY: 0.99
+FISHER_N_SAMPLES: 200
+HIDDEN_DIMS:
+- 32
+- 16
+INPUT_DIM: 13
+MOMENTUM: 0.9
+N_EPOCHS_PER_TASK: 20
+OPTIMIZER: sgd
+OUTPUT_DIM: 1
+condition_order:
+- 1
+- 2
+- 3
+dataset: pronostia
+exp_id: exp_S25_02
+model: ewc_regression
+n_tasks: 3
+normalizer_path: configs/pronostia_normalizer.yaml
+npy_dir: data/raw/Pronostia dataset/binaries
+primary_metric: rmse
+ram_budget_bytes: 262144
+report_metrics:
+- rmse
+- mae
+- avg_forgetting_rmse
+rul_cap: 300
+seed: 42
+sprint: 25
+task_mode: rul
+val_ratio: 0.2
+window_duration_s: 0.1

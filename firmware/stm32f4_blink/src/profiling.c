@@ -86,6 +86,49 @@ uint16_t profiling_get_throughput_ips(void)
     return g_profiling.throughput_ips;
 }
 
+/* ── Pic de pile (stack high-water mark) ─────────────────────────────────── */
+
+/* Symboles linker pour .data (le scan .bss utilise déjà _sbss/_ebss). */
+#ifndef TEST_HOST
+extern uint32_t _sdata, _edata;
+#endif
+
+/* Fonction pure, testable sur host : la pile croît vers le bas depuis `high`.
+ * Le startup a peint [low, high) avec `sentinel` ; on scanne de `low` (bas)
+ * vers le haut jusqu'au premier mot écrasé → tout ce qui est au-dessus a été
+ * touché par la pile. Retourne (high - premier_mot_utilisé) en octets. */
+uint32_t profiling_stack_peak_from_region(const uint32_t *low,
+                                          const uint32_t *high,
+                                          uint32_t sentinel)
+{
+    const uint32_t *p = low;
+    while (p < high && *p == sentinel) {
+        p++;
+    }
+    return (uint32_t)((const uint8_t *)high - (const uint8_t *)p);
+}
+
+uint32_t profiling_stack_peak_bytes(void)
+{
+#ifndef TEST_HOST
+    return profiling_stack_peak_from_region(&_ebss, &_estack,
+                                            STACK_PAINT_SENTINEL);
+#else
+    return 0U;
+#endif
+}
+
+uint32_t profiling_ram_peak_bytes(void)
+{
+#ifndef TEST_HOST
+    uint32_t data_bytes = (uint32_t)((uintptr_t)&_edata - (uintptr_t)&_sdata);
+    uint32_t bss_bytes  = (uint32_t)((uintptr_t)&_ebss - (uintptr_t)&_sbss);
+    return data_bytes + bss_bytes + profiling_stack_peak_bytes();
+#else
+    return 0U;
+#endif
+}
+
 /* Encode [latency_us:u32][ram_b:u16][throughput:u16] = 8 B dans buf */
 void profiling_encode(uint8_t *buf)
 {
@@ -101,4 +144,27 @@ void profiling_encode(uint8_t *buf)
     buf[5] = (uint8_t)((ram >> 8) & 0xFFU);
     buf[6] = (uint8_t)(thr & 0xFFU);
     buf[7] = (uint8_t)((thr >> 8) & 0xFFU);
+}
+
+/* Marqueur de phase énergie (S3304) — toggle GPIO PA8 corrélé au DWT.
+ *
+ * No-op complet si ENERGY_MARKERS n'est pas défini (macros vides → le
+ * compilateur élimine le corps). La corrélation temps↔énergie est assurée
+ * par l'adjacence avec profiling_start() côté pipeline.c (le passage en
+ * PHASE_INFERENCE est placé juste avant l'appel profiling_start existant).
+ */
+void energy_marker_phase(EnergyPhase phase)
+{
+    switch (phase) {
+    case PHASE_STARTUP:
+    case PHASE_ACQUISITION:
+    case PHASE_INFERENCE:
+        ENERGY_MARKER_SET();      /* haut : phase active */
+        break;
+    case PHASE_IDLE:
+    default:
+        ENERGY_MARKER_CLEAR();    /* bas : retour en attente */
+        break;
+    }
+    (void)phase;  /* évite -Wunused quand les macros sont vides */
 }

@@ -165,9 +165,7 @@ def load_normalizer(config_path: Path) -> dict:
     cfg = load_config(str(config_path))
 
     if "mean" not in cfg or "std" not in cfg:
-        raise ValueError(
-            f"Le fichier normalizer ({config_path}) doit contenir 'mean' et 'std'."
-        )
+        raise ValueError(f"Le fichier normalizer ({config_path}) doit contenir 'mean' et 'std'.")
 
     return {"mean": cfg["mean"], "std": cfg["std"]}
 
@@ -493,8 +491,7 @@ def get_cl_dataloaders_by_location(
     # Validation spécifique à la colonne location
     if LOCATION_COL not in df.columns:
         raise ValueError(
-            f"Colonne '{LOCATION_COL}' absente du CSV. "
-            f"Colonnes présentes : {list(df.columns)}"
+            f"Colonne '{LOCATION_COL}' absente du CSV. " f"Colonnes présentes : {list(df.columns)}"
         )
 
     present_locations = set(df[LOCATION_COL].unique())

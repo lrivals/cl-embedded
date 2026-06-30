@@ -1,0 +1,25 @@
+{
+  "exp_id": "exp_S35_PC_all_hdc_monitoring",
+  "condition": "all",
+  "model": "hdc",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "acc_final": 0.8697531741411043,
+  "f1_faulty": 0.5652173913043478,
+  "f1_macro": 0.7442945194069632,
+  "precision_faulty": 0.4234527687296417,
+  "recall_faulty": 0.8496732026143791,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.001949317738791423,
+  "ram_peak_bytes": 168427,
+  "n_params": 2048,
+  "note": "dims natives"
+}

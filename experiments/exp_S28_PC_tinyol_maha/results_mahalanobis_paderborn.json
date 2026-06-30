@@ -1,0 +1,22 @@
+{
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "config_path": "configs/mahalanobis_int8_paderborn.yaml",
+  "timestamp": "2026-06-12T20:20:28",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": NaN,
+    "ram_bytes": 120,
+    "latency_ms": 0.005418
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": NaN,
+    "ram_bytes": 30,
+    "latency_ms": 0.007804
+  },
+  "delta_metric": NaN,
+  "ram_ratio": 4.0,
+  "gap3_metric_ok": false,
+  "gap3_ram_ok": true
+}

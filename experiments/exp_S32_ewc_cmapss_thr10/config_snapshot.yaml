@@ -1,0 +1,76 @@
+_snapshot_timestamp: '2026-06-22T17:43:00.126777'
+data:
+  data_dir: data/raw/CMAPSS Jet Engine Simulated Data/
+  dataset: cmapss
+  domain_order:
+  - FD001
+  - FD002
+  - FD003
+  - FD004
+  faulty_threshold: 10
+  feature_subset_path: configs/cmapss_feature_subset.yaml
+  label_column: faulty
+  n_classes: 2
+  n_features: 5
+  n_features_selected: 5
+  normalizer: minmax
+  rul_cap: 125
+  task_split: by_domain
+  test_split: 0.2
+evaluation:
+  metrics:
+  - aa
+  - af
+  - bwt
+  - ram_peak_bytes
+  - n_params
+  - inference_latency_ms
+  output_dir: experiments/exp_S32_ewc_cmapss_thr10/results
+  seed: 42
+ewc:
+  gamma: 0.9
+  lambda: 1000
+  n_fisher_samples: 200
+exp_id: exp_S32_ewc_cmapss_thr10
+feature_bounds:
+  BPR:
+  - 0.0
+  - 1.0
+  P30:
+  - 0.0
+  - 1.0
+  Phi:
+  - 0.02985074557363987
+  - 1.0
+  Ps30:
+  - 0.0
+  - 1.0
+  T50:
+  - 0.0
+  - 1.0
+hdc:
+  D: 1024
+  base_vectors_path: configs/hdc_base_vectors_cmapss.npz
+  n_levels: 10
+  seed: 42
+mahalanobis:
+  anomaly_percentile: 95
+memory:
+  expected_ram_bytes: 9356
+  target_ram_bytes: 262144
+model:
+  activation: relu
+  architecture: mlp
+  dropout: 0.2
+  hidden_dims:
+  - 32
+  - 16
+  input_dim: 5
+  output_dim: 1
+training:
+  batch_size: 32
+  epochs_per_task: 10
+  learning_rate: 0.01
+  momentum: 0.9
+  optimizer: sgd
+  seed: 42

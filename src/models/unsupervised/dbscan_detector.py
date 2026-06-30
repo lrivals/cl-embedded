@@ -68,7 +68,9 @@ class DBSCANDetector:
         self.eps_knn_k: int = config.get("eps_knn_k", EPS_KNN_K_DEFAULT)
         self.eps_history_: list[float] = []  # eps effectivement utilisé par tâche
         # Support clé "min_samples" (YAML actuel) et "MIN_SAMPLES" (legacy)
-        self.min_samples: int = config.get("min_samples", config.get("MIN_SAMPLES", MIN_SAMPLES_DEFAULT))
+        self.min_samples: int = config.get(
+            "min_samples", config.get("MIN_SAMPLES", MIN_SAMPLES_DEFAULT)
+        )
         self.metric: str = config.get("metric", "euclidean")
         self.algorithm: str = config.get("algorithm", "auto")
         self.anomaly_threshold: float | None = config.get("anomaly_threshold", None)
@@ -95,7 +97,9 @@ class DBSCANDetector:
         """
         k = min(self.eps_knn_k, len(X) - 1)
         if k < 1:
-            print(f"  [DBSCAN] _estimate_eps : trop peu de samples ({len(X)}), fallback eps={EPSILON_DEFAULT}")
+            print(
+                f"  [DBSCAN] _estimate_eps : trop peu de samples ({len(X)}), fallback eps={EPSILON_DEFAULT}"
+            )
             return EPSILON_DEFAULT
         try:
             nbrs = NearestNeighbors(n_neighbors=k + 1, metric=self.metric).fit(X)

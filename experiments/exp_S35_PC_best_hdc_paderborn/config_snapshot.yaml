@@ -1,0 +1,9 @@
+exp_id: exp_S35_PC_best_hdc_paderborn
+condition: best
+model: hdc
+dataset: paderborn
+seed: 42
+feature_indices:
+- 0
+feature_names:
+- rms

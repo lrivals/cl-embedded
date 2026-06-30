@@ -1,0 +1,39 @@
+CR Réunion de Intrermédiaire —  03 Avril 2026, 10h à 11h30
+
+Participants : Arnaud Dion (ISAE-SUPAERO) (vision), Dorra Ben Khalifa (ENAC/LII),
+               Frédéric Zbierski (Edge Spectrum), Léonard (stagiaire)
+
+POint des la reunion
+Présentation de Leonard : 
+- Contexte sur l'apprentissage incremental.
+- Presentation des methodes d'apprentissage incremental avec exemples.
+- Contexte sur le stage, dataset et Carte microcontroleur
+
+Discussion sur l'utilisation d'apprentissage non supervisé dans le cadre du stage
+Mention de pistes/ approches au niveau des modeles.
+
+Notes de la reunion:
+Limiter le nombre de modeles a implementer
+-> Implementation sur carte risque de prendre du temps. 
+Focus sur 2 golden Modeles  apprentissage non surpervisé a implementer (rpochain objectif ). Implementer sur ordinateur, reflechir a des axes d'ameliorations sur ces modeles.
+- Un modele KNN
+- Un autre modele avec fort risque de sur apprentissage (pour comparer)
+
+Arnaud Dion avait des idées sur un modele Gaussien à retrouver qui pourrait correspondre a ce qu'on chercher a faire.
+
+Prendre en main l'utilisation de la carte avec l'odinateur. Contacter Frederick en cas de difficultés.
+Definir la méthodologie pour le transfert des données pour la carte.
+Definir les critères que les modeles doivent respecter pour marcher sur la carte 
+
+COnseil Dorra pour les slides:
+- Pour Images ajouter Nom, contenu conferences de l'article. 
+- ajoiuter numero de slides.
+- Bibliographie 
+
+S'organiser 
+Mardi 19 mai 2026 présentation des stagieres à l'ENAC. 10 min sur le sujet du stage pas besoin d'approfondir les ascpects techniques.
+24 juin presentation  ANITI - ENAC public spécialisé Présentation plus longues possibilité d'entrer dans les détails.
+
+
+Heberger le code sur GITLAB de SUPAERO ISEA DOnner acces a Arnaud et Dorra.
+

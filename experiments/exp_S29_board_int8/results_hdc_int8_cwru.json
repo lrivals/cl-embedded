@@ -1,0 +1,46 @@
+{
+  "model": "hdc_int8",
+  "dataset": "cwru",
+  "board": "NUCLEO-F439ZI",
+  "precision": "INT8",
+  "n_samples": 300,
+  "metric_name": "accuracy",
+  "metric_value": null,
+  "latency_dwt_us": {
+    "p50": 2095.0,
+    "p95": 2095.0,
+    "p99": 2095.0
+  },
+  "ram_weights_int8_bytes": 34816,
+  "ram_weights_fp32_bytes": 106496,
+  "ram_bss_total_bytes": 39500,
+  "gap2_compliant": true,
+  "gap3_latency_ok": false,
+  "gap3_ram_ok": true,
+  "fp32_reference": {
+    "n_samples": 300,
+    "metric_value": 0.9267,
+    "accuracy": 0.9267,
+    "auroc": 0.4675,
+    "latency_p50_us": 648.0,
+    "latency_p95_us": 648.0,
+    "latency_p99_us": 648.0,
+    "ram_bytes": 39500,
+    "crc_errors": 0
+  },
+  "int8_detail": {
+    "n_samples": 300,
+    "metric_value": 0.8767,
+    "accuracy": 0.8767,
+    "auroc": 0.307,
+    "latency_p50_us": 2095.0,
+    "latency_p95_us": 2095.0,
+    "latency_p99_us": 2095.0,
+    "ram_bytes": 39500,
+    "crc_errors": 0
+  },
+  "latency_ratio_int8_over_fp32": 3.233,
+  "ram_ratio_fp32_over_int8": 3.059,
+  "crc_errors": 0,
+  "na_reason": "t\u00e2ches de test mono-classe (AUROC non d\u00e9fini)"
+}

@@ -1,0 +1,73 @@
+# configs/best_features/hdc_cmapss.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: hdc
+dataset: cmapss
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 21
+n_features_selected: 18
+selected_indices:
+- 12
+- 3
+- 20
+- 19
+- 7
+- 8
+- 11
+- 13
+- 14
+- 16
+- 5
+- 1
+- 0
+- 4
+- 15
+- 17
+- 18
+- 6
+selected_features:
+- NRf
+- T50
+- W32
+- W31
+- Nf
+- Nc
+- Phi
+- NRc
+- BPR
+- htBleed
+- P15
+- T24
+- T2
+- P2
+- farB
+- Nf_dmd
+- PCNfR_dmd
+- P30
+val_f1_by_k:
+  1: 0.710485
+  2: 0.748395
+  3: 0.777567
+  4: 0.778647
+  5: 0.774496
+  6: 0.761236
+  7: 0.780504
+  8: 0.785845
+  9: 0.777149
+  10: 0.79384
+  11: 0.76704
+  12: 0.782074
+  13: 0.738311
+  14: 0.770144
+  15: 0.770862
+  16: 0.783827
+  17: 0.797419
+  18: 0.808233
+  19: 0.756186
+  20: 0.752227
+  21: 0.639927
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01
+selection_max_samples: 2000

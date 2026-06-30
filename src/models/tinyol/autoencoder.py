@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa: N812
 
 # ---------------------------------------------------------------------------
 # Constantes de configuration
@@ -68,9 +68,13 @@ class TinyOLAutoencoder(nn.Module):
         super().__init__()
 
         # --- Encodeur ---
-        self.enc1 = nn.Linear(input_dim, encoder_dims[0])       # MEM: 3 328 B @ FP32 / 832 B @ INT8
-        self.enc2 = nn.Linear(encoder_dims[0], encoder_dims[1]) # MEM: 2 112 B @ FP32 / 528 B @ INT8
-        self.enc3 = nn.Linear(encoder_dims[1], encoder_dims[2]) # MEM:   544 B @ FP32 / 136 B @ INT8
+        self.enc1 = nn.Linear(input_dim, encoder_dims[0])  # MEM: 3 328 B @ FP32 / 832 B @ INT8
+        self.enc2 = nn.Linear(
+            encoder_dims[0], encoder_dims[1]
+        )  # MEM: 2 112 B @ FP32 / 528 B @ INT8
+        self.enc3 = nn.Linear(
+            encoder_dims[1], encoder_dims[2]
+        )  # MEM:   544 B @ FP32 / 136 B @ INT8
 
         # --- Décodeur (utilisé au pré-entraînement uniquement) ---
         self.dec1 = nn.Linear(encoder_dims[2], decoder_dims[0])
@@ -93,7 +97,7 @@ class TinyOLAutoencoder(nn.Module):
         """
         z = F.relu(self.enc1(x))  # MEM: batch × 32 × 4 B = 128 B @ FP32 (batch=1)
         z = F.relu(self.enc2(z))  # MEM: batch × 16 × 4 B = 64 B @ FP32 (batch=1)
-        z = self.enc3(z)          # MEM: batch × 8 × 4 B = 32 B @ FP32 (batch=1)
+        z = self.enc3(z)  # MEM: batch × 8 × 4 B = 32 B @ FP32 (batch=1)
         return z
 
     def decode(self, z: torch.Tensor) -> torch.Tensor:

@@ -1,0 +1,25 @@
+exp_id: exp_S35_PC_all_ewc_cwru
+condition: all
+model: ewc
+dataset: cwru
+seed: 42
+feature_indices:
+- 0
+- 1
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+- 8
+feature_names:
+- max
+- min
+- mean
+- sd
+- rms
+- skewness
+- kurtosis
+- crest
+- form

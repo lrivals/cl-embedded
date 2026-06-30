@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_hdc_paderborn",
+  "condition": "best",
+  "model": "hdc",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "ram_peak_bytes": 684888,
+  "n_params": 2048,
+  "measure": "tracemalloc"
+}

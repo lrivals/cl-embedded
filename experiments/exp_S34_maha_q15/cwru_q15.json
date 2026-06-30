@@ -1,0 +1,16 @@
+{
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "variant": "q15",
+  "config_path": "/home/leonard/Documents/ENAC/cl-embedded/configs/mahalanobis_q15_cwru.yaml",
+  "timestamp": "2026-06-26T17:45:53",
+  "metric_name": "auroc",
+  "auroc": 0.200799,
+  "ram_bytes": 171,
+  "latency_ms": 0.008474,
+  "score_fidelity_vs_fp32": {
+    "mean_abs_error": 6.200185,
+    "max_abs_error": 23.444849,
+    "corr_with_fp32": 0.53575
+  }
+}

@@ -59,3 +59,6 @@ mlruns/
 .env
 *.key
 kaggle.json
+
+# === Documents de candidature (personnels, non versionnés) ===
+docs/prepThese/

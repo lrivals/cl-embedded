@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_ewc_monitoring",
+  "condition": "5feat",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "ram_peak_bytes": 59826583,
+  "n_params": 705,
+  "measure": "tracemalloc"
+}

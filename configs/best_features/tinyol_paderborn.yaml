@@ -1,0 +1,26 @@
+# configs/best_features/tinyol_paderborn.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: tinyol
+dataset: paderborn
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 7
+n_features_selected: 2
+selected_indices:
+- 0
+- 1
+selected_features:
+- rms
+- kurtosis
+val_f1_by_k:
+  1: 0.651181
+  2: 0.80028
+  3: 0.105336
+  4: 0.019174
+  5: 0.441813
+  6: 0.011893
+  7: 0.010918
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

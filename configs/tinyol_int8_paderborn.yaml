@@ -1,0 +1,16 @@
+# configs/tinyol_int8_paderborn.yaml — Benchmark INT8 vs FP32 TinyOL, dataset Paderborn (S2808).
+#
+# Hérite de paderborn_tinyol_config.yaml (backbone + pretrain + data Paderborn).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model tinyol \
+#   --config configs/tinyol_int8_paderborn.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_tinyol_paderborn.json
+
+extends: configs/paderborn_tinyol_config.yaml
+quantization: int8
+
+# paderborn_tinyol_config.yaml::pretrain n'expose que `epochs` → on complète learning_rate.
+pretrain:
+  learning_rate: 0.001
+  batch_size: 64
+  optimizer: adam

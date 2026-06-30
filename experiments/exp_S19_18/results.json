@@ -1,0 +1,16 @@
+{
+  "exp_id": "exp_S19_18",
+  "model": "dbscan",
+  "dataset": "pronostia",
+  "platform": "pc_python",
+  "date": "2026-06-09",
+  "acc_final": 0.8345153200830677,
+  "avg_forgetting": 0.09941520467836257,
+  "backward_transfer": -0.09873493256951904,
+  "auroc": 0.8249745689942708,
+  "f1_score": null,
+  "ram_peak_bytes": 120978,
+  "inference_latency_ms": 0.3080723100265459,
+  "n_params": 11479,
+  "config_snapshot": "experiments/exp_S19_18/config_snapshot.yaml"
+}

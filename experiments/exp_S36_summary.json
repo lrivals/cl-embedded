@@ -1,0 +1,306 @@
+{
+  "generated": "2026-06-29T11:26:57",
+  "model": "ewc",
+  "results": {
+    "pronostia": {
+      "5feat": {
+        "pc": {
+          "acc_final": 0.9887118193891102,
+          "aa": 0.9887118193891102,
+          "af": 0.009960159362549792,
+          "bwt": -0.0009960159362549792,
+          "f1_faulty": 0.9164086687306502,
+          "f1_macro": 0.9531868661426238,
+          "roc_auc": 0.9954850591274513,
+          "ram_peak_bytes": 59734496,
+          "inference_latency_ms": 0.03375087000009103,
+          "per_task_acc": {
+            "0": 0.9741035856573705,
+            "1": 0.9960159362549801,
+            "2": 0.9960159362549801
+          }
+        },
+        "board_frozen": {
+          "online_accuracy": 0.9821,
+          "f1_faulty": 0.9164,
+          "roc_auc": null,
+          "latency_us_p50": 50.0,
+          "latency_us_p99": 50.0,
+          "bss_bytes": 105036,
+          "parity_rate": 1.0
+        },
+        "board_online": {
+          "online_accuracy": 0.9857,
+          "online_forgetting": -0.0026549847338377766,
+          "latency_us_p50": 251.0,
+          "latency_us_p99": 251.0,
+          "parity_rate": 0.9754446509158482,
+          "latency_inference_only_us_p50": 50.0,
+          "latency_update_overhead_us_p50": 201.0
+        },
+        "board_frozen_int8": {
+          "online_accuracy": 0.7463,
+          "f1_faulty": 0.138,
+          "metric_value": 0.138,
+          "latency_us_p50": 53.0,
+          "latency_us_p99": 53.0,
+          "bss_bytes": 105036,
+          "ram_weights_fp32_bytes": 2816,
+          "ram_weights_int8_bytes": 704,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.7363600159299084,
+          "latency_inference_only_us_p50": null,
+          "latency_update_overhead_us_p50": null,
+          "latency_ratio_int8_over_fp32": 1.06,
+          "delta_metric_int8_vs_fp32": 0.7784,
+          "gap3_ram_ok": true
+        },
+        "board_online_int8": {
+          "online_accuracy": 0.8678,
+          "f1_faulty": 0.08455882352941177,
+          "metric_value": 0.08455882352941177,
+          "latency_us_p50": 462.0,
+          "latency_us_p99": 462.0,
+          "bss_bytes": 105036,
+          "ram_weights_fp32_bytes": 2816,
+          "ram_weights_int8_bytes": 704,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.8670029200955668,
+          "latency_inference_only_us_p50": 53.0,
+          "latency_update_overhead_us_p50": 409.0,
+          "latency_ratio_int8_over_fp32": 1.841,
+          "delta_metric_int8_vs_fp32": 0.8441069624679461,
+          "gap3_ram_ok": true
+        },
+        "delta_pc_board": {
+          "acc_final": 0.006611819389110263,
+          "f1_faulty": 8.668730650196466e-06
+        }
+      },
+      "all": {
+        "pc": {
+          "acc_final": 0.9833997343957503,
+          "aa": 0.9833997343957503,
+          "af": 0.004980079681274896,
+          "bwt": -0.0009960159362549792,
+          "f1_faulty": 0.9180116204002582,
+          "f1_macro": 0.9543087172198791,
+          "roc_auc": 0.9974295293994042,
+          "ram_peak_bytes": 133463,
+          "inference_latency_ms": 0.035788069999966865,
+          "per_task_acc": {
+            "0": 0.9741035856573705,
+            "1": 0.9800796812749004,
+            "2": 0.9960159362549801
+          }
+        },
+        "board_frozen": {
+          "online_accuracy": 0.9831,
+          "f1_faulty": 0.918,
+          "roc_auc": null,
+          "latency_us_p50": 65.0,
+          "latency_us_p99": 65.0,
+          "bss_bytes": 144516,
+          "parity_rate": 1.0
+        },
+        "board_online": {
+          "online_accuracy": 0.975,
+          "online_forgetting": 0.004646223284216082,
+          "latency_us_p50": 340.0,
+          "latency_us_p99": 340.0,
+          "parity_rate": 0.9625696840987523,
+          "latency_inference_only_us_p50": 65.0,
+          "latency_update_overhead_us_p50": 275.0
+        },
+        "board_frozen_int8": {
+          "online_accuracy": 0.683,
+          "f1_faulty": 0.1502,
+          "metric_value": 0.1502,
+          "latency_us_p50": 68.0,
+          "latency_us_p99": 68.0,
+          "bss_bytes": 144516,
+          "ram_weights_fp32_bytes": 3840,
+          "ram_weights_int8_bytes": 960,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.6812690827027744,
+          "latency_inference_only_us_p50": null,
+          "latency_update_overhead_us_p50": null,
+          "latency_ratio_int8_over_fp32": 1.046,
+          "delta_metric_int8_vs_fp32": 0.7678,
+          "gap3_ram_ok": true
+        },
+        "board_online_int8": {
+          "online_accuracy": 0.8556,
+          "f1_faulty": 0.10819672131147541,
+          "metric_value": 0.10819672131147541,
+          "latency_us_p50": 639.0,
+          "latency_us_p99": 639.0,
+          "bss_bytes": 144516,
+          "ram_weights_fp32_bytes": 3840,
+          "ram_weights_int8_bytes": 960,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.8537297584284577,
+          "latency_inference_only_us_p50": 68.0,
+          "latency_update_overhead_us_p50": 571.0,
+          "latency_ratio_int8_over_fp32": 1.879,
+          "delta_metric_int8_vs_fp32": 0.7695666076872242,
+          "gap3_ram_ok": true
+        },
+        "delta_pc_board": {
+          "acc_final": 0.00029973439575037286,
+          "f1_faulty": 1.1620400258149921e-05
+        }
+      }
+    },
+    "monitoring": {
+      "5feat": {
+        "pc": {
+          "acc_final": 0.9791258969341161,
+          "aa": 0.9791258969341161,
+          "af": 0.0,
+          "bwt": 0.000978473581213335,
+          "f1_faulty": 0.9193989071038251,
+          "f1_macro": 0.9554487330908175,
+          "roc_auc": 0.9879202475012439,
+          "ram_peak_bytes": 128363,
+          "inference_latency_ms": 0.03464293999996926,
+          "per_task_acc": {
+            "0": 0.9726027397260274,
+            "1": 0.9804305283757339,
+            "2": 0.9843444227005871
+          }
+        },
+        "board_frozen": {
+          "online_accuracy": 0.9846,
+          "f1_faulty": 0.9194,
+          "roc_auc": null,
+          "latency_us_p50": 48.0,
+          "latency_us_p99": 48.0,
+          "bss_bytes": 100152,
+          "parity_rate": 1.0
+        },
+        "board_online": {
+          "online_accuracy": 0.9814,
+          "online_forgetting": -0.0031286664059444838,
+          "latency_us_p50": 239.0,
+          "latency_us_p99": 239.0,
+          "parity_rate": 0.988660062565172,
+          "latency_inference_only_us_p50": 48.0,
+          "latency_update_overhead_us_p50": 191.0
+        },
+        "board_frozen_int8": {
+          "online_accuracy": 0.5913,
+          "f1_faulty": 0.1337,
+          "metric_value": 0.1337,
+          "latency_us_p50": 51.0,
+          "latency_us_p99": 51.0,
+          "bss_bytes": 100152,
+          "ram_weights_fp32_bytes": 2688,
+          "ram_weights_int8_bytes": 672,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.59548950593143,
+          "latency_inference_only_us_p50": null,
+          "latency_update_overhead_us_p50": null,
+          "latency_ratio_int8_over_fp32": 1.062,
+          "delta_metric_int8_vs_fp32": 0.7857,
+          "gap3_ram_ok": true
+        },
+        "board_online_int8": {
+          "online_accuracy": 0.8674,
+          "f1_faulty": 0.06782768102658111,
+          "metric_value": 0.06782768102658111,
+          "latency_us_p50": 440.0,
+          "latency_us_p99": 440.0,
+          "bss_bytes": 100152,
+          "ram_weights_fp32_bytes": 2688,
+          "ram_weights_int8_bytes": 672,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.8753910323253389,
+          "latency_inference_only_us_p50": 51.0,
+          "latency_update_overhead_us_p50": 389.0,
+          "latency_ratio_int8_over_fp32": 1.841,
+          "delta_metric_int8_vs_fp32": 0.8344279580711632,
+          "gap3_ram_ok": true
+        },
+        "delta_pc_board": {
+          "acc_final": 0.005474103065883917,
+          "f1_faulty": 1.0928961748923882e-06
+        }
+      },
+      "all": {
+        "pc": {
+          "acc_final": 0.9791258969341161,
+          "aa": 0.9791258969341161,
+          "af": 0.0,
+          "bwt": 0.000978473581213335,
+          "f1_faulty": 0.9193989071038251,
+          "f1_macro": 0.9554487330908175,
+          "roc_auc": 0.9879202475012439,
+          "ram_peak_bytes": 222375,
+          "inference_latency_ms": 0.028256734999843047,
+          "per_task_acc": {
+            "0": 0.9726027397260274,
+            "1": 0.9804305283757339,
+            "2": 0.9843444227005871
+          }
+        },
+        "board_frozen": {
+          "online_accuracy": 0.9846,
+          "f1_faulty": 0.9194,
+          "roc_auc": null,
+          "latency_us_p50": 48.0,
+          "latency_us_p99": 48.0,
+          "bss_bytes": 100152,
+          "parity_rate": 1.0
+        },
+        "board_online": {
+          "online_accuracy": 0.9814,
+          "online_forgetting": -0.0031286664059444838,
+          "latency_us_p50": 239.0,
+          "latency_us_p99": 239.0,
+          "parity_rate": 0.988660062565172,
+          "latency_inference_only_us_p50": 48.0,
+          "latency_update_overhead_us_p50": 191.0
+        },
+        "board_frozen_int8": {
+          "online_accuracy": 0.5913,
+          "f1_faulty": 0.1337,
+          "metric_value": 0.1337,
+          "latency_us_p50": 51.0,
+          "latency_us_p99": 51.0,
+          "bss_bytes": 100152,
+          "ram_weights_fp32_bytes": 2688,
+          "ram_weights_int8_bytes": 672,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.59548950593143,
+          "latency_inference_only_us_p50": null,
+          "latency_update_overhead_us_p50": null,
+          "latency_ratio_int8_over_fp32": 1.062,
+          "delta_metric_int8_vs_fp32": 0.7857,
+          "gap3_ram_ok": true
+        },
+        "board_online_int8": {
+          "online_accuracy": 0.8674,
+          "f1_faulty": 0.06782768102658111,
+          "metric_value": 0.06782768102658111,
+          "latency_us_p50": 440.0,
+          "latency_us_p99": 440.0,
+          "bss_bytes": 100152,
+          "ram_weights_fp32_bytes": 2688,
+          "ram_weights_int8_bytes": 672,
+          "ram_ratio_fp32_over_int8": 4.0,
+          "agreement_int8_vs_fp32": 0.8753910323253389,
+          "latency_inference_only_us_p50": 51.0,
+          "latency_update_overhead_us_p50": 389.0,
+          "latency_ratio_int8_over_fp32": 1.841,
+          "delta_metric_int8_vs_fp32": 0.8344279580711632,
+          "gap3_ram_ok": true
+        },
+        "delta_pc_board": {
+          "acc_final": 0.005474103065883917,
+          "f1_faulty": 1.0928961748923882e-06
+        }
+      }
+    }
+  }
+}

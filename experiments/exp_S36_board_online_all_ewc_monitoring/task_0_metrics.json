@@ -1,0 +1,18 @@
+{
+  "n_samples": 2557,
+  "n_tasks": 1,
+  "accuracy": 0.9761,
+  "f1_faulty": 0.8721,
+  "f1_macro": 0.9295,
+  "precision_faulty": 0.9286,
+  "recall_faulty": 0.8221,
+  "latency_mean_us": 238.66,
+  "latency_p50_us": 239.0,
+  "latency_p99_us": 239.0,
+  "ram_mean_bytes": 34616,
+  "throughput_mean_ips": 0,
+  "crc_errors": 0,
+  "task_id": 0,
+  "task_name": "t0",
+  "mode": "uart"
+}

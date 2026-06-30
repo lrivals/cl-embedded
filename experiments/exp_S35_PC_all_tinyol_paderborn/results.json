@@ -1,0 +1,28 @@
+{
+  "exp_id": "exp_S35_PC_all_tinyol_paderborn",
+  "condition": "all",
+  "model": "tinyol",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 7,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "acc_final": 0.3358295094004946,
+  "f1_faulty": 0.010918114143920596,
+  "f1_macro": 0.2552707567957866,
+  "precision_faulty": 0.7586206896551724,
+  "recall_faulty": 0.005498625343664084,
+  "avg_forgetting": 0.029043565348022035,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59723796,
+  "n_params": 486,
+  "note": "dims natives"
+}

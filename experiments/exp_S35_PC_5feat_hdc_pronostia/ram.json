@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_5feat_hdc_pronostia",
+  "condition": "5feat",
+  "model": "hdc",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "ram_peak_bytes": 392723,
+  "n_params": 2048,
+  "measure": "tracemalloc"
+}

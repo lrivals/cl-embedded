@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S35_PC_best_mahalanobis_paderborn",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "selected_indices": [
+    0
+  ],
+  "acc_final": 0.35529758376753423,
+  "f1_faulty": 0.10831988937543213,
+  "f1_macro": 0.3015153057951994,
+  "precision_faulty": 0.6952662721893491,
+  "recall_faulty": 0.05873531617095726,
+  "avg_forgetting": 0.0012518778167250888,
+  "backward_transfer": -0.0012518778167250888,
+  "ram_peak_bytes": 2177663,
+  "n_params": 2,
+  "note": "best mahalanobis_paderborn.yaml"
+}

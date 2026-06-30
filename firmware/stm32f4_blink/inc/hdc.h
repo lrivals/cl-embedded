@@ -1,34 +1,51 @@
-#pragma once
-#include <stdint.h>
-
-/* HDC — Hyperdimensional Computing skeleton
+/* HDC — Hyperdimensional Computing (implémentation complète Sprint 23)
  * Référence : Benatti2019HDC
- * Depuis configs/board_hdc.yaml — TODO(arnaud): D=512 si budget serré avec 3 modèles? */
+ * Depuis configs/board_hdc.yaml */
 
-#define HDC_DIM        1000   /* Dimension des hypervecteurs */
-#define HDC_N_FEATURES    5   /* Features d'entrée (Monitoring dataset) */
-#define HDC_N_CLASSES     2   /* faulty / normal */
+#ifndef HDC_H
+#define HDC_H
 
-/* MEM total HDCClassifier : ~28 Ko @ FP32
- *   am   : 2*1000*4    = 8 Ko  (.bss SRAM)
- *   proj : 1000*5*4    = 20 Ko (SRAM skeleton — TODO(dorra): Flash const ou seed?) */
+#include <stdint.h>
+#include "ring_buffer.h"
+
+#define HDC_DIM           1000  /* Dimension des hypervecteurs */
+/* Features d'entrée — surchargeable au build (S3506) : `make HDC_N_FEATURES=9`.
+ * Défaut 5 (condition board 5feat) → .bss inchangé sans override. */
+#ifndef HDC_N_FEATURES
+#define HDC_N_FEATURES       5  /* Features d'entrée (top-5 sélectionnées) */
+#endif
+#define HDC_N_CLASSES        2  /* faulty / normal */
+#define HDC_RETRAIN_BUF     50  /* Taille buffer retrain (FIFO circulaire) */
+                                /* MEM buf total : 50*(5+1) = 300 B */
+
+/* Élément du buffer retrain (S3402) : features quantifiées uint8 + label entrelacés.
+ *   octets [0 .. HDC_N_FEATURES-1] = features ; octet [HDC_N_FEATURES] = label. */
+#define HDC_BUF_ELEM_SIZE (HDC_N_FEATURES + 1)
+
+/* MEM total HDCClassifier :
+ *   am          : 2*1000*4         = 8 000 B (SRAM .bss)
+ *   proj        : 1000*5*4         = 20 000 B (SRAM — TODO(dorra): Flash const ?)
+ *   buf_storage : 50*(5+1)*1       =    300 B (features+label entrelacés)
+ *   rb          : RingBuffer       = ~24 B
+ *   scalars     : n_trained + buf_head + buf_count = 12 B
+ *   TOTAL       : ~28 336 B ≈ 27.7 Ko @ FP32 (dans budget 64 Ko board) */
 typedef struct {
-    float am[HDC_N_CLASSES][HDC_DIM];      /* Mémoire associative — accumulateurs FP32 */
-    float proj[HDC_DIM][HDC_N_FEATURES];   /* Matrice de projection aléatoire */
-    int   n_trained;
+    float   am[HDC_N_CLASSES][HDC_DIM];            /* Mémoire associative */
+    float   proj[HDC_DIM][HDC_N_FEATURES];         /* Projection aléatoire (fixée à l'init) */
+    uint8_t buf_storage[HDC_RETRAIN_BUF * HDC_BUF_ELEM_SIZE]; /* Stockage ring buffer (uint8) */
+    RingBuffer rb;      /* Abstraction buffer circulaire (S3402) sur buf_storage */
+    int     n_trained;
+    int     buf_head;   /* Miroir de rb.head — accès direct par les tests/diagnostics */
+    int     buf_count;  /* Miroir de rb.count — nb d'échantillons (≤ HDC_RETRAIN_BUF) */
 } HDCClassifier;
 
-/* Initialise le classifieur à zéro (proj à remplir avant utilisation). */
-void hdc_init   (HDCClassifier *h);
+void hdc_init               (HDCClassifier *h);
+void hdc_encode             (const HDCClassifier *h, const float *x, float *hv_out);
+int  hdc_predict            (const HDCClassifier *h, const float *hv);
+void hdc_update             (HDCClassifier *h, const float *hv, int label);
+void hdc_update_with_sample (HDCClassifier *h, const float *x,
+                              const float *hv, int label);
+void hdc_binarize           (HDCClassifier *h);
+void hdc_retrain            (HDCClassifier *h);
 
-/* Encode x ∈ ℝ^HDC_N_FEATURES en hypervecteur binarisé hv_out ∈ {-1,+1}^HDC_DIM.
- * Propriété : sum(hv_out[i]²) == HDC_DIM exactement.
- * hv_out doit pointer sur un buffer de HDC_DIM floats alloué par l'appelant. */
-void hdc_encode (const HDCClassifier *h, const float *x, float *hv_out);
-
-/* Retourne la classe prédite (0 … HDC_N_CLASSES-1) par argmax dot(am[c], hv). */
-int  hdc_predict(const HDCClassifier *h, const float *hv);
-
-/* Met à jour le prototype am[label] par accumulation de hv (apprentissage incrémental).
- * Pas d'oubli catastrophique par construction — O(HDC_DIM) en temps, O(1) en mémoire. */
-void hdc_update (HDCClassifier *h, const float *hv, int label);
+#endif /* HDC_H */

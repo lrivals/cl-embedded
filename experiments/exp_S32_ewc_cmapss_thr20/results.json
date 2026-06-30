@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S32_ewc_cmapss_thr20",
+  "model": "ewc",
+  "dataset": "cmapss",
+  "scenario": "by_domain",
+  "uint8_activations": false,
+  "acc_final": 0.9392019506103544,
+  "avg_forgetting": 0.0013233047060395853,
+  "backward_transfer": -0.0007583462185993076,
+  "per_task_acc": [
+    0.9595347710201114,
+    0.9097842261904762,
+    0.9660194174757282,
+    0.921469387755102
+  ],
+  "ram_peak_bytes": 1171,
+  "ram_peak_bytes_uint8": null,
+  "inference_latency_ms": 0.05359580997719604,
+  "n_params": 737,
+  "ram_training_peak_bytes": 60405347,
+  "sprint": 24
+}

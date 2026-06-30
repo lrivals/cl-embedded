@@ -1,0 +1,25 @@
+{
+  "exp_id": "exp_S35_PC_best_mahalanobis_monitoring",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "monitoring",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 4,
+  "selected_indices": [
+    1,
+    0,
+    2,
+    3
+  ],
+  "acc_final": 0.9537371106072546,
+  "f1_faulty": 0.6978723404255319,
+  "f1_macro": 0.8364141243573868,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.5359477124183006,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.0009861932938856066,
+  "ram_peak_bytes": 240133,
+  "n_params": 20,
+  "note": "best mahalanobis_monitoring.yaml"
+}

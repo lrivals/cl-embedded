@@ -1,0 +1,65 @@
+{
+  "exp_id": "exp_S31_PC_maha_ewc_cmapss",
+  "pair": "maha_ewc",
+  "dataset": "cmapss",
+  "frame": "binary",
+  "n_eval": 32073,
+  "oof": {
+    "meta_fit": 19243,
+    "meta_eval": 12830,
+    "test_size": 0.4
+  },
+  "input_features": [
+    "p_maha",
+    "p_sup",
+    "disagreement",
+    "conf_sup"
+  ],
+  "meta": {
+    "logreg": {
+      "f1": 0.47760088855979266,
+      "auroc": 0.7799911204177039
+    },
+    "mlp": {
+      "f1": 0.4569781803211198,
+      "auroc": 0.780673161893857
+    }
+  },
+  "best_meta": "logreg",
+  "baselines": {
+    "model_a": {
+      "name": "mahalanobis",
+      "f1": 0.30521844660194175,
+      "auroc": 0.5499308587000779
+    },
+    "model_b": {
+      "name": "ewc",
+      "f1": 0.47781327653532124,
+      "auroc": 0.7795935624363476
+    },
+    "ensemble": {
+      "or": {
+        "f1": 0.22243078366963867,
+        "auroc": 0.5778524515570567
+      },
+      "and": {
+        "f1": 0.44937238493723847,
+        "auroc": 0.5778524515570567
+      },
+      "soft_vote": {
+        "f1": 0.4311605723370429,
+        "auroc": 0.5778524515570567
+      },
+      "weighted": {
+        "f1": 0.4311605723370429,
+        "auroc": 0.5778524515570567
+      }
+    },
+    "best_ensemble_rule": "and",
+    "best_individual_f1": 0.47781327653532124,
+    "best_ensemble_f1": 0.44937238493723847
+  },
+  "delta_vs_best_individual": -0.0002123879755285829,
+  "delta_vs_ensemble": 0.02822850362255419,
+  "timestamp": "2026-06-18T14:39:50"
+}

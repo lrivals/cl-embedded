@@ -1,0 +1,733 @@
+
+########## ewc × cmapss ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=ewc dataset=cmapss
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+
+--- Tâche 1/4 : FD001 ---
+  Epoch  2/10 | Loss moy: 0.4426
+  Epoch  4/10 | Loss moy: 0.3942
+  Epoch  6/10 | Loss moy: 0.3836
+  Epoch  8/10 | Loss moy: 0.3495
+  Epoch 10/10 | Loss moy: 0.3004
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858
+
+--- Tâche 2/4 : FD002 ---
+  Epoch  2/10 | Loss moy: 0.4099
+  Epoch  4/10 | Loss moy: 0.4087
+  Epoch  6/10 | Loss moy: 0.4021
+  Epoch  8/10 | Loss moy: 0.3985
+  Epoch 10/10 | Loss moy: 0.4056
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858 | FD002: 0.842
+
+--- Tâche 3/4 : FD003 ---
+  Epoch  2/10 | Loss moy: 0.3248
+  Epoch  4/10 | Loss moy: 0.3143
+  Epoch  6/10 | Loss moy: 0.3205
+  Epoch  8/10 | Loss moy: 0.3051
+  Epoch 10/10 | Loss moy: 0.3008
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858 | FD002: 0.842 | FD003: 0.873
+
+--- Tâche 4/4 : FD004 ---
+  Epoch  2/10 | Loss moy: 0.3614
+  Epoch  4/10 | Loss moy: 0.3677
+  Epoch  6/10 | Loss moy: 0.3714
+  Epoch  8/10 | Loss moy: 0.3656
+  Epoch 10/10 | Loss moy: 0.3638
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858 | FD002: 0.842 | FD003: 0.873 | FD004: 0.858
+  auroc=0.7678 | ram=2948 B | lat=0.0274 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+
+--- Tâche 1/4 : FD001 ---
+  Epoch  2/10 | Loss moy: 0.4444
+  Epoch  4/10 | Loss moy: 0.3959
+  Epoch  6/10 | Loss moy: 0.3865
+  Epoch  8/10 | Loss moy: 0.3552
+  Epoch 10/10 | Loss moy: 0.3106
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858
+
+--- Tâche 2/4 : FD002 ---
+  Epoch  2/10 | Loss moy: 0.4078
+  Epoch  4/10 | Loss moy: 0.4086
+  Epoch  6/10 | Loss moy: 0.4027
+  Epoch  8/10 | Loss moy: 0.3991
+  Epoch 10/10 | Loss moy: 0.4060
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858 | FD002: 0.842
+
+--- Tâche 3/4 : FD003 ---
+  Epoch  2/10 | Loss moy: 0.3256
+  Epoch  4/10 | Loss moy: 0.3152
+  Epoch  6/10 | Loss moy: 0.3208
+  Epoch  8/10 | Loss moy: 0.3057
+  Epoch 10/10 | Loss moy: 0.3000
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858 | FD002: 0.842 | FD003: 0.873
+
+--- Tâche 4/4 : FD004 ---
+  Epoch  2/10 | Loss moy: 0.3604
+  Epoch  4/10 | Loss moy: 0.3664
+  Epoch  6/10 | Loss moy: 0.3695
+  Epoch  8/10 | Loss moy: 0.3651
+  Epoch 10/10 | Loss moy: 0.3635
+  Fisher mis à jour (γ=0.9)
+  Accuracy : FD001: 0.858 | FD002: 0.842 | FD003: 0.873 | FD004: 0.858
+  auroc=0.7734 | ram=737 B | lat=116.5507 ms
+
+============================================================
+  Δ auroc : +0.0056  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_ewc_cmapss.json
+============================================================
+
+########## ewc × monitoring ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=ewc dataset=equipment_monitoring
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : Pump ---
+  Epoch  2/10 | Loss moy: 0.3851
+  Epoch  4/10 | Loss moy: 0.2740
+  Epoch  6/10 | Loss moy: 0.2345
+  Epoch  8/10 | Loss moy: 0.2064
+  Epoch 10/10 | Loss moy: 0.1785
+  Fisher mis à jour (γ=0.9)
+  Accuracy : Pump: 0.953
+
+--- Tâche 2/3 : Turbine ---
+  Epoch  2/10 | Loss moy: 0.1546
+  Epoch  4/10 | Loss moy: 0.1498
+  Epoch  6/10 | Loss moy: 0.1381
+  Epoch  8/10 | Loss moy: 0.1395
+  Epoch 10/10 | Loss moy: 0.1225
+  Fisher mis à jour (γ=0.9)
+  Accuracy : Pump: 0.959 | Turbine: 0.959
+
+--- Tâche 3/3 : Compressor ---
+  Epoch  2/10 | Loss moy: 0.1257
+  Epoch  4/10 | Loss moy: 0.1193
+  Epoch  6/10 | Loss moy: 0.1276
+  Epoch  8/10 | Loss moy: 0.1083
+  Epoch 10/10 | Loss moy: 0.1020
+  Fisher mis à jour (γ=0.9)
+  Accuracy : Pump: 0.968 | Turbine: 0.959 | Compressor: 0.971
+  auroc=0.9394 | ram=2820 B | lat=0.0421 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : Pump ---
+  Epoch  2/10 | Loss moy: 0.3853
+  Epoch  4/10 | Loss moy: 0.2758
+  Epoch  6/10 | Loss moy: 0.2384
+  Epoch  8/10 | Loss moy: 0.2105
+  Epoch 10/10 | Loss moy: 0.1810
+  Fisher mis à jour (γ=0.9)
+  Accuracy : Pump: 0.951
+
+--- Tâche 2/3 : Turbine ---
+  Epoch  2/10 | Loss moy: 0.1608
+  Epoch  4/10 | Loss moy: 0.1556
+  Epoch  6/10 | Loss moy: 0.1432
+  Epoch  8/10 | Loss moy: 0.1442
+  Epoch 10/10 | Loss moy: 0.1283
+  Fisher mis à jour (γ=0.9)
+  Accuracy : Pump: 0.959 | Turbine: 0.957
+
+--- Tâche 3/3 : Compressor ---
+  Epoch  2/10 | Loss moy: 0.1302
+  Epoch  4/10 | Loss moy: 0.1255
+  Epoch  6/10 | Loss moy: 0.1347
+  Epoch  8/10 | Loss moy: 0.1122
+  Epoch 10/10 | Loss moy: 0.1040
+  Fisher mis à jour (γ=0.9)
+  Accuracy : Pump: 0.964 | Turbine: 0.957 | Compressor: 0.969
+  auroc=0.9387 | ram=705 B | lat=7.9363 ms
+
+============================================================
+  Δ auroc : -0.0007  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_ewc_monitoring.json
+============================================================
+
+########## ewc × cwru ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=ewc dataset=cwru
+============================================================
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : ball ---
+  Epoch  2/10 | Loss moy: 0.2436
+  Epoch  4/10 | Loss moy: 0.1548
+  Epoch  6/10 | Loss moy: 0.1202
+  Epoch  8/10 | Loss moy: 0.0870
+  Epoch 10/10 | Loss moy: 0.0557
+  Fisher mis à jour (γ=0.9)
+  Accuracy : ball: 1.000
+
+--- Tâche 2/3 : inner_race ---
+  Epoch  2/10 | Loss moy: 0.0270
+  Epoch  4/10 | Loss moy: 0.0248
+  Epoch  6/10 | Loss moy: 0.0233
+  Epoch  8/10 | Loss moy: 0.0229
+  Epoch 10/10 | Loss moy: 0.0247
+  Fisher mis à jour (γ=0.9)
+  Accuracy : ball: 1.000 | inner_race: 1.000
+
+--- Tâche 3/3 : outer_race ---
+  Epoch  2/10 | Loss moy: 0.0241
+  Epoch  4/10 | Loss moy: 0.0293
+  Epoch  6/10 | Loss moy: 0.0235
+  Epoch  8/10 | Loss moy: 0.0305
+  Epoch 10/10 | Loss moy: 0.0236
+  Fisher mis à jour (γ=0.9)
+  Accuracy : ball: 1.000 | inner_race: 1.000 | outer_race: 1.000
+  auroc=0.9998 | ram=3460 B | lat=0.0286 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : ball ---
+  Epoch  2/10 | Loss moy: 0.2584
+  Epoch  4/10 | Loss moy: 0.1674
+  Epoch  6/10 | Loss moy: 0.1310
+  Epoch  8/10 | Loss moy: 0.1011
+  Epoch 10/10 | Loss moy: 0.0709
+  Fisher mis à jour (γ=0.9)
+  Accuracy : ball: 1.000
+
+--- Tâche 2/3 : inner_race ---
+  Epoch  2/10 | Loss moy: 0.0381
+  Epoch  4/10 | Loss moy: 0.0339
+  Epoch  6/10 | Loss moy: 0.0310
+  Epoch  8/10 | Loss moy: 0.0303
+  Epoch 10/10 | Loss moy: 0.0307
+  Fisher mis à jour (γ=0.9)
+  Accuracy : ball: 1.000 | inner_race: 1.000
+
+--- Tâche 3/3 : outer_race ---
+  Epoch  2/10 | Loss moy: 0.0322
+  Epoch  4/10 | Loss moy: 0.0318
+  Epoch  6/10 | Loss moy: 0.0306
+  Epoch  8/10 | Loss moy: 0.0327
+  Epoch 10/10 | Loss moy: 0.0296
+  Fisher mis à jour (γ=0.9)
+  Accuracy : ball: 1.000 | inner_race: 1.000 | outer_race: 1.000
+  auroc=0.9997 | ram=865 B | lat=10.3301 ms
+
+============================================================
+  Δ auroc : -0.0002  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_ewc_cwru.json
+============================================================
+
+########## ewc × pronostia ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=ewc dataset=pronostia
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : condition_1 ---
+  Epoch  2/10 | Loss moy: 0.3943
+  Epoch  4/10 | Loss moy: 0.2231
+  Epoch  6/10 | Loss moy: 0.1483
+  Epoch  8/10 | Loss moy: 0.1150
+  Epoch 10/10 | Loss moy: 0.1057
+  Fisher mis à jour (γ=0.9)
+  Accuracy : condition_1: 0.962
+
+--- Tâche 2/3 : condition_2 ---
+  Epoch  2/10 | Loss moy: 0.2447
+  Epoch  4/10 | Loss moy: 0.2026
+  Epoch  6/10 | Loss moy: 0.1864
+  Epoch  8/10 | Loss moy: 0.1746
+  Epoch 10/10 | Loss moy: 0.1748
+  Fisher mis à jour (γ=0.9)
+  Accuracy : condition_1: 0.965 | condition_2: 0.956
+
+--- Tâche 3/3 : condition_3 ---
+  Epoch  2/10 | Loss moy: 0.1784
+  Epoch  4/10 | Loss moy: 0.1764
+  Epoch  6/10 | Loss moy: 0.1626
+  Epoch  8/10 | Loss moy: 0.1509
+  Epoch 10/10 | Loss moy: 0.1486
+  Fisher mis à jour (γ=0.9)
+  Accuracy : condition_1: 0.945 | condition_2: 0.947 | condition_3: 0.921
+  auroc=0.9884 | ram=3972 B | lat=0.0231 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : condition_1 ---
+  Epoch  2/10 | Loss moy: 0.3962
+  Epoch  4/10 | Loss moy: 0.2292
+  Epoch  6/10 | Loss moy: 0.1578
+  Epoch  8/10 | Loss moy: 0.1207
+  Epoch 10/10 | Loss moy: 0.1056
+  Fisher mis à jour (γ=0.9)
+  Accuracy : condition_1: 0.958
+
+--- Tâche 2/3 : condition_2 ---
+  Epoch  2/10 | Loss moy: 0.2409
+  Epoch  4/10 | Loss moy: 0.2018
+  Epoch  6/10 | Loss moy: 0.1834
+  Epoch  8/10 | Loss moy: 0.1743
+  Epoch 10/10 | Loss moy: 0.1725
+  Fisher mis à jour (γ=0.9)
+  Accuracy : condition_1: 0.963 | condition_2: 0.953
+
+--- Tâche 3/3 : condition_3 ---
+  Epoch  2/10 | Loss moy: 0.1771
+  Epoch  4/10 | Loss moy: 0.1740
+  Epoch  6/10 | Loss moy: 0.1604
+  Epoch  8/10 | Loss moy: 0.1471
+  Epoch 10/10 | Loss moy: 0.1456
+  Fisher mis à jour (γ=0.9)
+  Accuracy : condition_1: 0.947 | condition_2: 0.942 | condition_3: 0.923
+  auroc=0.9883 | ram=993 B | lat=25.8596 ms
+
+============================================================
+  Δ auroc : -0.0001  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_ewc_pronostia.json
+============================================================
+
+########## ewc × paderborn ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=ewc dataset=paderborn
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : K001 ---
+  Epoch  2/10 | Loss moy: 0.1707
+  Epoch  4/10 | Loss moy: 0.0264
+  Epoch  6/10 | Loss moy: 0.0152
+  Epoch  8/10 | Loss moy: 0.0096
+  Epoch 10/10 | Loss moy: 0.0074
+  Fisher mis à jour (γ=0.9)
+  Accuracy : K001: 1.000
+
+--- Tâche 2/3 : KA04 ---
+  Epoch  2/10 | Loss moy: 0.7064
+  Epoch  4/10 | Loss moy: 0.2583
+  Epoch  6/10 | Loss moy: 0.1772
+  Epoch  8/10 | Loss moy: 0.1459
+  Epoch 10/10 | Loss moy: 0.1280
+  Fisher mis à jour (γ=0.9)
+  Accuracy : K001: 0.000 | KA04: 1.000
+
+--- Tâche 3/3 : KI04 ---
+  Epoch  2/10 | Loss moy: 0.0556
+  Epoch  4/10 | Loss moy: 0.0542
+  Epoch  6/10 | Loss moy: 0.0537
+  Epoch  8/10 | Loss moy: 0.0525
+  Epoch 10/10 | Loss moy: 0.0512
+  Fisher mis à jour (γ=0.9)
+  Accuracy : K001: 0.000 | KA04: 1.000 | KI04: 1.000
+  auroc=nan | ram=2948 B | lat=0.0314 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+
+--- Tâche 1/3 : K001 ---
+  Epoch  2/10 | Loss moy: 0.1781
+  Epoch  4/10 | Loss moy: 0.0305
+  Epoch  6/10 | Loss moy: 0.0171
+  Epoch  8/10 | Loss moy: 0.0105
+  Epoch 10/10 | Loss moy: 0.0081
+  Fisher mis à jour (γ=0.9)
+  Accuracy : K001: 1.000
+
+--- Tâche 2/3 : KA04 ---
+  Epoch  2/10 | Loss moy: 0.7389
+  Epoch  4/10 | Loss moy: 0.2913
+  Epoch  6/10 | Loss moy: 0.2127
+  Epoch  8/10 | Loss moy: 0.1809
+  Epoch 10/10 | Loss moy: 0.1601
+  Fisher mis à jour (γ=0.9)
+  Accuracy : K001: 0.000 | KA04: 1.000
+
+--- Tâche 3/3 : KI04 ---
+  Epoch  2/10 | Loss moy: 0.0514
+  Epoch  4/10 | Loss moy: 0.0486
+  Epoch  6/10 | Loss moy: 0.0475
+  Epoch  8/10 | Loss moy: 0.0458
+  Epoch 10/10 | Loss moy: 0.0442
+  Fisher mis à jour (γ=0.9)
+  Accuracy : K001: 0.000 | KA04: 1.000 | KI04: 1.000
+  auroc=nan | ram=737 B | lat=27.3725 ms
+
+============================================================
+  Δ auroc : +nan  (Gap 3 métrique : ❌)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_ewc_paderborn.json
+============================================================
+
+########## hdc × cmapss ##########
+⚠️  HDC est nativement INT8 : la métrique INT8 est identique à FP32, seule la RAM diffère.
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=hdc dataset=cmapss
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  f1_macro=0.7225 | ram=14344 B | lat=0.0450 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  f1_macro=0.7225 | ram=6152 B | lat=0.0603 ms
+
+============================================================
+  Δ f1_macro : +0.0000  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 2.33×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_hdc_cmapss.json
+============================================================
+
+########## hdc × monitoring ##########
+⚠️  HDC est nativement INT8 : la métrique INT8 est identique à FP32, seule la RAM diffère.
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=hdc dataset=equipment_monitoring
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  f1_macro=0.7576 | ram=14344 B | lat=0.0655 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  f1_macro=0.7576 | ram=6152 B | lat=0.0540 ms
+
+============================================================
+  Δ f1_macro : +0.0000  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 2.33×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_hdc_monitoring.json
+============================================================
+
+########## hdc × cwru ##########
+⚠️  HDC est nativement INT8 : la métrique INT8 est identique à FP32, seule la RAM diffère.
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=hdc dataset=cwru
+============================================================
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  f1_macro=0.9290 | ram=7176 B | lat=0.0916 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  f1_macro=0.9290 | ram=3080 B | lat=0.0681 ms
+
+============================================================
+  Δ f1_macro : +0.0000  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 2.33×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_hdc_cwru.json
+============================================================
+
+########## hdc × pronostia ##########
+⚠️  HDC est nativement INT8 : la métrique INT8 est identique à FP32, seule la RAM diffère.
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=hdc dataset=pronostia
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  f1_macro=0.7087 | ram=14344 B | lat=0.1019 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  f1_macro=0.7087 | ram=6152 B | lat=0.0865 ms
+
+============================================================
+  Δ f1_macro : +0.0000  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 2.33×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_ewc_hdc/results_hdc_pronostia.json
+============================================================
+
+########## hdc × paderborn ##########
+⚠️  HDC est nativement INT8 : la métrique INT8 est identique à FP32, seule la RAM diffère.
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=hdc dataset=paderborn
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+⚠️  ÉCHEC hdc×paderborn : 'n_classes'
+
+########## tinyol × cmapss ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=tinyol dataset=cmapss
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+⚠️  ÉCHEC tinyol×cmapss : 'learning_rate'
+
+########## tinyol × monitoring ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=tinyol dataset=equipment_monitoring
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  [TinyOL AE] Seuil calculé sur Task 1 : 1.865686 (percentile 95)
+  auroc=0.8992 | ram=1456 B | lat=0.0843 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  [TinyOL AE] Seuil calculé sur Task 1 : 1.865686 (percentile 95)
+  auroc=0.9070 | ram=412 B | lat=0.2649 ms
+
+============================================================
+  Δ auroc : +0.0078  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 3.53×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_tinyol_maha/results_tinyol_monitoring.json
+============================================================
+
+########## tinyol × cwru ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=tinyol dataset=cwru
+============================================================
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  [TinyOL AE] Seuil calculé sur Task 1 : 1.198281 (percentile 95)
+  auroc=0.7074 | ram=3148 B | lat=0.1031 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  [TinyOL AE] Seuil calculé sur Task 1 : 1.198281 (percentile 95)
+  auroc=0.7620 | ram=835 B | lat=0.3254 ms
+
+============================================================
+  Δ auroc : +0.0545  (Gap 3 métrique : ❌)
+  RAM ratio FP32/INT8 : 3.77×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_tinyol_maha/results_tinyol_cwru.json
+============================================================
+
+########## tinyol × pronostia ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=tinyol dataset=pronostia
+============================================================
+✅ Seed fixé à 42
+⚠️  ÉCHEC tinyol×pronostia : 'training'
+
+########## tinyol × paderborn ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=tinyol dataset=paderborn
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+⚠️  ÉCHEC tinyol×paderborn : 'learning_rate'
+
+########## mahalanobis × cmapss ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=mahalanobis dataset=cmapss
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 3.3837 (percentile 95)
+  [Mahalanobis] Tâche 1 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Tâche 2 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Tâche 3 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  auroc=0.6551 | ram=120 B | lat=0.0049 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 3.3837 (percentile 95)
+  [Mahalanobis] Tâche 1 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Tâche 2 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Tâche 3 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  auroc=0.6491 | ram=30 B | lat=0.0078 ms
+
+============================================================
+  Δ auroc : -0.0060  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_cmapss.json
+============================================================
+
+########## mahalanobis × monitoring ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=mahalanobis dataset=equipment_monitoring
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(4,), Σ⁻¹ shape=(4, 4), RAM estimée=80 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 4.0637 (percentile 95)
+  [Mahalanobis] Tâche 1 — Welford update (+600 samples, total=1200), RAM estimée=80 B
+  [Mahalanobis] Tâche 2 — Welford update (+600 samples, total=1800), RAM estimée=80 B
+  auroc=0.9724 | ram=80 B | lat=0.0043 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(4,), Σ⁻¹ shape=(4, 4), RAM estimée=80 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 4.0637 (percentile 95)
+  [Mahalanobis] Tâche 1 — Welford update (+600 samples, total=1200), RAM estimée=80 B
+  [Mahalanobis] Tâche 2 — Welford update (+600 samples, total=1800), RAM estimée=80 B
+  auroc=0.9724 | ram=20 B | lat=0.0081 ms
+
+============================================================
+  Δ auroc : +0.0000  (Gap 3 métrique : ✅)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_monitoring.json
+============================================================
+
+########## mahalanobis × cwru ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=mahalanobis dataset=cwru
+============================================================
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(9,), Σ⁻¹ shape=(9, 9), RAM estimée=360 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 4.7742 (percentile 95)
+  [Mahalanobis] Tâche 1 — Welford update (+536 samples, total=1072), RAM estimée=360 B
+  [Mahalanobis] Tâche 2 — Welford update (+535 samples, total=1607), RAM estimée=360 B
+  auroc=0.4750 | ram=360 B | lat=0.0039 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(9,), Σ⁻¹ shape=(9, 9), RAM estimée=360 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 4.7742 (percentile 95)
+  [Mahalanobis] Tâche 1 — Welford update (+536 samples, total=1072), RAM estimée=360 B
+  [Mahalanobis] Tâche 2 — Welford update (+535 samples, total=1607), RAM estimée=360 B
+  auroc=0.2387 | ram=90 B | lat=0.0080 ms
+
+============================================================
+  Δ auroc : -0.2363  (Gap 3 métrique : ❌)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_cwru.json
+============================================================
+
+########## mahalanobis × pronostia ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=mahalanobis dataset=pronostia
+============================================================
+✅ Seed fixé à 42
+⚠️  ÉCHEC mahalanobis×pronostia : 'training'
+
+########## mahalanobis × paderborn ##########
+
+============================================================
+  Benchmark INT8 vs FP32 — modèle=mahalanobis dataset=paderborn
+============================================================
+✅ Seed fixé à 42
+✅ Seed fixé à 42
+
+[1/2] FP32...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 2.5993 (percentile 95)
+  [Mahalanobis] Tâche 1 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Tâche 2 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  auroc=nan | ram=120 B | lat=0.0054 ms
+
+[2/2] INT8...
+✅ Seed fixé à 42
+  [Mahalanobis] Tâche 0 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Seuil calculé sur Task 0 : 2.5993 (percentile 95)
+  [Mahalanobis] Tâche 1 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  [Mahalanobis] Tâche 2 — μ shape=(5,), Σ⁻¹ shape=(5, 5), RAM estimée=120 B
+  auroc=nan | ram=30 B | lat=0.0078 ms
+
+============================================================
+  Δ auroc : +nan  (Gap 3 métrique : ❌)
+  RAM ratio FP32/INT8 : 4.00×  (Gap 3 RAM : ✅)
+  → /home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S28_PC_tinyol_maha/results_mahalanobis_paderborn.json
+============================================================
+
+======================================================================
+  RÉSUMÉ CAMPAGNE S2807/S2808
+======================================================================
+  ewc          cmapss      ok       Δ=+0.0056 ratio=4.00×
+  ewc          monitoring  ok       Δ=-0.0007 ratio=4.00×
+  ewc          cwru        ok       Δ=-0.0002 ratio=4.00×
+  ewc          pronostia   ok       Δ=-0.0001 ratio=4.00×
+  ewc          paderborn   ok       Δ=+nan ratio=4.00×
+  hdc          cmapss      ok       Δ=+0.0000 ratio=2.33×
+  hdc          monitoring  ok       Δ=+0.0000 ratio=2.33×
+  hdc          cwru        ok       Δ=+0.0000 ratio=2.33×
+  hdc          pronostia   ok       Δ=+0.0000 ratio=2.33×
+  hdc          paderborn   blocked  
+  tinyol       cmapss      blocked  
+  tinyol       monitoring  ok       Δ=+0.0078 ratio=3.53×
+  tinyol       cwru        ok       Δ=+0.0545 ratio=3.77×
+  tinyol       pronostia   blocked  
+  tinyol       paderborn   blocked  
+  mahalanobis  cmapss      ok       Δ=-0.0060 ratio=4.00×
+  mahalanobis  monitoring  ok       Δ=+0.0000 ratio=4.00×
+  mahalanobis  cwru        ok       Δ=-0.2363 ratio=4.00×
+  mahalanobis  pronostia   blocked  
+  mahalanobis  paderborn   ok       Δ=+nan ratio=4.00×

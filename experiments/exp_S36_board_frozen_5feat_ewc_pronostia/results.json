@@ -1,0 +1,32 @@
+{
+  "exp_id": "exp_S36_board_frozen_5feat_ewc_pronostia",
+  "platform": "nucleo_f439zi",
+  "model": "ewc",
+  "dataset": "pronostia",
+  "condition": "5feat",
+  "n_features": 5,
+  "feature_names": [
+    "std_acc_horiz",
+    "rms_acc_horiz",
+    "peak_acc_horiz",
+    "rms_acc_vert",
+    "temporal_position"
+  ],
+  "date": "2026-06-27T18:25:43",
+  "stream_mode": "frozen (sans --update)",
+  "online_accuracy": 0.9821,
+  "f1_faulty": 0.9164,
+  "f1_macro": 0.9532,
+  "latency_us_p50": 50.0,
+  "latency_us_p99": 50.0,
+  "latency_us_mean": 50.0,
+  "bss_bytes": 105036,
+  "n_streamed": 7533,
+  "crc_errors": 0,
+  "parity_class": "exact",
+  "parity_ok": true,
+  "parity_rate": 1.0,
+  "parity_mismatch_count": 0,
+  "n_compared": 7533,
+  "gap2_latency_compliant": true
+}

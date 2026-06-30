@@ -90,16 +90,18 @@
 
 | ID | Tâche | Impl. | Doc | Exec | Fichier cible | Durée est. |
 |----|-------|:-----:|:---:|:----:|---------------|------------|
-| S4-01 | Implémenter `quantization.py` (UINT8 encoder/decoder) | 🔴 | ⬜ | N/A | `src/utils/quantization.py` | 3h |
-| S4-02 | Extension buffer UINT8 sur TinyOL | 🔴 | ⬜ | N/A | `src/models/tinyol/oto_head.py` (extension) | 3h |
-| S4-03 | Exp buffer UINT8 vs FP32 : delta précision | 🔴 | ⬜ | ⬜ | `experiments/exp_004_tinyol_uint8/` | 2h |
-| S4-04 | Tableau comparatif final 3 modèles (+ baselines) | 🔴 | ⬜ | ⬜ | `notebooks/04_final_comparison.ipynb` | 3h |
-| S4-05 | Export ONNX des 3 modèles (vérification portabilité) | 🟡 | ⬜ | ⬜ | `scripts/export_onnx.py` | 3h |
-| S4-06 | Profiling mémoire systématique (3 modèles) | 🔴 | ⬜ | ⬜ | `scripts/profile_memory.py` | 2h |
-| S4-07 | Refactoring final + documentation docstrings | 🟡 | ⬜ | N/A | Tout `src/` | 4h |
+| S4-01 | Implémenter `quantization.py` (UINT8 encoder/decoder) | ✅ | ✅ | N/A | `src/utils/quantization.py` | 3h |
+| S4-02 | Extension buffer UINT8 sur TinyOL | ✅ | ✅ | N/A | `src/models/tinyol/oto_head.py` (extension) | 3h |
+| S4-03 | Exp buffer UINT8 vs FP32 : delta précision | ✅ | ✅ | ✅ | `experiments/exp_004_tinyol_uint8/` | 2h |
+| S4-04 | Tableau comparatif final 3 modèles (+ baselines) | ✅ | ✅ | ✅ | `notebooks/04_final_comparison.ipynb` | 3h |
+| S4-05 | Export ONNX des 3 modèles (vérification portabilité) | ✅ | ✅ | ✅ | `scripts/export_onnx.py` | 3h |
+| S4-06 | Profiling mémoire systématique (3 modèles) | ✅ | ✅ | ✅ | `scripts/profile_memory.py` | 2h |
+| S4-07 | Refactoring final + documentation docstrings | ✅ | ✅ | N/A | Tout `src/` | 4h |
 | S4-08 | `CONTRIBUTING.md` + `LICENSE` | 🟢 | ⬜ | N/A | Racine | 1h |
 
 **Livrable sprint 4** : tableau comparatif complet 3 modèles, chiffres RAM mesurés, export ONNX validé. Prêt pour portage MCU (Phase 2).
+
+> **Note (01 juin 2026 — Sprint 22)** : Sprint 4 complet exécuté hors séquence. S4-01–S4-06 : quantization UINT8, exp_004, notebook comparaison, ONNX (`experiments/onnx_sprint4/`), profiling (`sprint4_memory_report.json`). S4-07 : `black` + `ruff` → 0 erreur, 427 tests (périmètre étendu : 46 fichiers). S4-08 repoussé à la publication GitHub.
 
 ---
 

@@ -1,0 +1,38 @@
+# configs/best_features/tinyol_pronostia.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: tinyol
+dataset: pronostia
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 13
+n_features_selected: 5
+selected_indices:
+- 10
+- 9
+- 8
+- 11
+- 7
+selected_features:
+- peak_acc_vert
+- kurtosis_acc_vert
+- rms_acc_vert
+- crest_factor_acc_vert
+- std_acc_vert
+val_f1_by_k:
+  1: 0.08589
+  2: 0.346386
+  3: 0.290598
+  4: 0.288344
+  5: 0.359431
+  6: 0.278919
+  7: 0.243534
+  8: 0.257634
+  9: 0.264463
+  10: 0.266376
+  11: 0.293553
+  12: 0.287263
+  13: 0.2861
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

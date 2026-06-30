@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_mahalanobis_cwru",
+  "condition": "all",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 9,
+  "ram_peak_bytes": 2044818,
+  "n_params": 90,
+  "measure": "tracemalloc"
+}

@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_mahalanobis_cwru",
+  "condition": "5feat",
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    3,
+    4,
+    6,
+    7,
+    8
+  ],
+  "acc_final": 0.16450216450216448,
+  "f1_faulty": 0.12669683257918551,
+  "f1_macro": 0.16293347853025664,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.06763285024154589,
+  "avg_forgetting": 0.025974025974025976,
+  "backward_transfer": -0.025974025974025976,
+  "ram_peak_bytes": 2024059,
+  "n_params": 30,
+  "note": "subset cwru_feature_subset.yaml"
+}

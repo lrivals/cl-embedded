@@ -1,0 +1,15 @@
+{
+  "model": "tinyol",
+  "encoding": "fp32",
+  "phases_uj": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "total_uj": "à mesurer",
+  "sampling_rate_hz": "à mesurer",
+  "duration_s": 10.0,
+  "source": "placeholder",
+  "timestamp": "2026-06-24T08:57:29.436037+00:00"
+}

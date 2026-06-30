@@ -22,10 +22,10 @@ from typing import Literal
 import numpy as np
 
 # Multiplicateurs de seuil calibrés sur les données d'enrôlement
-FAULT_MULTIPLIER_DEFAULT: float = 2.5   # fault_threshold = P95 × 2.5
-DRIFT_MULTIPLIER_DEFAULT: float = 1.3   # drift_threshold = P95 × 1.3
-DRIFT_RATIO_DEFAULT: float = 0.6        # >60% de la fenêtre dépasse drift_threshold
-WINDOW_SIZE_DEFAULT: int = 50           # taille de la fenêtre glissante
+FAULT_MULTIPLIER_DEFAULT: float = 2.5  # fault_threshold = P95 × 2.5
+DRIFT_MULTIPLIER_DEFAULT: float = 1.3  # drift_threshold = P95 × 1.3
+DRIFT_RATIO_DEFAULT: float = 0.6  # >60% de la fenêtre dépasse drift_threshold
+WINDOW_SIZE_DEFAULT: int = 50  # taille de la fenêtre glissante
 
 
 class SlidingWindowDriftDetector:
@@ -114,9 +114,7 @@ class SlidingWindowDriftDetector:
             Si set_thresholds_from_normal() n'a pas été appelé.
         """
         if self.fault_threshold is None or self.drift_threshold is None:
-            raise RuntimeError(
-                "Seuils non calibrés. Appeler set_thresholds_from_normal() d'abord."
-            )
+            raise RuntimeError("Seuils non calibrés. Appeler set_thresholds_from_normal() d'abord.")
 
         self._window.append(score)
 
@@ -167,9 +165,7 @@ class SlidingWindowDriftDetector:
             }
         arr = np.array(self._window)
         fraction = (
-            float((arr > self.drift_threshold).mean())
-            if self.drift_threshold is not None
-            else None
+            float((arr > self.drift_threshold).mean()) if self.drift_threshold is not None else None
         )
         return {
             "size": len(self._window),

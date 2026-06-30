@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_board_best_mahalanobis_pronostia",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-25T20:02:14",
+  "n_features": 2,
+  "bss_bytes": 102940,
+  "online_accuracy": 0.9267,
+  "f1_faulty": 0.4211,
+  "f1_macro": 0.691,
+  "latency_us_p50": 2.0,
+  "latency_us_p99": 2.0,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "stream_mode": "frozen (sans --update \u2192 parit\u00e9 exacte)",
+  "parity_class": "exact",
+  "parity_ok": true,
+  "n_compared": 150,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

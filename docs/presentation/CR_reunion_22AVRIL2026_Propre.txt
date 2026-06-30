@@ -1,0 +1,59 @@
+**CR Réunion — Mise à jour résultats expériences, 2 datasets**
+**22 avril 2026, 15h00–16h30 | Visio Teams**
+
+**Participants**
+
+- Arnaud Dion (ISAE-SUPAERO)
+- Dorra Ben Khalifa (ENAC/LII)
+- Frédéric Zbierski (Edge Spectrum)
+- Léonard (stagiaire)
+
+**Présentation**
+
+- Récapitulatif des modèles étudiés.
+- Proposition d'axes d'amélioration pour les modèles non supervisés.
+- Récapitulatif des données.
+- Aperçu rapide des résultats en mode *single task*.
+- Aperçu des résultats sur les scénarios d'apprentissage continu (CL).
+- Focus sur les modèles supervisés / non supervisés les plus performants sur le jeu de données *Equipment Monitoring* — scénario : traitement des données équipement par équipement (EWC et Mahalanobis).
+- Dataset FEMTO PRONOSTIA.
+
+**Discussion — Pistes à explorer**
+
+**Apprentissage sur données normales uniquement**
+
+- Entraîner le modèle sur des données normales seulement, puis tester sur données normales et défectueuses.
+- Comment un modèle peut-il identifier une donnée défectueuse sans en avoir appris d'exemples ?
+- Comparer les performances supervisé vs. non supervisé sur cette configuration.
+- Rechercher des cas similaires dans la littérature.
+
+**Jeu de données *Equipment Monitoring***
+
+- Tracer les valeurs des variables avec coloration selon le statut défectueux (*hue faulty*). Étudier si les données défectueuses se situent aux extrêmes des distributions.
+- Analyser la contribution individuelle de chaque *feature* aux classifications (single task et scénarios CL).
+- Réentraîner les modèles en utilisant les variables individuellement, afin de déterminer si une source simple peut atteindre des performances comparables à une source multiple.
+
+**Complexité computationnelle**
+
+- Produire des courbes nombre de calculs / précision par modèle.
+- Inclure les calculs effectués durant l'entraînement.
+- Établir une fonction d'estimation du nombre de calculs à partir des données et du modèle, couvrant à la fois l'entraînement et l'inférence.
+
+**Nouveaux datasets**
+
+- Explorer l'introduction d'un nouveau dataset intégrant une dimension temporelle (séries temporelles) et permettant de classifier l'état des données.
+- Recherche littérature associée.
+
+**Actions / Prochaines étapes**
+
+- [ ] Prochaine réunion : mercredi 29 avril (approuvé par tous) — heure à confirmer, lien Teams à créer.
+- [ ] Organiser un rendez-vous avec Dorra Ben Khalifa pour préparer la présentation du 19 mai.
+- [ ] Envoyer le lien du dataset FEMTO PRONOSTIA à Frédéric.
+Lien article:
+	https://www.researchgate.net/publication/380681425_Robust-MBDL_A_Robust_Multi-Branch_Deep-Learning-Based_Model_for_Remaining_Useful_Life_Prediction_of_Rotating_Machines
+
+Lien dataset:
+	https://www.kaggle.com/datasets/egorefimow/smallone
+- [ ] Mettre en place le GitLab : dépôt du code, des graphiques et des comptes rendus, avec accès pour tous les encadrants.
+
+

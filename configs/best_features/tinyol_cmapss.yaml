@@ -1,0 +1,39 @@
+# configs/best_features/tinyol_cmapss.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: tinyol
+dataset: cmapss
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 21
+n_features_selected: 1
+selected_indices:
+- 0
+selected_features:
+- T2
+val_f1_by_k:
+  1: 0.618321
+  2: 0.102369
+  3: 0.539769
+  4: 0.269137
+  5: 0.164541
+  6: 0.16748
+  7: 0.307155
+  8: 0.341314
+  9: 0.477612
+  10: 0.428184
+  11: 0.430425
+  12: 0.473886
+  13: 0.433084
+  14: 0.51594
+  15: 0.454362
+  16: 0.443189
+  17: 0.434329
+  18: 0.49146
+  19: 0.509174
+  20: 0.498501
+  21: 0.454156
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01
+selection_max_samples: 2000

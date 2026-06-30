@@ -1,0 +1,17 @@
+exp_id: exp_S35_PC_5feat_tinyol_cmapss
+condition: 5feat
+model: tinyol
+dataset: cmapss
+seed: 42
+feature_indices:
+- 10
+- 3
+- 11
+- 6
+- 14
+feature_names:
+- Ps30
+- T50
+- Phi
+- P30
+- BPR

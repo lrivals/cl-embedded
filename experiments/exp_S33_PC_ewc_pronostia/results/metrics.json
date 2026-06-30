@@ -1,0 +1,60 @@
+{
+  "exp_id": "exp_S33_PC_ewc_pronostia",
+  "cl_metrics": {
+    "ewc": {
+      "aa": 0.9819339347521753,
+      "af": 0.0,
+      "bwt": 0.004863348848311244,
+      "fwt": 0.0,
+      "forgetting_per_task": [
+        0.0,
+        0.0
+      ],
+      "bwt_per_task": [
+        0.006802721088435382,
+        0.0029239766081871066
+      ],
+      "acc_matrix": [
+        [
+          0.9809523809523809,
+          null,
+          null
+        ],
+        [
+          0.9836734693877551,
+          0.9736842105263158,
+          null
+        ],
+        [
+          0.9877551020408163,
+          0.9766081871345029,
+          0.9814385150812065
+        ]
+      ],
+      "n_tasks": 3
+    },
+    "memory": {
+      "model": "EWCMlpClassifier",
+      "input_shape": [
+        1,
+        13
+      ],
+      "forward": {
+        "ram_peak_bytes": 1171,
+        "ram_current_bytes": 72,
+        "inference_latency_ms": 0.033072389978769934,
+        "inference_latency_std_ms": 0.009721296712617886,
+        "n_params": 993,
+        "params_fp32_bytes": 3972,
+        "params_int8_bytes": 993,
+        "within_budget_64ko": true
+      },
+      "update": {
+        "ram_peak_bytes_update": 8664,
+        "update_latency_ms": 0.4934499200862774,
+        "update_latency_std_ms": 0.013261410147369616,
+        "within_budget_64ko_update": true
+      }
+    }
+  }
+}

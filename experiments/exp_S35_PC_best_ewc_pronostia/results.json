@@ -1,0 +1,22 @@
+{
+  "exp_id": "exp_S35_PC_best_ewc_pronostia",
+  "condition": "best",
+  "model": "ewc",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 1,
+  "selected_indices": [
+    12
+  ],
+  "acc_final": 0.9990253411306043,
+  "f1_faulty": 0.9966777408637874,
+  "f1_macro": 0.9981547083692786,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.9933774834437086,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.006426781238811352,
+  "ram_peak_bytes": 187486,
+  "n_params": 609,
+  "note": "best ewc_pronostia.yaml"
+}

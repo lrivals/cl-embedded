@@ -56,33 +56,50 @@ _MONITORING_CSV = Path(
     "/equipment_anomaly_data.csv"
 )
 _CWRU_PROCESSED = Path("data/processed/cwru_features.npz")
+_CWRU_SUBSET_CFG = Path("configs/cwru_feature_subset.yaml")
 _PRONOSTIA_BINARIES = Path("data/raw/Pronostia dataset/binaries")
 _PRONOSTIA_SUBSET_CFG = Path("configs/pronostia_feature_subset.yaml")
+_BATTERY_CSV = Path("data/raw/Battery Remaining Useful Life (RUL)/Battery_RUL.csv")
+_BATTERY_SUBSET_CFG = Path("configs/battery_feature_subset.yaml")
+_BATTERY_NORMALIZER_CFG = Path("configs/battery_normalizer.yaml")
 
 
 def _load_monitoring() -> tuple[np.ndarray, np.ndarray]:
-    """Charge le dataset monitoring : 4 features numériques + label faulty."""
+    """Charge le dataset monitoring : 4 features numériques + label faulty.
+
+    Le firmware NUCLEO est câblé à ``PROTO_MAX_N=5`` features. Monitoring n'en a
+    que 4 (temperature, pressure, vibration, humidity) → on ajoute une **5ᵉ feature
+    synthétique nulle** (zéro-pad) pour rendre le flux compatible board sans
+    toucher au firmware. Cette colonne ne porte aucune information (contribution
+    nulle) : elle n'est pas un chiffre « inventé » mais une feature construite,
+    à mentionner en note de figure pour HDC×monitoring.
+    """
     from src.data.monitoring_dataset import NUMERIC_FEATURES, LABEL_COL, load_raw_dataset
 
     df = load_raw_dataset(_MONITORING_CSV)
-    X = df[NUMERIC_FEATURES].to_numpy(dtype=np.float32)
+    X = df[NUMERIC_FEATURES].to_numpy(dtype=np.float32)  # MEM: 4 col @ FP32
+    # 5ᵉ feature synthétique (zéro-pad → firmware 5-feat)
+    X = np.column_stack([X, np.zeros(len(X), dtype=np.float32)])  # MEM: 5 col @ FP32
     y = df[LABEL_COL].to_numpy(dtype=np.int64)
     return X, y
 
 
 def _load_cwru() -> tuple[np.ndarray, np.ndarray]:
-    """Charge les features CWRU prétraitées (npz) si disponibles."""
+    """Charge les features CWRU prétraitées (npz) si disponibles, sinon CSV + sélection 9→5."""
     if _CWRU_PROCESSED.exists():
         data = np.load(_CWRU_PROCESSED)
         return data["X"].astype(np.float32), data["y"].astype(np.int64)
 
-    # Fallback : lecture directe du CSV features CWRU
+    import yaml
     from src.data.cwru_dataset import CWRUDataset
     from pathlib import Path as _Path
 
+    subset = yaml.safe_load(_CWRU_SUBSET_CFG.read_text())
+    indices = subset["feature_indices"]  # [3, 4, 6, 7, 8] = sd, rms, kurtosis, crest, form
+
     cwru_csv = _Path("data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv")
     ds = CWRUDataset(cwru_csv)
-    return ds.X.astype(np.float32), ds.y.astype(np.int64)
+    return ds.X[:, indices].astype(np.float32), ds.y.astype(np.int64)
 
 
 def _load_pronostia() -> tuple[np.ndarray, np.ndarray]:
@@ -101,6 +118,34 @@ def _load_pronostia() -> tuple[np.ndarray, np.ndarray]:
     return np.concatenate(all_X), np.concatenate(all_y)
 
 
+def _load_battery() -> tuple[np.ndarray, np.ndarray]:
+    """Charge Battery RUL z-scoré et applique la sélection 7→5 features (board).
+
+    Features normalisées via ``configs/battery_normalizer.yaml`` (grande dynamique
+    brute → stabilité Mahalanobis), puis sous-ensemble 5 features
+    (``configs/battery_feature_subset.yaml``). Le label ``faulty`` utilise le seuil
+    RUL par défaut ; le balayage S3205 ré-étiquette côté entraîneur board.
+    """
+    import yaml
+
+    from src.data.battery_dataset import (
+        FEATURE_COLUMNS,
+        load_battery_normalizer,
+        load_raw_dataset,
+        normalize_features,
+    )
+
+    subset = yaml.safe_load(_BATTERY_SUBSET_CFG.read_text())
+    indices = subset["feature_indices"]  # [0, 1, 2, 4, 5]
+
+    df = load_raw_dataset(_BATTERY_CSV)
+    normalizer = load_battery_normalizer(_BATTERY_NORMALIZER_CFG)
+    df = normalize_features(df, normalizer)
+    X = df[FEATURE_COLUMNS].to_numpy(dtype=np.float32)[:, indices]
+    y = df["faulty"].to_numpy(dtype=np.int64)
+    return X, y
+
+
 def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
     """
     Charge un dataset Phase 1 pour la simulation.
@@ -108,7 +153,7 @@ def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
     Parameters
     ----------
     name : str
-        "cwru", "monitoring" ou "pronostia"
+        "cwru", "monitoring", "pronostia" ou "battery"
 
     Returns
     -------
@@ -119,6 +164,7 @@ def load_dataset(name: str) -> tuple[np.ndarray, np.ndarray]:
         "monitoring": _load_monitoring,
         "cwru": _load_cwru,
         "pronostia": _load_pronostia,
+        "battery": _load_battery,
     }
     if name not in loaders:
         raise ValueError(f"Dataset inconnu : {name}. Choisir parmi {list(loaders)}")
@@ -224,7 +270,7 @@ def run_uart(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Simulateur de capteur UART pour firmware STM32")
-    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia"], required=True)
+    parser.add_argument("--dataset", choices=["cwru", "monitoring", "pronostia", "battery"], required=True)
     parser.add_argument("--dry-run", action="store_true", help="Loopback, pas de board nécessaire")
     parser.add_argument("--port", type=str, default="/dev/ttyUSB0")
     parser.add_argument("--baud", type=int, default=115200)

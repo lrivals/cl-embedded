@@ -1,0 +1,18 @@
+{
+  "exp_id": "exp_S30_PC_maha_hdc_paderborn",
+  "pair": "maha_hdc",
+  "dataset": "paderborn",
+  "frame": "binary",
+  "status": "skipped",
+  "reason": "ValueError: feature_bounds is empty or missing in config.",
+  "model_a": {
+    "name": "mahalanobis"
+  },
+  "model_b": {
+    "name": "hdc"
+  },
+  "disagreement": {
+    "rate": null
+  },
+  "timestamp": "2026-06-17T18:06:29"
+}

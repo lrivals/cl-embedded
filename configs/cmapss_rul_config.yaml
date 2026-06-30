@@ -1,0 +1,53 @@
+# cmapss_rul_config.yaml — Config EWC Régression RUL sur CMAPSS
+# Sprint 25 — mode natif RUL (ne pas confondre avec cmapss_config.yaml — binaire)
+# Ne PAS modifier les hyperparamètres ici — créer une copie pour chaque variante.
+
+# --- Identité ---
+task_mode: rul          # "binary" | "rul" | "multiclass"
+model: ewc_regression
+dataset: cmapss
+sprint: 25
+
+# --- Dataset CMAPSS ---
+data_dir: "data/raw/CMAPSS Jet Engine Simulated Data/"
+feature_subset_path: "configs/cmapss_feature_subset.yaml"
+domain_order:
+  - "FD001"
+  - "FD002"
+  - "FD003"
+  - "FD004"
+n_tasks: 4
+val_ratio: 0.2
+rul_cap: 125            # clip RUL à 125 cycles (cohérence CMAPSS_RUL_CAP)
+seed: 42
+
+# --- Architecture EWCMlpRegressor ---
+INPUT_DIM: 5            # top-5 features sélectionnées par mutual info
+HIDDEN_DIMS:
+  - 32
+  - 16
+DROPOUT: 0.2
+OUTPUT_DIM: 1           # régression — 1 neurone de sortie
+
+# --- Hyperparamètres EWC ---
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0       # même valeur que mode binaire (réglage à affiner exp_S25_01)
+FISHER_N_SAMPLES: 200   # nombre d'exemples pour le calcul de la Fisher diagonale
+FISHER_EMA_DECAY: 0.99  # EWC Online : decay de la Fisher accumulée
+
+# --- Entraînement ---
+N_EPOCHS_PER_TASK: 20
+BATCH_SIZE: 32
+OPTIMIZER: sgd          # SGD recommandé pour compatibilité MCU
+MOMENTUM: 0.9
+
+# --- Métriques (rul_metrics.py) ---
+primary_metric: rmse    # métrique de suivi principale
+report_metrics:
+  - rmse
+  - mae
+  - horizon_score
+  - avg_forgetting_rmse
+
+# --- Budget mémoire ---
+ram_budget_bytes: 262144   # 256 Ko (NUCLEO-F439ZI)

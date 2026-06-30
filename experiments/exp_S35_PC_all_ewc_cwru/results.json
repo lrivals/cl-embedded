@@ -1,0 +1,30 @@
+{
+  "exp_id": "exp_S35_PC_all_ewc_cwru",
+  "condition": "all",
+  "model": "ewc",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 9,
+  "selected_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "acc_final": 0.9956709956709956,
+  "f1_faulty": 0.9975903614457832,
+  "f1_macro": 0.9881568828505511,
+  "precision_faulty": 0.9951923076923077,
+  "recall_faulty": 1.0,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.07792207792207795,
+  "ram_peak_bytes": 92706,
+  "n_params": 865,
+  "note": "dims natives"
+}

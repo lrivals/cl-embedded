@@ -24,12 +24,11 @@ Références :
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
+import torch.nn.functional as F  # noqa: N812
 from torch.utils.data import DataLoader, TensorDataset
 
 ANOMALY_PERCENTILE_DEFAULT: int = 95
@@ -155,7 +154,9 @@ class EWCOneClassDetector:
         self._n_fisher_samples: int = int(cfg.get("n_fisher_samples", N_FISHER_SAMPLES_DEFAULT))
         self._cl_strategy: str = cfg.get("cl_strategy", "ewc")
 
-        self.anomaly_percentile: int = int(config.get("anomaly_percentile", ANOMALY_PERCENTILE_DEFAULT))
+        self.anomaly_percentile: int = int(
+            config.get("anomaly_percentile", ANOMALY_PERCENTILE_DEFAULT)
+        )
         self.threshold_: float | None = config.get("anomaly_threshold", None)
 
         self._device = torch.device("cpu")  # MCU-ciblé
@@ -239,8 +240,7 @@ class EWCOneClassDetector:
 
         self._update_fisher(loader)
         self._theta_star = {
-            name: param.detach().clone()
-            for name, param in self._model.named_parameters()
+            name: param.detach().clone() for name, param in self._model.named_parameters()
         }
         print(
             f"  [EWCOneClass] Tâche {task_id} terminée — "
@@ -269,9 +269,7 @@ class EWCOneClassDetector:
         # MEM: N × input_dim × 4 B @ FP32 (activations forward, temporaire)
         """
         if not self._fitted:
-            raise RuntimeError(
-                "EWCOneClassDetector non entraîné. Appeler fit_task() d'abord."
-            )
+            raise RuntimeError("EWCOneClassDetector non entraîné. Appeler fit_task() d'abord.")
         self._model.eval()
         with torch.no_grad():
             x_t = torch.from_numpy(X.astype(np.float32)).to(self._device)
@@ -363,8 +361,7 @@ class EWCOneClassDetector:
             self._fisher = {name: f.clone() for name, f in fisher_new.items()}
         else:
             self._fisher = {
-                name: self._ewc_gamma * self._fisher[name] + fisher_new[name]
-                for name in fisher_new
+                name: self._ewc_gamma * self._fisher[name] + fisher_new[name] for name in fisher_new
             }
 
     def _reset_model(self) -> None:

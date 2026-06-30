@@ -1,0 +1,11 @@
+exp_id: exp_S35_PC_best_tinyol_monitoring
+condition: best
+model: tinyol
+dataset: monitoring
+seed: 42
+feature_indices:
+- 0
+- 2
+feature_names:
+- temperature
+- vibration

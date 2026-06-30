@@ -1,0 +1,15 @@
+exp_id: exp_S35_PC_5feat_mahalanobis_monitoring
+condition: 5feat
+model: mahalanobis
+dataset: monitoring
+seed: 42
+feature_indices:
+- 0
+- 1
+- 2
+- 3
+feature_names:
+- temperature
+- pressure
+- vibration
+- humidity

@@ -1,0 +1,47 @@
+{
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "scenario": "by_domain",
+  "global": {
+    "permutation_importance": {
+      "humidity": 0.2259907086957877,
+      "vibration": 0.22219935771521215,
+      "pressure": 0.21939949490225424,
+      "temperature": 0.2152028185701369
+    }
+  },
+  "per_task": {
+    "FD001": {
+      "permutation_importance": {
+        "humidity": 0.06455052095953476,
+        "temperature": 0.059268233583716995,
+        "vibration": 0.05732977950084808,
+        "pressure": 0.05631209110734192
+      }
+    },
+    "FD002": {
+      "permutation_importance": {
+        "humidity": 0.12008928571428568,
+        "vibration": 0.11968005952380956,
+        "pressure": 0.11930803571428572,
+        "temperature": 0.11744791666666665
+      }
+    },
+    "FD003": {
+      "permutation_importance": {
+        "vibration": 0.047491909385113246,
+        "humidity": 0.04587378640776699,
+        "temperature": 0.03503236245954691,
+        "pressure": 0.029207119741100324
+      }
+    },
+    "FD004": {
+      "permutation_importance": {
+        "humidity": 0.11440000000000006,
+        "pressure": 0.11180408163265321,
+        "vibration": 0.11120000000000008,
+        "temperature": 0.10715102040816327
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_mahalanobis_cmapss",
+  "condition": "5feat",
+  "model": "mahalanobis",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    10,
+    3,
+    11,
+    6,
+    14
+  ],
+  "acc_final": 0.7446392635218492,
+  "f1_faulty": 0.269375,
+  "f1_macro": 0.5703931429435706,
+  "precision_faulty": 0.24846272098385858,
+  "recall_faulty": 0.29413102820746134,
+  "avg_forgetting": 0.08530146758175745,
+  "backward_transfer": -0.07507081281985269,
+  "ram_peak_bytes": 1795698,
+  "n_params": 30,
+  "note": "subset cmapss_feature_subset.yaml"
+}

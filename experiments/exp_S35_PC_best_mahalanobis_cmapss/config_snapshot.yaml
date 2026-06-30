@@ -1,0 +1,11 @@
+exp_id: exp_S35_PC_best_mahalanobis_cmapss
+condition: best
+model: mahalanobis
+dataset: cmapss
+seed: 42
+feature_indices:
+- 0
+- 1
+feature_names:
+- T2
+- T24

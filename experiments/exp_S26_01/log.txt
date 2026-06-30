@@ -1,0 +1,16 @@
+✅ Seed fixé à 42
+[   0] RUL_pred=0.8 true=61.0 RMSE=33.39 lat=233µs
+[  20] RUL_pred=0.3 true=45.0 RMSE=22.24 lat=233µs
+[  40] RUL_pred=0.8 true=125.0 RMSE=23.64 lat=233µs
+[  60] RUL_pred=0.7 true=68.0 RMSE=22.67 lat=233µs
+[  80] RUL_pred=0.9 true=101.0 RMSE=21.44 lat=233µs
+[ 100] RUL_pred=0.9 true=125.0 RMSE=22.19 lat=233µs
+[ 120] RUL_pred=0.4 true=21.0 RMSE=22.41 lat=233µs
+[ 140] RUL_pred=0.2 true=12.0 RMSE=22.25 lat=233µs
+[ 160] RUL_pred=0.8 true=125.0 RMSE=21.83 lat=233µs
+[ 180] RUL_pred=0.1 true=2.0 RMSE=21.38 lat=233µs
+
+✅ RMSE board = 21.23 | lat P50=233µs
+Résultats → experiments/exp_S26_01/board_rul_results.json
+   text	   data	    bss	    dec	    hex	filename
+  41176	    460	  66748	 108384	  1a760	firmware/stm32f4_blink/build/stm32f4_blink.elf

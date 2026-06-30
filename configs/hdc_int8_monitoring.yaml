@@ -1,0 +1,11 @@
+# configs/hdc_int8_monitoring.yaml — Benchmark INT8 vs FP32 HDC, dataset Monitoring (Sprint 28, S2807).
+#
+# Hérite de hdc_config.yaml (hdc + data + feature_bounds). HDC est nativement entier :
+# la métrique INT8 == FP32, seule la RAM (hypervecteurs INT8 vs FP32 hypothétique) diffère.
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model hdc \
+#   --config configs/hdc_int8_monitoring.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_hdc_monitoring.json
+
+extends: configs/hdc_config.yaml
+quantization: int8

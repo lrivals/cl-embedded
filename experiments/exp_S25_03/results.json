@@ -1,0 +1,140 @@
+{
+  "exp_id": "exp_S25_03",
+  "model": "ewc_multiclass",
+  "dataset": "cwru",
+  "task_mode": "multiclass",
+  "n_tasks": 3,
+  "n_classes": 10,
+  "per_task_metrics": [
+    {
+      "task_id": 1,
+      "f1_macro": 0.9551767676767677,
+      "confusion_matrix": [
+        [
+          14,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          50,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          41,
+          4
+        ],
+        [
+          0,
+          0,
+          0,
+          43
+        ]
+      ],
+      "per_class_accuracy": {
+        "class_0": 0.9333333333333333,
+        "class_1": 1.0,
+        "class_2": 0.8913043478260869,
+        "class_3": 1.0,
+        "class_4": NaN,
+        "class_5": NaN,
+        "class_6": NaN,
+        "class_7": NaN,
+        "class_8": NaN,
+        "class_9": NaN
+      }
+    },
+    {
+      "task_id": 2,
+      "f1_macro": 1.0,
+      "confusion_matrix": [
+        [
+          15,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          50,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          46,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          43
+        ]
+      ],
+      "per_class_accuracy": {
+        "class_0": 1.0,
+        "class_1": NaN,
+        "class_2": NaN,
+        "class_3": NaN,
+        "class_4": 1.0,
+        "class_5": 1.0,
+        "class_6": 1.0,
+        "class_7": NaN,
+        "class_8": NaN,
+        "class_9": NaN
+      }
+    },
+    {
+      "task_id": 3,
+      "f1_macro": 0.9890279166732807,
+      "confusion_matrix": [
+        [
+          17,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          49,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          41,
+          1
+        ],
+        [
+          0,
+          1,
+          0,
+          45
+        ]
+      ],
+      "per_class_accuracy": {
+        "class_0": 1.0,
+        "class_1": NaN,
+        "class_2": NaN,
+        "class_3": NaN,
+        "class_4": NaN,
+        "class_5": NaN,
+        "class_6": NaN,
+        "class_7": 1.0,
+        "class_8": 0.9761904761904762,
+        "class_9": 0.9782608695652174
+      }
+    }
+  ],
+  "avg_forgetting_f1": 0.8475134860110433,
+  "training_time_s": 30.268378734588623,
+  "n_params": 1018,
+  "config": "configs/cwru_multiclass_config.yaml"
+}

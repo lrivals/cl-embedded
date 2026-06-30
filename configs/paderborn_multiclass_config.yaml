@@ -1,0 +1,52 @@
+# paderborn_multiclass_config.yaml — Config EWC Multi-classe sur Paderborn (3 états)
+# Sprint 25 — mode natif multi-classe bearing.
+
+# --- Identité ---
+task_mode: multiclass
+model: ewc_multiclass
+dataset: paderborn
+sprint: 25
+
+# --- Dataset Paderborn ---
+data_dir: "data/raw/paderborn/"
+feature_subset_path: "configs/paderborn_feature_subset.yaml"
+n_tasks: 3
+n_classes: 3
+val_ratio: 0.2
+seed: 42
+
+# Mapping états bearing
+class_names:
+  0: "K001_healthy"
+  1: "KA04_outer_race"
+  2: "KI04_inner_race"
+
+# --- Architecture EWCMlpMulticlass ---
+INPUT_DIM: 5             # top-5 features FFT (PADERBORN_N_FEATURES_SELECTED=5, confirmé board_paderborn.yaml)
+HIDDEN_DIMS:
+  - 32
+  - 16
+DROPOUT: 0.2
+N_CLASSES: 3
+
+# --- Hyperparamètres EWC ---
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0
+FISHER_N_SAMPLES: 200
+FISHER_EMA_DECAY: 0.99
+
+# --- Entraînement ---
+N_EPOCHS_PER_TASK: 20
+BATCH_SIZE: 32
+OPTIMIZER: sgd
+MOMENTUM: 0.9
+
+# --- Métriques ---
+primary_metric: f1_macro
+report_metrics:
+  - f1_macro
+  - confusion_matrix
+  - avg_forgetting_f1
+
+# --- Budget mémoire ---
+ram_budget_bytes: 262144

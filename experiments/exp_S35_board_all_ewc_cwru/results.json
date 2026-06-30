@@ -1,0 +1,23 @@
+{
+  "exp_id": "exp_S35_board_all_ewc_cwru",
+  "condition": "all",
+  "model": "ewc",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-25T09:40:50",
+  "n_features": 9,
+  "bss_bytes": 124484,
+  "online_accuracy": 0.9933,
+  "f1_faulty": 0.9963,
+  "f1_macro": 0.982,
+  "latency_us_p50": 57.0,
+  "latency_us_p99": 57.0,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "stream_mode": "frozen (sans --update \u2192 parit\u00e9 exacte)",
+  "parity_class": "exact",
+  "parity_ok": true,
+  "n_compared": 150,
+  "parity_mismatch_count": 0,
+  "parity_rate": 1.0
+}

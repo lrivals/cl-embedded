@@ -1,0 +1,21 @@
+{
+  "exp_id": "exp_S32_hdc_cmapss_thr10",
+  "model": "hdc",
+  "dataset": "cmapss",
+  "scenario": "by_domain",
+  "native_int_architecture": true,
+  "acc_final": 0.9510650080511566,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.026607281906271967,
+  "per_task_acc": [
+    0.9466925127211049,
+    0.9468005952380952,
+    0.9555016181229773,
+    0.955265306122449
+  ],
+  "ram_peak_bytes": 14504,
+  "inference_latency_ms": 0.043061440014753316,
+  "n_params": 2048,
+  "ram_training_peak_bytes": 2156609,
+  "sprint": 24
+}

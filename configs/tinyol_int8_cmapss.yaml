@@ -1,0 +1,17 @@
+# configs/tinyol_int8_cmapss.yaml — Benchmark INT8 vs FP32 TinyOL, dataset CMAPSS (Sprint 28, S2808).
+#
+# Hérite de cmapss_tinyol_config.yaml (backbone + pretrain + data CMAPSS).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model tinyol \
+#   --config configs/tinyol_int8_cmapss.yaml \
+#   --output experiments/exp_S28_PC_tinyol_maha/results_tinyol_cmapss.json
+
+extends: configs/cmapss_tinyol_config.yaml
+quantization: int8
+
+# cmapss_tinyol_config.yaml::pretrain n'expose que `epochs` → TinyOLAnomalyDetector
+# exige learning_rate. On complète (deep-merge).
+pretrain:
+  learning_rate: 0.001
+  batch_size: 64
+  optimizer: adam

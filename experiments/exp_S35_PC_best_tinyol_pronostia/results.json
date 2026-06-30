@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_best_tinyol_pronostia",
+  "condition": "best",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    10,
+    9,
+    8,
+    11,
+    7
+  ],
+  "acc_final": 0.7004642863373216,
+  "f1_faulty": 0.3594306049822064,
+  "f1_macro": 0.6063656692392695,
+  "precision_faulty": 0.24574209245742093,
+  "recall_faulty": 0.6688741721854304,
+  "avg_forgetting": 0.314327485380117,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59723508,
+  "n_params": 257,
+  "note": "best tinyol_pronostia.yaml"
+}

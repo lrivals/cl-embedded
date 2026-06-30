@@ -1,0 +1,31 @@
+{
+  "exp_id": "exp_S25_02",
+  "model": "ewc_regression",
+  "dataset": "pronostia",
+  "task_mode": "rul",
+  "n_tasks": 3,
+  "per_task_metrics": [
+    {
+      "task_id": 1,
+      "rmse": 83.67517852783203,
+      "mae": 79.82378387451172,
+      "horizon_score": 15573401.763880946
+    },
+    {
+      "task_id": 2,
+      "rmse": 15.67290210723877,
+      "mae": 12.52708625793457,
+      "horizon_score": 1404.2834638224938
+    },
+    {
+      "task_id": 3,
+      "rmse": 18.223928451538086,
+      "mae": 14.333137512207031,
+      "horizon_score": 3656.1081588205984
+    }
+  ],
+  "avg_forgetting_rmse": 9.670023918151855,
+  "training_time_s": 4.907721757888794,
+  "n_params": 993,
+  "config": "configs/pronostia_rul_config.yaml"
+}

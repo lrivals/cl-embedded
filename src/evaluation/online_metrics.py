@@ -78,9 +78,7 @@ class OnlineAUROC:
         neg_scores = scores[labels == 0]
 
         u_stat = sum(
-            (1.0 if p > n else 0.5 if p == n else 0.0)
-            for p in pos_scores
-            for n in neg_scores
+            (1.0 if p > n else 0.5 if p == n else 0.0) for p in pos_scores for n in neg_scores
         )
         return float(u_stat / (n_pos * n_neg))
 

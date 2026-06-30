@@ -1,0 +1,55 @@
+{
+  "model": "mahalanobis",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_location",
+  "global": {
+    "permutation_importance": {
+      "temperature": 0.03448275862068961,
+      "vibration": 0.021860767729342978,
+      "pressure": 0.00741704619388428,
+      "humidity": 0.005204944697462577
+    }
+  },
+  "per_task": {
+    "Atlanta": {
+      "permutation_importance": {
+        "temperature": 0.03386581469648564,
+        "vibration": 0.014696485623003186,
+        "pressure": 0.012779552715655007,
+        "humidity": 0.002555910543130979
+      }
+    },
+    "Chicago": {
+      "permutation_importance": {
+        "temperature": 0.04180064308681675,
+        "vibration": 0.014790996784565857,
+        "humidity": 0.007717041800643143,
+        "pressure": 0.0038585209003215715
+      }
+    },
+    "Houston": {
+      "permutation_importance": {
+        "temperature": 0.033548387096774324,
+        "vibration": 0.029032258064516148,
+        "humidity": 0.016774193548387162,
+        "pressure": 0.00838709677419347
+      }
+    },
+    "New York": {
+      "permutation_importance": {
+        "temperature": 0.02941176470588236,
+        "vibration": 0.027450980392156876,
+        "pressure": 0.00588235294117645,
+        "humidity": 0.0013071895424836555
+      }
+    },
+    "San Francisco": {
+      "permutation_importance": {
+        "temperature": 0.02154882154882165,
+        "vibration": 0.020875420875420936,
+        "humidity": 0.0033670033670034627,
+        "pressure": 0.0006734006734007147
+      }
+    }
+  }
+}

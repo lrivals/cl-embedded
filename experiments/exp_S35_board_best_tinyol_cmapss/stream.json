@@ -1,0 +1,1219 @@
+{
+  "n_samples": 150,
+  "n_tasks": 3,
+  "accuracy": 0.8867,
+  "f1_faulty": 0.0,
+  "f1_macro": 0.47,
+  "precision_faulty": 0.0,
+  "recall_faulty": 0.0,
+  "latency_mean_us": 2.0,
+  "latency_p50_us": 2.0,
+  "latency_p99_us": 2.0,
+  "ram_mean_bytes": 25792,
+  "throughput_mean_ips": 0,
+  "crc_errors": 0,
+  "mode": "uart",
+  "port": "/dev/ttyACM0",
+  "samples": [
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 1,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    },
+    {
+      "pred": 0,
+      "true": 0,
+      "confidence": 0.5820398330688477,
+      "features": [
+        0.0
+      ]
+    }
+  ]
+}

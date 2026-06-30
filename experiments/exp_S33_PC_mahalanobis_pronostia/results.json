@@ -1,0 +1,24 @@
+{
+  "exp_id": "exp_S33_PC_mahalanobis_pronostia",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "scenario": "by_condition",
+  "acc_final": 0.8976641969524408,
+  "avg_forgetting": 0.010204081632653073,
+  "backward_transfer": -0.007280105024465966,
+  "per_task_acc": [
+    0.8693877551020408,
+    0.9210526315789473,
+    0.9025522041763341
+  ],
+  "ram_peak_bytes": 1372,
+  "inference_latency_ms": 0.004248989944244386,
+  "n_params": 182,
+  "welford_updates_per_task": [
+    2939,
+    1366,
+    1721
+  ],
+  "cl_strategy": "welford",
+  "sprint": 24
+}

@@ -1,0 +1,26 @@
+MODEL: ewc_head
+PLATFORM: nucleo_f439zi
+EWC_IN: 5
+EWC_H1: 32
+EWC_H2: 16
+EWC_OUT: 2
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0
+FISHER_EMA_DECAY: 0.99
+dataset: cmapss
+data_dir: data/raw/CMAPSS Jet Engine Simulated Data/
+feature_subset_path: configs/cmapss_feature_subset.yaml
+domain_order:
+- FD001
+- FD002
+- FD003
+- FD004
+n_tasks_board: 2
+n_samples_per_task: 200
+faulty_threshold: 30
+rul_cap: 125
+ram_budget_bytes: 65536
+WEIGHTS_HEADER: firmware/stm32f4_blink/inc/model_weights.h
+WEIGHTS_CHECKPOINT: experiments/exp_S22_cmapss_base/ewc_weights.pkl
+data:
+  faulty_threshold: 30

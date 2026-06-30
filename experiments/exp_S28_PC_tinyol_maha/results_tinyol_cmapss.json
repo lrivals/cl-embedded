@@ -1,0 +1,22 @@
+{
+  "model": "tinyol",
+  "dataset": "cmapss",
+  "config_path": "configs/tinyol_int8_cmapss.yaml",
+  "timestamp": "2026-06-12T20:22:10",
+  "fp32": {
+    "metric_name": "auroc",
+    "metric_value": 0.72012,
+    "ram_bytes": 2148,
+    "latency_ms": 0.070496
+  },
+  "int8": {
+    "metric_name": "auroc",
+    "metric_value": 0.740452,
+    "ram_bytes": 585,
+    "latency_ms": 0.259514
+  },
+  "delta_metric": 0.020331,
+  "ram_ratio": 3.671795,
+  "gap3_metric_ok": false,
+  "gap3_ram_ok": true
+}

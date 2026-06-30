@@ -1,0 +1,10 @@
+# configs/hdc_int8_cwru.yaml — Benchmark INT8 vs FP32 HDC, dataset CWRU (Sprint 28, S2807).
+#
+# Hérite de cwru_by_fault_config.yaml (config unifiée incluant la section hdc + feature_bounds).
+#
+# Usage : python scripts/benchmark_int8_fp32.py --model hdc \
+#   --config configs/hdc_int8_cwru.yaml \
+#   --output experiments/exp_S28_PC_ewc_hdc/results_hdc_cwru.json
+
+extends: configs/cwru_by_fault_config.yaml
+quantization: int8

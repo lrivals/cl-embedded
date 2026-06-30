@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_mahalanobis_pronostia",
+  "condition": "best",
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 2,
+  "ram_peak_bytes": 2054377,
+  "n_params": 6,
+  "measure": "tracemalloc"
+}

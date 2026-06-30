@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_cmapss.yaml
+dataset: cmapss
+date: '2026-06-02T13:59:30.547942'
+dry_run: false
+model: ewc
+n_samples: 300
+n_tasks: 3
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

@@ -13,9 +13,9 @@ Note méthodologique :
 
 from __future__ import annotations
 
-import tracemalloc
 import time
-from typing import Callable, Any
+import tracemalloc
+from typing import Callable
 
 import numpy as np
 import torch
@@ -181,12 +181,20 @@ def full_memory_report(
     fwd_peak = fwd["ram_peak_bytes"]
     fwd_pct = fwd_peak / budget * 100
 
-    print(f"\n   ┌─ Résultats ─────────────────────────────────────┐")
+    print("\n   ┌─ Résultats ─────────────────────────────────────┐")
     print(f"   │  Paramètres    : {fwd['n_params']:>10,} params")
-    print(f"   │  RAM FP32      : {fwd['params_fp32_bytes']:>10,} B ({fwd['params_fp32_bytes']/1024:.1f} Ko)")
-    print(f"   │  RAM INT8 est. : {fwd['params_int8_bytes']:>10,} B ({fwd['params_int8_bytes']/1024:.1f} Ko)")
-    print(f"   │  RAM peak fwd  : {fwd_peak:>10,} B ({fwd_peak/1024:.1f} Ko) — {fwd_pct:.1f}% budget")
-    print(f"   │  Latence fwd   : {fwd['inference_latency_ms']:>10.3f} ms (± {fwd['inference_latency_std_ms']:.3f})")
+    print(
+        f"   │  RAM FP32      : {fwd['params_fp32_bytes']:>10,} B ({fwd['params_fp32_bytes']/1024:.1f} Ko)"
+    )
+    print(
+        f"   │  RAM INT8 est. : {fwd['params_int8_bytes']:>10,} B ({fwd['params_int8_bytes']/1024:.1f} Ko)"
+    )
+    print(
+        f"   │  RAM peak fwd  : {fwd_peak:>10,} B ({fwd_peak/1024:.1f} Ko) — {fwd_pct:.1f}% budget"
+    )
+    print(
+        f"   │  Latence fwd   : {fwd['inference_latency_ms']:>10.3f} ms (± {fwd['inference_latency_std_ms']:.3f})"
+    )
 
     status = "✅ DANS LE BUDGET" if fwd["within_budget_64ko"] else "❌ DÉPASSE LE BUDGET"
     print(f"   │  STM32N6 64Ko  : {status}")
@@ -197,7 +205,7 @@ def full_memory_report(
         print(f"   │  RAM peak upd  : {upd_peak:>10,} B ({upd_peak/1024:.1f} Ko)")
         print(f"   │  Latence upd   : {upd['update_latency_ms']:>10.3f} ms")
 
-    print(f"   └────────────────────────────────────────────────┘")
+    print("   └────────────────────────────────────────────────┘")
 
     return report
 

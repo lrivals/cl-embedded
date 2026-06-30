@@ -8,9 +8,11 @@ Architecture board (NUCLEO-F439ZI) :
 
 Sans checkpoint : init aléatoire reproductible (seed=42).
 Avec --checkpoint : charge un TinyOLBoard sauvé via torch.save(model.state_dict(), ...).
+Avec --train-dataset : entraîne TinyOLBoard via MSE reconstruction avant export.
 
 Usage :
     python scripts/export_weights_tinyol.py [--checkpoint PATH] [--seed 42]
+    python scripts/export_weights_tinyol.py --train-dataset cwru [--task0-only] [--train-epochs 150]
 
 Sorties :
   - firmware/stm32f4_blink/inc/model_weights.h  (section TinyOL mise à jour)
@@ -27,6 +29,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.optim as optim
 
 # ---------------------------------------------------------------------------
 # Constantes board (conformes à tinyol.h)
@@ -98,7 +101,7 @@ def _c_vector(name: str, arr: np.ndarray, n: int) -> str:
     return f"static const float {name}[{n}] = {{{vals}}};"
 
 
-def build_tinyol_section(model: TinyOLBoard) -> str:
+def build_tinyol_section(model: TinyOLBoard, threshold: float | None = None) -> str:
     """Construit la section TinyOL de model_weights.h à partir des poids du modèle."""
     enc_w1 = model.encoder[0].weight.detach().numpy()   # [32, 5]
     enc_b1 = model.encoder[0].bias.detach().numpy()     # [32]
@@ -108,6 +111,10 @@ def build_tinyol_section(model: TinyOLBoard) -> str:
     dec_b1 = model.decoder[0].bias.detach().numpy()     # [32]
     dec_w2 = model.decoder[2].weight.detach().numpy()   # [5, 32]
     dec_b2 = model.decoder[2].bias.detach().numpy()     # [5]
+
+    if threshold is None:
+        threshold = getattr(model, "_calibrated_threshold", 0.05)
+    threshold_comment = "calibré sur P95 × 1.5 des MSE training" if hasattr(model, "_calibrated_threshold") else "depuis configs/board_tinyol.yaml"
 
     lines = [
         "/* ── TinyOL encoder weights — MEM: ~2.8 Ko @ FP32 en Flash ──────────── */",
@@ -133,7 +140,7 @@ def build_tinyol_section(model: TinyOLBoard) -> str:
         _c_vector("TINYOL_B_DEC2", dec_b2, BOARD_OUT),
         f"  /* MEM: {BOARD_OUT * 4} B @ FP32 */",
         "",
-        "static const float TINYOL_THRESHOLD = 0.05f;  /* depuis configs/board_tinyol.yaml */",
+        f"static const float TINYOL_THRESHOLD = {threshold:.8f}f;  /* {threshold_comment} */",
     ]
     return "\n".join(lines)
 
@@ -190,6 +197,95 @@ def compute_reference(model: TinyOLBoard) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Entraînement TinyOLBoard sur données board (5 features)
+# ---------------------------------------------------------------------------
+
+def train_tinyol_board(
+    dataset: str,
+    epochs: int = 150,
+    lr: float = 1e-3,
+    task0_only: bool = True,
+    batch_size: int = 32,
+    seed: int = 42,
+    normalize: bool = False,
+) -> TinyOLBoard:
+    """Entraîne TinyOLBoard (5→32→16→5) via MSE reconstruction sur un dataset board.
+
+    Charge les données via sensor_sim.load_dataset() (mêmes features que le board).
+    Monitoring (4 features) est zero-paddé à 5 pour cohérence avec pipeline.c ligne 238.
+    """
+    import importlib.util
+    _spec = importlib.util.spec_from_file_location(
+        "sensor_sim", Path(__file__).parent / "sensor_sim.py"
+    )
+    sensor_sim = importlib.util.module_from_spec(_spec)
+    _spec.loader.exec_module(sensor_sim)
+
+    print(f"[train] Chargement dataset '{dataset}' ...", file=sys.stderr)
+    X, y = sensor_sim.load_dataset(dataset)
+
+    # Pad monitoring (4 features) à 5 — identique au zero-fill pipeline.c
+    if X.shape[1] < BOARD_IN:
+        pad = np.zeros((X.shape[0], BOARD_IN - X.shape[1]), dtype=np.float32)
+        X = np.concatenate([X, pad], axis=1)
+        print(f"[train] Monitoring padded : {X.shape[1] - (BOARD_IN - X.shape[1] + X.shape[1] - (BOARD_IN - X.shape[1]))}→{X.shape[1]} features", file=sys.stderr)
+
+    if task0_only:
+        mask = y == 0
+        X = X[mask]
+        print(f"[train] task0-only : {X.shape[0]} samples (classe 0 = normal)", file=sys.stderr)
+
+    # Normalisation zero-mean / unit-std (optionnel — par défaut désactivé pour cohérence board)
+    # Le board reçoit les valeurs brutes depuis sensor_stream, sans normalisation.
+    if normalize:
+        mu = X.mean(axis=0, keepdims=True)
+        sigma = X.std(axis=0, keepdims=True) + 1e-8
+        X = (X - mu) / sigma
+        print(f"[train] Normalisation appliquée (mu={mu.flatten().round(3)}, sigma={sigma.flatten().round(3)})", file=sys.stderr)
+    else:
+        print("[train] Pas de normalisation — entraînement sur valeurs brutes (cohérence board)", file=sys.stderr)
+
+    torch.manual_seed(seed)
+    model = TinyOLBoard()
+    optimizer = optim.Adam(model.parameters(), lr=lr)
+    criterion = nn.MSELoss()
+
+    X_t = torch.tensor(X, dtype=torch.float32)
+    N = len(X_t)
+    model.train()
+
+    print(f"[train] Entraînement {epochs} epochs, batch={batch_size}, lr={lr} ...", file=sys.stderr)
+    for ep in range(1, epochs + 1):
+        perm = torch.randperm(N)
+        total_loss = 0.0
+        n_batches = 0
+        for i in range(0, N, batch_size):
+            idx = perm[i:i + batch_size]
+            xb = X_t[idx]
+            optimizer.zero_grad()
+            _, recon = model(xb)
+            loss = criterion(recon, xb)
+            loss.backward()
+            optimizer.step()
+            total_loss += loss.item()
+            n_batches += 1
+        if ep % 50 == 0 or ep == epochs:
+            print(f"[train]   epoch {ep:3d}/{epochs}  loss={total_loss/n_batches:.6f}", file=sys.stderr)
+
+    model.eval()
+
+    # Calibration du seuil : 95e percentile de la MSE sur les données d'entraînement normales
+    with torch.no_grad():
+        _, recon_all = model(X_t)
+        mse_train = ((X_t - recon_all) ** 2).mean(dim=1).numpy()
+    threshold = float(np.percentile(mse_train, 95)) * 1.5
+    print(f"[train] Seuil calibré : {threshold:.6f}  (P95={float(np.percentile(mse_train, 95)):.6f} × 1.5)", file=sys.stderr)
+
+    model._calibrated_threshold = threshold
+    return model
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -201,6 +297,16 @@ def parse_args() -> argparse.Namespace:
                    help="Seed aléatoire si pas de checkpoint (défaut: 42)")
     p.add_argument("--output", type=Path, default=MODEL_WEIGHTS_H,
                    help=f"Chemin model_weights.h (défaut: {MODEL_WEIGHTS_H})")
+    p.add_argument("--train-dataset", choices=["cwru", "monitoring", "pronostia"],
+                   default=None, help="Entraîne TinyOLBoard sur ce dataset avant export")
+    p.add_argument("--train-epochs", type=int, default=150,
+                   help="Nombre d'epochs d'entraînement (défaut: 150)")
+    p.add_argument("--train-lr", type=float, default=1e-3,
+                   help="Learning rate Adam (défaut: 1e-3)")
+    p.add_argument("--task0-only", action="store_true",
+                   help="Entraîne sur task 0 uniquement (données normales pour anomaly detection)")
+    p.add_argument("--normalize", action="store_true",
+                   help="Normalise X avant entraînement (attention : mismatch si le board reçoit valeurs brutes)")
     return p.parse_args()
 
 
@@ -209,7 +315,15 @@ def main() -> None:
 
     model = TinyOLBoard()
 
-    if args.checkpoint is not None:
+    if args.train_dataset is not None:
+        model = train_tinyol_board(
+            dataset=args.train_dataset,
+            epochs=args.train_epochs,
+            lr=args.train_lr,
+            task0_only=args.task0_only,
+            normalize=args.normalize,
+        )
+    elif args.checkpoint is not None:
         if not args.checkpoint.exists():
             print(f"[erreur] Checkpoint introuvable : {args.checkpoint}", file=sys.stderr)
             sys.exit(1)

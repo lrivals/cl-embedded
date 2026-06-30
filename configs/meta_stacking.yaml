@@ -1,0 +1,23 @@
+# configs/meta_stacking.yaml — Sprint 31 (S3101/S3103) — méta-modèle d'arbitrage (stacking).
+#
+# Remplace la fusion statique du Sprint 30 par un arbitrage appris (MetaLearner) sur le vecteur
+# d'entrée compact dérivé des 2 modèles de base d'une ModelPair. Chaque run entraîne ET compare
+# les deux types de méta (logreg, mlp) puis retient le meilleur F1 (best_meta).
+#
+# Usage :
+#   python scripts/train_meta_learner.py --config configs/meta_stacking.yaml --pair maha_ewc --dataset monitoring
+
+meta:
+  kinds: ["logreg", "mlp"]                  # chaque run entraîne et compare les deux
+  hidden_size: 8                            # neurones cachés (mode mlp)
+  class_weight: "balanced"                  # logreg : évite l'effondrement (panne minoritaire)
+  input_features: ["p_maha", "p_sup", "disagreement", "conf_sup"]  # ≤ 8, toutes ∈ [0, 1]
+  oof_test_size: 0.4                         # part du jeu d'éval réservée au meta-eval (out-of-fold)
+  seed: 42
+
+# --pair → config board_pair existante (Sprint 30) : réutilise sa section `mahalanobis`,
+# `supervised_configs` et `fusion` sans duplication.
+pairs:
+  maha_ewc: "configs/board_pair_maha_ewc.yaml"
+  maha_hdc: "configs/board_pair_maha_hdc.yaml"
+  maha_tinyol: "configs/board_pair_maha_tinyol.yaml"

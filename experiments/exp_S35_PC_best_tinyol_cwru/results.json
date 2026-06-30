@@ -1,0 +1,28 @@
+{
+  "exp_id": "exp_S35_PC_best_tinyol_cwru",
+  "condition": "best",
+  "model": "tinyol",
+  "dataset": "cwru",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 7,
+  "selected_indices": [
+    2,
+    8,
+    3,
+    0,
+    1,
+    4,
+    5
+  ],
+  "acc_final": 0.8831168831168831,
+  "f1_faulty": 0.9302325581395349,
+  "f1_macro": 0.7851162790697674,
+  "precision_faulty": 1.0,
+  "recall_faulty": 0.8695652173913043,
+  "avg_forgetting": 0.0,
+  "backward_transfer": NaN,
+  "ram_peak_bytes": 59826115,
+  "n_params": 486,
+  "note": "best tinyol_cwru.yaml"
+}

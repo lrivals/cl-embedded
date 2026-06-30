@@ -1,0 +1,32 @@
+# exp_S26_01 — EWC RUL board / CMAPSS FD001
+# Date : 2026-06-06
+experiment_id: exp_S26_01
+model: ewc_head_regression
+dataset: CMAPSS FD001
+task: RUL continu (regression)
+board: NUCLEO-F439ZI (Cortex-M4 @ 180 MHz, 256 Ko SRAM)
+firmware: ewc_head_regression.c + pipeline.c (Sprint 26)
+model_weights: experiments/exp_S25_01/model_ewc_reg.pt
+
+firmware_config:
+  EWC_REG_IN: 5
+  EWC_REG_H1: 32
+  EWC_REG_H2: 16
+  EWC_REG_OUT: 1
+  EWC_REG_LR: 0.001
+  EWC_REG_FISHER_DECAY: 0.99
+  EWC_LAMBDA: 400.0
+
+loader_config: configs/cmapss_feature_subset.yaml
+n_samples: 200
+n_tasks: 1  # FD001 seulement
+
+# Commande d'exécution :
+# python scripts/simulate_rul_board.py \
+#     --port /dev/ttyACM0 \
+#     --config configs/cmapss_feature_subset.yaml \
+#     --n-samples 200 \
+#     --task-id 0 \
+#     --update \
+#     --output experiments/exp_S26_01/board_rul_results.json \
+#     2>&1 | tee experiments/exp_S26_01/log.txt

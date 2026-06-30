@@ -1,0 +1,17 @@
+exp_id: exp_S35_PC_5feat_hdc_cwru
+condition: 5feat
+model: hdc
+dataset: cwru
+seed: 42
+feature_indices:
+- 3
+- 4
+- 6
+- 7
+- 8
+feature_names:
+- sd
+- rms
+- kurtosis
+- crest
+- form

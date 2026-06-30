@@ -1,0 +1,12 @@
+baud: 115200
+board_config: configs/board_mahalanobis.yaml
+dataset: pronostia
+date: '2026-06-09T11:09:18.361423'
+dry_run: false
+model: mahalanobis
+n_samples: 300
+n_tasks: 2
+platform: nucleo_f439zi
+port: /dev/ttyACM0
+protocol_version: 3
+update_requested: true

@@ -1,0 +1,7 @@
+method: sd_rms_kurtosis_crest_form
+n_features_total: 9
+n_features_selected: 5
+feature_indices: [3, 4, 6, 7, 8]
+feature_names: [sd, rms, kurtosis, crest, form]
+all_feature_names: [max, min, mean, sd, rms, skewness, kurtosis, crest, form]
+description: "Top-5 features for CWRU board experiments (EWC_IN=5). Maps to sprint doc: sd=variance_temporelle, rms=RMS, kurtosis=kurtosis, crest=pic_a_pic, form=energie_spectrale"

@@ -1,0 +1,24 @@
+# configs/best_features/ewc_paderborn.yaml
+# Généré par scripts/select_best_features_per_model.py (Sprint 35 / S3501).
+# NE PAS éditer manuellement.
+model: ewc
+dataset: paderborn
+method: permutation_importance
+metric: f1_faulty
+n_features_total: 7
+n_features_selected: 1
+selected_indices:
+- 0
+selected_features:
+- rms
+val_f1_by_k:
+  1: 0.80028
+  2: 0.80028
+  3: 0.80028
+  4: 0.80028
+  5: 0.80028
+  6: 0.80028
+  7: 0.80028
+fit_split: train (seed 42)
+permutation_n_repeats: 5
+parcimonie: 0.01

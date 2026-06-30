@@ -1,0 +1,16 @@
+{
+  "exp_id": "exp_S19_14",
+  "model": "kmeans",
+  "dataset": "equipment_monitoring",
+  "platform": "pc_python",
+  "date": "2026-06-09",
+  "acc_final": 0.9465158186906333,
+  "avg_forgetting": 0.008033498440665282,
+  "backward_transfer": -0.0047786595276081145,
+  "auroc": 0.9717843474324926,
+  "f1_score": null,
+  "ram_peak_bytes": 5226,
+  "inference_latency_ms": 0.46993616997497156,
+  "n_params": 12,
+  "config_snapshot": "experiments/exp_S19_14/config_snapshot.yaml"
+}

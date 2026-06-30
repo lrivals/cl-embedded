@@ -1,0 +1,7 @@
+# configs/all_features/paderborn.yaml — condition `all` (dims natives) — Sprint 35 / S3502
+# feature_names importés des constantes du loader (src/data/paderborn_loader.FEATURE_NAMES_RAW).
+dataset: paderborn
+condition: all
+n_features: 7
+feature_names: [rms, kurtosis, crest_factor, energy_band_1, energy_band_2, energy_band_3, energy_band_4]
+source_loader: src/data/paderborn_loader.py

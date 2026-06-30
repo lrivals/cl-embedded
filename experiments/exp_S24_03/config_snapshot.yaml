@@ -1,0 +1,17 @@
+budget_256ko: 262144
+datasets:
+- monitoring
+- pump
+- cwru
+- pronostia
+- cmapss
+- paderborn
+description: Profiling RAM systématique — 4 modèles × 6 datasets (S2404)
+exp_id: exp_S24_03
+generated_at: '2026-06-02'
+models:
+- ewc
+- hdc
+- tinyol
+- mahalanobis
+report_path: experiments/sprint24_memory_report.json

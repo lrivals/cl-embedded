@@ -1,0 +1,7 @@
+{
+  "base_vectors_int8_bytes": 10240,
+  "am_int32_bytes": 8192,
+  "total_int_bytes": 18432,
+  "hypothetical_fp32_bytes": 49152,
+  "compression_ratio": 2.6666666666666665
+}

@@ -1,0 +1,19 @@
+{
+  "exp_id": "exp_S32_board_tinyol_pronostia_thr120",
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "threshold": 120,
+  "platform": "nucleo_f439zi",
+  "date": "2026-06-23T13:42:10",
+  "bss_bytes": 104596,
+  "n_features": 5,
+  "parity_class": "hw_only",
+  "latency_us_p50": 5.0,
+  "latency_us_p99": 5.0,
+  "ram_response_bytes": 39060,
+  "online_accuracy": 0.85,
+  "crc_errors": 0,
+  "gap2_latency_compliant": true,
+  "parity_ok": null,
+  "parity_note": "N/A par construction (HDC projection embarqu\u00e9e / init en ligne)"
+}

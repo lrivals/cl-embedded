@@ -1,0 +1,9 @@
+{
+  "model": "ewc",
+  "phase": "inf",
+  "dataset": "cwru",
+  "platform": "nucleo_f439zi",
+  "latency_us_p50": 50.0,
+  "latency_us_p99": 50.0,
+  "date": "2026-06-24T20:49:44"
+}

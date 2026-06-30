@@ -1,0 +1,64 @@
+# cwru_multiclass_config.yaml — Config EWC Multi-classe sur CWRU (10 classes, 3 tâches)
+# Sprint 25 — mode natif multi-classe.
+# Ne PAS confondre avec cwru_by_fault_config.yaml (binaire domain-incremental).
+
+# --- Identité ---
+task_mode: multiclass
+model: ewc_multiclass
+dataset: cwru
+scenario: by_fault_type  # tâches : ball → inner_race → outer_race
+sprint: 25
+
+# --- Dataset CWRU ---
+data_path: "data/raw/CWRU Bearing Dataset/feature_time_48k_2048_load_1.csv"
+n_tasks: 3
+n_classes: 10            # 10 classes totales (Normal + 3 types × 3 sévérités)
+val_ratio: 0.2
+seed: 42
+
+# Mapping classes (référence : MULTICLASS_LABEL_MAP dans cwru_dataset.py)
+class_names:
+  0: "Normal"
+  1: "Ball_007"
+  2: "Ball_014"
+  3: "Ball_021"
+  4: "IR_007"
+  5: "IR_014"
+  6: "IR_021"
+  7: "OR_007"
+  8: "OR_014"
+  9: "OR_021"
+
+# --- Architecture EWCMlpMulticlass ---
+INPUT_DIM: 9             # 9 features statistiques CWRU (max, min, mean, sd, rms, skew, kurt, crest, form)
+HIDDEN_DIMS:
+  - 32
+  - 16
+DROPOUT: 0.2
+N_CLASSES: 10
+
+# --- Hyperparamètres EWC ---
+EWC_LR: 0.01
+EWC_LAMBDA: 400.0
+FISHER_N_SAMPLES: 200
+FISHER_EMA_DECAY: 0.99
+
+# --- Entraînement ---
+N_EPOCHS_PER_TASK: 30   # plus d'époques — 10 classes plus difficiles que 2
+BATCH_SIZE: 32
+OPTIMIZER: sgd
+MOMENTUM: 0.9
+
+# --- Métriques (multiclass_metrics.py) ---
+primary_metric: f1_macro
+report_metrics:
+  - f1_macro
+  - confusion_matrix
+  - per_class_accuracy
+  - avg_forgetting_f1
+
+# --- Critère de validation ---
+f1_macro_min_task1: 0.70   # critère exp_S25_03 (S2517)
+
+# --- Budget mémoire ---
+ram_budget_bytes: 262144

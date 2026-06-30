@@ -1,0 +1,31 @@
+# exp_S26_03 — Comparaison RAM .bss des 3 têtes EWC
+# Date : 2026-07-29
+experiment_id: exp_S26_03
+description: Mesure et comparaison du footprint SRAM .bss de chaque tête EWC compilée pour ARM Cortex-M4
+
+firmware: firmware/stm32f4_blink/build/stm32f4_blink.elf
+
+variants:
+  ewc_head_fp32_binary:
+    struct: EWCHead
+    config: EWC_IN=5, H1=32, H2=16, OUT=2
+    comment: baseline existant Sprint 23
+  ewc_head_regression:
+    struct: EWCHeadReg
+    config: EWC_REG_IN=5, H1=32, H2=16, OUT=1
+    comment: Sprint 26, tête RUL CMAPSS
+  ewc_head_multiclass_n10:
+    struct: EWCHeadMC
+    config: EWC_MC_IN=9, H1=32, H2=16, N_CLASSES=10
+    comment: Sprint 26, tête CWRU 10 classes
+  ewc_head_int8_binary:
+    struct: EWCHeadInt8
+    config: quantifié INT8
+    comment: Sprint 22
+
+# Commandes d'exécution :
+# arm-none-eabi-nm -S --size-sort firmware/stm32f4_blink/build/stm32f4_blink.elf \
+#     | grep -E "g_ewc_head|g_ewc_reg|g_ewc_mc|g_ewc_int8" \
+#     > experiments/exp_S26_03/bss_sizes.txt
+# arm-none-eabi-size firmware/stm32f4_blink/build/stm32f4_blink.elf \
+#     >> experiments/exp_S26_03/bss_sizes.txt

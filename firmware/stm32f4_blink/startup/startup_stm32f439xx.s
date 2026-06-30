@@ -58,6 +58,22 @@ LoopFillZerobss:
   cmp   r2, r3
   bcc   FillZerobss
 
+  /* Peinture de la pile (stack high-water mark) — cf. profiling.c.
+   * À ce stade SP = _estack et aucune trame n'est encore empilée : toute la
+   * zone libre [_ebss, _estack) peut être remplie de la sentinelle 0xDEADBEEF.
+   * profiling_stack_peak_bytes() scanne ensuite le plus bas mot écrasé pour
+   * déduire la profondeur de pile réellement atteinte. La boucle n'utilise que
+   * des registres (aucun push) ; elle ne modifie ni .bss ni .data. */
+  ldr   r2, =_ebss
+  ldr   r3, =_estack
+  ldr   r1, =0xDEADBEEF
+  b     LoopPaintStack
+PaintStack:
+  str   r1, [r2], #4
+LoopPaintStack:
+  cmp   r2, r3
+  bcc   PaintStack
+
   bl    main
   bx    lr
 

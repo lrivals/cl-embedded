@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_all_ewc_pronostia",
+  "condition": "all",
+  "model": "ewc",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 13,
+  "ram_peak_bytes": 59727957,
+  "n_params": 993,
+  "measure": "tracemalloc"
+}

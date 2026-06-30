@@ -1,0 +1,20 @@
+{
+  "exp_id": "exp_S33_PC_tinyol_monitoring",
+  "model": "tinyol",
+  "dataset": "equipment_monitoring",
+  "scenario": "by_location",
+  "acc_final": 0.9740799548785306,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.016680613195316496,
+  "per_task_acc": [
+    0.9768185451638689,
+    0.9637681159420289,
+    0.975767366720517,
+    0.9836065573770492,
+    0.9704391891891891
+  ],
+  "ram_peak_bytes": 8023,
+  "inference_latency_ms": 0.0064417400153615745,
+  "n_params": 398,
+  "sprint": 24
+}

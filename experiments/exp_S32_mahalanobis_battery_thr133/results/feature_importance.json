@@ -1,0 +1,39 @@
+{
+  "model": "mahalanobis",
+  "dataset": "battery_rul",
+  "scenario": "by_temporal_window",
+  "global": {
+    "permutation_importance": {
+      "vibration": 0.02480928689883921,
+      "humidity": 0.01850746268656711,
+      "temperature": 0.011011608623548996,
+      "pressure": 0.005837479270315193
+    }
+  },
+  "per_task": {
+    "window_1": {
+      "permutation_importance": {
+        "vibration": 0.02567164179104464,
+        "humidity": 0.01771144278606962,
+        "temperature": 0.017512437810945136,
+        "pressure": 0.009552238805970226
+      }
+    },
+    "window_2": {
+      "permutation_importance": {
+        "vibration": 0.021094527363183957,
+        "temperature": 0.013731343283581943,
+        "humidity": 0.010348258706467606,
+        "pressure": 0.006965174129353269
+      }
+    },
+    "window_3": {
+      "permutation_importance": {
+        "humidity": 0.006169154228855667,
+        "pressure": 0.0019900497512438386,
+        "vibration": -0.0005970149253731183,
+        "temperature": -0.0013930348258706093
+      }
+    }
+  }
+}

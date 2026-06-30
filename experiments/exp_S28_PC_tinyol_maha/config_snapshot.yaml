@@ -1,0 +1,25 @@
+# config_snapshot.yaml — exp_S28_PC_tinyol_maha (Sprint 28, S2808)
+# Campagne PC FP32 vs INT8 : TinyOL + Mahalanobis × 5 datasets.
+sprint: 28
+task: S2808
+script: scripts/benchmark_int8_fp32.py
+driver: scripts/run_s28_pc_benchmarks.py
+n_samples_per_task: 600   # RAM exacte (indep. du nb d'echantillons) ; metrique sur 600/tache
+seed: 42
+configs:
+  tinyol:
+    cmapss: configs/tinyol_int8_cmapss.yaml
+    monitoring: configs/tinyol_int8_monitoring.yaml
+    cwru: configs/tinyol_int8_cwru.yaml
+    pronostia: configs/tinyol_int8_pronostia.yaml
+    paderborn: configs/tinyol_int8_paderborn.yaml
+  mahalanobis:
+    cmapss: configs/mahalanobis_int8_cmapss.yaml
+    monitoring: configs/mahalanobis_int8_monitoring.yaml
+    cwru: configs/mahalanobis_int8_cwru.yaml
+    pronostia: configs/mahalanobis_int8_pronostia.yaml
+    paderborn: configs/mahalanobis_int8_paderborn.yaml
+metric: auroc (TinyOL = erreur reconstruction MSE ; Mahalanobis = distance), labels binarises normal-vs-fault
+gap3_criteria:
+  metric_ok: abs(delta_metric) < 0.02
+  ram_ok: ram_ratio > 1.0

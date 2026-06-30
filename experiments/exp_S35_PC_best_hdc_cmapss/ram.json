@@ -1,0 +1,12 @@
+{
+  "exp_id": "exp_S35_PC_best_hdc_cmapss",
+  "condition": "best",
+  "model": "hdc",
+  "dataset": "cmapss",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 18,
+  "ram_peak_bytes": 2872406,
+  "n_params": 2048,
+  "measure": "tracemalloc"
+}

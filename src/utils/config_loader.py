@@ -8,7 +8,6 @@ Usage :
 
 from __future__ import annotations
 
-import shutil
 from datetime import datetime
 from pathlib import Path
 
@@ -36,8 +35,7 @@ def load_config(path: str) -> dict:
     config_path = Path(path)
     if not config_path.exists():
         raise FileNotFoundError(
-            f"Config introuvable : {path}\n"
-            f"Vérifier que le fichier existe dans configs/"
+            f"Config introuvable : {path}\n" f"Vérifier que le fichier existe dans configs/"
         )
 
     with open(config_path, encoding="utf-8") as f:
@@ -50,6 +48,64 @@ def load_config(path: str) -> dict:
         raise ValueError(f"Fichier YAML vide : {path}")
 
     return cfg
+
+
+def _deep_merge(base: dict, override: dict) -> dict:
+    """
+    Fusionne récursivement ``override`` dans ``base`` (l'enfant écrase le parent).
+
+    Les dicts imbriqués sont fusionnés clé à clé ; toute autre valeur est remplacée.
+
+    Parameters
+    ----------
+    base : dict
+        Configuration parent.
+    override : dict
+        Configuration enfant (prioritaire).
+
+    Returns
+    -------
+    dict : nouvelle config fusionnée (les entrées ne sont pas mutées en place).
+    """
+    merged = dict(base)
+    for key, value in override.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+def load_config_extends(path: str) -> dict:
+    """
+    Charge une config YAML avec support de l'héritage via la clé ``extends:``.
+
+    Si la config contient ``extends: <chemin>``, la base est chargée récursivement
+    (elle-même peut hériter) puis fusionnée par deep-merge — les clés de l'enfant
+    écrasent celles du parent. La clé ``extends`` est retirée du résultat.
+
+    Le chemin ``extends`` est résolu relativement au répertoire du fichier courant,
+    puis (à défaut) relativement au répertoire de travail.
+
+    Parameters
+    ----------
+    path : str
+        Chemin vers le fichier .yaml (potentiellement avec ``extends:``).
+
+    Returns
+    -------
+    dict : configuration fusionnée.
+    """
+    cfg = load_config(path)
+    parent_ref = cfg.pop("extends", None)
+    if parent_ref is None:
+        return cfg
+
+    parent_path = Path(path).parent / parent_ref
+    if not parent_path.exists():
+        parent_path = Path(parent_ref)
+    base = load_config_extends(str(parent_path))
+    return _deep_merge(base, cfg)
 
 
 def save_config_snapshot(cfg: dict, exp_dir: str) -> str:

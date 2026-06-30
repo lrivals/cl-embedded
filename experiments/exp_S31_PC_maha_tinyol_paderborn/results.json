@@ -1,0 +1,65 @@
+{
+  "exp_id": "exp_S31_PC_maha_tinyol_paderborn",
+  "pair": "maha_tinyol",
+  "dataset": "paderborn",
+  "frame": "binary",
+  "n_eval": 23980,
+  "oof": {
+    "meta_fit": 14388,
+    "meta_eval": 9592,
+    "test_size": 0.4
+  },
+  "input_features": [
+    "p_maha",
+    "p_sup",
+    "disagreement",
+    "conf_sup"
+  ],
+  "meta": {
+    "logreg": {
+      "f1": 0.5976184357063309,
+      "auroc": 0.49271034269737324
+    },
+    "mlp": {
+      "f1": 0.7999499562116852,
+      "auroc": 0.49273190958612506
+    }
+  },
+  "best_meta": "mlp",
+  "baselines": {
+    "model_a": {
+      "name": "mahalanobis",
+      "f1": 0.7220289855072464,
+      "auroc": 0.508569806199253
+    },
+    "model_b": {
+      "name": "tinyol",
+      "f1": 0.25657229524772496,
+      "auroc": 0.49768913965817313
+    },
+    "ensemble": {
+      "or": {
+        "f1": 0.7526383876897937,
+        "auroc": 0.5085696594857241
+      },
+      "and": {
+        "f1": 0.08854471069549971,
+        "auroc": 0.5085696594857241
+      },
+      "soft_vote": {
+        "f1": 0.08854471069549971,
+        "auroc": 0.5085696594857241
+      },
+      "weighted": {
+        "f1": 0.08854471069549971,
+        "auroc": 0.5085696594857241
+      }
+    },
+    "best_ensemble_rule": "or",
+    "best_individual_f1": 0.7220289855072464,
+    "best_ensemble_f1": 0.7526383876897937
+  },
+  "delta_vs_best_individual": 0.07792097070443882,
+  "delta_vs_ensemble": 0.047311568521891445,
+  "timestamp": "2026-06-18T14:44:10"
+}

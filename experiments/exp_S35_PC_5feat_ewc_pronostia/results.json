@@ -1,0 +1,26 @@
+{
+  "exp_id": "exp_S35_PC_5feat_ewc_pronostia",
+  "condition": "5feat",
+  "model": "ewc",
+  "dataset": "pronostia",
+  "platform": "pc",
+  "sprint": 35,
+  "n_features": 5,
+  "selected_indices": [
+    1,
+    2,
+    4,
+    8,
+    12
+  ],
+  "acc_final": 0.9850275155719741,
+  "f1_faulty": 0.9302325581395349,
+  "f1_macro": 0.9612488757548503,
+  "precision_faulty": 0.9333333333333333,
+  "recall_faulty": 0.9271523178807947,
+  "avg_forgetting": 0.0,
+  "backward_transfer": 0.01139157417352904,
+  "ram_peak_bytes": 189249,
+  "n_params": 737,
+  "note": "subset pronostia_feature_subset.yaml"
+}
