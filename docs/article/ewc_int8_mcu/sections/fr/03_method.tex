@@ -1,0 +1,36 @@
+\section{Méthode}
+\label{sec:method}
+
+\subsection{Modèle EWC et portage C}
+
+Le modèle est un perceptron multicouche à tête EWC (\texttt{EWCMlpMulticlass}, $k \to 32 \to 16 \to 2$)
+entraîné en régime incrémental avec pénalité de Fisher en ligne. La tête est portée en C
+(\texttt{ewc\_head.c}) pour la carte : le \emph{forward pass} et la mise à jour SGD s'exécutent tous deux
+sur le Cortex-M4 en FP32 (le F439ZI ne dispose pas de NPU). Les poids sont exportés du checkpoint PyTorch
+vers un en-tête C généré (\texttt{model\_weights\_ewc.h}) --- jamais édité à la main --- de sorte que la
+carte et le PC partagent \emph{exactement} les mêmes paramètres.
+
+\subsection{Protocole apparié PC$\leftrightarrow$carte}
+
+Pour rendre la comparaison honnête, la carte et le PC consomment la même séquence : même graine
+($\texttt{seed}=42$), même ordre d'échantillons, même normalisation (les indices de features et les
+tableaux sont produits par une source unique). Deux protocoles sont évalués : \emph{gelé} (inférence
+seule, poids figés) et \emph{en ligne} (inférence puis mise à jour continue). La \emph{parité} est le taux
+d'accord prédiction-à-prédiction entre les deux plateformes.
+
+\subsection{Schémas de quantification}
+
+Nous comparons plusieurs kernels INT8 de la tête de décision, du plus naïf au plus soigné :
+\begin{itemize}
+  \item \texttt{legacy\_c} : accumulateur \texttt{int8}, échelle par-tenseur non calibrée (le kernel v1
+        d'origine sur carte) ;
+  \item \texttt{fix\_acc32} : accumulateur élargi à \texttt{int32} (correction partielle) ;
+  \item \texttt{per\_tensor\_calib} : accumulateur \texttt{int32} + échelle par-tenseur \emph{calibrée} sur
+        les activations ;
+  \item \texttt{per\_channel\_int8} : échelle \emph{par-canal} de sortie ;
+  \item \texttt{q15} : poids en virgule fixe \texttt{int16} Q15 (RAM $\div 2$ au lieu de $\div 4$).
+\end{itemize}
+Le kernel v2 firmware (Sprint~40) implémente l'accumulateur \texttt{int32} et les échelles calibrées
+par-canal, avec une variante Q15 optionnelle (\texttt{-DEWC\_INT8\_Q15}) ; le chemin FP32 v1 reste
+inchangé. L'ablation est \emph{émulée bit-à-bit sur PC} (\texttt{src/utils/int8\_c\_emulation.py}) afin
+d'isoler la contribution de chaque correctif indépendamment de l'accès à la carte.

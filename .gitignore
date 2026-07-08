@@ -62,3 +62,6 @@ kaggle.json
 
 # === Documents de candidature (personnels, non versionnés) ===
 docs/prepThese/
+
+# === Rapport de stage (manuscrit Overleaf + md de travail, non versionnés) ===
+docs/rapport_de_stage/

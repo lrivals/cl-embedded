@@ -1,0 +1,59 @@
+\begin{thebibliography}{1}
+
+\bibitem{Benatti2019HDC}
+Simone Benatti, Fabio Montagna, Victor Kartsch, Abbas Rahimi, Davide Rossi, and
+  Luca Benini.
+\newblock Online learning and classification of {EMG}-based gestures on a
+  parallel ultra-low power platform using hyperdimensional computing.
+\newblock {\em IEEE Transactions on Biomedical Circuits and Systems}, 2019.
+
+\bibitem{Capogrosso2023TinyML}
+Luigi Capogrosso, Federico Cunico, Dong~Seon Cheng, Federico Fummi, and Marco
+  Cristani.
+\newblock A machine learning-oriented survey on tiny machine learning.
+\newblock {\em IEEE Access}, 2023.
+
+\bibitem{Hurtado2023CLPdM}
+Jhair Hurtado, Alain Salvati, Andrea Cossu, Antonio Carta, and Davide Bacciu.
+\newblock Continual learning for predictive maintenance: Overview and
+  challenges.
+\newblock {\em Intelligent Systems with Applications}, 2023.
+
+\bibitem{Kirkpatrick2017EWC}
+James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume
+  Desjardins, Andrei~A. Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka
+  Grabska-Barwinska, Demis Hassabis, Claudia Clopath, Dharshan Kumaran, and
+  Raia Hadsell.
+\newblock Overcoming catastrophic forgetting in neural networks.
+\newblock {\em Proceedings of the National Academy of Sciences}, 2017.
+
+\bibitem{Kwon2023LifeLearner}
+Young~D. Kwon, Jagmohan Chauhan, Hong Jia, Stylianos~I. Venieris, and Cecilia
+  Mascolo.
+\newblock {LifeLearner}: Hardware-aware meta continual learning system for
+  embedded computing platforms.
+\newblock In {\em ACM Conference on Embedded Networked Sensor Systems
+  (SenSys)}, 2023.
+
+\bibitem{DeLange2021Survey}
+Matthias~De Lange, Rahaf Aljundi, Marc Masana, Sarah Parisot, Xu~Jia,
+  Ale{\v{s}} Leonardis, Gregory Slabaugh, and Tinne Tuytelaars.
+\newblock A continual learning survey: Defying forgetting in classification
+  tasks.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  2021.
+
+\bibitem{Ravaglia2021QLRCL}
+Leonardo Ravaglia, Manuele Rusci, Davide Nadalini, Alessandro Capotondi,
+  Francesco Conti, and Luca Benini.
+\newblock A {TinyML} platform for on-device continual learning with quantized
+  latent replays.
+\newblock {\em IEEE Transactions on Circuits and Systems for Video Technology},
+  2021.
+
+\bibitem{Ren2021TinyOL}
+Haoyu Ren, Darko Anicic, and Thomas~A. Runkler.
+\newblock {TinyOL}: {TinyML} with online-learning on microcontrollers.
+\newblock arXiv:2103.08295, 2021.
+
+\end{thebibliography}

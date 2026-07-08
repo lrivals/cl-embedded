@@ -1,1 +1,1 @@
-{"nodes": [{"id": "models_hdc_hdc_int8_py", "label": "hdc_int8.py (Python reference)", "file_type": "code", "source_file": "src/models/hdc/hdc_int8.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
+{"nodes": [{"id": "hdc_hdc_int8_module", "label": "hdc_int8.py (HDC int16-AM)", "file_type": "code", "source_file": "src/models/hdc/hdc_int8.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

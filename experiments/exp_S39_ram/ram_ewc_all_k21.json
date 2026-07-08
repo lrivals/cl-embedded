@@ -1,0 +1,12 @@
+{
+  "label": "EWC",
+  "model_flag": "ewc",
+  "dataset": "cmapss",
+  "condition": "all",
+  "data_bytes": 460,
+  "bss_bytes": 184864,
+  "stack_peak_bytes": 4728,
+  "ram_peak_bytes": 190052,
+  "static_bound_bytes": 4800,
+  "bound_ge_measured": true
+}

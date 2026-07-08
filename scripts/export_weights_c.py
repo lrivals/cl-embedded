@@ -248,6 +248,191 @@ def export_ewc_head_board_to_c(model_path: Path, out_path: Path) -> None:
     print(f"  w1={w1.shape}, w2={w2.shape}, w3={w3.shape} (g_ewc_head, EWC_IN={ewc_in}, parité board↔PC)")
 
 
+# ── Export tête EWC INT8 v2 par-canal (Sprint 39 / S3908) ──────────────────
+
+def _ewc_v2_quantize(model_path: Path, calib_X: np.ndarray | None):
+    """Charge un checkpoint EWCMlpMulticlass et calcule poids int8 par-canal + scales.
+
+    Réutilise EXACTEMENT les primitives de l'émulateur (``_weight_scales`` per_channel,
+    ``_quant_weight``, ``calibrate_activations``) → parité board↔PC par construction.
+    ``calib_X`` = lot représentatif [N, k] pour les scales d'activation (à défaut : lot
+    synthétique normal, calibration approximative signalée).
+    """
+    import torch  # noqa: PLC0415
+
+    from src.utils.int8_c_emulation import (  # noqa: PLC0415
+        EWCHeadWeights,
+        _quant_weight,
+        _weight_scales,
+        calibrate_activations,
+    )
+
+    checkpoint = torch.load(model_path, map_location="cpu")
+    sd = checkpoint.get("model_state_dict", checkpoint)
+    w = EWCHeadWeights.from_state_dict(sd)
+    k = int(w.w1.shape[1])
+
+    if calib_X is None:  # défaut reproductible si aucun jeu de calibration fourni
+        rng = np.random.default_rng(39)
+        calib_X = rng.standard_normal((256, k)).astype(np.float32)
+    act = calibrate_activations(w, np.asarray(calib_X, dtype=np.float32))
+
+    NB = 8  # per-channel int8 (schéma cible S3904)
+    scales = {name: _weight_scales(getattr(w, name), "per_channel", NB)
+              for name in ("w1", "w2", "w3")}
+    qw = {name: _quant_weight(getattr(w, name), scales[name], NB).astype(np.int32)
+          for name in ("w1", "w2", "w3")}
+    qmax_a = 127.0
+    return {
+        "k": k, "w": w,
+        "qw": qw, "scales": scales,
+        "act_max": {"in": act["in"], "h1": act["h1"], "h2": act["h2"]},
+        "scale_act": {"in": act["in"] / qmax_a, "h1": act["h1"] / qmax_a,
+                      "h2": act["h2"] / qmax_a},
+    }
+
+
+def export_ewc_int8_v2_to_c(model_path: Path, out_path: Path,
+                            calib_X: np.ndarray | None = None) -> dict:
+    """Génère inc/ewc_head_int8_v2_weights.h (poids int8 par-canal + scales calibrés).
+
+    Alimente le kernel v2 (ewc_head_int8_v2.c/.h, S3907). Header vide par défaut ⇒
+    ce flag l'active : ``EWC_INT8_V2_WEIGHTS_PROVIDED 1``. NE PAS ÉDITER À LA MAIN.
+    """
+    q = _ewc_v2_quantize(model_path, calib_X)
+    k = q["k"]
+    w = q["w"]
+    sa = q["scale_act"]
+
+    lines = [
+        "/* ewc_head_int8_v2_weights.h — GÉNÉRÉ par export_weights_c.py --int8-v2 (S3908).",
+        " * Poids int8 par-canal + scales calibrés (parité émulateur per_channel_int8).",
+        " * NE PAS ÉDITER À LA MAIN (règle CLAUDE.md). */",
+        "#ifndef EWC_HEAD_INT8_V2_WEIGHTS_H",
+        "#define EWC_HEAD_INT8_V2_WEIGHTS_H",
+        "#include <stdint.h>",
+        "",
+        "#define EWC_INT8_V2_WEIGHTS_PROVIDED 1",
+        f"#define EWC_INT8_V2_NATIVE_DIM {k}",
+        "",
+        _array2d_int_to_c("EWC_V2_W1", q["qw"]["w1"], "int8_t"),
+        _array1d_to_c("EWC_V2_SCALE_W1", q["scales"]["w1"].astype(np.float32)),
+        _array1d_to_c("EWC_V2_B1", w.b1.astype(np.float32)),
+        "",
+        _array2d_int_to_c("EWC_V2_W2", q["qw"]["w2"], "int8_t"),
+        _array1d_to_c("EWC_V2_SCALE_W2", q["scales"]["w2"].astype(np.float32)),
+        _array1d_to_c("EWC_V2_B2", w.b2.astype(np.float32)),
+        "",
+        _array2d_int_to_c("EWC_V2_W3", q["qw"]["w3"], "int8_t"),
+        _array1d_to_c("EWC_V2_SCALE_W3", q["scales"]["w3"].astype(np.float32)),
+        _array1d_to_c("EWC_V2_B3", w.b3.astype(np.float32)),
+        "",
+        f"static const float EWC_V2_SCALE_ACT_IN = {_fmt_float(sa['in'])};",
+        f"static const float EWC_V2_SCALE_ACT_H1 = {_fmt_float(sa['h1'])};",
+        f"static const float EWC_V2_SCALE_ACT_H2 = {_fmt_float(sa['h2'])};",
+        "",
+        "/* Bornes d'activation calibrées [in, h1, h2] (calibrate_activations sur calib_X).",
+        " * Le firmware quantifie la tête à bord via ewc_int8_v2_from_fp32_calib(act_max) :",
+        " * le QMAX dépend de la variante de build (int8/q15/mixed) → on transmet act_max brut,",
+        " * pas seulement scale_act (= act_max/127, figé int8). */",
+        _array1d_to_c("EWC_V2_ACT_MAX",
+                      np.array([q["act_max"]["in"], q["act_max"]["h1"],
+                                q["act_max"]["h2"]], dtype=np.float32)),
+        "",
+        "#endif /* EWC_HEAD_INT8_V2_WEIGHTS_H */",
+    ]
+    header_path = out_path / "ewc_head_int8_v2_weights.h"
+    header_path.write_text("\n".join(lines) + "\n")
+    print(f"[export] ewc_head_int8_v2_weights.h écrit → {header_path}  (k={k}, per-canal int8)")
+    return q
+
+
+def export_ewc_int8_v2_test_vectors_h(model_path: Path, out_path: Path,
+                                      calib_X: np.ndarray | None = None,
+                                      n_vectors: int = 8) -> None:
+    """Génère tests/test_vectors_v2.h : header golden **auto-suffisant** (S3909).
+
+    Émet tout ce qu'il faut au test Unity ``test_ewc_int8_v2.c`` pour **reconstruire la
+    tête à l'identique** et prouver la parité C v2 ↔ émulateur Python :
+      - poids FP32 ``TV_V2_W1/B1/W2/B2/W3/B3`` (convention ``[out][in]`` == ``EWCHead``) ;
+      - ``TV_V2_ACT_MAX[3]`` = ``calibrate_activations(w, X)`` (bornes in/h1/h2) ;
+      - entrées ``TV_V2_INPUT`` et logits golden FP32 / per_channel_int8 / q15,
+        calculés avec ``act_max`` **explicite** (même calibration que le C) → parité 1e-3.
+
+    Les inputs servent aussi de lot de calibration (X = calibration) pour garantir que le
+    C (``ewc_int8_v2_from_fp32_calib`` + ``ewc_int8_v2_forward``) et l'émulateur partagent
+    exactement scales par-canal et scales d'activation. NE PAS ÉDITER À LA MAIN.
+    """
+    from src.utils.int8_c_emulation import (  # noqa: PLC0415
+        EWCHeadWeights,
+        QuantConfig,
+        calibrate_activations,
+        forward_fp32,
+        forward_quant,
+    )
+
+    import torch  # noqa: PLC0415
+
+    checkpoint = torch.load(model_path, map_location="cpu")
+    sd = checkpoint.get("model_state_dict", checkpoint)
+    w = EWCHeadWeights.from_state_dict(sd)
+    k = int(w.w1.shape[1])
+
+    if calib_X is None:
+        rng = np.random.default_rng(390)
+        X = rng.standard_normal((n_vectors, k)).astype(np.float32)
+    else:
+        X = np.asarray(calib_X, dtype=np.float32)[:n_vectors]
+
+    # X = lot de calibration : le C reçoit ce même act_max → parité par construction.
+    act_max = calibrate_activations(w, X)
+    act_max_vec = np.array([act_max["in"], act_max["h1"], act_max["h2"]], dtype=np.float32)
+
+    logits_fp32 = forward_fp32(w, X)
+    logits_pc = forward_quant(w, X, QuantConfig.per_channel_int8(), act_max=act_max)
+    logits_q15 = forward_quant(w, X, QuantConfig.q15(), act_max=act_max)
+
+    def _mat(name: str, arr: np.ndarray) -> str:
+        rows, cols = arr.shape
+        inner = ",\n    ".join(
+            "{" + ", ".join(_fmt_float(float(v)) for v in row) + "}" for row in arr
+        )
+        return f"static const float {name}[{rows}][{cols}] = {{\n    {inner}\n}};"
+
+    n = X.shape[0]
+    lines = [
+        "#pragma once",
+        "/* test_vectors_v2.h — GÉNÉRÉ par export_weights_c.py --int8-v2-test-vectors (S3909).",
+        " * Header golden auto-suffisant (poids FP32 + act_max + logits) pour parité",
+        " * C v2 ↔ émulateur Python. NE PAS ÉDITER À LA MAIN (règle CLAUDE.md). */",
+        f"#define TV_V2_N {n}",
+        f"#define TV_V2_DIM {k}",
+        f"#define TV_V2_OUT {logits_fp32.shape[1]}",
+        f"#define TV_V2_H1 {w.w1.shape[0]}",
+        f"#define TV_V2_H2 {w.w2.shape[0]}",
+        "",
+        "/* Poids FP32 de référence (convention [out][in], identique à EWCHead). */",
+        _mat("TV_V2_W1", w.w1.astype(np.float32)),
+        _array1d_to_c("TV_V2_B1", w.b1.astype(np.float32)),
+        _mat("TV_V2_W2", w.w2.astype(np.float32)),
+        _array1d_to_c("TV_V2_B2", w.b2.astype(np.float32)),
+        _mat("TV_V2_W3", w.w3.astype(np.float32)),
+        _array1d_to_c("TV_V2_B3", w.b3.astype(np.float32)),
+        "",
+        "/* Bornes d'activation calibrées [in, h1, h2] (calibrate_activations sur X). */",
+        _array1d_to_c("TV_V2_ACT_MAX", act_max_vec),
+        "",
+        "/* Entrées + logits golden (émulateur, act_max explicite). */",
+        _mat("TV_V2_INPUT", X),
+        _mat("TV_V2_LOGITS_FP32", logits_fp32.astype(np.float32)),
+        _mat("TV_V2_LOGITS_PER_CHANNEL_INT8", logits_pc.astype(np.float32)),
+        _mat("TV_V2_LOGITS_Q15", logits_q15.astype(np.float32)),
+    ]
+    header_path = out_path / "test_vectors_v2.h"
+    header_path.write_text("\n".join(lines) + "\n")
+    print(f"[export] test_vectors_v2.h écrit → {header_path}  (n={n}, k={k})")
+
+
 # ── Export seuils du gate de dérive (Sprint 38 / S3803) ────────────────────
 
 def export_drift_thresholds_to_c(thresholds_json: Path, out_path: Path) -> dict:
@@ -836,7 +1021,36 @@ def _parse_args() -> argparse.Namespace:
         help="JSON {fault_threshold,drift_threshold,window_size,drift_ratio} "
              "(run_sprint38_pc) → inc/drift_thresholds.h (gate -DEWC_AUTO_UPDATE, S3803).",
     )
+    p.add_argument(
+        "--int8-v2", nargs="?", default=None, const=_AUTO,
+        help="Checkpoint EWCMlpMulticlass(k,2,[32,16]) → ewc_head_int8_v2_weights.h "
+             "(kernel v2, poids int8 par-canal + scales calibrés, S3908). Sans valeur + "
+             "--condition/--model/--dataset : résolution auto [optionnel].",
+    )
+    p.add_argument(
+        "--int8-v2-test-vectors", action="store_true",
+        help="Génère tests/test_vectors_v2.h (golden vectors émulateur : logits FP32 / "
+             "per_channel_int8 / q15) pour la parité C v2 ↔ Python (S3908/S3909). "
+             "Nécessite --int8-v2 (ou --ewc-head) pour fournir le checkpoint.",
+    )
     return p.parse_args()
+
+
+def _load_calib_arrays(args) -> np.ndarray | None:
+    """Charge un lot de calibration [N,k] via feature_conditions si condition/dataset fournis.
+
+    Garantit que les scales d'activation du header v2 sont calibrés sur les MÊMES colonnes
+    que celles que board et PC consomment (parité par construction). None → défaut synthétique.
+    """
+    if not (args.condition and args.dataset):
+        return None
+    try:
+        from src.evaluation.feature_conditions import load_condition_arrays  # noqa: PLC0415
+        X, _y, _idx, _names = load_condition_arrays(args.dataset, args.condition, "ewc")
+        return X
+    except Exception as exc:  # calibration best-effort : ne bloque pas l'export
+        print(f"[export] calibration v2 : lot condition indisponible ({exc}) → défaut synthétique")
+        return None
 
 
 def main() -> None:
@@ -914,6 +1128,25 @@ def main() -> None:
         export_drift_thresholds_to_c(args.drift_thresholds, out_path)
     else:
         print("[export] --drift-thresholds non fourni : drift_thresholds.h inchangé")
+
+    # Sprint 39 — kernel v2 : poids int8 par-canal + scales calibrés.
+    int8_v2_ckpt: Path | None = None
+    if args.int8_v2 is not None:
+        int8_v2_ckpt = _resolve(args.int8_v2, "ewc")
+        calib_X = _load_calib_arrays(args)
+        export_ewc_int8_v2_to_c(int8_v2_ckpt, out_path, calib_X)
+    else:
+        print("[export] --int8-v2 non fourni : ewc_head_int8_v2_weights.h inchangé")
+
+    if args.int8_v2_test_vectors:
+        test_vectors_dir = Path("firmware/stm32f4_blink/tests")
+        test_vectors_dir.mkdir(parents=True, exist_ok=True)
+        if int8_v2_ckpt is None:
+            raise SystemExit(
+                "--int8-v2-test-vectors nécessite --int8-v2 (ou --ewc-head) pour le checkpoint."
+            )
+        export_ewc_int8_v2_test_vectors_h(int8_v2_ckpt, test_vectors_dir,
+                                          _load_calib_arrays(args))
 
     if args.dump_test_vectors:
         test_vectors_dir = Path("firmware/stm32f4_blink/tests")

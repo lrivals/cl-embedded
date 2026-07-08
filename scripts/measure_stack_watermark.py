@@ -7,10 +7,13 @@ mais ce chiffre **exclut la pile**. Le chemin HDC alloue p.ex. `float hv[HDC_DIM
 
     ram_peak = .data + .bss + pic_de_pile
 
-Le startup (`startup_stm32f439xx.s`) peint la zone libre `[_ebss, _estack)` avec la
-sentinelle 0xDEADBEEF au boot. Après exécution d'une charge représentative (stream
-multi-modèle, pire cas HDC), ce script lit la RAM via OpenOCD et trouve le mot le
-plus bas écrasé → profondeur de pile maximale réellement atteinte.
+Le startup (`startup_stm32f439xx.s`) peint la zone libre `[_ebss, _estack)` au boot
+avec un canary POSITION-DÉPENDANT : chaque mot reçoit sa propre adresse (`str r2,[r2]`).
+Après exécution d'une charge représentative (stream multi-modèle, pire cas HDC), ce
+script lit la RAM via OpenOCD et trouve le mot le plus bas dont la valeur ≠ son adresse
+→ profondeur de pile maximale réellement atteinte. Le motif position-dépendant élimine
+le faux négatif d'un buffer de pile rempli d'une constante répétée (contrairement à une
+sentinelle constante, qui pouvait être « imitée » par les données).
 
 Procédure (zéro changement du protocole UART) :
   1. flasher + faire tourner le firmware (`make flash`) ;
@@ -28,8 +31,9 @@ Exemple :
     python scripts/measure_stack_watermark.py \
         --elf firmware/stm32f4_blink/build/stm32f4_blink.elf
 
-Caveat : si une valeur de pile vaut exactement 0xDEADBEEF, le pic est sous-estimé
-(sentinelle choisie pour rendre l'événement négligeable).
+Caveat : le seul faux négatif résiduel est un mot-frontière valant par hasard sa propre
+adresse (~1/2³², négligeable) — le canary position-dépendant ayant déjà écarté le cas
+d'un buffer rempli d'une constante répétée.
 """
 from __future__ import annotations
 
@@ -39,7 +43,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-SENTINEL = 0xDEADBEEF
 RAM_TOTAL_BYTES = 256 * 1024  # NUCLEO-F439ZI : 192 Ko SRAM + 64 Ko CCM (budget Gap 2)
 TCL_RPC_DEFAULT_PORT = 6666
 TCL_TERMINATOR = b"\x1a"
@@ -99,8 +102,10 @@ def scan_stack_peak(ocd: OpenOCD, ebss: int, estack: int,
                     chunk_words: int = 1024) -> int:
     """Scanne [ebss, estack) de bas en haut ; retourne le pic de pile en octets.
 
-    La pile croît vers le bas depuis `estack`. On cherche le premier mot écrasé
-    (!= sentinelle) en partant de `ebss` ; tout ce qui est au-dessus a été touché.
+    La pile croît vers le bas depuis `estack`. Canary POSITION-DÉPENDANT : le
+    startup a peint chaque mot avec sa propre adresse. On cherche le premier mot
+    dont la valeur ≠ son adresse (en partant de `ebss`) ; tout ce qui est
+    au-dessus a été touché par la pile.
     """
     total_words = (estack - ebss) // 4
     addr = ebss
@@ -109,12 +114,12 @@ def scan_stack_peak(ocd: OpenOCD, ebss: int, estack: int,
         n = min(chunk_words, total_words - scanned)
         words = ocd.read_words(addr, n)
         for i, w in enumerate(words):
-            if (w & 0xFFFFFFFF) != SENTINEL:
-                first_used = addr + i * 4
-                return estack - first_used
+            word_addr = addr + i * 4
+            if (w & 0xFFFFFFFF) != (word_addr & 0xFFFFFFFF):
+                return estack - word_addr
         addr += n * 4
         scanned += n
-    return 0  # entièrement sentinelle → pile jamais utilisée (improbable)
+    return 0  # tout intact → pile jamais utilisée (improbable)
 
 
 def main() -> int:
@@ -129,6 +134,10 @@ def main() -> int:
                     help="port OpenOCD Tcl RPC (défaut 6666)")
     ap.add_argument("--no-resume", action="store_true",
                     help="ne pas relancer le cœur après la mesure")
+    ap.add_argument("--json", type=Path, default=None,
+                    help="écrire le résultat (JSON) dans ce fichier")
+    ap.add_argument("--label", default=None,
+                    help="étiquette du modèle/scénario (stockée dans le JSON)")
     args = ap.parse_args()
 
     if not args.elf.exists():
@@ -174,6 +183,22 @@ def main() -> int:
     if stack_peak == 0:
         print("  ⚠ pic de pile = 0 : la carte a-t-elle exécuté une charge avant "
               "la mesure ? (stream multi-modèle requis)")
+
+    if args.json is not None:
+        import json
+        record = {
+            "label": args.label,
+            "elf": str(args.elf),
+            "data_bytes": data_bytes,
+            "bss_bytes": bss_bytes,
+            "stack_peak_bytes": stack_peak,
+            "ram_peak_bytes": ram_peak,
+            "ram_total_bytes": RAM_TOTAL_BYTES,
+            "ram_peak_pct": round(100.0 * ram_peak / RAM_TOTAL_BYTES, 2),
+        }
+        args.json.parent.mkdir(parents=True, exist_ok=True)
+        args.json.write_text(json.dumps(record, indent=2))
+        print(f"\n→ résultat écrit : {args.json}")
     return 0
 
 

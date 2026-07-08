@@ -119,16 +119,19 @@ C'est ce qu'il faut reporter quand on veut être *sûr* du résultat (Gap 2).
 
 Technique standard en embarqué, en 3 temps :
 
+Canary **position-dépendant** : chaque mot est peint avec **sa propre adresse**
+(un buffer de pile rempli d'une constante répétée ne peut donc pas masquer une zone).
+
 ```
    AU BOOT (startup.s)              APRÈS UNE CHARGE              ON SCANNE
    ┌──────────────┐ _estack        ┌──────────────┐ _estack     ┌──────────────┐
-   │  DEADBEEF    │                 │  pile        │ ← utilisée  │  pile        │
-   │  DEADBEEF    │  on peint       │  utilisée    │             │  utilisée    │
-   │  DEADBEEF    │  toute la zone  │  DEADBEEF    │             ├──────────────┤ ← 1er mot
-   │  DEADBEEF    │  libre avec     │  DEADBEEF    │             │  DEADBEEF    │   écrasé
-   │  DEADBEEF    │  la sentinelle  │  DEADBEEF    │             │  DEADBEEF    │
+   │ mot = @mot   │                 │  pile        │ ← utilisée  │  pile        │
+   │ mot = @mot   │  on peint       │  utilisée    │             │  utilisée    │
+   │ mot = @mot   │  chaque mot     │ mot = @mot   │             ├──────────────┤ ← 1er mot
+   │ mot = @mot   │  avec sa propre │ mot = @mot   │             │ mot = @mot   │   ≠ @mot
+   │ mot = @mot   │  adresse        │ mot = @mot   │             │ mot = @mot   │
    └──────────────┘ _ebss          └──────────────┘ _ebss       └──────────────┘
-                                                            pic = _estack − (1er mot écrasé)
+                                                            pic = _estack − (1er mot ≠ @mot)
 ```
 
 1. **Peinture au démarrage** — dans `startup_stm32f439xx.s`, juste avant `bl main`
@@ -138,20 +141,20 @@ Technique standard en embarqué, en 3 temps :
    ```asm
    ldr r2, =_ebss
    ldr r3, =_estack
-   ldr r1, =0xDEADBEEF
    PaintStack:
-     str r1, [r2], #4
+     str r2, [r2]        @ canary = adresse (Rt==Rn sans writeback : OK)
+     add r2, r2, #4
    LoopPaintStack:
      cmp r2, r3
      bcc PaintStack
    ```
 
    La boucle n'utilise que des registres → **ne modifie ni `.bss` ni `.data`**
-   (vérifié : tailles inchangées, seul `.text` +16 B).
+   (vérifié : tailles inchangées, seul `.text` grossit un peu).
 
 2. **Exécution** d'une charge représentative (stream multi-modèle, pire cas HDC).
 
-3. **Scan** — le plus bas mot non-sentinelle marque la profondeur atteinte :
+3. **Scan** — le plus bas mot dont la valeur ≠ son adresse marque la profondeur atteinte :
 
    ```c
    uint32_t profiling_stack_peak_bytes(void);   // _estack − 1er_mot_écrasé
@@ -175,19 +178,25 @@ python scripts/measure_stack_watermark.py
 ```
 
 Le script lit `_sbss/_ebss/_sdata/_edata/_estack` **depuis l'ELF** (zéro valeur en
-dur), halt le cœur, scanne la sentinelle, et affiche :
+dur), halt le cœur, scanne la sentinelle, et affiche. **Mesure réelle NUCLEO-F439ZI**
+(dataset Monitoring, mode entraînement, `experiments/exp_S39_ram/`) :
 
 ```
   .data        :      460 B
-  .bss         :  105 036 B   (chiffre habituellement rapporté)
-  pic de pile  :     <mesuré> B
+  .bss         :  106 152 B   (chiffre habituellement rapporté)
+  pic de pile  :    4 712 B   (EWC entraînement — mesuré, high-water mark)
   ─────────────────────────────
-  RAM pic total:     <mesuré> B   (xx.x % de 256 Ko)
+  RAM pic total:  111 324 B   (42.5 % de 256 Ko)
 ```
 
-> **Caveat honnête** : si un mot de pile vaut par hasard `0xDEADBEEF`, le pic est
-> légèrement sous-estimé. La sentinelle est choisie pour rendre l'événement
-> négligeable.
+> **Caveat honnête** : le seul mot-frontière valant par hasard sa propre adresse
+> sous-estimerait le pic (~1/2³², négligeable) ; le canary position-dépendant élimine
+> le cas d'un buffer rempli d'une constante répétée.
+>
+> **Nuance mesurée** : le pic de pile est **~identique (~4,3 Ko) pour tous les modèles**
+> (EWC 4 712 B, HDC/Maha/TinyOL 4 336 B) car le compilateur réserve **une seule trame pour
+> `pipeline_run()` = le max de toutes ses branches** (dont `hv[HDC_DIM]` 4 Ko). Le pic de
+> pile est donc une propriété du firmware entier, pas isolable par modèle.
 
 ---
 
@@ -205,13 +214,45 @@ Le `.bss` reste un indicateur utile, mais le chiffre **à présenter** quand on 
 
 ---
 
-## 6. Récapitulatif des artefacts
+## 6. Où vit quoi, par modèle — et exemple chiffré (Monitoring)
+
+Le notebook [`notebooks/cl_eval/ram_measurement/ram_explained.ipynb`](../notebooks/cl_eval/ram_measurement/ram_explained.ipynb)
+détaille, pour chaque modèle, la part **statique** (poids figés, Flash → copie RAM) vs
+**modulable** (état de *continual learning* mis à jour à bord, `.bss` in-place), plus la
+**pile**. Les tailles `.bss` sont lues réellement de l'ELF ; le split est calculé et
+vérifié par [`scripts/ram_breakdown.py`](../scripts/ram_breakdown.py).
+
+Sur Monitoring (5-feat), split validé au niveau octet contre `nm` :
+
+| Modèle | statique (poids) | modulable (état CL) | `.bss` total | pile inf. | pile entr. |
+|---|---:|---:|---:|---:|---:|
+| EWC | 3 016 B | 5 636 B (Fisher + θ*) | 8 652 B | 200 B | 400 B |
+| HDC | 20 000 B (proj) | 8 332 B (mémoire assoc.) | 28 332 B | 4 000 B | 4 300 B |
+| Mahalanobis | 108 B (Σ⁻¹) | 20 B (moyenne EMA) | 128 B | 40 B | 40 B |
+| TinyOL | 5 716 B (auto-enc. gelé) | 96 B (tête OtO) | 5 812 B | 212 B | 212 B |
+
+**Idée maîtresse** : statique et modulable vivent dans la **même struct pré-allouée en
+`.bss`** ; l'entraînement en ligne (Fisher, θ*, mémoire associative, EMA, tête OtO)
+réécrit des tableaux **déjà comptés** — il n'ajoute **aucune RAM permanente**, seulement de
+la pile transitoire. Donc `.bss` inférence == `.bss` entraînement.
+
+Schémas générés (`docs/figures/ram_measurement/`) :
+`fig_memory_map.png`, `fig_stack_painting.png`, `fig_model_maps.png`,
+`fig_monitoring_stacked.png`, `fig_infer_vs_train.png`, `fig_shared_frame.png`
+(effet « trame partagée `pipeline_run` »).
+
+---
+
+## 7. Récapitulatif des artefacts
 
 | Fichier | Rôle |
 |---|---|
 | `firmware/.../startup/startup_stm32f439xx.s` | Peinture de la pile au boot |
 | `firmware/.../inc/profiling.h`, `src/profiling.c` | `STACK_PAINT_SENTINEL`, getters de pic |
 | `firmware/.../tests/test_profiling.c` | 3 tests du scan (PASS) |
-| `scripts/measure_stack_watermark.py` | Driver OpenOCD : pic de pile + RAM totale |
+| `scripts/measure_stack_watermark.py` | Driver OpenOCD : pic de pile + RAM totale (`--json`) |
+| `scripts/ram_breakdown.py` | Split statique/modulable par modèle (vérifié vs nm) |
+| `scripts/run_ram_board.py` | Driver carte optionnel : pic réel par modèle Monitoring |
+| `notebooks/cl_eval/ram_measurement/ram_explained.ipynb` | Notebook pédagogique + 5 schémas |
 | `docs/context/ram_measurement.md` | Référence technique détaillée |
 | `docs/presentation_ram_measurement.md` | **Ce document** (présentation) |

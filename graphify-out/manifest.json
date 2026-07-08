@@ -240,9 +240,9 @@
     "semantic_hash": "7ac40af4529517e4d0fda33b08ddc572"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/export_weights_c.py": {
-    "mtime": 1782729339.7613401,
-    "ast_hash": "ab724872e21a5fd239d69ec7228e5823",
-    "semantic_hash": "ab724872e21a5fd239d69ec7228e5823"
+    "mtime": 1782910695.4830403,
+    "ast_hash": "d13af275125a40eb7e515c35849f593b",
+    "semantic_hash": "d13af275125a40eb7e515c35849f593b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/generate_cwru_severity_notebooks.py": {
     "mtime": 1777212689.937269,
@@ -390,14 +390,14 @@
     "semantic_hash": "3613e9a260573d92cac14bbd01a92e56"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/profiling.c": {
-    "mtime": 1782490629.1827464,
-    "ast_hash": "e935bcccd517fd04e1bcbe0b03385789",
-    "semantic_hash": "e935bcccd517fd04e1bcbe0b03385789"
+    "mtime": 1782985089.9022372,
+    "ast_hash": "70b4cccdf751ed27f7e8547aa71edff9",
+    "semantic_hash": "70b4cccdf751ed27f7e8547aa71edff9"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/pipeline.c": {
-    "mtime": 1782731194.698021,
-    "ast_hash": "29b19dc310710c98a7130d120cd99b4b",
-    "semantic_hash": "29b19dc310710c98a7130d120cd99b4b"
+    "mtime": 1783420181.9520311,
+    "ast_hash": "bf4a0c531ecca6490badf691fc3f2313",
+    "semantic_hash": "bf4a0c531ecca6490badf691fc3f2313"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/.vscode/c_cpp_properties.json": {
     "mtime": 1778478994.9784858,
@@ -430,9 +430,9 @@
     "semantic_hash": "a59e868ba4b027ad5ba070dbf71eaafc"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_runner.c": {
-    "mtime": 1782728786.6971831,
-    "ast_hash": "430307f9992a57971818179371752aa9",
-    "semantic_hash": "430307f9992a57971818179371752aa9"
+    "mtime": 1782985143.5321178,
+    "ast_hash": "49facb32e287d2ba2651c9a955f7ef34",
+    "semantic_hash": "49facb32e287d2ba2651c9a955f7ef34"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/mock_data.h": {
     "mtime": 1779890559.8929589,
@@ -440,9 +440,9 @@
     "semantic_hash": "d20a1412d27f1860650f572793f0e434"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_profiling.c": {
-    "mtime": 1782490662.4735978,
-    "ast_hash": "f7deaf308399dcf80b84bc77e4911898",
-    "semantic_hash": "f7deaf308399dcf80b84bc77e4911898"
+    "mtime": 1782985128.7842405,
+    "ast_hash": "59189ec677e11cfcda7b9337cb9b0e9e",
+    "semantic_hash": "59189ec677e11cfcda7b9337cb9b0e9e"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_pipeline.c": {
     "mtime": 1781772926.9449806,
@@ -480,9 +480,9 @@
     "semantic_hash": "e57940a12208a4de87ae4a8dba0ec003"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/profiling.h": {
-    "mtime": 1782490618.0606008,
-    "ast_hash": "e93d0e693125a56c83901f056fe459fa",
-    "semantic_hash": "e93d0e693125a56c83901f056fe459fa"
+    "mtime": 1782985072.667228,
+    "ast_hash": "35368cc7f65157b35176df95be3c2d48",
+    "semantic_hash": "35368cc7f65157b35176df95be3c2d48"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/pipeline.h": {
     "mtime": 1782488924.111434,
@@ -500,9 +500,9 @@
     "semantic_hash": "c177e5e68823ec3df8cda1a15532f899"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/model_weights.h": {
-    "mtime": 1782735073.6334329,
-    "ast_hash": "e9689758f72484eea5e1b14634739b15",
-    "semantic_hash": "e9689758f72484eea5e1b14634739b15"
+    "mtime": 1783421375.2941625,
+    "ast_hash": "dcad1576cd541597ad67da97d9e49461",
+    "semantic_hash": "dcad1576cd541597ad67da97d9e49461"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/stm32f4xx.h": {
     "mtime": 1778482498.1380942,
@@ -520,9 +520,9 @@
     "semantic_hash": "d308c44b3fb4c75aeca6a0849f760980"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/triple_gap.md": {
-    "mtime": 1782581477.9466872,
-    "ast_hash": "e27d5d2eaa49fe24dee11e5e14dc31ed",
-    "semantic_hash": "e27d5d2eaa49fe24dee11e5e14dc31ed"
+    "mtime": 1783422969.6471016,
+    "ast_hash": "7d10473d58e1bf0b31e0531024e6e6e5",
+    "semantic_hash": "7d10473d58e1bf0b31e0531024e6e6e5"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/roadmap.md": {
     "mtime": 1779359321.895805,
@@ -530,9 +530,9 @@
     "semantic_hash": "d1cf0bc8b0e211965aedde8bc99d2490"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/roadmap_phase2.md": {
-    "mtime": 1782581459.2875137,
-    "ast_hash": "6dcddd4793d433c387a64de77068008c",
-    "semantic_hash": "6dcddd4793d433c387a64de77068008c"
+    "mtime": 1783495150.0200253,
+    "ast_hash": "546bb7c4bcf64e122b9767177d8c29fe",
+    "semantic_hash": "546bb7c4bcf64e122b9767177d8c29fe"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/embedded_demo_guide.md": {
     "mtime": 1779304998.1706638,
@@ -1860,7 +1860,7 @@
     "semantic_hash": "5d889f6515d0041ec4238255be698bc3"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/hdc.c": {
-    "mtime": 1782293163.0432625,
+    "mtime": 1782996225.3093016,
     "ast_hash": "0e49b3f17fde3159621a7ecccacabff5",
     "semantic_hash": "0e49b3f17fde3159621a7ecccacabff5"
   },
@@ -9710,19 +9710,19 @@
     "semantic_hash": "e15302ebdb73b22c83c922cce53acbb6"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/pipeline_network_diagram.html": {
-    "mtime": 1777277629.667069,
-    "ast_hash": "610cba795a1ef625200a6fca8c426bb5",
-    "semantic_hash": "610cba795a1ef625200a6fca8c426bb5"
+    "mtime": 1782824221.2430751,
+    "ast_hash": "f8e63a75ded886c680f43f92147c9fe4",
+    "semantic_hash": "f8e63a75ded886c680f43f92147c9fe4"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/README.md": {
-    "mtime": 1780374085.2984214,
-    "ast_hash": "1d466cb8bac0b815a9407b81ba7544bf",
-    "semantic_hash": "1d466cb8bac0b815a9407b81ba7544bf"
+    "mtime": 1782823875.888169,
+    "ast_hash": "ec8a869e7cf0fa3c1125e1c838b66467",
+    "semantic_hash": "ec8a869e7cf0fa3c1125e1c838b66467"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/CLAUDE.md": {
-    "mtime": 1782585649.362171,
-    "ast_hash": "0e88216f5452f81a41bb078a6962d2db",
-    "semantic_hash": "0e88216f5452f81a41bb078a6962d2db"
+    "mtime": 1783495436.9600499,
+    "ast_hash": "481290289666711f7eca4a871d90f83a",
+    "semantic_hash": "481290289666711f7eca4a871d90f83a"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/requirements.txt": {
     "mtime": 1778480325.7052853,
@@ -16925,14 +16925,14 @@
     "semantic_hash": "0a205236de578402491bba40fdc085bc"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/pc_gap3_heatmaps.png": {
-    "mtime": 1782577080.6036854,
+    "mtime": 1782665963.9969225,
     "ast_hash": "8910937c192ad934be87a0234b01cb2b",
     "semantic_hash": "8910937c192ad934be87a0234b01cb2b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/ram_reduction_board.png": {
-    "mtime": 1781516126.9364827,
-    "ast_hash": "8741728e0e9fc030e444885cada03387",
-    "semantic_hash": "8741728e0e9fc030e444885cada03387"
+    "mtime": 1782665965.5716016,
+    "ast_hash": "ec38c6018d6933003ff3e8b67778d79a",
+    "semantic_hash": "ec38c6018d6933003ff3e8b67778d79a"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/s2908_simd_blocked.png": {
     "mtime": 1781516127.6444883,
@@ -16940,52 +16940,52 @@
     "semantic_hash": "c942d12c04940c5a0c9fd0a2f883e9fb"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/board_int8_summary_table.png": {
-    "mtime": 1782577081.8174057,
-    "ast_hash": "9341a7a372a35f44cd708c1ab0fd17eb",
-    "semantic_hash": "9341a7a372a35f44cd708c1ab0fd17eb"
+    "mtime": 1782665969.7159834,
+    "ast_hash": "d8343a0c977adc6dc31f3560bb729946",
+    "semantic_hash": "d8343a0c977adc6dc31f3560bb729946"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/gap_compliance_grid.png": {
-    "mtime": 1781516127.4184866,
-    "ast_hash": "0192566a73d0d4382d2b5b95ec0fdaa5",
-    "semantic_hash": "0192566a73d0d4382d2b5b95ec0fdaa5"
+    "mtime": 1782665966.862953,
+    "ast_hash": "3166f6f130c87aa95f3826a6b0b609d1",
+    "semantic_hash": "3166f6f130c87aa95f3826a6b0b609d1"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/gap3_multimodel_synthesis.png": {
-    "mtime": 1782577081.4494092,
-    "ast_hash": "c6d0b2394f217194ad495ffdca497707",
-    "semantic_hash": "c6d0b2394f217194ad495ffdca497707"
+    "mtime": 1782665969.1699777,
+    "ast_hash": "75eeb8d178fa210a1419be48a79bb3f9",
+    "semantic_hash": "75eeb8d178fa210a1419be48a79bb3f9"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/latency_int8_vs_fp32_board.png": {
-    "mtime": 1781516126.5994802,
-    "ast_hash": "be4a1c3fb6e7a94e9b8e7fef38c7ec27",
-    "semantic_hash": "be4a1c3fb6e7a94e9b8e7fef38c7ec27"
+    "mtime": 1782665964.718811,
+    "ast_hash": "3eabef3de6f77380f8c4f9321ab0efef",
+    "semantic_hash": "3eabef3de6f77380f8c4f9321ab0efef"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/metric_int8_vs_fp32_board.png": {
-    "mtime": 1781516127.2004848,
-    "ast_hash": "c66fb6f51722219216f2900da4c6c470",
-    "semantic_hash": "c66fb6f51722219216f2900da4c6c470"
+    "mtime": 1782665966.2859468,
+    "ast_hash": "af299b41bdc2812443b2f8d5be54b537",
+    "semantic_hash": "af299b41bdc2812443b2f8d5be54b537"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint28/ram_ratio_bars.png": {
-    "mtime": 1782577207.2987647,
+    "mtime": 1782825414.5317078,
     "ast_hash": "1ffb989478c2ef55ec477e1bb00b6f4b",
     "semantic_hash": "1ffb989478c2ef55ec477e1bb00b6f4b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint28/gap3_summary_grid.png": {
-    "mtime": 1782577209.3178115,
+    "mtime": 1782825416.0881772,
     "ast_hash": "74a90f10ce6652e36ff566196e1d2e9b",
     "semantic_hash": "74a90f10ce6652e36ff566196e1d2e9b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint28/delta_metric_heatmap.png": {
-    "mtime": 1782577206.8707547,
+    "mtime": 1782825414.050177,
     "ast_hash": "a7e2ce9e537863afdbe4016dc4a15b95",
     "semantic_hash": "a7e2ce9e537863afdbe4016dc4a15b95"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint28/metric_fp32_vs_int8.png": {
-    "mtime": 1782577208.111398,
+    "mtime": 1782825415.2881773,
     "ast_hash": "0b51db0f40fbf31f6d80dfbb30f430dd",
     "semantic_hash": "0b51db0f40fbf31f6d80dfbb30f430dd"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint28/metric_preservation_checklist.png": {
-    "mtime": 1782577208.9268024,
+    "mtime": 1782825415.7701774,
     "ast_hash": "f657cf9d40d5e418ede2e28158e09d29",
     "semantic_hash": "f657cf9d40d5e418ede2e28158e09d29"
   },
@@ -17385,9 +17385,9 @@
     "semantic_hash": "8e03e01daa9469ce4d2a3eb2ddbedfca"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/model_weights_ewc.h": {
-    "mtime": 1782735074.5485103,
-    "ast_hash": "30c965251d558aedf9b9365aa25d108f",
-    "semantic_hash": "30c965251d558aedf9b9365aa25d108f"
+    "mtime": 1783421376.4488454,
+    "ast_hash": "b0c8e9f8abcacd3383fabcc2c4b3aaa1",
+    "semantic_hash": "b0c8e9f8abcacd3383fabcc2c4b3aaa1"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/battery_feature_selection.py": {
     "mtime": 1782212802.2175734,
@@ -23045,9 +23045,9 @@
     "semantic_hash": "5004a241285a3012fdece8844be275a2"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_36/S3600_sprint_36.md": {
-    "mtime": 1782581400.654522,
-    "ast_hash": "90be7d74b96189dbe69d7dcbaab62069",
-    "semantic_hash": "90be7d74b96189dbe69d7dcbaab62069"
+    "mtime": 1782725385.9064858,
+    "ast_hash": "63df755daab10668e78a33decf03f9af",
+    "semantic_hash": "63df755daab10668e78a33decf03f9af"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S35_PC_all_ewc_paderborn/config_snapshot.yaml": {
     "mtime": 1782407614.9129164,
@@ -23190,9 +23190,9 @@
     "semantic_hash": "9c71d0913341ac32bb6d0e5987a1f9b4"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/measure_stack_watermark.py": {
-    "mtime": 1782490784.4881682,
-    "ast_hash": "be21cc4abe016380420351d926eaa6f7",
-    "semantic_hash": "be21cc4abe016380420351d926eaa6f7"
+    "mtime": 1782986312.7723415,
+    "ast_hash": "a22b820af4c8dd30ea4ed389c75309bd",
+    "semantic_hash": "a22b820af4c8dd30ea4ed389c75309bd"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/tests/test_energy_capture.py": {
     "mtime": 1782578087.8927379,
@@ -23325,14 +23325,14 @@
     "semantic_hash": "06b7dfda1fddd24a43ea7b733900d54b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/presentation_ram_measurement.md": {
-    "mtime": 1782576725.2074854,
-    "ast_hash": "3f34cd526d4d90e539eb61f576539e6a",
-    "semantic_hash": "3f34cd526d4d90e539eb61f576539e6a"
+    "mtime": 1782985467.6559665,
+    "ast_hash": "2166fd3b3da740bb161194ad606aaf9a",
+    "semantic_hash": "2166fd3b3da740bb161194ad606aaf9a"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/context/ram_measurement.md": {
-    "mtime": 1782490857.4281926,
-    "ast_hash": "05530422a8ad6a1a2c3334a0c676f4fa",
-    "semantic_hash": "05530422a8ad6a1a2c3334a0c676f4fa"
+    "mtime": 1782996387.3253155,
+    "ast_hash": "efcc1f4efa9043b3a100c8d91f15bc7b",
+    "semantic_hash": "efcc1f4efa9043b3a100c8d91f15bc7b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/aggregate_sprint36.py": {
     "mtime": 1782723274.9242406,
@@ -23340,9 +23340,9 @@
     "semantic_hash": "58df114c57ee0407a443fb1962a1b8ee"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/board_pc_parity.py": {
-    "mtime": 1782580755.0792305,
-    "ast_hash": "65902f94e78f2ac1414f53caa59d27ea",
-    "semantic_hash": "65902f94e78f2ac1414f53caa59d27ea"
+    "mtime": 1783420486.518185,
+    "ast_hash": "a97eb53707f10338410bbee17a9984dc",
+    "semantic_hash": "a97eb53707f10338410bbee17a9984dc"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/tests/test_sprint36_comparison.py": {
     "mtime": 1782723740.496307,
@@ -23414,53 +23414,8 @@
     "ast_hash": "4762684c21dcaf3aaaf83ef60ea0d2c5",
     "semantic_hash": "4762684c21dcaf3aaaf83ef60ea0d2c5"
   },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/forgetting_curves.png": {
-    "mtime": 1782581091.969505,
-    "ast_hash": "b30d4d24641e7fb15378c0f229574a2f",
-    "semantic_hash": "b30d4d24641e7fb15378c0f229574a2f"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accuracy_vs_ram.png": {
-    "mtime": 1782581092.5479593,
-    "ast_hash": "d1d386c1d81422de61981e141ace0189",
-    "semantic_hash": "d1d386c1d81422de61981e141ace0189"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/latency_pc_vs_board.png": {
-    "mtime": 1782581092.3704867,
-    "ast_hash": "b64128e531f92f3550880552e5ec9822",
-    "semantic_hash": "b64128e531f92f3550880552e5ec9822"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/f1_rocauc_pc_vs_board.png": {
-    "mtime": 1782581092.6634576,
-    "ast_hash": "a73190f02d565160fc1be4930d85466e",
-    "semantic_hash": "a73190f02d565160fc1be4930d85466e"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accfinal_vs_forgetting.png": {
-    "mtime": 1782581091.6774733,
-    "ast_hash": "83b15e5404517a69dfa27c88d37e6e8c",
-    "semantic_hash": "83b15e5404517a69dfa27c88d37e6e8c"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/latency_inference_vs_update.png": {
-    "mtime": 1782581092.253853,
-    "ast_hash": "eceed8bf9548249a66f218e632a84775",
-    "semantic_hash": "eceed8bf9548249a66f218e632a84775"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accuracy_per_task.png": {
-    "mtime": 1782581091.0564613,
-    "ast_hash": "67b538c2ce11ebf2b9e2e1dbe6672987",
-    "semantic_hash": "67b538c2ce11ebf2b9e2e1dbe6672987"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/prediction_parity.png": {
-    "mtime": 1782581092.9574385,
-    "ast_hash": "e5183a7dc526e1beb503b9e7bc1a8b6d",
-    "semantic_hash": "e5183a7dc526e1beb503b9e7bc1a8b6d"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/cl_accuracy_matrix.png": {
-    "mtime": 1782581091.50347,
-    "ast_hash": "71194a13fd0d9df11394f9bed6ab556a",
-    "semantic_hash": "71194a13fd0d9df11394f9bed6ab556a"
-  },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/condition_5feat_vs_all.png": {
-    "mtime": 1782581093.2854145,
+    "mtime": 1782742127.7831628,
     "ast_hash": "4f9e87a6f795eda70d57b835422d8df1",
     "semantic_hash": "4f9e87a6f795eda70d57b835422d8df1"
   },
@@ -24153,5 +24108,1710 @@
     "mtime": 1782724211.1069574,
     "ast_hash": "dc92f4abe6ad0d4ee0140f16832235b5",
     "semantic_hash": "dc92f4abe6ad0d4ee0140f16832235b5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/utils/int8_c_emulation.py": {
+    "mtime": 1782827339.527802,
+    "ast_hash": "08e13628f6a049a3fded9c0f9208186b",
+    "semantic_hash": "08e13628f6a049a3fded9c0f9208186b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s39_int8_ablation.py": {
+    "mtime": 1782892838.5713003,
+    "ast_hash": "511b50aa10c6b807d28117e88a2f8886",
+    "semantic_hash": "511b50aa10c6b807d28117e88a2f8886"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_int8_c_emulation.py": {
+    "mtime": 1782893582.730816,
+    "ast_hash": "add20471952d257c5c54b5cbb37e3939",
+    "semantic_hash": "add20471952d257c5c54b5cbb37e3939"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ablation/paderborn.json": {
+    "mtime": 1782893535.9860792,
+    "ast_hash": "53b2f41b0f38a5006d2eaf6b1adef2d6",
+    "semantic_hash": "53b2f41b0f38a5006d2eaf6b1adef2d6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ablation/cmapss.json": {
+    "mtime": 1782893409.8949704,
+    "ast_hash": "10dfd8e4e7ddd37ed6b75080daff3376",
+    "semantic_hash": "10dfd8e4e7ddd37ed6b75080daff3376"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ablation/pronostia.json": {
+    "mtime": 1782893460.7508256,
+    "ast_hash": "8751784ac7cec197f65c6bc4b6c05e4e",
+    "semantic_hash": "8751784ac7cec197f65c6bc4b6c05e4e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ablation/cwru.json": {
+    "mtime": 1782893413.2584698,
+    "ast_hash": "b7289bce88fc0fab15159cefa3230df3",
+    "semantic_hash": "b7289bce88fc0fab15159cefa3230df3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ablation/monitoring.json": {
+    "mtime": 1782893435.2267675,
+    "ast_hash": "3e046b189ba984ded390cd0b0c1f6882",
+    "semantic_hash": "3e046b189ba984ded390cd0b0c1f6882"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/gitlab_release.yaml": {
+    "mtime": 1782588474.125877,
+    "ast_hash": "8bf5989ad3fe3c58eda2b2ad67dd3a2e",
+    "semantic_hash": "8bf5989ad3fe3c58eda2b2ad67dd3a2e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/sprint38_autonomous_update.yaml": {
+    "mtime": 1782727214.2665417,
+    "ast_hash": "8f2e522c1f11a23985292c9aafa20efb",
+    "semantic_hash": "8f2e522c1f11a23985292c9aafa20efb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/gitlab_publication.md": {
+    "mtime": 1782588123.8768566,
+    "ast_hash": "507ac0e07559387c95697d4ccb3d73c3",
+    "semantic_hash": "507ac0e07559387c95697d4ccb3d73c3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/gitlab/CONTRIBUTING.md": {
+    "mtime": 1782587455.6607006,
+    "ast_hash": "1a5ccb04109e9662bc3bb3ea2a1d310e",
+    "semantic_hash": "1a5ccb04109e9662bc3bb3ea2a1d310e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/gitlab/README_gitlab.md": {
+    "mtime": 1782587436.1956165,
+    "ast_hash": "64ba77d86683f59fbe44cb9de43ffcbf",
+    "semantic_hash": "64ba77d86683f59fbe44cb9de43ffcbf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3803_firmware_gate.md": {
+    "mtime": 1782730035.5083523,
+    "ast_hash": "5b9a3016c785470fdcc997887c02e99c",
+    "semantic_hash": "5b9a3016c785470fdcc997887c02e99c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3802_pc_reference.md": {
+    "mtime": 1782730012.1661181,
+    "ast_hash": "4351c066127df851ba5cbb61f43e3900",
+    "semantic_hash": "4351c066127df851ba5cbb61f43e3900"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3801_config.md": {
+    "mtime": 1782729970.2930508,
+    "ast_hash": "646361aedf279c894d63fbdbae8ea2e5",
+    "semantic_hash": "646361aedf279c894d63fbdbae8ea2e5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3808_notebook.md": {
+    "mtime": 1782735879.1683743,
+    "ast_hash": "69dc5ff6c3d99c873d8773b8cf7ed22d",
+    "semantic_hash": "69dc5ff6c3d99c873d8773b8cf7ed22d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3804_board_references.md": {
+    "mtime": 1782730068.5009108,
+    "ast_hash": "015369ba3bc620d31fa920455b81ff2e",
+    "semantic_hash": "015369ba3bc620d31fa920455b81ff2e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3805_board_autonomous.md": {
+    "mtime": 1782735861.1045809,
+    "ast_hash": "7b0454475e6f795b257a8b4278164f15",
+    "semantic_hash": "7b0454475e6f795b257a8b4278164f15"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3807_aggregate.md": {
+    "mtime": 1782735874.0863137,
+    "ast_hash": "8e528a9f911e4a1f696a3c59ffca7ecc",
+    "semantic_hash": "8e528a9f911e4a1f696a3c59ffca7ecc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3800_sprint_38.md": {
+    "mtime": 1782726174.6798272,
+    "ast_hash": "16dd616d7dc0e09e53f4a1ec945e833e",
+    "semantic_hash": "16dd616d7dc0e09e53f4a1ec945e833e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3806_parity.md": {
+    "mtime": 1782735869.0502539,
+    "ast_hash": "1bf59f28e49105dfd19be9bddce25749",
+    "semantic_hash": "1bf59f28e49105dfd19be9bddce25749"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_38/S3809_tests_docs.md": {
+    "mtime": 1782735885.801453,
+    "ast_hash": "013d763c328f5b6e21f10940e2daf032",
+    "semantic_hash": "013d763c328f5b6e21f10940e2daf032"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_29/S2914_notebook_grid_20.md": {
+    "mtime": 1782665850.4237077,
+    "ast_hash": "d44af15e7245f03fe479e31c4a5df8c0",
+    "semantic_hash": "d44af15e7245f03fe479e31c4a5df8c0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_29/S2912_mahalanobis_int8_firmware.md": {
+    "mtime": 1782665834.5145366,
+    "ast_hash": "02e2208880cccffee2c958c0c4568af2",
+    "semantic_hash": "02e2208880cccffee2c958c0c4568af2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_29/S2913_board_extension_20.md": {
+    "mtime": 1782665843.8696373,
+    "ast_hash": "6fafbcadc7cc460f9fe1c29efb836fa2",
+    "semantic_hash": "6fafbcadc7cc460f9fe1c29efb836fa2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_36/S3610_int8_fp32_board.md": {
+    "mtime": 1782725414.3966098,
+    "ast_hash": "527dde085a4b69688d217bc4bd786b0a",
+    "semantic_hash": "527dde085a4b69688d217bc4bd786b0a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3703_prepare_release.md": {
+    "mtime": 1782588284.9206054,
+    "ast_hash": "f478e080186ee7cf1af4113ed13b31a6",
+    "semantic_hash": "f478e080186ee7cf1af4113ed13b31a6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3706_ci_guard.md": {
+    "mtime": 1782588322.3950129,
+    "ast_hash": "86ae686683bc32b6e273782c70d7436a",
+    "semantic_hash": "86ae686683bc32b6e273782c70d7436a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3705_makefile.md": {
+    "mtime": 1782588312.691606,
+    "ast_hash": "2500bfaefcb0a905336f85626349b236",
+    "semantic_hash": "2500bfaefcb0a905336f85626349b236"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3700_sprint_37.md": {
+    "mtime": 1782588232.923747,
+    "ast_hash": "2439b5459d91b1265a9a2c82b5f9ab73",
+    "semantic_hash": "2439b5459d91b1265a9a2c82b5f9ab73"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3707_runbook.md": {
+    "mtime": 1782588334.9128525,
+    "ast_hash": "c868fe1df05cedfa1e8657eb122f0325",
+    "semantic_hash": "c868fe1df05cedfa1e8657eb122f0325"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3708_tests.md": {
+    "mtime": 1782588347.0862818,
+    "ast_hash": "305b3b0d8edc216bece575cf839da0a5",
+    "semantic_hash": "305b3b0d8edc216bece575cf839da0a5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3702_check_ai_traces.md": {
+    "mtime": 1782588271.0099192,
+    "ast_hash": "78e1c774b91de5c0bec2814fcd07fed3",
+    "semantic_hash": "78e1c774b91de5c0bec2814fcd07fed3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3704_neutral_docs.md": {
+    "mtime": 1782588304.9324963,
+    "ast_hash": "d7d92982cc927bb0a15316c8eb3d63d2",
+    "semantic_hash": "d7d92982cc927bb0a15316c8eb3d63d2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3709_docs_graphify.md": {
+    "mtime": 1782588358.3771756,
+    "ast_hash": "7de7ee97f17ceea7de67baff720beb9c",
+    "semantic_hash": "7de7ee97f17ceea7de67baff720beb9c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_37/S3701_release_config.md": {
+    "mtime": 1782588251.5529082,
+    "ast_hash": "66a03bd1dbed90b223bf7bb474864170",
+    "semantic_hash": "66a03bd1dbed90b223bf7bb474864170"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3903_validation_emulateur.md": {
+    "mtime": 1782893729.0963764,
+    "ast_hash": "0ff4837dfff924c0aa97f61d66aff144",
+    "semantic_hash": "0ff4837dfff924c0aa97f61d66aff144"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3909_tests_unity_v2.md": {
+    "mtime": 1782909158.9912498,
+    "ast_hash": "75d8a17c9676d2913da5dfc7d4e0c44d",
+    "semantic_hash": "75d8a17c9676d2913da5dfc7d4e0c44d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3915_board_validation.md": {
+    "mtime": 1782911367.5824063,
+    "ast_hash": "0bf4f31aceabe2441323f7a459a4216f",
+    "semantic_hash": "0bf4f31aceabe2441323f7a459a4216f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3912_tests_python.md": {
+    "mtime": 1782909170.4610045,
+    "ast_hash": "4e20d8e7b08f766abe31fd67b4cc09bd",
+    "semantic_hash": "4e20d8e7b08f766abe31fd67b4cc09bd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3918_comparaison_conditions_identiques.md": {
+    "mtime": 1782911390.193923,
+    "ast_hash": "1fc29e97f90026d9784eb9a5e717b9cf",
+    "semantic_hash": "1fc29e97f90026d9784eb9a5e717b9cf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3900_sprint_39.md": {
+    "mtime": 1782909208.6992865,
+    "ast_hash": "9abf37a882cf9ef8f405ed2426b33efd",
+    "semantic_hash": "9abf37a882cf9ef8f405ed2426b33efd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3907_kernel_v2.md": {
+    "mtime": 1782909220.4204009,
+    "ast_hash": "ffb4506a8fd3069fbce2a41aeb2b1f22",
+    "semantic_hash": "ffb4506a8fd3069fbce2a41aeb2b1f22"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3904_ablation_perte_f1.md": {
+    "mtime": 1782893759.0403788,
+    "ast_hash": "508419c0484523ac173a7473a56256cd",
+    "semantic_hash": "508419c0484523ac173a7473a56256cd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3911_notebook_tradeoff.md": {
+    "mtime": 1782909165.4464703,
+    "ast_hash": "fed68357915f0498e98538755c164bf5",
+    "semantic_hash": "fed68357915f0498e98538755c164bf5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3908_export_per_channel.md": {
+    "mtime": 1782897620.3017993,
+    "ast_hash": "acefc9c9e41bb07e0d14b52b9758c752",
+    "semantic_hash": "acefc9c9e41bb07e0d14b52b9758c752"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3905_configs_intermediaires.md": {
+    "mtime": 1782897599.3494077,
+    "ast_hash": "cce46c562969cc71f9bd211fdc626253",
+    "semantic_hash": "cce46c562969cc71f9bd211fdc626253"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3906_campagne_tradeoff.md": {
+    "mtime": 1782897605.5115676,
+    "ast_hash": "acf012999d1c07dfd0e8b5adc9d4d1ac",
+    "semantic_hash": "acf012999d1c07dfd0e8b5adc9d4d1ac"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3902_emulateur_int8.md": {
+    "mtime": 1782827544.0350895,
+    "ast_hash": "c3eb026e6e39eacb308738254ebb07a5",
+    "semantic_hash": "c3eb026e6e39eacb308738254ebb07a5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3901_audit_int8_actuel.md": {
+    "mtime": 1782827065.6183183,
+    "ast_hash": "49094fa0ce814c2d27cf7752c80faf57",
+    "semantic_hash": "49094fa0ce814c2d27cf7752c80faf57"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_39/S3910_simd_cmsis_spec.md": {
+    "mtime": 1782909177.1582341,
+    "ast_hash": "0fb5e30ee5cf6f9f52f65f4ef68357d5",
+    "semantic_hash": "0fb5e30ee5cf6f9f52f65f4ef68357d5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/.github/workflows/ai-trace-guard.yml": {
+    "mtime": 1782588103.4959621,
+    "ast_hash": "ef93c298365cf935d09d387be260da91",
+    "semantic_hash": "ef93c298365cf935d09d387be260da91"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/objectifs_contributions.png": {
+    "mtime": 1782739779.4518797,
+    "ast_hash": "209a6e1c93642dacb5bb1458cfd6a586",
+    "semantic_hash": "209a6e1c93642dacb5bb1458cfd6a586"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/concepts_cles.png": {
+    "mtime": 1782765978.3688326,
+    "ast_hash": "f7931f3de2fa86c5c52b9a939b930612",
+    "semantic_hash": "f7931f3de2fa86c5c52b9a939b930612"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/timeline_parcours.png": {
+    "mtime": 1782767824.0556602,
+    "ast_hash": "adfb6daac01faab23a57d720fe5ea510",
+    "semantic_hash": "adfb6daac01faab23a57d720fe5ea510"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ewc_illustrations/3_ewc_pronostia.png": {
+    "mtime": 1782724485.362913,
+    "ast_hash": "8119db46d8f53415862b5f775b4c5bab",
+    "semantic_hash": "8119db46d8f53415862b5f775b4c5bab"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ewc_illustrations/1_ewc_pc.png": {
+    "mtime": 1782724484.4899073,
+    "ast_hash": "d021e63d6d158693fb7d00a1f8f449dc",
+    "semantic_hash": "d021e63d6d158693fb7d00a1f8f449dc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ewc_illustrations/2_ewc_board.png": {
+    "mtime": 1782724484.9839103,
+    "ast_hash": "20b990635431c5ab9c5f06d8d58f0eff",
+    "semantic_hash": "20b990635431c5ab9c5f06d8d58f0eff"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ewc_illustrations/4_ewc_monitoring.png": {
+    "mtime": 1782724485.7799156,
+    "ast_hash": "92476706639aa3b1dd9fc7eb9cb00719",
+    "semantic_hash": "92476706639aa3b1dd9fc7eb9cb00719"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/int8_vs_fp32_board_all.png": {
+    "mtime": 1782742128.6141706,
+    "ast_hash": "8d0c8f27f03905746ca126769e23d4ec",
+    "semantic_hash": "8d0c8f27f03905746ca126769e23d4ec"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accuracy_per_task_5feat.png": {
+    "mtime": 1782742122.8341167,
+    "ast_hash": "e25d4adf021f2abc945509a56c6d26ef",
+    "semantic_hash": "e25d4adf021f2abc945509a56c6d26ef"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accuracy_per_task_all.png": {
+    "mtime": 1782742123.2321205,
+    "ast_hash": "8de1346b10071403e1e24d1e4fc8f348",
+    "semantic_hash": "8de1346b10071403e1e24d1e4fc8f348"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/latency_inference_vs_update_5feat.png": {
+    "mtime": 1782742126.2761488,
+    "ast_hash": "a5be7fd42e2e1ad5dfa53c3e45664e5f",
+    "semantic_hash": "a5be7fd42e2e1ad5dfa53c3e45664e5f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/cl_accuracy_matrix_all.png": {
+    "mtime": 1782742124.6591337,
+    "ast_hash": "94f677d4443de5b9acaaf5de9282f918",
+    "semantic_hash": "94f677d4443de5b9acaaf5de9282f918"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/latency_pc_vs_board_all.png": {
+    "mtime": 1782742126.5961518,
+    "ast_hash": "f93fec47e687dbe9f4b2766767681bba",
+    "semantic_hash": "f93fec47e687dbe9f4b2766767681bba"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/cl_accuracy_matrix_5feat.png": {
+    "mtime": 1782742123.938127,
+    "ast_hash": "ad54fe334a95d1d2a37a1d3cfa598a44",
+    "semantic_hash": "ad54fe334a95d1d2a37a1d3cfa598a44"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accfinal_vs_forgetting_all.png": {
+    "mtime": 1782742124.885136,
+    "ast_hash": "50a263539f74a60c5044a5061b36f1b2",
+    "semantic_hash": "50a263539f74a60c5044a5061b36f1b2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/f1_rocauc_pc_vs_board_5feat.png": {
+    "mtime": 1782742126.9241548,
+    "ast_hash": "7b425586c1ac0a4a8c1cde0f6e9e4d88",
+    "semantic_hash": "7b425586c1ac0a4a8c1cde0f6e9e4d88"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/prediction_parity_5feat.png": {
+    "mtime": 1782742127.4161594,
+    "ast_hash": "a1e328445d03080e4df77edb4de6dfa7",
+    "semantic_hash": "a1e328445d03080e4df77edb4de6dfa7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accfinal_vs_forgetting_5feat.png": {
+    "mtime": 1782742124.7795985,
+    "ast_hash": "f8a0d039dc33ef3373f4b33acc415aff",
+    "semantic_hash": "f8a0d039dc33ef3373f4b33acc415aff"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/int8_vs_fp32_board_5feat.png": {
+    "mtime": 1782742128.2501671,
+    "ast_hash": "4e22ab9ad43a27a85de77487e0c30385",
+    "semantic_hash": "4e22ab9ad43a27a85de77487e0c30385"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/board_model_ram_inf_vs_update_5feat.png": {
+    "mtime": 1782742128.7061715,
+    "ast_hash": "dbb7481b13a85808b0d5e5c406810651",
+    "semantic_hash": "dbb7481b13a85808b0d5e5c406810651"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/f1_rocauc_pc_vs_board_all.png": {
+    "mtime": 1782742126.9951556,
+    "ast_hash": "5c242408c1cd0c41391ea66e5a4a755a",
+    "semantic_hash": "5c242408c1cd0c41391ea66e5a4a755a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/latency_pc_vs_board_5feat.png": {
+    "mtime": 1782742126.528151,
+    "ast_hash": "f85e0b651f403dc451c2e2b611d363f6",
+    "semantic_hash": "f85e0b651f403dc451c2e2b611d363f6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/latency_inference_vs_update_all.png": {
+    "mtime": 1782742126.4181502,
+    "ast_hash": "b8fc77abd810ea81c3bb0d8b3ab89564",
+    "semantic_hash": "b8fc77abd810ea81c3bb0d8b3ab89564"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accuracy_vs_ram_5feat.png": {
+    "mtime": 1782742126.725153,
+    "ast_hash": "e9f7611b9d872e4818beed8df669b2cf",
+    "semantic_hash": "e9f7611b9d872e4818beed8df669b2cf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/accuracy_vs_ram_all.png": {
+    "mtime": 1782742126.840154,
+    "ast_hash": "0c099a7ae55f2e1aa672623d70b31235",
+    "semantic_hash": "0c099a7ae55f2e1aa672623d70b31235"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/forgetting_curves_all.png": {
+    "mtime": 1782742126.0591466,
+    "ast_hash": "3338deea5f82e31e93e6520d2eefac70",
+    "semantic_hash": "3338deea5f82e31e93e6520d2eefac70"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/int8_vs_fp32_acc_f1_all.png": {
+    "mtime": 1782742129.401178,
+    "ast_hash": "f7692e5e0e5d2122747d058f73f73786",
+    "semantic_hash": "f7692e5e0e5d2122747d058f73f73786"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/prediction_parity_all.png": {
+    "mtime": 1782742127.621272,
+    "ast_hash": "b4f541d6138af6e99ac4147802f220f6",
+    "semantic_hash": "b4f541d6138af6e99ac4147802f220f6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/int8_vs_fp32_acc_f1_5feat.png": {
+    "mtime": 1782742129.1321754,
+    "ast_hash": "0c6405c16a27c59cad18d2f042051d61",
+    "semantic_hash": "0c6405c16a27c59cad18d2f042051d61"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/board_model_ram_inf_vs_update_all.png": {
+    "mtime": 1782742128.7851722,
+    "ast_hash": "30b1b2147c39800fc3fc4c5af83337b2",
+    "semantic_hash": "30b1b2147c39800fc3fc4c5af83337b2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint36_pc_board_ewc/forgetting_curves_5feat.png": {
+    "mtime": 1782742125.571838,
+    "ast_hash": "0e6bbdf8a921223460dc41aa2771844e",
+    "semantic_hash": "0e6bbdf8a921223460dc41aa2771844e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint37_gitlab_release/kept_by_directory.png": {
+    "mtime": 1782662968.3195164,
+    "ast_hash": "73a85bef24f33555ecf15074af46d882",
+    "semantic_hash": "73a85bef24f33555ecf15074af46d882"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint37_gitlab_release/traces_by_pattern.png": {
+    "mtime": 1782663031.965714,
+    "ast_hash": "cdb4078709e29326e9b566051c7998f4",
+    "semantic_hash": "cdb4078709e29326e9b566051c7998f4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint37_gitlab_release/release_overview.png": {
+    "mtime": 1782662968.1105158,
+    "ast_hash": "a2015b24279ff188d2487dfe7df990b0",
+    "semantic_hash": "a2015b24279ff188d2487dfe7df990b0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint37_gitlab_release/excluded_by_rule.png": {
+    "mtime": 1782662968.5321145,
+    "ast_hash": "ab4e2d3986c94dc781f0b8f922822cbb",
+    "semantic_hash": "ab4e2d3986c94dc781f0b8f922822cbb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint38_autonomous_ewc/parity_board_pc.png": {
+    "mtime": 1782735713.3993974,
+    "ast_hash": "4c09754ab956e3bbcef02df97260b81f",
+    "semantic_hash": "4c09754ab956e3bbcef02df97260b81f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint38_autonomous_ewc/drift_vs_fault_confusion.png": {
+    "mtime": 1782735712.9083915,
+    "ast_hash": "f8834067db6edd883e6c80e0d9034605",
+    "semantic_hash": "f8834067db6edd883e6c80e0d9034605"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint38_autonomous_ewc/economy_vs_accuracy.png": {
+    "mtime": 1782735711.6863768,
+    "ast_hash": "8874d4b865c6d2d137d34db54d84cd86",
+    "semantic_hash": "8874d4b865c6d2d137d34db54d84cd86"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint38_autonomous_ewc/update_rate_vs_f1.png": {
+    "mtime": 1782735712.4643862,
+    "ast_hash": "409e0f7ac25760f3efe20095d64e4aba",
+    "semantic_hash": "409e0f7ac25760f3efe20095d64e4aba"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s5_tinyol_scheme.png": {
+    "mtime": 1782663987.1171033,
+    "ast_hash": "d79664bd573f810bb46482225553da74",
+    "semantic_hash": "d79664bd573f810bb46482225553da74"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s3_uart_frame_v3.png": {
+    "mtime": 1782663985.823092,
+    "ast_hash": "ad2d25f499e9b137caf5d300bb0a4fc5",
+    "semantic_hash": "ad2d25f499e9b137caf5d300bb0a4fc5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s3_pipeline_flow.png": {
+    "mtime": 1782663985.9953556,
+    "ast_hash": "8b4cb2760be8f587c1fa528be486b47c",
+    "semantic_hash": "8b4cb2760be8f587c1fa528be486b47c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s5_ewc_forward_backprop.png": {
+    "mtime": 1782663986.7210999,
+    "ast_hash": "e0c57ea3f71d039e2914050222ea02aa",
+    "semantic_hash": "e0c57ea3f71d039e2914050222ea02aa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s3_response_layouts.png": {
+    "mtime": 1782663986.2520957,
+    "ast_hash": "ba56c73a24ce9170c76c0299f738a47d",
+    "semantic_hash": "ba56c73a24ce9170c76c0299f738a47d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s5_mahalanobis_scheme.png": {
+    "mtime": 1782663987.0351331,
+    "ast_hash": "903fea25355e3788eb246d21420a6cc2",
+    "semantic_hash": "903fea25355e3788eb246d21420a6cc2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s1_pc_board_overview.png": {
+    "mtime": 1782663985.5350893,
+    "ast_hash": "71734e5159a2198b0a16027d4bc0849e",
+    "semantic_hash": "71734e5159a2198b0a16027d4bc0849e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s5_hdc_scheme.png": {
+    "mtime": 1782663986.8691013,
+    "ast_hash": "b4d2748abe4d4a99392ab459f45e744f",
+    "semantic_hash": "b4d2748abe4d4a99392ab459f45e744f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s4_export_pipeline.png": {
+    "mtime": 1782663986.3610966,
+    "ast_hash": "357f8e0cbe272b69290d55a50ba6e337",
+    "semantic_hash": "357f8e0cbe272b69290d55a50ba6e337"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s2_c_dependency_graph.png": {
+    "mtime": 1782663985.7440913,
+    "ast_hash": "54a0a6485d50fe9d8c80c404b547cd05",
+    "semantic_hash": "54a0a6485d50fe9d8c80c404b547cd05"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/figures/firmware_arch/s7_recap.png": {
+    "mtime": 1782663987.3541055,
+    "ast_hash": "fb1354ad16153a1eccc407d9062df52a",
+    "semantic_hash": "fb1354ad16153a1eccc407d9062df52a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/figures/sprint29/board_gap3_heatmaps.png": {
+    "mtime": 1782665967.9019642,
+    "ast_hash": "faec218dc595aed8871cbe5c2c127ae4",
+    "semantic_hash": "faec218dc595aed8871cbe5c2c127ae4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/ewc_head_int8_v2.c": {
+    "mtime": 1782898797.249917,
+    "ast_hash": "966c5e166e737b1d97a7abf353fbda3e",
+    "semantic_hash": "966c5e166e737b1d97a7abf353fbda3e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_ewc_int8_v2.c": {
+    "mtime": 1782898813.6209788,
+    "ast_hash": "d3676fb49024ab2e416fcf4f22994ff1",
+    "semantic_hash": "d3676fb49024ab2e416fcf4f22994ff1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_vectors_v2.h": {
+    "mtime": 1783420091.2604375,
+    "ast_hash": "b651863e93731050d94d91e7694ad915",
+    "semantic_hash": "b651863e93731050d94d91e7694ad915"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/ewc_head_int8_v2_weights.h": {
+    "mtime": 1783421376.567477,
+    "ast_hash": "2c38fb9f31238aca16889a75b6a57191",
+    "semantic_hash": "2c38fb9f31238aca16889a75b6a57191"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/ewc_head_int8_v2.h": {
+    "mtime": 1782898776.6174202,
+    "ast_hash": "9d9aa9d1401d117a109934c60e6c967e",
+    "semantic_hash": "9d9aa9d1401d117a109934c60e6c967e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s39_quant_sweep.py": {
+    "mtime": 1782896918.8160875,
+    "ast_hash": "996b3613067b71e7992f05e237a78b4e",
+    "semantic_hash": "996b3613067b71e7992f05e237a78b4e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_s39_quant.py": {
+    "mtime": 1782899133.3972769,
+    "ast_hash": "ea7755e129be0971d76a984f38f3f53b",
+    "semantic_hash": "ea7755e129be0971d76a984f38f3f53b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/mahalanobis_paderborn.json": {
+    "mtime": 1782897091.8472676,
+    "ast_hash": "7751d24526555651641a940aeb072204",
+    "semantic_hash": "7751d24526555651641a940aeb072204"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/mahalanobis_cmapss.json": {
+    "mtime": 1782897069.1249862,
+    "ast_hash": "5fa1ec64cfae7d2ef4c4e824609253bd",
+    "semantic_hash": "5fa1ec64cfae7d2ef4c4e824609253bd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/ewc_monitoring.json": {
+    "mtime": 1782897022.0343182,
+    "ast_hash": "699f991d52c0816343d4ab512087c432",
+    "semantic_hash": "699f991d52c0816343d4ab512087c432"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/ewc_pronostia.json": {
+    "mtime": 1782897044.4978864,
+    "ast_hash": "3ad3e85f70087079f5226114b18a323a",
+    "semantic_hash": "3ad3e85f70087079f5226114b18a323a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/summary.json": {
+    "mtime": 1782897174.01043,
+    "ast_hash": "a9ead85e605ada7e98d8c121e4363b8c",
+    "semantic_hash": "a9ead85e605ada7e98d8c121e4363b8c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/mahalanobis_pronostia.json": {
+    "mtime": 1782897076.7518947,
+    "ast_hash": "7014a1b28ebf5458629f3c578c9ca5de",
+    "semantic_hash": "7014a1b28ebf5458629f3c578c9ca5de"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/ewc_cwru.json": {
+    "mtime": 1782897004.4720623,
+    "ast_hash": "13745a5288dc89856aad91bec03feac8",
+    "semantic_hash": "13745a5288dc89856aad91bec03feac8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/tinyol_cwru.json": {
+    "mtime": 1782897140.5656872,
+    "ast_hash": "e56f4f32aa3e2a9465030f8936008e0e",
+    "semantic_hash": "e56f4f32aa3e2a9465030f8936008e0e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/mahalanobis_cwru.json": {
+    "mtime": 1782897069.2720563,
+    "ast_hash": "b6d8610f824a56a76b818a85c0acd6c8",
+    "semantic_hash": "b6d8610f824a56a76b818a85c0acd6c8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/ewc_cmapss.json": {
+    "mtime": 1782896999.484442,
+    "ast_hash": "8f13a316b98a3a5927dcb1f9fd69b83a",
+    "semantic_hash": "8f13a316b98a3a5927dcb1f9fd69b83a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/tinyol_cmapss.json": {
+    "mtime": 1782897139.807766,
+    "ast_hash": "416474b868985578143517624a1ea08a",
+    "semantic_hash": "416474b868985578143517624a1ea08a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/ewc_paderborn.json": {
+    "mtime": 1782897067.6496542,
+    "ast_hash": "9aa419b8650d0474c09d5f5a41ea1eb9",
+    "semantic_hash": "9aa419b8650d0474c09d5f5a41ea1eb9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/tinyol_pronostia.json": {
+    "mtime": 1782897158.5048451,
+    "ast_hash": "116680f4e8bbe6c3055d57457e6d8e1e",
+    "semantic_hash": "116680f4e8bbe6c3055d57457e6d8e1e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/hdc_monitoring.json": {
+    "mtime": 1782897104.8806496,
+    "ast_hash": "8381d29956fa9772e63f2952daeed122",
+    "semantic_hash": "8381d29956fa9772e63f2952daeed122"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/hdc_paderborn.json": {
+    "mtime": 1782897133.300343,
+    "ast_hash": "2a4834cfcdcde91782b2d90520d5146a",
+    "semantic_hash": "2a4834cfcdcde91782b2d90520d5146a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/tinyol_monitoring.json": {
+    "mtime": 1782897146.2119875,
+    "ast_hash": "5754e93cab2aa512acb535cb426dc6fa",
+    "semantic_hash": "5754e93cab2aa512acb535cb426dc6fa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/hdc_cmapss.json": {
+    "mtime": 1782897100.177717,
+    "ast_hash": "6cd2bd65cd4885210d4d776968d9f19b",
+    "semantic_hash": "6cd2bd65cd4885210d4d776968d9f19b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/hdc_pronostia.json": {
+    "mtime": 1782897114.7514937,
+    "ast_hash": "e9f9e376fef28485a24c045d3ebfe0af",
+    "semantic_hash": "e9f9e376fef28485a24c045d3ebfe0af"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/hdc_cwru.json": {
+    "mtime": 1782897101.3110209,
+    "ast_hash": "d5c5be6bcd899081d13cdb335536e0c4",
+    "semantic_hash": "d5c5be6bcd899081d13cdb335536e0c4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/mahalanobis_monitoring.json": {
+    "mtime": 1782897069.4747095,
+    "ast_hash": "dadf2bd420d9ead44f3f527f1bed0e82",
+    "semantic_hash": "dadf2bd420d9ead44f3f527f1bed0e82"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_quant_sweep/tinyol_paderborn.json": {
+    "mtime": 1782897174.0098293,
+    "ast_hash": "91b20aed6a43f03eb48b0fe9113348b2",
+    "semantic_hash": "91b20aed6a43f03eb48b0fe9113348b2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_legacy_paderborn.yaml": {
+    "mtime": 1782896562.9671435,
+    "ast_hash": "583cd2e12deabdcf79fcf2a88d67c0be",
+    "semantic_hash": "583cd2e12deabdcf79fcf2a88d67c0be"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/q15_cmapss.yaml": {
+    "mtime": 1782896562.9661365,
+    "ast_hash": "4592475581959d677fa1eac83e3490ed",
+    "semantic_hash": "4592475581959d677fa1eac83e3490ed"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_perchannel_cwru.yaml": {
+    "mtime": 1782896562.9663792,
+    "ast_hash": "00366a980e2348f693f2cb7c4e4f97db",
+    "semantic_hash": "00366a980e2348f693f2cb7c4e4f97db"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_perchannel_monitoring.yaml": {
+    "mtime": 1782896562.966656,
+    "ast_hash": "998731168b4c52110861420c81314336",
+    "semantic_hash": "998731168b4c52110861420c81314336"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/fp32_monitoring.yaml": {
+    "mtime": 1782896562.9665413,
+    "ast_hash": "87f3781daea22cafc04425dbef702c4a",
+    "semantic_hash": "87f3781daea22cafc04425dbef702c4a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_legacy_cmapss.yaml": {
+    "mtime": 1782896562.965976,
+    "ast_hash": "fbd46391b7530f0e0057026a5199afa4",
+    "semantic_hash": "fbd46391b7530f0e0057026a5199afa4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/q15_cwru.yaml": {
+    "mtime": 1782896562.966432,
+    "ast_hash": "5234ded7e50182fd01d135f426e1b25e",
+    "semantic_hash": "5234ded7e50182fd01d135f426e1b25e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/fp32_paderborn.yaml": {
+    "mtime": 1782896562.9670913,
+    "ast_hash": "73bed5f63a3f633b3232e8f8f7233866",
+    "semantic_hash": "73bed5f63a3f633b3232e8f8f7233866"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/q15_pronostia.yaml": {
+    "mtime": 1782896562.9669824,
+    "ast_hash": "370a5f094c33f9c88d59516e010be151",
+    "semantic_hash": "370a5f094c33f9c88d59516e010be151"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_perchannel_pronostia.yaml": {
+    "mtime": 1782896562.9669304,
+    "ast_hash": "420921c71a3dd42f910dbb6a7b3b445b",
+    "semantic_hash": "420921c71a3dd42f910dbb6a7b3b445b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_perchannel_cmapss.yaml": {
+    "mtime": 1782896562.966056,
+    "ast_hash": "1626d2c6a33d2bdd03e8af9292f216df",
+    "semantic_hash": "1626d2c6a33d2bdd03e8af9292f216df"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/fp32_cwru.yaml": {
+    "mtime": 1782896562.9662626,
+    "ast_hash": "54fcf3cc321242622463921d39edc7fa",
+    "semantic_hash": "54fcf3cc321242622463921d39edc7fa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/q15_monitoring.yaml": {
+    "mtime": 1782896562.9667118,
+    "ast_hash": "b4e99f4ba43a3720f694c152cfa320ed",
+    "semantic_hash": "b4e99f4ba43a3720f694c152cfa320ed"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_legacy_monitoring.yaml": {
+    "mtime": 1782896562.9666018,
+    "ast_hash": "4f928c4e1ed65af3c35d4a377f2fe761",
+    "semantic_hash": "4f928c4e1ed65af3c35d4a377f2fe761"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/mixed_monitoring.yaml": {
+    "mtime": 1782896562.9667685,
+    "ast_hash": "a5ba3bf4445440d6ab380c5085406421",
+    "semantic_hash": "a5ba3bf4445440d6ab380c5085406421"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/mixed_paderborn.yaml": {
+    "mtime": 1782896562.9673092,
+    "ast_hash": "c1798d20d2803615c3fb253bfb0a0d80",
+    "semantic_hash": "c1798d20d2803615c3fb253bfb0a0d80"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/fp32_cmapss.yaml": {
+    "mtime": 1782896562.9658546,
+    "ast_hash": "bd1cfbd3d911ca25ebed93e85e4dbc79",
+    "semantic_hash": "bd1cfbd3d911ca25ebed93e85e4dbc79"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/mixed_cmapss.yaml": {
+    "mtime": 1782896562.966202,
+    "ast_hash": "ea8afccd3f02ba167ea97036347f8666",
+    "semantic_hash": "ea8afccd3f02ba167ea97036347f8666"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/q15_paderborn.yaml": {
+    "mtime": 1782896562.9672496,
+    "ast_hash": "775c98216eb96dd46d5687e691a924f9",
+    "semantic_hash": "775c98216eb96dd46d5687e691a924f9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/fp32_pronostia.yaml": {
+    "mtime": 1782896562.966821,
+    "ast_hash": "abeab0e93634f10ab3a094606deda2de",
+    "semantic_hash": "abeab0e93634f10ab3a094606deda2de"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_legacy_cwru.yaml": {
+    "mtime": 1782896562.9663193,
+    "ast_hash": "bed1a7e8caf0f4e2526bfe098ee51bef",
+    "semantic_hash": "bed1a7e8caf0f4e2526bfe098ee51bef"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_perchannel_paderborn.yaml": {
+    "mtime": 1782896562.9671953,
+    "ast_hash": "3f0eab04dd3b7be34bc31cfc9dea191b",
+    "semantic_hash": "3f0eab04dd3b7be34bc31cfc9dea191b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/int8_legacy_pronostia.yaml": {
+    "mtime": 1782896562.9668782,
+    "ast_hash": "07ff4aedda1f35a984f432bda0929071",
+    "semantic_hash": "07ff4aedda1f35a984f432bda0929071"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/mixed_pronostia.yaml": {
+    "mtime": 1782896562.9670336,
+    "ast_hash": "c40608c50c4429cfd555528660701698",
+    "semantic_hash": "c40608c50c4429cfd555528660701698"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_intermediate/mixed_cwru.yaml": {
+    "mtime": 1782896562.9664862,
+    "ast_hash": "5be37666edd24cc6b4d6b0a265d21dc9",
+    "semantic_hash": "5be37666edd24cc6b4d6b0a265d21dc9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4003_notebook_synthese.md": {
+    "mtime": 1782897766.9984634,
+    "ast_hash": "524d5b093d49b81f63a9d51544de6ce4",
+    "semantic_hash": "524d5b093d49b81f63a9d51544de6ce4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4000_sprint_40.md": {
+    "mtime": 1782897685.931642,
+    "ast_hash": "41bfa9065121822b3f6ee3866511e91e",
+    "semantic_hash": "41bfa9065121822b3f6ee3866511e91e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4006_redaction_en.md": {
+    "mtime": 1783423048.0060277,
+    "ast_hash": "7fb79a1cc1b0e1c348c5a658a8129de9",
+    "semantic_hash": "7fb79a1cc1b0e1c348c5a658a8129de9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4004_structure_article.md": {
+    "mtime": 1783423033.2374127,
+    "ast_hash": "ffb147d221e2038091d3760786c96d35",
+    "semantic_hash": "ffb147d221e2038091d3760786c96d35"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4001_kernel_v2_firmware.md": {
+    "mtime": 1783421046.5991051,
+    "ast_hash": "961f98a25302de91385eb5f8c56f7f34",
+    "semantic_hash": "961f98a25302de91385eb5f8c56f7f34"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4007_tests_docs.md": {
+    "mtime": 1783423054.1862392,
+    "ast_hash": "ac8f3c7a8f8ab7e1445bd90c31686a61",
+    "semantic_hash": "ac8f3c7a8f8ab7e1445bd90c31686a61"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4002_board_validation_v2.md": {
+    "mtime": 1782897739.7631576,
+    "ast_hash": "dc1f5c9dddf7b48aa7e0f56cf8898af7",
+    "semantic_hash": "dc1f5c9dddf7b48aa7e0f56cf8898af7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_40/S4005_redaction_fr.md": {
+    "mtime": 1783423041.283939,
+    "ast_hash": "5c4cf20319b3eff62498db66e9470c22",
+    "semantic_hash": "5c4cf20319b3eff62498db66e9470c22"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint39_int8_intermediate/ablation_factors.png": {
+    "mtime": 1782909140.7552898,
+    "ast_hash": "3f00b919d4f5499f77e228172130090a",
+    "semantic_hash": "3f00b919d4f5499f77e228172130090a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint39_int8_intermediate/heatmap_legacy.png": {
+    "mtime": 1782909141.4201293,
+    "ast_hash": "17be21c5692e0042a4cad0e31892b027",
+    "semantic_hash": "17be21c5692e0042a4cad0e31892b027"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint39_int8_intermediate/tradeoff_pareto.png": {
+    "mtime": 1782909141.1035056,
+    "ast_hash": "b81fd6d85ccf829b1d8f13e5cc46cb4f",
+    "semantic_hash": "b81fd6d85ccf829b1d8f13e5cc46cb4f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint39_int8_intermediate/heatmap_q15.png": {
+    "mtime": 1782909141.8921294,
+    "ast_hash": "edf6fe16ce58a2149f1718a6214bf8c8",
+    "semantic_hash": "edf6fe16ce58a2149f1718a6214bf8c8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint39_int8_intermediate/heatmap_perchannel.png": {
+    "mtime": 1782909141.6681294,
+    "ast_hash": "4ad298e933bc4026e0a911b1f9e9e068",
+    "semantic_hash": "4ad298e933bc4026e0a911b1f9e9e068"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s39_board.py": {
+    "mtime": 1782911051.0482924,
+    "ast_hash": "dc8a706d728a9156069572c9ac7b19bd",
+    "semantic_hash": "dc8a706d728a9156069572c9ac7b19bd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s39_matched_compare.py": {
+    "mtime": 1782910398.6125088,
+    "ast_hash": "03b0ab6ac6098cc9bf6f345182b0502a",
+    "semantic_hash": "03b0ab6ac6098cc9bf6f345182b0502a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_s39_matched.py": {
+    "mtime": 1782910470.194293,
+    "ast_hash": "ec713989029b2dffb179171b382fcb5d",
+    "semantic_hash": "ec713989029b2dffb179171b382fcb5d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_cmapss_mixed.json": {
+    "mtime": 1782910865.2442765,
+    "ast_hash": "4b855f9585ecc7d413355e087e5ad25e",
+    "semantic_hash": "4b855f9585ecc7d413355e087e5ad25e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_cmapss_legacy_c.json": {
+    "mtime": 1782910863.3312764,
+    "ast_hash": "dd9445950f14afd3ac4b6bb847a7c4c7",
+    "semantic_hash": "dd9445950f14afd3ac4b6bb847a7c4c7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_pronostia_legacy_c.json": {
+    "mtime": 1782910517.5222533,
+    "ast_hash": "b34a365e843c9e6365dab30f275c06d5",
+    "semantic_hash": "b34a365e843c9e6365dab30f275c06d5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_pronostia_mixed.json": {
+    "mtime": 1782910517.6358428,
+    "ast_hash": "420d4563536af204befb23c1a8bfaa0c",
+    "semantic_hash": "420d4563536af204befb23c1a8bfaa0c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_pronostia_per_channel_int8.json": {
+    "mtime": 1782910517.5612469,
+    "ast_hash": "91f24b5178ecbde324a59660cf6a857b",
+    "semantic_hash": "91f24b5178ecbde324a59660cf6a857b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_cmapss_q15.json": {
+    "mtime": 1782910864.5852766,
+    "ast_hash": "5b84384f9d355507e9d4dd24cda91ab7",
+    "semantic_hash": "5b84384f9d355507e9d4dd24cda91ab7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_cmapss_per_channel_int8.json": {
+    "mtime": 1782910863.9152765,
+    "ast_hash": "4dce732aa9a73865bd75de8b0876d4e1",
+    "semantic_hash": "4dce732aa9a73865bd75de8b0876d4e1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_matched/matched_ewc_pronostia_q15.json": {
+    "mtime": 1782910517.600247,
+    "ast_hash": "86fea594f1055203be91aeda1a0d5cba",
+    "semantic_hash": "86fea594f1055203be91aeda1a0d5cba"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_board/results_legacy_c_pronostia.json": {
+    "mtime": 1782911105.329991,
+    "ast_hash": "32f6132ed239aae7be54e19019514c9e",
+    "semantic_hash": "32f6132ed239aae7be54e19019514c9e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_board/results_q15_pronostia.json": {
+    "mtime": 1782911178.192902,
+    "ast_hash": "393d7fe45ea179f2c2788f8731164a9d",
+    "semantic_hash": "393d7fe45ea179f2c2788f8731164a9d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_board/results_per_channel_int8_pronostia.json": {
+    "mtime": 1782911132.2641962,
+    "ast_hash": "99a848b67a5c0f6c7fedfc8c9254c5a7",
+    "semantic_hash": "99a848b67a5c0f6c7fedfc8c9254c5a7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_board/results_legacy_c_cmapss.json": {
+    "mtime": 1782911207.8674695,
+    "ast_hash": "051153e958ea0d374b60678dabf04aa9",
+    "semantic_hash": "051153e958ea0d374b60678dabf04aa9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_board/results_per_channel_int8_cmapss.json": {
+    "mtime": 1782911223.8905046,
+    "ast_hash": "8ccb3821d008994dc205e8f45093eca1",
+    "semantic_hash": "8ccb3821d008994dc205e8f45093eca1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s32_perf_vs_threshold.png": {
+    "mtime": 1782981377.9894428,
+    "ast_hash": "6cde0695d5e8d26a5c03251203617877",
+    "semantic_hash": "6cde0695d5e8d26a5c03251203617877"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s32_positive_ratio.png": {
+    "mtime": 1782981377.1201022,
+    "ast_hash": "684aa8fcbb0bfed58ddf15c5bb47583f",
+    "semantic_hash": "684aa8fcbb0bfed58ddf15c5bb47583f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s33_compute_cost.png": {
+    "mtime": 1782981382.023443,
+    "ast_hash": "2d1e40cb5486ce9dfcf28fd8ff3becc1",
+    "semantic_hash": "2d1e40cb5486ce9dfcf28fd8ff3becc1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s32_board_invariance.png": {
+    "mtime": 1782981379.7753618,
+    "ast_hash": "d4677fd6152110e416b7681dd39a3913",
+    "semantic_hash": "d4677fd6152110e416b7681dd39a3913"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s32_heatmaps_acc.png": {
+    "mtime": 1782981379.0394428,
+    "ast_hash": "e3e34a1eca3e1e475af5bc22311fbc9d",
+    "semantic_hash": "e3e34a1eca3e1e475af5bc22311fbc9d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/ram_breakdown.py": {
+    "mtime": 1782977263.4610913,
+    "ast_hash": "b138091141ade3c7a85cc4769daa774d",
+    "semantic_hash": "b138091141ade3c7a85cc4769daa774d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/stack_usage_report.py": {
+    "mtime": 1782986475.5693555,
+    "ast_hash": "c04721919291454762fc2d0426655cc9",
+    "semantic_hash": "c04721919291454762fc2d0426655cc9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_ram_board.py": {
+    "mtime": 1782995313.9162238,
+    "ast_hash": "3bc34dd8d1683f529dd6cb890f141bf3",
+    "semantic_hash": "3bc34dd8d1683f529dd6cb890f141bf3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_ram_breakdown.py": {
+    "mtime": 1782977432.0837913,
+    "ast_hash": "423d89fa3f93ee140eccca33665677d7",
+    "semantic_hash": "423d89fa3f93ee140eccca33665677d7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_tinyol.json": {
+    "mtime": 1782995779.3814366,
+    "ast_hash": "c7e748394510f4c061694e6aeef1e0e3",
+    "semantic_hash": "c7e748394510f4c061694e6aeef1e0e3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_mahalanobis.json": {
+    "mtime": 1782995767.0700295,
+    "ast_hash": "498137b42589d9aaf4679aaa32cf8fe5",
+    "semantic_hash": "498137b42589d9aaf4679aaa32cf8fe5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_ewc.json": {
+    "mtime": 1782995742.427157,
+    "ast_hash": "70df6b0574b25532e50848cea19859a5",
+    "semantic_hash": "70df6b0574b25532e50848cea19859a5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_hdc.json": {
+    "mtime": 1782995754.6820326,
+    "ast_hash": "def4a7a16283d1314cfcb211c2ac82a1",
+    "semantic_hash": "def4a7a16283d1314cfcb211c2ac82a1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/seminaire.md": {
+    "mtime": 1782911771.8725183,
+    "ast_hash": "e8328ae70e8bb22af50ff1006e38aaeb",
+    "semantic_hash": "e8328ae70e8bb22af50ff1006e38aaeb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_stack_painting.png": {
+    "mtime": 1783067323.75409,
+    "ast_hash": "cc33eaf1d871e01253de975b0910a3a2",
+    "semantic_hash": "cc33eaf1d871e01253de975b0910a3a2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_stack_bound.png": {
+    "mtime": 1783067327.051204,
+    "ast_hash": "26adba45c7ebab172be6f914d8f3af1b",
+    "semantic_hash": "26adba45c7ebab172be6f914d8f3af1b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_infer_vs_train.png": {
+    "mtime": 1783067326.2071896,
+    "ast_hash": "030e8348de574ee5ac924e23c0e6f942",
+    "semantic_hash": "030e8348de574ee5ac924e23c0e6f942"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_model_maps.png": {
+    "mtime": 1783067324.2718313,
+    "ast_hash": "2b9c6fec5e27eab9a6a7766ec3d61987",
+    "semantic_hash": "2b9c6fec5e27eab9a6a7766ec3d61987"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_monitoring_stacked.png": {
+    "mtime": 1783067325.7801821,
+    "ast_hash": "0e824843c969c356f8e63a3ac627bd0c",
+    "semantic_hash": "0e824843c969c356f8e63a3ac627bd0c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_shared_frame.png": {
+    "mtime": 1783067326.5561955,
+    "ast_hash": "2678a3cfa36221f31429799ef99adeda",
+    "semantic_hash": "2678a3cfa36221f31429799ef99adeda"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_memory_map.png": {
+    "mtime": 1783067323.3391402,
+    "ast_hash": "5685b0247cf8434c447ce2746fa572c6",
+    "semantic_hash": "5685b0247cf8434c447ce2746fa572c6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s34_buffer_mem.png": {
+    "mtime": 1782981385.7182305,
+    "ast_hash": "99891650acbce3a30a5ac7748b041cbc",
+    "semantic_hash": "99891650acbce3a30a5ac7748b041cbc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s33_board_latency.png": {
+    "mtime": 1782981382.6714432,
+    "ast_hash": "7b45cff92c6eb4c788984249d2f92d09",
+    "semantic_hash": "7b45cff92c6eb4c788984249d2f92d09"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s35_board_cost.png": {
+    "mtime": 1782981390.7524438,
+    "ast_hash": "e8eb2e91f27de9b2479dc6ec5d102fb8",
+    "semantic_hash": "e8eb2e91f27de9b2479dc6ec5d102fb8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s33_energy_autonomy.png": {
+    "mtime": 1782981383.5395746,
+    "ast_hash": "9a24e4ff5aed55494b2597556be98514",
+    "semantic_hash": "9a24e4ff5aed55494b2597556be98514"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s33_pc_ram_acc.png": {
+    "mtime": 1782981383.2058017,
+    "ast_hash": "b5b1eae4c4f29fd3db722dcb5e8a99e2",
+    "semantic_hash": "b5b1eae4c4f29fd3db722dcb5e8a99e2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s35_gain.png": {
+    "mtime": 1782981390.1684437,
+    "ast_hash": "075776183a9fade26144f078a6b1c659",
+    "semantic_hash": "075776183a9fade26144f078a6b1c659"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s34_streaming_heatmaps.png": {
+    "mtime": 1782981384.4376662,
+    "ast_hash": "763d1d40857df4b17912535da4833dab",
+    "semantic_hash": "763d1d40857df4b17912535da4833dab"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s39_matched_pc_board.png": {
+    "mtime": 1782981393.6013322,
+    "ast_hash": "3ead1a6fe933c2d4865f2ac17e16127d",
+    "semantic_hash": "3ead1a6fe933c2d4865f2ac17e16127d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s34_board_parity.png": {
+    "mtime": 1782981387.0304434,
+    "ast_hash": "9407877cc43499ce12cb584a875cb548",
+    "semantic_hash": "9407877cc43499ce12cb584a875cb548"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s34_saturation.png": {
+    "mtime": 1782981385.2893758,
+    "ast_hash": "3c16b462caac30b4051f8996b51f6f97",
+    "semantic_hash": "3c16b462caac30b4051f8996b51f6f97"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s34_auroc_q15.png": {
+    "mtime": 1782981386.1340673,
+    "ast_hash": "53147ed706db889bb04c61b25f87dc5e",
+    "semantic_hash": "53147ed706db889bb04c61b25f87dc5e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s39_agreement_vs_fp32.png": {
+    "mtime": 1782981394.4747598,
+    "ast_hash": "d62160424d92535ea73cf0c26c775797",
+    "semantic_hash": "d62160424d92535ea73cf0c26c775797"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s34_rank_fidelity_ram.png": {
+    "mtime": 1782981386.577342,
+    "ast_hash": "441a40530a9705558064041ac837e3cd",
+    "semantic_hash": "441a40530a9705558064041ac837e3cd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s39_tradeoff_scatter.png": {
+    "mtime": 1782981392.644444,
+    "ast_hash": "360c5dc4756c55a15e980b0c78891129",
+    "semantic_hash": "360c5dc4756c55a15e980b0c78891129"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s39_sweep_heatmap.png": {
+    "mtime": 1782981392.0934439,
+    "ast_hash": "06157616052d69c959b0e0352e885ff8",
+    "semantic_hash": "06157616052d69c959b0e0352e885ff8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s35_f1_heatmaps.png": {
+    "mtime": 1782981388.5604436,
+    "ast_hash": "ddcb54808efc8b1f374772b57465e8b1",
+    "semantic_hash": "ddcb54808efc8b1f374772b57465e8b1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s39_ablation.png": {
+    "mtime": 1782981391.198139,
+    "ast_hash": "f06062752ddddc4d651d07ece87b916f",
+    "semantic_hash": "f06062752ddddc4d651d07ece87b916f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s39_board_recovery.png": {
+    "mtime": 1782981394.0578334,
+    "ast_hash": "08767669fa43e2e03aeb211708ea0f76",
+    "semantic_hash": "08767669fa43e2e03aeb211708ea0f76"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/PresentationJuillet/figures/s35_acc_vs_f1.png": {
+    "mtime": 1782981389.5174437,
+    "ast_hash": "d35d7677b416872ea3aebb76b0962a59",
+    "semantic_hash": "d35d7677b416872ea3aebb76b0962a59"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/generate_project_timeline.py": {
+    "mtime": 1783081933.7133784,
+    "ast_hash": "2ed983115c558403c614b0f14fabcd63",
+    "semantic_hash": "2ed983115c558403c614b0f14fabcd63"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tstex_modules/_api.ts": {
+    "mtime": 1783422572.3752356,
+    "ast_hash": "4538fa42a8d5fda4aa2e8e706fe7e1f1",
+    "semantic_hash": "4538fa42a8d5fda4aa2e8e706fe7e1f1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_ewc-int8_int8.json": {
+    "mtime": 1782995946.2186117,
+    "ast_hash": "60fdf903bd5d966c118d6e5c3e977857",
+    "semantic_hash": "60fdf903bd5d966c118d6e5c3e977857"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_hdc_all_k21.json": {
+    "mtime": 1782996285.274572,
+    "ast_hash": "9143cdfd90c11c693d1b22a0955b4fab",
+    "semantic_hash": "9143cdfd90c11c693d1b22a0955b4fab"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S39_ram/ram_ewc_all_k21.json": {
+    "mtime": 1782996296.2582886,
+    "ast_hash": "e7a68e9ef0037a695a383d8554b0812a",
+    "semantic_hash": "e7a68e9ef0037a695a383d8554b0812a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4103_audit_biblio.md": {
+    "mtime": 1783082258.857224,
+    "ast_hash": "a3ffdc11359a4c7dc4bb51b3273a8514",
+    "semantic_hash": "a3ffdc11359a4c7dc4bb51b3273a8514"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch8.md": {
+    "mtime": 1783082205.7082705,
+    "ast_hash": "091ac268721728f0018d826e89010eda",
+    "semantic_hash": "091ac268721728f0018d826e89010eda"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch1.md": {
+    "mtime": 1783082060.4862268,
+    "ast_hash": "535d7d494facbe84e2652b1ad63a7ab9",
+    "semantic_hash": "535d7d494facbe84e2652b1ad63a7ab9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch6.md": {
+    "mtime": 1783082167.0035317,
+    "ast_hash": "2c47d7c2e10a154ec9a7a5995fc7fcaa",
+    "semantic_hash": "2c47d7c2e10a154ec9a7a5995fc7fcaa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch3.md": {
+    "mtime": 1783082089.7404156,
+    "ast_hash": "419a85441c8c3a5f9f12f711a51e0a20",
+    "semantic_hash": "419a85441c8c3a5f9f12f711a51e0a20"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch4.md": {
+    "mtime": 1783419942.9870107,
+    "ast_hash": "3d47637e8a4a0421f272e198bafb237c",
+    "semantic_hash": "3d47637e8a4a0421f272e198bafb237c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4100_sprint_41.md": {
+    "mtime": 1783082027.8237767,
+    "ast_hash": "c7a76e411e863e591b0c922f281c189d",
+    "semantic_hash": "c7a76e411e863e591b0c922f281c189d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4104_audit_glossaire.md": {
+    "mtime": 1783082298.6992273,
+    "ast_hash": "b8a5af6fd4ba32b1f460b43d5c96af2f",
+    "semantic_hash": "b8a5af6fd4ba32b1f460b43d5c96af2f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4101_infrastructure.md": {
+    "mtime": 1783082034.0842047,
+    "ast_hash": "3c57bad0d5b2f247b2258754a7c170f2",
+    "semantic_hash": "3c57bad0d5b2f247b2258754a7c170f2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch5.md": {
+    "mtime": 1783082140.5792139,
+    "ast_hash": "d87d7b7e7af2f27df31eb3b88e0897ea",
+    "semantic_hash": "d87d7b7e7af2f27df31eb3b88e0897ea"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch7.md": {
+    "mtime": 1783082189.1043897,
+    "ast_hash": "612f65d4a2c9bf9c7fc33b5979b92ffc",
+    "semantic_hash": "612f65d4a2c9bf9c7fc33b5979b92ffc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4102_cadrage_ch2.md": {
+    "mtime": 1783082078.4282627,
+    "ast_hash": "79afd887ab3e25f710bc659395adfd22",
+    "semantic_hash": "79afd887ab3e25f710bc659395adfd22"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/project_timeline.png": {
+    "mtime": 1783081949.3211975,
+    "ast_hash": "cb8acaf37fca800722947388044b4a7b",
+    "semantic_hash": "cb8acaf37fca800722947388044b4a7b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_maha.png": {
+    "mtime": 1783067330.249259,
+    "ast_hash": "554629f570d217fa0f45ff59dd564d88",
+    "semantic_hash": "554629f570d217fa0f45ff59dd564d88"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_hdc.png": {
+    "mtime": 1783067329.1772406,
+    "ast_hash": "5fe719bf76f3f21e8f690531ba096495",
+    "semantic_hash": "5fe719bf76f3f21e8f690531ba096495"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_ewc.png": {
+    "mtime": 1783067327.97822,
+    "ast_hash": "45d59ab5e47809f2617cd4f6c73011a6",
+    "semantic_hash": "45d59ab5e47809f2617cd4f6c73011a6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_tinyol.png": {
+    "mtime": 1783067331.3612783,
+    "ast_hash": "729e43f97b21fc118c0222c4e565bdf4",
+    "semantic_hash": "729e43f97b21fc118c0222c4e565bdf4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_cases_compare.png": {
+    "mtime": 1783067332.1692922,
+    "ast_hash": "c2e9564058d59d9ad99f20842e96b4f2",
+    "semantic_hash": "c2e9564058d59d9ad99f20842e96b4f2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_section3_detail.png": {
+    "mtime": 1783067324.900167,
+    "ast_hash": "2af230b81888a41c93d0a6c6893c4465",
+    "semantic_hash": "2af230b81888a41c93d0a6c6893c4465"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_maha.png": {
+    "mtime": 1783067330.249259,
+    "ast_hash": "554629f570d217fa0f45ff59dd564d88",
+    "semantic_hash": "554629f570d217fa0f45ff59dd564d88"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_hdc.png": {
+    "mtime": 1783067329.1772406,
+    "ast_hash": "5fe719bf76f3f21e8f690531ba096495",
+    "semantic_hash": "5fe719bf76f3f21e8f690531ba096495"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/2fig_stack_painting.png": {
+    "mtime": 1783067323.75409,
+    "ast_hash": "cc33eaf1d871e01253de975b0910a3a2",
+    "semantic_hash": "cc33eaf1d871e01253de975b0910a3a2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_ewc.png": {
+    "mtime": 1783067327.97822,
+    "ast_hash": "45d59ab5e47809f2617cd4f6c73011a6",
+    "semantic_hash": "45d59ab5e47809f2617cd4f6c73011a6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_model_maps.png": {
+    "mtime": 1783067324.2718313,
+    "ast_hash": "2b9c6fec5e27eab9a6a7766ec3d61987",
+    "semantic_hash": "2b9c6fec5e27eab9a6a7766ec3d61987"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/1fig_memory_map.png": {
+    "mtime": 1783067323.3391402,
+    "ast_hash": "5685b0247cf8434c447ce2746fa572c6",
+    "semantic_hash": "5685b0247cf8434c447ce2746fa572c6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_tinyol.png": {
+    "mtime": 1783067331.3612783,
+    "ast_hash": "729e43f97b21fc118c0222c4e565bdf4",
+    "semantic_hash": "729e43f97b21fc118c0222c4e565bdf4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/C_budget_ram.png": {
+    "mtime": 1782998351.3281324,
+    "ast_hash": "c710a94d0078ce3db7929a21b048d62b",
+    "semantic_hash": "c710a94d0078ce3db7929a21b048d62b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/02_cycle_de_vie.png": {
+    "mtime": 1782998350.4654832,
+    "ast_hash": "7389675757d97a62edd54c5cd823af58",
+    "semantic_hash": "7389675757d97a62edd54c5cd823af58"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/01_use_case.png": {
+    "mtime": 1782998350.3054833,
+    "ast_hash": "9bb8c2fcacd0e07a4f55e50d2731957f",
+    "semantic_hash": "9bb8c2fcacd0e07a4f55e50d2731957f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/03_boucle_temps_reel.png": {
+    "mtime": 1782998350.6604834,
+    "ast_hash": "14c0d62ff7ec0e2e43458f1a73a2bc17",
+    "semantic_hash": "14c0d62ff7ec0e2e43458f1a73a2bc17"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/04_concept_normal_faulty_drift.png": {
+    "mtime": 1782998350.8384833,
+    "ast_hash": "a1d2a8d305ab78dce87b498f2f049dd9",
+    "semantic_hash": "a1d2a8d305ab78dce87b498f2f049dd9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/B_budget_latence.png": {
+    "mtime": 1782998351.2624834,
+    "ast_hash": "46f6eb7d6766c0df2d796480bceb76ac",
+    "semantic_hash": "46f6eb7d6766c0df2d796480bceb76ac"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/style.py": {
+    "mtime": 1783331443.9083774,
+    "ast_hash": "2605fde7318988cbb54a62381c57aeb5",
+    "semantic_hash": "2605fde7318988cbb54a62381c57aeb5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/__init__.py": {
+    "mtime": 1783331425.3402207,
+    "ast_hash": "f39247872c37b7e4221b924b2402a2cd",
+    "semantic_hash": "f39247872c37b7e4221b924b2402a2cd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/loaders.py": {
+    "mtime": 1783331468.2967155,
+    "ast_hash": "fb236564ff7d8072efd704f7ee11f79a",
+    "semantic_hash": "fb236564ff7d8072efd704f7ee11f79a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/registry.py": {
+    "mtime": 1783331475.8156464,
+    "ast_hash": "255e0fd63270d9c2cdc3e80e18d44727",
+    "semantic_hash": "255e0fd63270d9c2cdc3e80e18d44727"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/__init__.py": {
+    "mtime": 1783423863.0391445,
+    "ast_hash": "7af82d8b152cb17c46b74dc64efc5e71",
+    "semantic_hash": "7af82d8b152cb17c46b74dc64efc5e71"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/quant_pedagogy.py": {
+    "mtime": 1783410660.7326999,
+    "ast_hash": "f3189075a5c5402bfad30c9a660dbf52",
+    "semantic_hash": "f3189075a5c5402bfad30c9a660dbf52"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/generate_figures.py": {
+    "mtime": 1783331498.6384974,
+    "ast_hash": "aee2482cf5f2304d14fcab7ef0bf4cdf",
+    "semantic_hash": "aee2482cf5f2304d14fcab7ef0bf4cdf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4201_infrastructure_figures.md": {
+    "mtime": 1783412371.5521798,
+    "ast_hash": "be67fff34575ea24fd6dedfc8273d2ac",
+    "semantic_hash": "be67fff34575ea24fd6dedfc8273d2ac"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4205_figures_impact.md": {
+    "mtime": 1783495033.8078458,
+    "ast_hash": "94827c0a63749207df2d900de8bfac1c",
+    "semantic_hash": "94827c0a63749207df2d900de8bfac1c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4204_figures_pipeline.md": {
+    "mtime": 1783424597.8526638,
+    "ast_hash": "579fd615b3ceb93d38ef9ca7719af0a4",
+    "semantic_hash": "579fd615b3ceb93d38ef9ca7719af0a4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4202_inventaire_strategies.md": {
+    "mtime": 1783412371.55318,
+    "ast_hash": "53badc4c9f735a58f4545739748a4453",
+    "semantic_hash": "53badc4c9f735a58f4545739748a4453"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4206_notebook_catalogue.md": {
+    "mtime": 1783495050.9300168,
+    "ast_hash": "ff28ee02088c186cb1b6e5561efa0829",
+    "semantic_hash": "ff28ee02088c186cb1b6e5561efa0829"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4200_sprint_42.md": {
+    "mtime": 1783495096.1050208,
+    "ast_hash": "c355713b613e78167cf219c9103163a1",
+    "semantic_hash": "c355713b613e78167cf219c9103163a1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4203_figures_pedagogiques.md": {
+    "mtime": 1783412371.55418,
+    "ast_hash": "a18cac5598dfa825e4ac804124ea08a7",
+    "semantic_hash": "a18cac5598dfa825e4ac804124ea08a7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4207_tests_docs.md": {
+    "mtime": 1783495073.6280186,
+    "ast_hash": "86f42d266d4cb3fb261d8019066a0191",
+    "semantic_hash": "86f42d266d4cb3fb261d8019066a0191"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/quantization_strategies.md": {
+    "mtime": 1783411242.0720835,
+    "ast_hash": "45da0474b425f1d2d925242cb2e688da",
+    "semantic_hash": "45da0474b425f1d2d925242cb2e688da"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pedagogy/grilles_int8_vs_q15.png": {
+    "mtime": 1783424238.4883778,
+    "ast_hash": "e8d94d0908ee11d281c868d16575db3d",
+    "semantic_hash": "e8d94d0908ee11d281c868d16575db3d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pedagogy/erreur_quantification_poids.png": {
+    "mtime": 1783424239.0663779,
+    "ast_hash": "d21508d68d6fb59704ca03791bc9a269",
+    "semantic_hash": "d21508d68d6fb59704ca03791bc9a269"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pedagogy/dynamique_sigma_inv.png": {
+    "mtime": 1783424239.3918085,
+    "ast_hash": "5f134ef1d29776cf7983cbed3e12cbe7",
+    "semantic_hash": "5f134ef1d29776cf7983cbed3e12cbe7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pedagogy/fakequant_forward.png": {
+    "mtime": 1783424239.5610769,
+    "ast_hash": "1e87ae3673a62d688d4028766e6e32f4",
+    "semantic_hash": "1e87ae3673a62d688d4028766e6e32f4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pedagogy/mapping_affine_int8.png": {
+    "mtime": 1783424238.180898,
+    "ast_hash": "b9d827353c562d08dfb4159487290986",
+    "semantic_hash": "b9d827353c562d08dfb4159487290986"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pedagogy/qat_vs_ptq.png": {
+    "mtime": 1783424238.6823778,
+    "ast_hash": "68f16c2ecafd0cfee1eaafaae8d057af",
+    "semantic_hash": "68f16c2ecafd0cfee1eaafaae8d057af"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/schematic.py": {
+    "mtime": 1783423315.4024577,
+    "ast_hash": "0e295e99e6de5e87cf5c125ab3e5e559",
+    "semantic_hash": "0e295e99e6de5e87cf5c125ab3e5e559"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/quant_impact.py": {
+    "mtime": 1783423985.5934932,
+    "ast_hash": "ad1fb594e72f8fe241224657718f10ee",
+    "semantic_hash": "ad1fb594e72f8fe241224657718f10ee"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/quant_pipeline.py": {
+    "mtime": 1783423938.9963522,
+    "ast_hash": "db00a65ead2f962db83da8337eede3d1",
+    "semantic_hash": "db00a65ead2f962db83da8337eede3d1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s40_board_v2.py": {
+    "mtime": 1783420445.941393,
+    "ast_hash": "bb6d6d05ad68dea4bbfbc9f55a3ce7e6",
+    "semantic_hash": "bb6d6d05ad68dea4bbfbc9f55a3ce7e6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_sprint40_article.py": {
+    "mtime": 1783422873.9532611,
+    "ast_hash": "8c3df4dc0a4fd5716328b3592f0b943e",
+    "semantic_hash": "8c3df4dc0a4fd5716328b3592f0b943e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_figures_library.py": {
+    "mtime": 1783424327.4233854,
+    "ast_hash": "da8edccf7eb8c4ead0d734023d2059f5",
+    "semantic_hash": "da8edccf7eb8c4ead0d734023d2059f5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json": {
+    "mtime": 1783421198.3169534,
+    "ast_hash": "0f5d9084f81ba235fc60abfd1ba0868f",
+    "semantic_hash": "0f5d9084f81ba235fc60abfd1ba0868f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json": {
+    "mtime": 1783421374.3656507,
+    "ast_hash": "52e09bff9150c20daad6de80816150ff",
+    "semantic_hash": "52e09bff9150c20daad6de80816150ff"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_pronostia_online/board_samples.json": {
+    "mtime": 1783421374.3348353,
+    "ast_hash": "ff89529527f6212b995005b23c7f0805",
+    "semantic_hash": "ff89529527f6212b995005b23c7f0805"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_pronostia_online/task_0_metrics.json": {
+    "mtime": 1783421266.940999,
+    "ast_hash": "2f105a2698188852d4841d6a869be0dd",
+    "semantic_hash": "2f105a2698188852d4841d6a869be0dd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_pronostia_online/task_2_metrics.json": {
+    "mtime": 1783421368.4732368,
+    "ast_hash": "261dedc40a9ea5cd6e6db8f8e805d064",
+    "semantic_hash": "261dedc40a9ea5cd6e6db8f8e805d064"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_pronostia_online/task_1_metrics.json": {
+    "mtime": 1783421317.706489,
+    "ast_hash": "a268c8701b6a466805f55a7d23d35d85",
+    "semantic_hash": "a268c8701b6a466805f55a7d23d35d85"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_pronostia_frozen/board_samples.json": {
+    "mtime": 1783421198.3159208,
+    "ast_hash": "5f2bf80b805dafac070eeff07afde72c",
+    "semantic_hash": "5f2bf80b805dafac070eeff07afde72c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4401_inventaire_methodes.md": {
+    "mtime": 1783413364.2942648,
+    "ast_hash": "eaf0a63564a37e9579d6a4708c16c4bd",
+    "semantic_hash": "eaf0a63564a37e9579d6a4708c16c4bd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4405_execution_figures.md": {
+    "mtime": 1783413484.2952394,
+    "ast_hash": "0eeddc6f4e6e372df7f39074c7379ebd",
+    "semantic_hash": "0eeddc6f4e6e372df7f39074c7379ebd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4404_harness_evaluation.md": {
+    "mtime": 1783413453.967447,
+    "ast_hash": "b3c5918a8b143630c62b8e153574be12",
+    "semantic_hash": "b3c5918a8b143630c62b8e153574be12"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4403_detecteurs_non_supervises.md": {
+    "mtime": 1783413426.08827,
+    "ast_hash": "de4c3e80341399f99f6d3580c28ffb2d",
+    "semantic_hash": "de4c3e80341399f99f6d3580c28ffb2d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4406_notebook_tests_docs.md": {
+    "mtime": 1783413510.177277,
+    "ast_hash": "ad74f8d0b5e75d1ed87af540277c3e4e",
+    "semantic_hash": "ad74f8d0b5e75d1ed87af540277c3e4e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4400_sprint_44.md": {
+    "mtime": 1783413329.4636993,
+    "ast_hash": "8515f536a9a9a9d3e4965375e6de2155",
+    "semantic_hash": "8515f536a9a9a9d3e4965375e6de2155"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4402_detecteurs_supervises.md": {
+    "mtime": 1783413391.557267,
+    "ast_hash": "42853807ce86721855afa5181715afcb",
+    "semantic_hash": "42853807ce86721855afa5181715afcb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4303_caracterisation_drift.md": {
+    "mtime": 1783413221.5256565,
+    "ast_hash": "d639034bc29b2fbc48efba87bf59dbd6",
+    "semantic_hash": "d639034bc29b2fbc48efba87bf59dbd6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4305_notebook_tests_docs.md": {
+    "mtime": 1783413268.6760976,
+    "ast_hash": "8b8dd282a3e30e4bc97aa1dafca7f840",
+    "semantic_hash": "8b8dd282a3e30e4bc97aa1dafca7f840"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4301_recherche_datasets.md": {
+    "mtime": 1783426572.9284663,
+    "ast_hash": "2eae4f74f3e0edc31f3229819b3c8cb0",
+    "semantic_hash": "2eae4f74f3e0edc31f3229819b3c8cb0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4302_acquisition_loaders.md": {
+    "mtime": 1783413191.2642498,
+    "ast_hash": "e85619f06b63ced2c0eacc0cf4f3b83d",
+    "semantic_hash": "e85619f06b63ced2c0eacc0cf4f3b83d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4300_sprint_43.md": {
+    "mtime": 1783413119.8768995,
+    "ast_hash": "46b87d08a79abc6e061ca8b26a917907",
+    "semantic_hash": "46b87d08a79abc6e061ca8b26a917907"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4304_figures_analyse.md": {
+    "mtime": 1783413245.5886576,
+    "ast_hash": "8fd2a4ce7ddd4ebf79c497bd6aac500e",
+    "semantic_hash": "8fd2a4ce7ddd4ebf79c497bd6aac500e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4503_export_parite.md": {
+    "mtime": 1783421154.2771142,
+    "ast_hash": "637ea7d6fd7f58fbc5b1eabc0c78b019",
+    "semantic_hash": "637ea7d6fd7f58fbc5b1eabc0c78b019"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4502_firmware_detecteurs.md": {
+    "mtime": 1783421125.7791119,
+    "ast_hash": "b72c869b4daeec6b62073abb3852fdfa",
+    "semantic_hash": "b72c869b4daeec6b62073abb3852fdfa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4500_sprint_45.md": {
+    "mtime": 1783413565.5286489,
+    "ast_hash": "ac80b5310986e5f29801026e17ed5454",
+    "semantic_hash": "ac80b5310986e5f29801026e17ed5454"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4505_notebook_tests_docs.md": {
+    "mtime": 1783421206.6931188,
+    "ast_hash": "fe65e238f4cc1424698292912707c5b7",
+    "semantic_hash": "fe65e238f4cc1424698292912707c5b7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4504_mesure_board.md": {
+    "mtime": 1783421183.7253342,
+    "ast_hash": "4a3ee64c9b0c02a49e8fc74f9dd195a6",
+    "semantic_hash": "4a3ee64c9b0c02a49e8fc74f9dd195a6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4501_selection_cadrage.md": {
+    "mtime": 1783413594.4702845,
+    "ast_hash": "c01df4bac59ef22673e2362f0872c78a",
+    "semantic_hash": "c01df4bac59ef22673e2362f0872c78a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/drift_fault_tandem.md": {
+    "mtime": 1783421264.137114,
+    "ast_hash": "4fc684113b6ebadd11970837ce1c30be",
+    "semantic_hash": "4fc684113b6ebadd11970837ce1c30be"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/main_fr.pdf": {
+    "mtime": 1783423084.067279,
+    "ast_hash": "db3ce0feed8a977633dac0cad451d1b6",
+    "semantic_hash": "db3ce0feed8a977633dac0cad451d1b6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/main_en.pdf": {
+    "mtime": 1783423085.9182794,
+    "ast_hash": "ce8cabd1626dd0e5367d7f72dde90626",
+    "semantic_hash": "ce8cabd1626dd0e5367d7f72dde90626"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/impact/ablation_perte_f1.png": {
+    "mtime": 1783424240.7997813,
+    "ast_hash": "3c6a28dc8f9f28d7f05666af3627d246",
+    "semantic_hash": "3c6a28dc8f9f28d7f05666af3627d246"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/impact/paradoxe_latence.png": {
+    "mtime": 1783424241.351378,
+    "ast_hash": "32cfb7f456681bfb921a6c384c010aea",
+    "semantic_hash": "32cfb7f456681bfb921a6c384c010aea"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/impact/qat_vs_ptq_resultats.png": {
+    "mtime": 1783424241.495378,
+    "ast_hash": "65f39c34f7099f510eb7dffc461edcbb",
+    "semantic_hash": "65f39c34f7099f510eb7dffc461edcbb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/impact/metrique_par_strategie.png": {
+    "mtime": 1783424240.632378,
+    "ast_hash": "f2b691d75a297105c288d6addb35f96f",
+    "semantic_hash": "f2b691d75a297105c288d6addb35f96f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/impact/ram_gap3.png": {
+    "mtime": 1783424241.198378,
+    "ast_hash": "3a7cfd8baa2a35f70d89baed296d9b76",
+    "semantic_hash": "3a7cfd8baa2a35f70d89baed296d9b76"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/impact/recuperation_q15_maha.png": {
+    "mtime": 1783424241.0411973,
+    "ast_hash": "fa25f314dd9f62ba08c130d325027360",
+    "semantic_hash": "fa25f314dd9f62ba08c130d325027360"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pipeline/pipeline_int8_ptq_board.png": {
+    "mtime": 1783424239.9913778,
+    "ast_hash": "333de77c1bb0b0947e53d97eea1b9882",
+    "semantic_hash": "333de77c1bb0b0947e53d97eea1b9882"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pipeline/pipeline_int8_qat_pc.png": {
+    "mtime": 1783424239.8363779,
+    "ast_hash": "e153f6bf3d43fb94f2c2babe7b4316a0",
+    "semantic_hash": "e153f6bf3d43fb94f2c2babe7b4316a0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pipeline/pipeline_fp32.png": {
+    "mtime": 1783424239.689378,
+    "ast_hash": "a987be50fd5c8f503fffbaa7c279749a",
+    "semantic_hash": "a987be50fd5c8f503fffbaa7c279749a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pipeline/pipeline_int8_v2_q15.png": {
+    "mtime": 1783424240.1653779,
+    "ast_hash": "4269eeda6caed5f84a695f797df38d56",
+    "semantic_hash": "4269eeda6caed5f84a695f797df38d56"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization/pipeline/pipeline_comparatif.png": {
+    "mtime": 1783424240.4413779,
+    "ast_hash": "3380c2703c347cfdd2e87b863a92996d",
+    "semantic_hash": "3380c2703c347cfdd2e87b863a92996d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint40_article/fig5_pareto_ram_f1_latency.png": {
+    "mtime": 1783423099.3212805,
+    "ast_hash": "9161f1083550a323a33df6a67f5c195a",
+    "semantic_hash": "9161f1083550a323a33df6a67f5c195a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint40_article/fig1_parity_fp32_pc_board.png": {
+    "mtime": 1783423098.3462803,
+    "ast_hash": "1da637bd0b0f230e99167b4a12aa403e",
+    "semantic_hash": "1da637bd0b0f230e99167b4a12aa403e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint40_article/fig4_int8_recovery_board.png": {
+    "mtime": 1783423099.1962805,
+    "ast_hash": "908629e2ba794c40dfc6b6fbe9bc7bde",
+    "semantic_hash": "908629e2ba794c40dfc6b6fbe9bc7bde"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint40_article/fig2_latency_gap2.png": {
+    "mtime": 1783423098.7172804,
+    "ast_hash": "6d38531f1ca780d5b063d8db551c1582",
+    "semantic_hash": "6d38531f1ca780d5b063d8db551c1582"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/sprint40_article/fig3_ablation_ladder.png": {
+    "mtime": 1783423098.9702804,
+    "ast_hash": "f41fc4d81438591570b367c29b36e70b",
+    "semantic_hash": "f41fc4d81438591570b367c29b36e70b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/figures/fig5_pareto_ram_f1_latency.png": {
+    "mtime": 1783422331.9448903,
+    "ast_hash": "84920346313e12cde37b18d0b22e9815",
+    "semantic_hash": "84920346313e12cde37b18d0b22e9815"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/figures/fig1_parity_fp32_pc_board.png": {
+    "mtime": 1783422331.9444947,
+    "ast_hash": "1da637bd0b0f230e99167b4a12aa403e",
+    "semantic_hash": "1da637bd0b0f230e99167b4a12aa403e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/figures/fig4_int8_recovery_board.png": {
+    "mtime": 1783422331.944807,
+    "ast_hash": "e54c62620706ca20f0c40fe1e785a43c",
+    "semantic_hash": "e54c62620706ca20f0c40fe1e785a43c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/figures/fig2_latency_gap2.png": {
+    "mtime": 1783422331.9446251,
+    "ast_hash": "7add77e0f3bca75bef9d91f3567b90f4",
+    "semantic_hash": "7add77e0f3bca75bef9d91f3567b90f4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/article/ewc_int8_mcu/figures/fig3_ablation_ladder.png": {
+    "mtime": 1783422331.9447,
+    "ast_hash": "f41fc4d81438591570b367c29b36e70b",
+    "semantic_hash": "f41fc4d81438591570b367c29b36e70b"
   }
 }

@@ -1,0 +1,57 @@
+{
+  "dataset": "pronostia",
+  "condition": "5feat",
+  "n_features": 5,
+  "feature_indices": [
+    1,
+    2,
+    4,
+    8,
+    12
+  ],
+  "feature_names": [
+    "std_acc_horiz",
+    "rms_acc_horiz",
+    "peak_acc_horiz",
+    "rms_acc_vert",
+    "temporal_position"
+  ],
+  "n_samples": 7534,
+  "positive_ratio": 0.1005,
+  "f1_fp32": 0.9616,
+  "ladder": [
+    {
+      "scheme": "legacy_c",
+      "f1": 0.0663,
+      "delta_prev": null,
+      "factor": "firmware actuel (int16 wrap + 1/128 figé)"
+    },
+    {
+      "scheme": "fix_acc32",
+      "f1": 0.0667,
+      "delta_prev": 0.0004,
+      "factor": "accumulateur int32 (supprime l'overflow)"
+    },
+    {
+      "scheme": "per_tensor_calib",
+      "f1": 0.9462,
+      "delta_prev": 0.8795,
+      "factor": "scale calibré par-tenseur (vs 1/128)"
+    },
+    {
+      "scheme": "per_channel_int8",
+      "f1": 0.9426,
+      "delta_prev": -0.0036,
+      "factor": "scale par-canal (mirroir QAT PC)"
+    },
+    {
+      "scheme": "q15",
+      "f1": 0.9616,
+      "delta_prev": 0.019,
+      "factor": "16-bit (fidélité 256×)"
+    }
+  ],
+  "dominant_factor": "scale calibré par-tenseur (vs 1/128)",
+  "dominant_scheme": "per_tensor_calib",
+  "seed": 42
+}

@@ -1,0 +1,12 @@
+{
+  "label": "HDC",
+  "model_flag": "hdc",
+  "dataset": "cmapss",
+  "condition": "all",
+  "data_bytes": 460,
+  "bss_bytes": 184864,
+  "stack_peak_bytes": 4392,
+  "ram_peak_bytes": 189716,
+  "static_bound_bytes": 4800,
+  "bound_ge_measured": true
+}

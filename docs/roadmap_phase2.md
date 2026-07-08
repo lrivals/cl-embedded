@@ -26,6 +26,8 @@ Sprint 35 (4–10 aoû)     → Impact nb features (5feat/all/best par modèle) 
 Sprint 36 (11–17 aoû)    → Comparaison précise PC↔board EWC (Pronostia + Monitoring) : 2 conditions (5feat/all) × 2 protocoles (gelé=parité / online=latence inf+MAJ), tous métriques + parité par-inférence + notebook  ✅ (S3601–S3609 : board gelé **parité 1.000** lat inf 48–65µs, board online inf+MAJ 239–340µs ≪ 100ms / parité~ 0.963–0.989 re-streamée board, Δacc PC↔board ≤ 0.007, 8 fichiers parité, `exp_S36_summary.json`, notebook 10 PNG, 6 tests PC + Unity 0 régression) · **rework S3610–S3613** : cadrage 2 comparaisons appariées + étude secondaire features + **axe INT8 vs FP32 board** (frozen+online, 8 cellules board réelle 0 CRC ; firmware résout `TODO(dorra)` `ewc_int8_from_fp32`, 0 régression ; Gap 2 ✅ + Gap 3 RAM ×4 ✅ **mais F1 INT8 0.07–0.15 ≪ FP32 0.92** = dégradation PTQ cohérente S29)
 Sprint 37 (18–24 aoû)    → Pipeline de publication GitLab (export sanitisé) : transformation reproductible dépôt de travail → version GitLab propre (0 trace IA), déclencheur local manuel, dépôt exporté séparé, couvre les ajouts futurs  ✅ (S3701–S3709 : `gitlab_release.yaml` + `check_ai_traces.py` + `prepare_gitlab_release.py` → export 0 trace gate dur, docs neutres README/CONTRIBUTING, garde-fou CI `--check-only`, runbook, 12 tests PASS)
 Sprint 38 (25–31 aoû)    → Mise à jour EWC autonome déclenchée par gate de nouveauté embarqué (Maha + fenêtre glissante) : arbitrage économie (RAM/latence) vs précision entre EWC permanent et gaté, board réelle  ✅ (S3800–S3809 : gate `-DEWC_AUTO_UPDATE`, 8 cellules gated NUCLEO-F439ZI, update_rate frozen 0 < gated ~0.025 < always 1, parité verdict board↔PC = 1.000, économie ~97 % MAJ / +300 B RAM, Gap 2 ✅, 10 tests PASS)
+Sprint 40 (article)      → Article standalone FR+EN « EWC INT8 sur MCU » (parité FP32 mesurée · effondrement PTQ naïve · récupération par kernel calibré · honnêteté mesuré board vs émulé PC)  ✅ (S4004–S4007 : `docs/article/ewc_int8_mcu/` classe `article`, `main_{fr,en}.tex` + 7 sections miroir + `references.bib` autonome + Makefile → **`make all` compile FR+EN sans erreur**, 5 figures S4003, chiffres FR≡EN adossés JSON S36/S39, board v2 « à mesurer » ; `test_sprint40_article.py` **14 PASS / 2 skips honnêtes** ; firmware inchangé, 2 TinyOL préexistants hors périmètre)
+Sprint 42 (13–19 jul)    → Bibliothèque de figures de présentation `src/figures/` + catalogue complet « stratégies de quantification » (pédagogie/pipeline/impact), FR, régénérable en une commande  ✅ (S4201–S4207 : style/loaders/registre + CLI `generate_figures.py` · inventaire `docs/context/quantization_strategies.md` · **17 PNG** `docs/figures/quantization/{pedagogy,pipeline,impact}/` — mapping affine, grilles INT8/Q15, QAT vs PTQ, ablation S39, récupération Q15 Maha, RAM Gap 3, paradoxe latence · badges plateforme mesuré/émulé/« à mesurer », 0 chiffre en dur (garde AST) · notebook-galerie `catalog.ipynb` nbconvert OK · `test_figures_library.py` **7 PASS**, 714 collectés 0 erreur)
 P2-07 (6–20 jul)         → Rédaction manuscrit — résultats Phase 1+2
 P2-08 (14–21 jul)        → Rédaction manuscrit — discussion + triple gap
 P2-09 (21–31 jul)        → Finalisation rapport + figures
@@ -636,6 +638,148 @@ DUAL_MODE validé board réelle NUCLEO-F439ZI (2026-06-12) :
 **Statut** : ✅ **Implémenté (S3800–S3809, board réelle NUCLEO-F439ZI)**. Firmware : `pipeline.c` réinterprète 2 champs du snapshot **sous `-DEWC_AUTO_UPDATE` uniquement** (`auroc←verdict`, `forgetting←n_updates`) → wire format V3 inchangé, `sensor_stream.py` intact ; `.bss` défaut **105 036 B invariant**, gate **+300 B**, builds P2/P3 0 warning. Driver `run_sprint38_board.py` (gated : Maha d'enrôlement welford = miroir PC, stream sans `--update`, `_pc_gate_replay` reconstruit le verdict PC sur l'ordre board). **8 cellules gated board réelle (0 CRC)** : `update_rate` strictement **frozen=0 < gated≈0.025 < always=1**, `mean_latency` gated ≈ 79–82 µs ≪ always 238–251 µs ≪ 100 ms (**Gap 2 ✅**), **parité verdict board↔PC = 1.000 sur les 8** (mêmes seuils exportés). `economy_table` (deltas vs `always`) : gated économisent **~97 % des MAJ** et ~159–169 µs/éch. au coût de **+300 B** RAM, F1 préservé (`pretrained` : Δ≤0.02 ; `scratch` : `always` plafond domine). `board_pc_parity38.py` (16 JSON), `aggregate_sprint38.py` → `exp_S38_summary.json`, notebook `autonomous_ewc/comparison.ipynb` (4 PNG, nbconvert OK), `test_sprint38_autonomous.py` **10/10 PASS** + Unity `test_drift_detector` 6/6 (0 régression, 2 TinyOL préexistants hors périmètre). Précédent de sélection à la compilation : `-DMAHA_INT8` (Sprint 29, nibble UART saturé).
 
 → Détail : [`docs/sprints/sprint_38/S3800_sprint_38.md`](sprints/sprint_38/S3800_sprint_38.md)
+
+---
+
+### Sprint 39 — Approfondissement INT8 vs FP32 sur board : cause de la perte F1 + schémas intermédiaires (30 juin – 4 juillet 2026)
+
+**Objectif** : comprendre et corriger la perte d'accuracy/F1 INT8 sur board (suite Sprints 28/29), concevoir un kernel C **v2 optimisé** et balayer des **quantifications intermédiaires** (per-channel INT8, Q15, mixte) pour équilibrer latence/RAM/accuracy. Carte indisponible → méthodologie **au PC** via émulateur bit-exact ; mesures matérielles isolées en Partie B différée.
+
+| Objectif | Tâches | Statut | Résultat |
+| -------- | ------ | :----: | -------- |
+| O1 — Audit & critique INT8 actuel | S3901 | ✅ | 6 faiblesses cataloguées : overflow `int16`, scale `1/128` figé (≠ QAT PC per-canal), PTQ≠QAT, déquant→FP32 (RAM-only), absence SIMD |
+| O2 — Émulateur Python bit-exact | S3902 ✅ · S3903 ✅ | ✅ | `int8_c_emulation.py` reproduit le forward C ; `test_int8_c_emulation.py` **3 PASS** valide vs logs board (F1 legacy 0.066 ≈ board 0.138 ; accord émulé 0.842 vs board 0.736, même régime — écart imputé à l'ordre de streaming/normalisation, documenté) |
+| O3 — Ablation chiffrée perte F1 | S3904 ✅ | ✅ | `run_s39_int8_ablation.py` → 5 JSON `exp_S39_ablation/` : **cause racine = échelle `1/128` non calibrée** (`per_tensor_calib` dominant 4/5, jusqu'à +0.88 F1), **pas l'overflow int16** (`fix_acc32` marginal) ; Q15 non requis sur ces têtes ; paderborn dégénéré mono-classe |
+| O4 — Schémas intermédiaires | S3905 ✅ · S3906 ✅ | ✅ | 25 configs `configs/quant_intermediate/` + `run_s39_quant_sweep.py` → 20 JSON + `summary.json`. **EWC** : `int8_legacy` s'effondre (monitoring 0.027 / pronostia 0.045) → **`int8_perchannel` récupère ≈ FP32** (0.915 / 0.944), Q15/mixte idem ; **confirme la cause racine S3904 (scale non calibrée)**. Maha INT8 0.77 → **Q15 0.923** (pronostia). BOPs/latence = proxy analytique honnête (`lat_proxy: true`, FPU réelle → S3915) |
+| O5 — Kernel C v2 + tests host | S3907 ✅ · S3908 ✅ · S3909 ✅ · S3910 ✅ | ✅ | `ewc_head_int8_v2.c/.h` (acc + scales **par-canal** + variantes `-DEWC_INT8_Q15`/`-DEWC_INT8_MIXED`), v1 intact (A/B) ; export `--int8-v2`/`--int8-v2-test-vectors` → header golden **auto-suffisant** (poids FP32 + `act_max` + logits). **S3909** `test_ewc_int8_v2.c` (5 cas, parité par construction) → `make test` **127** (2 TinyOL préexistants) + `make test-v2-q15` ; **bug réel corrigé** : acc `int32` déborde en Q15 → `ewc_v2_acc_t` int32 (int8/mixed) / **int64 (Q15)**, 0 régression. **S3910** spec SIMD complète, mesure board différée (S3917, toolchain bloquée) |
+| O6 — Notebook + tests Python | S3911 ✅ · S3912 ✅ | ✅ | `int8_intermediate/comparison.ipynb` (nbconvert OK) : ablation, scatter Pareto, 3 heatmaps 4×5 → **5 PNG** ; `test_s39_quant.py` **11 PASS** (suite int8/quant **40 PASS**). Constat honnête : échelle non monotone (`fix_acc32` seul dégrade) → test sur régime calibré |
+| O7 — Doc & clôture | S3913 🟡 · S3914 | 🟡 | doc principale, roadmap, `triple_gap.md` |
+| **Partie B (board réelle)** | S3915 ✅ · S3916 ✅ · S3917 ⬜ | ✅ (S3917 différé) | **kernel v2 câblé** (`-DEWC_INT8_V2` route le chemin 0x40, wire UART intact, `.bss` v1 105 036 B invariant → 0 régression) + `run_s39_board.py` → **5 cellules board réelle NUCLEO-F439ZI** : **v2 récupère la F1 sur silicium** (pronostia 0.078→**0.928** per-canal / **0.970** Q15 ; cmapss 0.133→**0.400**), **parité gelée bit-exacte 1.000 (0 mismatch)**, latence 67–75 µs ≪ 100 ms (**Gap 2 ✅**), 0 CRC. S3917 SIMD CMSIS-NN différé (`TODO(dorra)`) |
+| **Conditions identiques** | S3918 ✅ · S3919 ✅ | ✅ | `run_s39_matched_compare.py` (côté PC = émulateur du schéma board, jamais QAT S28 ; source données + métrique + checkpoint uniques) → `exp_S39_matched/` + `test_s39_matched.py` **5 PASS** ; S3919 confronte board↔émulateur = **parité gelée bit-exacte** |
+
+**Décisions** : kernel **v2 séparé** (ancien intact pour A/B) · schémas **per-channel INT8 + Q15 + mixte INT8w/Q15act** · SIMD CMSIS **documenté + différé** (`TODO(dorra)` toolchain). **Statut** : ✅ **Partie A livrée** (audit + émulateur validé + ablation + schémas intermédiaires + kernel v2 + export per-canal ; cause racine = scale `1/128` non calibrée, corrigée par `int8_perchannel` qui récupère la F1 ≈ FP32) **+ Partie B board réelle livrée** (S3915/S3916 câblage `-DEWC_INT8_V2` + `run_s39_board.py`, 5 cellules NUCLEO-F439ZI : **v2 récupère la F1 mesurée matériellement** — pronostia 0.078→0.928, cmapss 0.133→0.400 — **parité gelée bit-exacte 1.000**, Gap 2 ✅, 0 CRC) **+ S3918/S3919 comparaison appariée bit-exacte**. Reste **S3917 SIMD CMSIS-NN** différé (`TODO(dorra)`, non bloquant).
+
+→ Détail : [`docs/sprints/sprint_39/S3900_sprint_39.md`](sprints/sprint_39/S3900_sprint_39.md)
+
+---
+
+### Sprint 40 — Rédaction d'un article standalone : EWC PC↔board & INT8 vs FP32 (Pronostia + Monitoring) (5 – 11 juillet 2026)
+
+**Objectif** : capitaliser deux campagnes complémentaires sur EWC (M2) en un **article standalone LaTeX (FR + EN)**. Sprint 36 fournit la comparaison **appariée PC↔NUCLEO-F439ZI** (parité FP32 exacte, Gap 2, Δacc≤0.007) et l'effondrement F1 de la PTQ INT8 « legacy » ; Sprint 39 en donne le **diagnostic** (émulateur bit-exact : cause = scale figé, récupération per-channel/Q15 ≈ FP32). Le sprint complète le **kernel v2 + la validation board** différés du Sprint 39 pour obtenir la récupération INT8 **réelle sur carte**, unifie les données dans un notebook de synthèse, puis rédige l'article.
+
+**Nœud honnête** : la récupération INT8 n'est aujourd'hui qu'**émulée PC** (board S3915 différée). L'article distingue explicitement « mesuré board » vs « émulé PC » ; les cellules board v2 portent `"à mesurer"` tant que la carte n'a pas streamé (règle « aucun chiffre inventé »). Paradoxe latence INT8 (RAM ÷4 sans accélération FPU) assumé, SIMD CMSIS différé.
+
+| Bloc | Tâches | Statut | Résultat attendu |
+| ---- | ------ | :----: | ---------------- |
+| A — Prérequis données (Sprint 39 différé) | S4001 · S4002 | 📝 Doc | kernel v2 calibré (int32 + per-canal + Q15) + tests host ; board réelle : latence/`.bss`/F1/parité/accord INT8↔FP32 (différé carte) |
+| B — Synthèse unifiée | S4003 | 📝 Doc | notebook rechargeant exp_S36+exp_S39+exp_S40 → 5 figures article, aucune valeur en dur |
+| C — Rédaction article | S4004 · S4005 · S4006 | 📝 Doc | squelette LaTeX + `references.bib` + Makefile ; versions FR et EN (miroir strict) |
+| D — Clôture | S4007 | 📝 Doc | tests figures↔JSON + FR≡EN ; `make test` 0 régression ; roadmap/`triple_gap.md`/`graphify` |
+
+**Message scientifique** : (1) portabilité EWC MCU (parité FP32, Gap 2/3) · (2) piège de la PTQ naïve (effondrement F1 malgré RAM ÷4) · (3) récupération par kernel calibré (per-channel/Q15 ≈ FP32) · (4) honnêteté mesuré/émulé + paradoxe latence.
+
+**Liens triple gap** : Gap 2 (latences board <100 ms) · Gap 3 (récupération F1 INT8 board ⇒ RAM ÷4 sans perte de métrique, `FIXME(gap3)` levé si confirmé). **Statut** : 📝 **Documenté (S4000–S4007)** — Bloc A/B board différés si carte indisponible ; S4001 (firmware+émulateur) et S4003–S4006 faisables sans carte.
+
+→ Détail : [`docs/sprints/sprint_40/S4000_sprint_40.md`](sprints/sprint_40/S4000_sprint_40.md)
+
+---
+
+### Sprint 41 — Rédaction du manuscrit final M2 (démarré 3 juillet 2026)
+
+**Objectif** : produire `Manuscrit Final RIVALS.pdf` (~30 pages de texte FR hors abstracts/TOC/biblio/annexes, dépôt Moodle) en intégrant les retours des rapporteurs (limite de pages ; clarification du domaine = intersection CL × TinyML × PdM) et en exposant méthodologie, contribution, évaluation, perspectives.
+
+**Cadrage validé** : fil narratif **par triple gap** ; corps = socle (4 modèles, portage board, RAM, INT8 vs FP32) + **S36** (comparaison appariée PC↔board) ; S34/S35/S38 en perspectives ; énergie (S33) exclue ; datasets focus **CMAPSS + Pronostia + Monitoring** (grilles 4×5 en annexe) ; cadre mixte supervisé+non supervisé **assumé** ; chiffres RAM/INT8 en évolution (S39/S40) gérés par placeholders `[à confirmer — exp_XXX]`.
+
+**Workflow imposé** : textes produits en md dans `docs/rapport_de_stage/FIchier_md/` (dossier gitignoré) ; le projet Overleaf n'est **jamais** modifié sans instruction explicite ; aucun chiffre non traçable vers `experiments/exp_*` ; notebook de figures en fin de sprint.
+
+| Bloc | Tâches | Statut | Résultat attendu |
+| ---- | ------ | :----: | ---------------- |
+| A — Infrastructure & cadrage | S4101 · S4102 | ✅ | gitignore + arborescence `FIchier_md/` ; 8 fiches de cadrage (messages clés, chiffres+sources vérifiées, figures, refs, budget pages) |
+| B — Audits rigueur | S4103 · S4104 | ✅ | biblio : doublon Aljundi2018, corrections Ravaglia/Wu/Lin, ~10 entrées BibTeX prêtes (Belay, Park, Su, Zong, Lessmeier, CWRU, Jacob, Krishnamoorthi, Mahalanobis) ; glossaire : STM32N6 obsolète → NUCLEO-F439ZI, ~20 acronymes + 7 entrées à créer (PTQ/QAT, Q15, DWT, .bss, watermark, parité…) |
+| C — Rédaction (à la demande) | S4105–S4108 | ⏳ | ch. 1–3 / ch. 4 / ch. 5–7 (placeholders RAM-INT8) / ch. 8 + abstracts + annexes |
+| D — Figures & consolidation | S4109 · S4110 | ⏳ | notebook `notebooks/manuscrit_final/figures.ipynb` (0 valeur en dur) ; résolution placeholders depuis S39/S40, vérif chiffres↔JSON, comptage pages, checklist consignes |
+
+→ Détail : [`docs/sprints/sprint_41/S4100_sprint_41.md`](sprints/sprint_41/S4100_sprint_41.md)
+
+---
+
+### Sprint 42 — Bibliothèque de figures + explication des stratégies de quantification (13 – 19 juillet 2026)
+
+**Objectif** : mettre en place une **infrastructure pérenne de génération de figures** (`src/figures/`) — style commun, chargement traçable des `experiments/`, registre de catalogues, CLI régénérable — dont le premier cas d'usage est le **catalogue complet des stratégies de quantification** (FP32, INT8 QAT/PTQ-legacy/v2, Q15, HDC int16-AM), aujourd'hui dispersées sur ~8 sprints sans figure explicative.
+
+**Cadrage validé** : périmètre = toutes les stratégies ; trois familles de figures (pédagogie / pipeline-flux / impact mesuré) ; langue FR ; règles d'honnêteté héritées (aucun chiffre inventé, badges plateforme mesuré/émulé/« à mesurer », métriques nommées).
+
+| Bloc | Tâches | Statut | Résultat |
+| ---- | ------ | :----: | -------- |
+| A — Infrastructure | S4201 | ✅ | `src/figures/{style,loaders,registry,schematic}.py` + catalogs + CLI `generate_figures.py` (`--catalog`/`--all`/`--list`) |
+| B — Contenu quantification | S4202 · S4203 · S4204 · S4205 | ✅ | inventaire `quantization_strategies.md` ; **17 PNG** (pédagogie P1–P6, pipeline F1–F5, impact I1–I6) sous `docs/figures/quantization/` |
+| C — Assemblage & clôture | S4206 · S4207 | ✅ | notebook-galerie `catalog.ipynb` (nbconvert OK) ; `test_figures_library.py` **7 PASS**, 714 collectés 0 erreur ; roadmap + CLAUDE.md + graphify |
+
+**Messages portés par les figures** : *quantifier ≠ quantifier* (moment + calibration de l'échelle dominent : QAT ✓ / PTQ figée ✗ / PTQ calibrée ✓) ; la dynamique des tenseurs décide du format (Σ⁻¹ → Q15) ; paradoxe latence FPU (INT8 ×1.84 vs FP32, gain RAM seul). Board v2 (S40) : Pronostia chargé, Monitoring « à mesurer » (remplissage automatique à la relance). `TODO(dorra)` scales per-channel kernel v2, `TODO(arnaud)` notations manuscrit laissés ouverts.
+
+→ Détail : [`docs/sprints/sprint_42/S4200_sprint_42.md`](sprints/sprint_42/S4200_sprint_42.md)
+
+---
+
+### Sprint 43 — Recherche & analyse de datasets pour la détection de drift (20 – 26 juillet 2026)
+
+**Objectif** : constituer un corpus de **datasets externes à drift labellisé** (aujourd'hui absent du projet — le drift y est déduit du scénario CL, jamais annoté échantillon par échantillon), les acquérir, les analyser et **caractériser/quantifier le drift**. Socle des Sprints 44 (modèles PC) et 45 (portage board).
+
+**Cadrage validé (utilisateur, 7 juillet 2026)** : datasets **externes trouvés sur internet**, priorité drift, de préférence **dual-usage drift+faute** (pour le sprint tandem futur) ; **ne pas** réutiliser les datasets projet actuels sauf s'ils portent des labels de drift (aucun ne le fait) ; short-list proposée (UCI Gas Sensor Array Drift ⭐, USP INSECTS ⭐, Electricity/NOAA, générateurs synthétiques à points exacts, hydraulique/SECOM dual-usage).
+
+| Bloc | Tâches | Statut | Résultat attendu |
+| ---- | ------ | :----: | ---------------- |
+| A — Recherche & acquisition | S4301 · S4302 | 📝 Doc | doc de référence `drift_datasets.md` (fiche/dataset) ; loaders exposant `drift_points`/`drift_type` + configs, normalisation figée |
+| B — Analyse & caractérisation | S4303 · S4304 | 📝 Doc | typage (sudden/gradual/incremental/recurring) + quantification glissante (KS/MMD/PSI/PCA/Maha), validation vs ground-truth ; figures (timelines, shifts, PCA, heatmaps) |
+| C — Assemblage & clôture | S4305 | 📝 Doc | notebook EDA + tests (loaders, ground-truth, 0 chiffre en dur) + roadmap/`CLAUDE.md`/graphify |
+
+**Message scientifique** : fournir une **vérité-terrain de drift** (points de changement) qui rende mesurables le délai de détection et le taux de fausses alarmes des détecteurs (S44), en privilégiant des capteurs industriels réels (Gap 1 sur l'axe drift).
+
+**Liens triple gap** : Gap 1 (données industrielles réelles de drift). **Statut** : 📝 **Documenté (S4300–S4305)** — implémentation à venir.
+
+→ Détail : [`docs/sprints/sprint_43/S4300_sprint_43.md`](sprints/sprint_43/S4300_sprint_43.md)
+
+---
+
+### Sprint 44 — Modèles de détection de drift sur PC (supervisés ∥ non-supervisés) (27 juillet – 2 août 2026)
+
+**Objectif** : implémenter et évaluer une **famille de détecteurs de drift** sur les datasets S43 — statistiques streaming (DDM, EDDM, Page-Hinkley), tests deux-échantillons (ADWIN, KSWIN, KS, MMD, PSI/JS) et **baseline projet** (`SlidingWindowDriftDetector`) — avec métriques de détection **et** RAM/latence (proxies PC honnêtes), pour produire la **reco des détecteurs portables MCU** (S45).
+
+**Cadrage validé (utilisateur, 7 juillet 2026)** : trois familles (streaming + deux-échantillons + baseline) ; signal **supervisé (flux d'erreur) ET non-supervisé (features) à parité** (axe d'étude) ; **priorité aux méthodes à état borné** (viabilité MCU annotée dès le PC) ; évaluation = détection **+ coût** dans le même tableau.
+
+| Bloc | Tâches | Statut | Résultat attendu |
+| ---- | ------ | :----: | ---------------- |
+| A — Inventaire & config | S4401 | 📝 Doc | `drift_detectors.md` (taxonomie + état mémoire + viabilité MCU) + interface `BaseDriftDetector` + config |
+| B — Détecteurs | S4402 · S4403 | 📝 Doc | supervisés (DDM/EDDM/Page-Hinkley, O(1)) + non-supervisés (ADWIN/KSWIN/KS/MMD/PSI, état borné) |
+| C — Évaluation & exécution | S4404 · S4405 | 📝 Doc | harnais `drift_metrics.py` (délai, FAR, MDR, MTFA/MTD, précision/rappel) + RAM/latence ; grille détecteurs×datasets + figures d'impact |
+| D — Assemblage & clôture | S4406 | 📝 Doc | notebook comparatif + tests + **reco MCU pour S45** + roadmap/`CLAUDE.md`/graphify |
+
+**Message scientifique** : quantifier le compromis **délai ↔ fausses alarmes ↔ coût** par détecteur, et l'arbitrage **supervisé (précis, exige labels) vs non-supervisé (autonome)** — décisif pour une carte déployée seule (scénario S38).
+
+**Liens triple gap** : Gap 2 (latence par update) · Gap 3 (état mémoire). **Statut** : 📝 **Documenté (S4400–S4406)** — implémentation à venir.
+
+→ Détail : [`docs/sprints/sprint_44/S4400_sprint_44.md`](sprints/sprint_44/S4400_sprint_44.md)
+
+---
+
+### Sprint 45 — Portage board des détecteurs de drift (NUCLEO-F439ZI) (3 – 9 août 2026)
+
+**Objectif** : porter en C les détecteurs retenus MCU-viables (reco S44), mesurer leur **RAM `.bss` et latence DWT réelles** sur la NUCLEO-F439ZI, vérifier la **parité board↔PC**, et les intégrer au firmware sans toucher au protocole UART (nibble saturé → sélection à la compilation `-DDRIFT_DETECT`, précédent `-DEWC_AUTO_UPDATE`/`-DMAHA_INT8`).
+
+**Nœud honnête** : le portage ne change pas les métriques de détection (établies S44) ; il vérifie **parité** (même verdict que le Python), **coût réel** (`.bss` + DWT) et **faisabilité** (build par défaut invariant, 0 régression). Cellules board `« à mesurer »` tant que la carte n'a pas streamé.
+
+| Bloc | Tâches | Statut | Résultat attendu |
+| ---- | ------ | :----: | ---------------- |
+| A — Sélection & cadrage | S4501 | 📝 Doc | liste des détecteurs à porter (tracée aux chiffres S44) + cadrage protocole (pas de flag UART neuf) |
+| B — Firmware | S4502 | 📝 Doc | port C (0 malloc, `ring_buffer.h`) + intégration `pipeline.c` sous `-DDRIFT_DETECT` + tests Unity de parité |
+| C — Export, parité & mesure | S4503 · S4504 | 📝 Doc | header params généré + driver board + parité board↔PC ; latence DWT P50/P99 + `.bss` + agrégat `exp_S45_summary.json` |
+| D — Assemblage & clôture | S4505 | 📝 Doc | notebook PC↔board + tests + roadmap/`triple_gap.md`/`CLAUDE.md`/graphify + renvoi au doc tandem |
+
+**Message scientifique** : établir **quels détecteurs de drift tiennent sur MCU et à quel coût mesuré** (Page-Hinkley/DDM O(1) ≪ PSI O(bins) ≪ fenêtres O(W)), lesquels rester PC-only — chiffres board réels, pas proxies.
+
+**Liens triple gap** : Gap 2 (latences board < 100 ms) · Gap 3 (RAM détecteurs dans le budget). **Statut** : 📝 **Documenté (S4500–S4505)** — implémentation nécessite la carte. **Suite** : tandem drift + faute autonome → [`docs/context/drift_fault_tandem.md`](context/drift_fault_tandem.md).
+
+→ Détail : [`docs/sprints/sprint_45/S4500_sprint_45.md`](sprints/sprint_45/S4500_sprint_45.md)
 
 ---
 

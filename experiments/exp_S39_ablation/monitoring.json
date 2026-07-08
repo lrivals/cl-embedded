@@ -1,0 +1,55 @@
+{
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "n_features": 4,
+  "feature_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "feature_names": [
+    "temperature",
+    "pressure",
+    "vibration",
+    "humidity"
+  ],
+  "n_samples": 7672,
+  "positive_ratio": 0.1,
+  "f1_fp32": 0.9194,
+  "ladder": [
+    {
+      "scheme": "legacy_c",
+      "f1": 0.1178,
+      "delta_prev": null,
+      "factor": "firmware actuel (int16 wrap + 1/128 figé)"
+    },
+    {
+      "scheme": "fix_acc32",
+      "f1": 0.0419,
+      "delta_prev": -0.076,
+      "factor": "accumulateur int32 (supprime l'overflow)"
+    },
+    {
+      "scheme": "per_tensor_calib",
+      "f1": 0.9201,
+      "delta_prev": 0.8783,
+      "factor": "scale calibré par-tenseur (vs 1/128)"
+    },
+    {
+      "scheme": "per_channel_int8",
+      "f1": 0.9187,
+      "delta_prev": -0.0014,
+      "factor": "scale par-canal (mirroir QAT PC)"
+    },
+    {
+      "scheme": "q15",
+      "f1": 0.9194,
+      "delta_prev": 0.0006,
+      "factor": "16-bit (fidélité 256×)"
+    }
+  ],
+  "dominant_factor": "scale calibré par-tenseur (vs 1/128)",
+  "dominant_scheme": "per_tensor_calib",
+  "seed": 42
+}

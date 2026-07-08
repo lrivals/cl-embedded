@@ -1,0 +1,57 @@
+{
+  "dataset": "cmapss",
+  "condition": "5feat",
+  "n_features": 5,
+  "feature_indices": [
+    10,
+    3,
+    11,
+    6,
+    14
+  ],
+  "feature_names": [
+    "Ps30",
+    "T50",
+    "Phi",
+    "P30",
+    "BPR"
+  ],
+  "n_samples": 160359,
+  "positive_ratio": 0.1371,
+  "f1_fp32": 0.4476,
+  "ladder": [
+    {
+      "scheme": "legacy_c",
+      "f1": 0.2266,
+      "delta_prev": null,
+      "factor": "firmware actuel (int16 wrap + 1/128 figé)"
+    },
+    {
+      "scheme": "fix_acc32",
+      "f1": 0.2944,
+      "delta_prev": 0.0677,
+      "factor": "accumulateur int32 (supprime l'overflow)"
+    },
+    {
+      "scheme": "per_tensor_calib",
+      "f1": 0.4478,
+      "delta_prev": 0.1534,
+      "factor": "scale calibré par-tenseur (vs 1/128)"
+    },
+    {
+      "scheme": "per_channel_int8",
+      "f1": 0.4479,
+      "delta_prev": 0.0001,
+      "factor": "scale par-canal (mirroir QAT PC)"
+    },
+    {
+      "scheme": "q15",
+      "f1": 0.4476,
+      "delta_prev": -0.0003,
+      "factor": "16-bit (fidélité 256×)"
+    }
+  ],
+  "dominant_factor": "scale calibré par-tenseur (vs 1/128)",
+  "dominant_scheme": "per_tensor_calib",
+  "seed": 42
+}

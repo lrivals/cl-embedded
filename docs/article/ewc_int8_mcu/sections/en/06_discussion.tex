@@ -1,0 +1,22 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{INT8 latency paradox.} INT8 quantization divides the weight memory footprint by~4 but does
+\emph{not} speed up inference on the Cortex-M4: INT8 latency is comparable, even slightly higher online (the
+SGD update is not accelerated). The reason is structural: our kernel dequantizes to FP32 and runs the
+distance/decision on the hardware \emph{FPU}, which is already efficient in single precision; INT8 gains
+would require integer SIMD instructions (SMLAD, etc.). We acknowledge this finding rather than masking it:
+on this target the INT8 benefit is \emph{memory}, not \emph{speed}. A direct avenue is porting to integer
+SIMD kernels (CMSIS-NN), left for future work.
+
+\paragraph{"Measured" vs "emulated" honesty.} We rigorously separate two kinds of results. FP32 parities,
+the INT8 legacy collapse, and the latency/RAM figures are \emph{measured on real hardware} (Sprints~36
+and~40). The causal diagnosis and the recovery through a calibrated kernel are \emph{bit-exactly emulated on
+PC} (Sprint~39): the emulator reproduces exactly the C kernel arithmetic, which makes it a reliable
+reference, but it is not a board measurement. The board-v2 campaign (Sprint~40) partially confirms the
+recovery (Pronostia per-channel cell), the rest being explicitly "to be measured". This discipline avoids
+over-selling a recovery that, on-board, is so far demonstrated on a single point.
+
+\paragraph{Scope.} The central result --- a naive PTQ can destroy a binary decision head, and a
+per-tensor/per-channel calibration (or a Q15 format) restores it --- extends beyond the EWC case: it concerns
+any lightweight head quantized downstream of a feature extractor, a frequent regime in TinyML.

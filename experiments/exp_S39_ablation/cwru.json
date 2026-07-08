@@ -1,0 +1,57 @@
+{
+  "dataset": "cwru",
+  "condition": "5feat",
+  "n_features": 5,
+  "feature_indices": [
+    3,
+    4,
+    6,
+    7,
+    8
+  ],
+  "feature_names": [
+    "sd",
+    "rms",
+    "kurtosis",
+    "crest",
+    "form"
+  ],
+  "n_samples": 1838,
+  "positive_ratio": 0.8993,
+  "f1_fp32": 0.9961,
+  "ladder": [
+    {
+      "scheme": "legacy_c",
+      "f1": 0.9286,
+      "delta_prev": null,
+      "factor": "firmware actuel (int16 wrap + 1/128 figé)"
+    },
+    {
+      "scheme": "fix_acc32",
+      "f1": 0.947,
+      "delta_prev": 0.0184,
+      "factor": "accumulateur int32 (supprime l'overflow)"
+    },
+    {
+      "scheme": "per_tensor_calib",
+      "f1": 0.9945,
+      "delta_prev": 0.0475,
+      "factor": "scale calibré par-tenseur (vs 1/128)"
+    },
+    {
+      "scheme": "per_channel_int8",
+      "f1": 0.9945,
+      "delta_prev": 0.0,
+      "factor": "scale par-canal (mirroir QAT PC)"
+    },
+    {
+      "scheme": "q15",
+      "f1": 0.9961,
+      "delta_prev": 0.0015,
+      "factor": "16-bit (fidélité 256×)"
+    }
+  ],
+  "dominant_factor": "scale calibré par-tenseur (vs 1/128)",
+  "dominant_scheme": "per_tensor_calib",
+  "seed": 42
+}

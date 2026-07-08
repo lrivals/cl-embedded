@@ -22,6 +22,10 @@
 #include "ewc_head_regression.h"
 #include "ewc_head_multiclass.h"
 #include "ewc_head_int8.h"
+#ifdef EWC_INT8_V2
+#include "ewc_head_int8_v2.h"
+#include "ewc_head_int8_v2_weights.h"  /* généré (vide par défaut) — S3908 */
+#endif
 #include "hdc.h"
 #include "meta_head.h"
 #include "mahalanobis_q15.h"
@@ -87,6 +91,19 @@ EWCHead g_ewc_head;
 /* MEM: EWCHeadInt8 ~2.4 Ko @ INT8 + ~1.2 Ko biais FP32 en .bss
  * Cf. S2221 — ewc_head_int8.h commentaires MEM détaillés */
 EWCHeadInt8 g_ewc_int8;
+
+#ifdef EWC_INT8_V2
+/* Sprint 39 (S3915) — tête INT8 v2 : acc int32, scales par-canal + activations calibrées.
+ * Sélectionnée à la compilation (-DEWC_INT8_V2) car le nibble protocole est saturé (mirroir
+ * -DMAHA_INT8, S2912) : le chemin 0x40 (FRAME_FLAGS_INT8_MODE) exécute le v2 au lieu du v1.
+ * Update en ligne (S4002) : SGD sur la tête FP32 maître g_ewc_head puis requantification
+ * v2 (les scales par-canal restent la vue quantifiée de g_ewc_head, act_max figé).
+ * MEM: EWCHeadInt8V2 ~704 B poids int8 + scales/biais FP32 en .bss. */
+EWCHeadInt8V2 g_ewc_int8_v2;
+/* act_max de calibration mémorisé à l'init (header EWC_V2_ACT_MAX ou neutre) → réutilisé
+ * pour la requantification par échantillon en mode online (S4002). Figé = parité miroir PC. */
+static float g_v2_act_max[3] = {1.0f, 1.0f, 1.0f};
+#endif
 
 /* MEM: HDCClassifier ~27.7 Ko @ FP32 en .bss
  * ATTENTION : avec g_ewc_head (~9.5 Ko) + g_tinyol (~5.7 Ko) + g_detector (~128 B)
@@ -522,6 +539,20 @@ void pipeline_init(void)
      * (poids exportés si EWC_HEAD_WEIGHTS_PROVIDED, Xavier en fallback → 0 régression
      * FP32). La conversion ne touche que g_ewc_int8 ; le chemin FP32 reste inchangé. */
     ewc_int8_from_fp32(&g_ewc_int8, &g_ewc_head);
+#ifdef EWC_INT8_V2
+    /* Sprint 39 (S3915) : quantifie la tête FP32 entraînée (g_ewc_head) en INT8 v2 avec
+     * scales par-canal + bornes d'activation calibrées. act_max provient du header généré
+     * (EWC_V2_ACT_MAX) ; à défaut (header vide) → bornes unitaires neutres. Le QMAX dépend
+     * de la variante (int8/q15/mixed) → on passe act_max brut, pas scale_act figé.
+     * Parité par construction avec l'émulateur forward_quant(per_channel_int8|q15). */
+#if defined(EWC_INT8_V2_WEIGHTS_PROVIDED)
+    g_v2_act_max[0] = EWC_V2_ACT_MAX[0]; g_v2_act_max[1] = EWC_V2_ACT_MAX[1];
+    g_v2_act_max[2] = EWC_V2_ACT_MAX[2];
+#else
+    g_v2_act_max[0] = 1.0f; g_v2_act_max[1] = 1.0f; g_v2_act_max[2] = 1.0f;
+#endif
+    ewc_int8_v2_from_fp32_calib(&g_ewc_int8_v2, &g_ewc_head, g_v2_act_max);
+#endif
     hdc_init(&g_hdc);
 #ifdef EWC_AUTO_UPDATE
     /* S3803 — gate de mise à jour autonome : seuils depuis inc/drift_thresholds.h
@@ -1043,7 +1074,34 @@ void pipeline_run(void)
         }
         auroc_update(&g_auroc, confidence, (int)g_recv_label);
     } else if (g_recv_flags & PROTO_FLAG_INT8_MODE) {
-        /* ── Chemin EWC INT8 : forward Q7 + update Q7 ──────────────────────────── */
+#ifdef EWC_INT8_V2
+        /* ── Chemin EWC INT8 v2 (S3915) : forward inférence, déquant→FP32 ──────────
+         * Sélectionné par -DEWC_INT8_V2 (le nibble 0x40 route vers le v2 au lieu du v1).
+         * Le kernel v2 quantifie les activations à bord (scales calibrés) ⇒ on lui passe
+         * l'entrée FP32 brute, pas x_q7. */
+        float logits[EWC_OUT];   /* MEM: 8 B @ FP32 (stack) */
+        ewc_int8_v2_forward(&g_ewc_int8_v2, raw, logits);
+        pred = (logits[1] > logits[0]) ? 1 : 0;
+
+        float e0 = expf(logits[0]);
+        float e1 = expf(logits[1]);
+        confidence = e1 / (e0 + e1);
+
+        /* Update online (S4002) : SGD sur la tête FP32 maître puis requantification v2.
+         * g_ewc_head est la source ; g_ewc_int8_v2 en est la vue quantifiée (act_max figé).
+         * Le coût de requantification par échantillon est inclus dans la latence DWT (honnête). */
+        if (g_recv_flags & PROTO_FLAG_UPDATE) {
+            ewc_sgd_step(&g_ewc_head, raw, (int)g_recv_label);
+            ewc_int8_v2_from_fp32_calib(&g_ewc_int8_v2, &g_ewc_head, g_v2_act_max);
+        }
+        if (g_recv_flags & PROTO_FLAG_CONSOLIDATE) {
+            ewc_consolidate(&g_ewc_head, EWC_FISHER_DECAY);
+            ewc_int8_v2_from_fp32_calib(&g_ewc_int8_v2, &g_ewc_head, g_v2_act_max);
+            g_current_task_id = g_recv_task_id;
+        }
+        auroc_update(&g_auroc, confidence, (int)g_recv_label);
+#else
+        /* ── Chemin EWC INT8 v1 : forward Q7 + update Q7 ──────────────────────────── */
         int8_t x_q7[EWC_IN];   /* MEM: EWC_IN B = 5 B (stack) */
         for (int i = 0; i < EWC_IN; i++) {
             x_q7[i] = float_to_q7(raw[i]);
@@ -1067,6 +1125,7 @@ void pipeline_run(void)
             g_current_task_id = g_recv_task_id;
         }
         auroc_update(&g_auroc, confidence, (int)g_recv_label);
+#endif
     } else if (g_recv_flags & PROTO_FLAG_HDC_MODE) {
         /* ── Chemin HDC : encode → predict → update si UPDATE → binarize si CONSOLIDATE ── */
         float hv[HDC_DIM];   /* MEM: 4 Ko @ FP32 (stack — vérifier _Min_Stack_Size dans ld) */

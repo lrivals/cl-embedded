@@ -1,0 +1,21 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Embedded continual learning.} CL methods are conventionally grouped into regularization-,
+replay- and architecture-based approaches~\cite{DeLange2021Survey}. EWC~\cite{Kirkpatrick2017EWC} belongs to
+the first family: a quadratic penalty weighted by the Fisher information protects the parameters important
+for past tasks, without storing data --- a valuable property under memory constraints. On MCUs,
+TinyOL~\cite{Ren2021TinyOL} showed the feasibility of online learning of an added layer, and
+HDC~\cite{Benatti2019HDC} that of non-neural, ultra-low-power learning.
+LifeLearner~\cite{Kwon2023LifeLearner} and quantized latent-replay platforms~\cite{Ravaglia2021QLRCL}
+address the memory/accuracy trade-off on embedded targets. Recent TinyML
+surveys~\cite{Capogrosso2023TinyML} stress that \emph{on-device} training remains under-explored compared
+to inference alone.
+
+\paragraph{INT8 quantization and learning.} Post-training quantization (PTQ) and quantization-aware
+training (QAT) reduce the memory footprint by a factor of~4 (FP32~$\to$~INT8). However, \emph{naive} PTQ of
+a decision head can destroy separability when accumulation is carried out in \texttt{int8} or when the
+quantization scale is set without calibration. Our empirical contribution is to \emph{measure} this collapse
+on a real MCU, then isolate its cause and demonstrate recovery through a calibrated kernel, rather than
+masking it with upstream QAT. Per-channel quantization and the Q15 fixed-point format (\num{16}-bit integer)
+emerge as the decisive levers to preserve the metric while meeting the RAM budget (Gap~3).

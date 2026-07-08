@@ -1,0 +1,19 @@
+\section{Experimental setup}
+\label{sec:setup}
+
+\paragraph{Hardware target.} NUCLEO-F439ZI (Cortex-M4 @ \SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM =
+\SI{192}{\kilo\byte} + \SI{64}{\kilo\byte} CCM, no NPU). Latencies are measured with the DWT cycle counter;
+the static footprint is read from the binary's \texttt{.bss} section. The latency budget is
+\SI{100}{\milli\second} per inference + update cycle (Gap~2).
+
+\paragraph{Datasets and CL scenarios.} Two industrial datasets with contrasting scenarios:
+\emph{Pronostia} (FEMTO bearings, \emph{class-incremental} by normal/fault condition) and
+\emph{Monitoring} (industrial equipment, \emph{domain-incremental} by machine type). Two feature conditions
+are considered: \texttt{5feat} (embedded subset) and \texttt{all} (native features). On Monitoring,
+\texttt{5feat} and \texttt{all} coincide (4 native features).
+
+\paragraph{Identical conditions.} All comparisons share seed, order and normalization (\S\ref{sec:method}).
+The on-board FP32 and INT8-legacy measurements come from the Sprint~36 campaign (\texttt{exp\_S36}); the
+emulated ablation from Sprint~39 (\texttt{exp\_S39\_ablation}); the board-v2 campaign from Sprint~40
+(\texttt{exp\_S40\_board\_v2}), partial at the time of writing. Any quantity not yet streamed on-board is
+reported as "to be measured", with no invented value.

@@ -1,0 +1,1 @@
+{"nodes": [{"id": "linker_stm32f439zitx_flash", "label": "STM32F439ZITx_FLASH.ld (linker script)", "file_type": "code", "source_file": "firmware/stm32f4_blink/linker/STM32F439ZITx_FLASH.ld", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

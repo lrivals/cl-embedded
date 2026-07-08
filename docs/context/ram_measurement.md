@@ -82,15 +82,14 @@ depuis `_estack`. Aucune section CCM (linker `RAM` seul).
 Méthode « stack painting » :
 
 1. **Peinture au boot** — [`startup_stm32f439xx.s`](../../firmware/stm32f4_blink/startup/startup_stm32f439xx.s)
-   remplit toute la zone libre `[_ebss, _estack)` avec la sentinelle
-   `0xDEADBEEF` (`STACK_PAINT_SENTINEL`) juste avant `bl main`. À cet instant
-   `SP = _estack` et aucune trame n'est empilée : toute la zone est peignable.
-   La peinture n'utilise que des registres et **ne modifie ni `.bss` ni `.data`**
-   (vérifié : `.bss`/`.data` inchangés, seul `.text` +16 B).
+   peint toute la zone libre `[_ebss, _estack)` avec un **canary position-dépendant**
+   (chaque mot reçoit **sa propre adresse**, `str r2,[r2]`) juste avant `bl main`.
+   À cet instant `SP = _estack` et aucune trame n'est empilée : toute la zone est
+   peignable. La peinture n'utilise que des registres et **ne modifie ni `.bss` ni
+   `.data`** (vérifié : `.bss`/`.data` inchangés, seul `.text` grossit un peu).
 2. **Exécution** d'une charge représentative (stream multi-modèle, pire cas HDC).
-3. **Scan** — le plus bas mot écrasé donne la profondeur atteinte :
-   `profiling_stack_peak_bytes()` =
-   `_estack - première_adresse_non_sentinelle`
+3. **Scan** — le plus bas mot dont la valeur ≠ son adresse donne la profondeur :
+   `profiling_stack_peak_bytes()` = `_estack - première_adresse_non_intacte`
    (logique pure `profiling_stack_peak_from_region()`, testée host).
    `profiling_ram_peak_bytes()` renvoie `.data + .bss + pic_de_pile`.
 
@@ -105,16 +104,105 @@ python scripts/measure_stack_watermark.py                  # halt → scan → p
 ```
 
 Le script lit `_sbss/_ebss/_sdata/_edata/_estack` depuis l'ELF (aucune valeur en
-dur), halt le cœur, scanne la sentinelle, et imprime `.data`, `.bss`, **pic de
-pile** et **`ram_peak_total`** en % de 256 Ko.
+dur), halt le cœur, scanne le canary (mot ≠ son adresse), et imprime `.data`,
+`.bss`, **pic de pile** et **`ram_peak_total`** en % de 256 Ko.
 
-**Caveat** : si un mot de pile vaut exactement `0xDEADBEEF`, le pic est
-sous-estimé. La sentinelle est choisie pour rendre l'événement négligeable.
+**Caveat** : le seul mot-frontière valant par hasard sa propre adresse
+sous-estimerait le pic (~1/2³², négligeable). Le canary position-dépendant élimine
+en plus le cas d'un buffer de pile rempli d'une constante répétée.
+
+### Contre-vérification : borne supérieure statique (`-fstack-usage`)
+
+Le pic *mesuré* dépend de la charge streamée : il ne prouve pas à lui seul qu'aucun
+chemin d'appel plus profond n'existe. On le confronte donc à une borne **statique**,
+calculée sans exécuter la carte, à partir des cadres de pile par fonction émis par
+GCC. Le Makefile compile avec **`-fstack-usage`** (fichier annexe `build/<unité>.su`,
+**0 impact sur le code généré** — `.text`/`.data`/`.bss` bit-identiques, vérifié par
+`size` avant/après).
+
+[`scripts/stack_usage_report.py`](../../scripts/stack_usage_report.py) parse les `.su`
+et somme une **chaîne pire-cas déclarée** (auditable) le long de la boucle chaude :
+
+```
+main (48 B) → pipeline_run (4 160 B, détient hv[HDC_DIM] = 4 Ko)
+            → noyau modèle le plus profond (ewc_mc_sgd_step 560 B)
+            = BORNE STATIQUE 4 768 B
+```
+
+Le firmware **n'a pas de récursion** et son dispatch modèle est fait par
+`switch`/`if` (appels **directs**, pas de pointeurs de fonction) : le graphe d'appels
+de la boucle chaude est court et connu → la chaîne déclarée est fiable (c'est une
+**contre-vérification**, pas une preuve formelle). Tout gros cadre hors chaîne (p.ex.
+`hdc_retrain`, 4 344 B — **éliminé du binaire par `--gc-sections`**, jamais appelé)
+est signalé pour ré-audit s'il redevenait atteignable.
+
+```bash
+cd firmware/stm32f4_blink && make clean && make all   # génère les .su
+python ../../scripts/stack_usage_report.py \
+    --measured ../../experiments/exp_S39_ram/ram_ewc.json
+# → BORNE STATIQUE 4 768 B ≥ pic mesuré 4 712 B  (marge +56 B) ✅
+```
+
+L'inégalité `borne_statique ≥ pic_mesuré` tenant, le pic mesuré n'a pas « raté » de
+chemin plus profond : les deux méthodes se corroborent.
 
 ## 4. Lien Gap 2
 
 Gap 2 (« < 100 Ko RAM avec chiffres mesurés ») doit s'appuyer sur `ram_peak`
 (pile incluse), pas seulement `.bss`. Le `.bss` reste une borne inférieure utile ;
 le pic mesuré par la procédure ci-dessus est le chiffre à reporter quand on veut
-être **sûr** du résultat. À remplir depuis une exécution réelle du script (pas de
-valeur inventée).
+être **sûr** du résultat.
+
+**Mesure réelle NUCLEO-F439ZI** (dataset Monitoring, entraînement, `experiments/exp_S39_ram/`) :
+`.data=460 B` + `.bss=106 152 B` + pic de pile mesuré `4 712 B` (EWC) =
+**`ram_peak ≈ 111 324 B` (42,5 % de 256 Ko)**. Le pic de pile est **~identique
+(~4,3 Ko) pour les 4 modèles** (EWC 4 712, HDC/Maha/TinyOL 4 336) car le compilateur
+réserve **une seule trame pour `pipeline_run()` = le max de ses branches** (dont
+`hv[HDC_DIM]` 4 Ko) : le pic de pile est une propriété du firmware entier, non isolable
+par modèle. La **borne statique** (§3) le confirme : `4 768 B ≥ 4 712 B` (marge +56 B).
+Détail et schémas :
+[`notebooks/cl_eval/ram_measurement/ram_explained.ipynb`](../../notebooks/cl_eval/ram_measurement/ram_explained.ipynb).
+
+## 5. Cas à re-mesurer (comparaisons utiles)
+
+Le `.bss` (via `size`) est **exact** et ne demande pas de re-mesure. Ce qui vaut le coup,
+c'est le **pic de pile** sur les cas qui grossissent réellement les cadres — pour tester la
+thèse « trame partagée » sous stress et confirmer que la borne statique reste ≥ pic :
+
+| Cas | Intérêt | Comment |
+|---|---|---|
+| **Défaut 5-feat Monitoring** | référence (déjà mesuré) + attacher la borne | `make all && python scripts/run_ram_board.py` |
+| **Condition `all` CMAPSS k=21** (S35) | cadres plus gros (dims × 4) → la trame partagée `hv[HDC_DIM]` reste-t-elle dominante ? | `make clean && make all EWC_IN=21 MAHA_DIM=21 TINYOL_IN=21 HDC_N_FEATURES=21 PROTO_MAX_N=21` puis flash + mesure |
+| **INT8 board** (S36) | `.bss` poids ÷4 ; la pile change-t-elle ? (`ewc_int8_update` 496 B) | même firmware, streamer avec le flag `FRAME_FLAGS_INT8_MODE` (0x40) |
+
+Procédure d'un cas variant (sortie JSON dédiée, à comparer au cas 5-feat) :
+
+```bash
+cd firmware/stm32f4_blink && make clean && make all <overrides>   # + size : vérifier .bss
+make flash
+# streamer une charge pire-cas (mode HDC + --update), p.ex. via sensor_stream.py
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg &
+python ../../scripts/measure_stack_watermark.py \
+    --json ../../experiments/exp_S39_ram/ram_<cas>.json --label <cas>
+python ../../scripts/stack_usage_report.py \
+    --measured ../../experiments/exp_S39_ram/ram_<cas>.json   # borne recalculée sur ce build
+```
+
+**Mesuré (NUCLEO-F439ZI réelle, `experiments/exp_S39_ram/`)** — le pic reste ~4,3–4,7 Ko,
+dominé par `hv[HDC_DIM]` (4 Ko fixe), **peu sensible aux dims** → confirme la thèse « trame
+partagée » et l'argument Gap 2. La borne statique est recalculée depuis les `.su` du build
+courant et l'invariant `borne ≥ pic` **tient sur chaque cas** :
+
+| Cas | `.bss` | pic pile mesuré | borne statique | marge |
+|---|---|---|---|---|
+| 5-feat — EWC | 105 036 B | **4 712 B** | 4 768 B | +56 B ✅ |
+| 5-feat — HDC / Maha / TinyOL | 105 036 B | **4 336 B** | 4 768 B | +432 B ✅ |
+| INT8 — EWC-INT8 (flag 0x40) | 105 036 B | **4 720 B** | 4 768 B | +48 B ✅ |
+| all CMAPSS k=21 — HDC | 184 864 B | **4 392 B** | 4 800 B | +408 B ✅ |
+| all CMAPSS k=21 — EWC | 184 864 B | **4 728 B** | 4 800 B | +72 B ✅ |
+
+Constat : passer de k=5 à k=21 fait **exploser `.bss`** (105 → 185 Ko, `proj`/poids/Fisher)
+mais laisse le **pic de pile quasi inchangé** (+16…+56 B = buffer `raw[PROTO_MAX_N]` + cadres
+EWC légèrement plus gros) ; la borne statique suit (+32 B). INT8 ne réduit pas la pile
+(`ewc_int8_update` déquantifie en FP32 sur le FPU, cadre ≈ FP32). RAM pic total k=21 ≈ 190 Ko
+(72,4 % de 256 Ko) — toujours sous budget.

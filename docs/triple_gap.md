@@ -141,6 +141,39 @@ Conclusion honnête : pour EWC, la quantif INT8 *post-training* embarquée ne sa
 < 0.02 » côté board (≠ HDC INT8 Δ=0) → piste QAT exporté ou Q15 (cf. Mahalanobis Sprint 34). Détail :
 `docs/sprints/sprint_36/S3610_int8_fp32_board.md`.
 
+**Renforcement Sprint 39 (Partie A, PC + host) — la perte est corrigeable, cause isolée** : un émulateur
+Python bit-exact du chemin C (`src/utils/int8_c_emulation.py`) reproduit la dégradation board **sans flasher**
+et permet une ablation chiffrée (`exp_S39_ablation/`). **Cause racine = l'échelle `1/128` non calibrée**
+(dominant `per_tensor_calib`, jusqu'à **+0.88 F1**), **pas** l'accumulateur `int16` seul (`fix_acc32` marginal,
+et sur Monitoring il *dégrade* transitoirement avant recalibration — l'échelle d'ablation n'est donc **pas**
+monotone bout-en-bout). Le sweep `exp_S39_quant_sweep/` confirme : EWC `int8_legacy` s'effondre (monitoring
+0.027 / pronostia 0.045) → **`int8_perchannel` récupère ≈ FP32** (0.915 / 0.944), Q15/mixte idem ; Maha INT8
+0.77 → **Q15 0.923**. Le kernel C **v2** (`ewc_head_int8_v2.c`, acc int32 + scales par-canal calibrés) est
+validé **host** (`make test`, S3909) contre les golden vectors de l'émulateur (parité par construction) — v1
+laissé intact pour l'A/B board (S3916). **Bug supplémentaire trouvé & corrigé en Q15** : l'accumulateur int32
+déborde (int16×int16 sommé > 2³¹) → `ewc_v2_acc_t` int32 (int8) / **int64 (Q15)**.
+
+**Confirmé sur board réelle (Sprint 39, Partie B — S3915/S3916/S3919, 1er juil. 2026)** : le kernel v2 est
+câblé au pipeline par **sélection de compilation `-DEWC_INT8_V2`** (nibble protocole saturé → mirroir
+`-DMAHA_INT8` ; le chemin 0x40 route vers `ewc_int8_v2_forward`, **wire UART inchangé**, `.bss` v1 défaut
+105 036 B invariant → 0 régression). Sur NUCLEO-F439ZI (`run_s39_board.py`, stream gelé sans `--update`),
+**le v2 récupère bien la F1 mesurée matériellement** : pronostia **0.078 (v1) → 0.928 (per-canal) / 0.970
+(Q15)**, cmapss **0.133 → 0.400** ; **parité gelée bit-exacte board↔émulateur = 1.000 (0 mismatch)** sur les
+5 cellules (la parité host **et** silicium sont maintenant prouvées) ; latence P50 67–75 µs ≪ 100 ms
+(**Gap 2 ✅** ; coût +14–22 µs vs v1 = déquant→FP32 sur FPU, cohérent S29) ; `.bss` +1.1–1.8 Ko (2ᵉ tête) ;
+0 CRC. Côté PC, `run_s39_matched_compare.py` (S3918) garantit une comparaison *appariée* — le côté PC est
+l'**émulateur du schéma board**, jamais le QAT S28 — et fournit la référence bit-à-bit confrontée par S3919.
+**S3917 (bench SIMD CMSIS-NN)** reste différé (`TODO(dorra)`, non bloquant). Détail : `docs/sprints/sprint_39/`.
+
+**Synthèse Sprint 40 (article) — récupération émulée établie, board v2 partielle/honnête** : l'article standalone
+FR+EN (`docs/article/ewc_int8_mcu/`, S4004–S4007) formalise le fil Gap 3 « effondrement PTQ naïve → récupération
+par kernel calibré » en séparant strictement **mesuré board** (S36 FP32+legacy) et **émulé PC bit-exact** (S39
+ablation). Le résultat de récupération (`per_tensor_calib` +0.88 F1, Q15 = FP32) est **prouvé par émulation** et
+**confirmé sur carte pour la cellule Pronostia per-canal** (S39 board + `exp_S40_board_v2`) ; la grille board v2
+complète reste explicitement **« à mesurer »** (règle « aucun chiffre inventé »). Tant que la campagne carte v2
+n'est pas complète, le critère « RAM ÷4 sans perte de métrique sur MCU réel » est donc **confirmé par émulation +
+un point board**, pas encore généralisé — l'axe honnête émulateur reste la formulation de référence.
+
 **Volet énergie (Sprint 33)** : le constat « INT8 réduit la RAM sans accélérer la latence FPU » ouvre une
 question énergie potentiellement originale — l'INT8 réduit-il néanmoins les **µJ** (moins d'accès mémoire) ? La
 chaîne de mesure est livrée et fonctionnelle : marqueurs de phase GPIO firmware (PA8, `ENERGY_MARKERS`, S3304),

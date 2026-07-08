@@ -50,6 +50,13 @@ void test_ewc_init_weights_nonzero(void);
 void test_ewc_init_fisher_zero(void);
 void test_ewc_init_deterministic(void);
 
+/* ── Déclarations — test_ewc_int8_v2.c (Sprint 39, S3909) ───────────────── */
+void test_v2_no_overflow(void);
+void test_v2_parity_emulator(void);
+void test_v2_q15_parity(void);
+void test_v2_recovers_f1(void);
+void test_v1_unchanged(void);
+
 /* ── Déclarations — test_profiling.c ───────────────────────────────────── */
 void test_profiling_latency_positive(void);
 void test_profiling_latency_zero_cycles(void);
@@ -60,6 +67,7 @@ void test_bss_size_within_limit(void);
 void test_stack_peak_partial_usage(void);
 void test_stack_peak_untouched_is_zero(void);
 void test_stack_peak_fully_used(void);
+void test_stack_peak_repeated_constant_not_masked(void);
 
 /* ── Déclarations — test_pipeline.c ────────────────────────────────────── */
 void test_pipeline_response_v3_23bytes(void);
@@ -226,6 +234,7 @@ int main(void)
     RUN_TEST(test_stack_peak_partial_usage);
     RUN_TEST(test_stack_peak_untouched_is_zero);
     RUN_TEST(test_stack_peak_fully_used);
+    RUN_TEST(test_stack_peak_repeated_constant_not_masked);
 
     /* Pipeline */
     RUN_TEST(test_pipeline_response_v3_23bytes);
@@ -240,6 +249,13 @@ int main(void)
     RUN_TEST(test_int8_consolidate_updates_star_w);
     RUN_TEST(test_int8_relu_q7_clamps_negative);
     RUN_TEST(test_int8_float_q7_roundtrip);
+
+    /* EWC INT8 v2 — Sprint 39, S3909 */
+    RUN_TEST(test_v2_no_overflow);
+    RUN_TEST(test_v2_parity_emulator);
+    RUN_TEST(test_v2_q15_parity);
+    RUN_TEST(test_v2_recovers_f1);
+    RUN_TEST(test_v1_unchanged);
 
     /* HDC */
     RUN_TEST(test_hdc_encode_norm);

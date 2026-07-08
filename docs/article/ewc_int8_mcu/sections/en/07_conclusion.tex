@@ -1,0 +1,15 @@
+\section{Conclusion and future work}
+\label{sec:conclusion}
+
+We ported a predictive-maintenance EWC classifier onto a Cortex-M4 microcontroller and established, under a
+paired protocol, an exact FP32 PC$\leftrightarrow$board parity in the frozen protocol, with an inference +
+online learning latency $\ll$~\SI{100}{\milli\second} and a footprint below \SI{256}{\kilo\byte} (Gaps~2
+and~3). We \emph{measured on-board} the collapse of naive INT8 quantization of the binary head, then
+\emph{isolated its cause} and \emph{demonstrated its recovery} through a bit-exact emulated ablation: a
+calibrated per-tensor scale on an \texttt{int32} accumulator restores $+\,\num{0.88}$ F1, and the Q15 format
+matches FP32, for a weight RAM divided by~4 (INT8) or~2 (Q15).
+
+The latency paradox (RAM $\div 4$ with no FPU speed-up) is acknowledged as an honest finding and steers
+future work toward integer SIMD kernels (CMSIS-NN). The immediate priority is to \emph{complete the board-v2
+campaign} (\texttt{exp\_S40\_board\_v2}) to confirm, on a real MCU and across the full grid, the recovery so
+far established by emulation --- with the cells not yet streamed remaining explicitly "to be measured".

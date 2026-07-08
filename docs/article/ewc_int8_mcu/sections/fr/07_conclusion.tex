@@ -1,0 +1,16 @@
+\section{Conclusion et travaux futurs}
+\label{sec:conclusion}
+
+Nous avons porté un classifieur EWC de maintenance prédictive sur un microcontrôleur Cortex-M4 et établi,
+dans un protocole apparié, une parité FP32 PC$\leftrightarrow$carte exacte en mode gelé, avec une latence
+inférence + apprentissage continu $\ll$~\SI{100}{\milli\second} et une empreinte sous \SI{256}{\kilo\byte}
+(Gaps~2 et~3). Nous avons \emph{mesuré sur carte} l'effondrement de la quantification INT8 naïve de la tête
+binaire, puis \emph{isolé sa cause} et \emph{démontré sa récupération} par ablation émulée bit-exacte : une
+échelle par-tenseur calibrée sur accumulateur \texttt{int32} restaure $+\,\num{0.88}$ de F1, et le format
+Q15 égale le FP32, pour une RAM des poids divisée par~4 (INT8) ou par~2 (Q15).
+
+Le paradoxe de latence (RAM $\div 4$ sans accélération sur FPU) est assumé comme un constat honnête et
+oriente les travaux futurs vers des noyaux SIMD entiers (CMSIS-NN). La priorité immédiate est de
+\emph{compléter la campagne carte v2} (\texttt{exp\_S40\_board\_v2}) pour confirmer, sur MCU réel et sur
+l'ensemble de la grille, la récupération aujourd'hui établie par émulation --- les cellules non encore
+streamées restant explicitement « à mesurer ».

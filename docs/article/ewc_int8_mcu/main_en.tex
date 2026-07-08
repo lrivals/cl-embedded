@@ -1,0 +1,81 @@
+% =============================================================
+%  main_en.tex — Standalone article (English version)
+%  "EWC on a microcontroller: FP32 parity, the naive-PTQ pitfall,
+%   and recovery via a calibrated INT8 kernel"
+%  Sprint 40 — CL-Embedded (ISAE-SUPAERO 2026), Léonard Rivals
+%
+%  Strict mirror of main_fr.tex: same structure, same figures,
+%  same numeric values (checked by tests/test_sprint40_article.py).
+%  Class: article (confirmed choice, portable).
+%  TODO(arnaud): IEEEtran TinyML conf.? (apt install texlive-publishers)
+% =============================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+
+\graphicspath{{figures/}}
+
+% ── Lightweight siunitx-style fallback (siunitx absent from the environment) ──
+\providecommand{\num}[1]{#1}
+\providecommand{\numrange}[2]{#1--#2}
+\providecommand{\SI}[2]{#1\,#2}
+\providecommand{\SIrange}[3]{#1--#2\,#3}
+\providecommand{\micro}{\textmu}
+\providecommand{\second}{s}
+\providecommand{\milli}{m}
+\providecommand{\kilo}{k}
+\providecommand{\byte}{B}
+\providecommand{\mega}{M}
+\providecommand{\hertz}{Hz}
+
+\title{Incremental EWC learning on a microcontroller:\\
+measured FP32 parity, collapse of naive quantization\\
+and recovery via a calibrated INT8 kernel}
+\author{Léonard Rivals\\
+\small ISAE-SUPAERO (DISC) --- ENAC (LII) --- Edge Spectrum}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study the porting of an \emph{Elastic Weight Consolidation} (EWC) classifier for predictive maintenance
+onto a Cortex-M4 microcontroller (NUCLEO-F439ZI, \SI{256}{\kilo\byte} SRAM, no NPU). Three results are
+established under a \textbf{paired} protocol (same seed, same sample order, same normalization) between the
+PC run and the board. \textbf{(1)} In FP32, the PC$\leftrightarrow$board parity is \emph{exact} in the
+frozen protocol (\num{1.000}) and near-exact online (\numrange{0.963}{0.989}), with an inference + online
+update latency $\ll$ \SI{100}{\milli\second} (Gap~2). \textbf{(2)} \emph{Naive} post-training quantization
+(PTQ) of the binary EWC head collapses on the board: the F1 score drops from $\approx\!\num{0.92}$ to
+\numrange{0.05}{0.15}. \textbf{(3)} A bit-exact PC-emulated ablation isolates the cause (\texttt{int8}
+accumulator, uncalibrated per-tensor scale) and demonstrates \emph{recovery} through a calibrated kernel:
+the \texttt{per\_tensor\_calib} scheme restores $+\!\num{0.88}$ F1 (Pronostia \num{0.9462}, Monitoring
+\num{0.9201}), and the \texttt{q15} scheme matches FP32. Weight RAM is divided by~4 (INT8) with no latency
+speed-up on the Cortex-M4 FPU --- a \emph{paradox} we acknowledge and tie to a SIMD (CMSIS-NN) direction.
+We systematically distinguish \emph{on-board} measurements from \emph{bit-exact PC emulation}, and
+explicitly leave "to be measured" the board-v2 campaign cells not yet streamed.
+\end{abstract}
+
+\noindent\textbf{Keywords}: continual learning; EWC; INT8 quantization; PTQ; microcontroller; predictive
+maintenance; TinyML.
+
+\input{sections/en/01_intro}
+\input{sections/en/02_related}
+\input{sections/en/03_method}
+\input{sections/en/04_setup}
+\input{sections/en/05_results}
+\input{sections/en/06_discussion}
+\input{sections/en/07_conclusion}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

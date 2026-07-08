@@ -1,0 +1,22 @@
+\section{Travaux connexes}
+\label{sec:related}
+
+\paragraph{Apprentissage continu embarqué.} Les méthodes de CL se répartissent classiquement en approches
+par régularisation, par rejeu et par architecture~\cite{DeLange2021Survey}. EWC~\cite{Kirkpatrick2017EWC}
+appartient à la première famille : une pénalité quadratique pondérée par l'information de Fisher protège
+les paramètres importants pour les tâches passées, sans stocker de données --- une propriété précieuse
+sous contrainte mémoire. Sur MCU, TinyOL~\cite{Ren2021TinyOL} a montré la faisabilité de l'apprentissage
+en ligne d'une couche additionnelle, et HDC~\cite{Benatti2019HDC} celle d'un apprentissage non neuronal à
+très basse consommation. LifeLearner~\cite{Kwon2023LifeLearner} et les plateformes à rejeu latent
+quantifié~\cite{Ravaglia2021QLRCL} adressent le compromis mémoire/précision sur des cibles embarquées. Les
+panoramas TinyML récents~\cite{Capogrosso2023TinyML} soulignent que l'entraînement \emph{sur l'appareil}
+reste sous-exploré comparé à l'inférence seule.
+
+\paragraph{Quantification INT8 et apprentissage.} La quantification post-entraînement (PTQ) et
+l'entraînement conscient de la quantification (QAT) réduisent l'empreinte mémoire d'un facteur~4
+(FP32~$\to$~INT8). Toutefois, la PTQ \emph{naïve} d'une tête de décision peut détruire la séparabilité
+lorsque l'accumulation se fait en \texttt{int8} ou lorsque l'échelle de quantification est fixée sans
+calibration. Notre contribution empirique est de \emph{mesurer} cet effondrement sur MCU réel, puis d'en
+isoler la cause et de démontrer la récupération par un kernel calibré, plutôt que de la masquer par un QAT
+en amont. La quantification par-canal et le format Q15 (entier \num{16} bits en virgule fixe) apparaissent
+comme les leviers déterminants pour préserver la métrique tout en tenant le budget RAM (Gap~3).

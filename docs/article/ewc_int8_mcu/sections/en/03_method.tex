@@ -1,0 +1,35 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{EWC model and C port}
+
+The model is a multilayer perceptron with an EWC head (\texttt{EWCMlpMulticlass}, $k \to 32 \to 16 \to 2$)
+trained incrementally with an online Fisher penalty. The head is ported to C (\texttt{ewc\_head.c}) for the
+board: both the \emph{forward pass} and the SGD update run on the Cortex-M4 in FP32 (the F439ZI has no NPU).
+Weights are exported from the PyTorch checkpoint to a generated C header
+(\texttt{model\_weights\_ewc.h}) --- never hand-edited --- so that board and PC share \emph{exactly} the same
+parameters.
+
+\subsection{Paired PC$\leftrightarrow$board protocol}
+
+To make the comparison honest, board and PC consume the same sequence: same seed ($\texttt{seed}=42$), same
+sample order, same normalization (feature indices and arrays are produced by a single source). Two protocols
+are evaluated: \emph{frozen} (inference only, fixed weights) and \emph{online} (inference then continual
+update). \emph{Parity} is the prediction-by-prediction agreement rate between the two platforms.
+
+\subsection{Quantization schemes}
+
+We compare several INT8 kernels of the decision head, from the most naive to the most careful:
+\begin{itemize}
+  \item \texttt{legacy\_c}: \texttt{int8} accumulator, uncalibrated per-tensor scale (the original v1 board
+        kernel);
+  \item \texttt{fix\_acc32}: accumulator widened to \texttt{int32} (partial fix);
+  \item \texttt{per\_tensor\_calib}: \texttt{int32} accumulator + per-tensor scale \emph{calibrated} on the
+        activations;
+  \item \texttt{per\_channel\_int8}: \emph{per-channel} output scale;
+  \item \texttt{q15}: \texttt{int16} Q15 fixed-point weights (RAM $\div 2$ instead of $\div 4$).
+\end{itemize}
+The v2 firmware kernel (Sprint~40) implements the \texttt{int32} accumulator and per-channel calibrated
+scales, with an optional Q15 variant (\texttt{-DEWC\_INT8\_Q15}); the v1 FP32 path is unchanged. The
+ablation is \emph{bit-exactly emulated on PC} (\texttt{src/utils/int8\_c\_emulation.py}) to isolate the
+contribution of each fix independently of board access.

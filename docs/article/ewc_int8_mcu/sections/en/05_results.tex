@@ -1,0 +1,125 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{FP32 PC$\leftrightarrow$board parity (measured on-board)}
+
+In FP32, the prediction-by-prediction parity is \emph{exact} in the frozen protocol (\num{1.000}) on both
+datasets, and near-exact online (\num{0.9754} Pronostia, \num{0.9887} Monitoring) --- the online gaps stem
+from the board's \texttt{float32} versus the PC's \texttt{float64} at decision boundaries.
+Table~\ref{tab:parity} summarizes; Figure~\ref{fig:parity} illustrates.
+
+\begin{table}[t]
+\centering
+\caption{FP32 PC$\leftrightarrow$board parity and performance (\emph{measured on-board}, \texttt{exp\_S36}).}
+\label{tab:parity}
+\begin{tabular}{lccccc}
+\toprule
+Dataset & Cond. & F1 (PC/board) & Frozen parity & Online parity \\
+\midrule
+Pronostia  & 5feat & \num{0.9164} & \num{1.000} & \num{0.9754} \\
+Pronostia  & all   & \num{0.9180} & \num{1.000} & \num{0.9626} \\
+Monitoring & 5feat & \num{0.9194} & \num{1.000} & \num{0.9887} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig1_parity_fp32_pc_board.png}
+\caption{FP32 PC$\leftrightarrow$board parity: frozen (\num{1.000}) vs online. \emph{Measured on-board}
+(\texttt{exp\_S36\_parity\_*.json}).}
+\label{fig:parity}
+\end{figure}
+
+\paragraph{Latency and RAM (Gap~2/Gap~3).} All board latencies stay three orders of magnitude below budget:
+inference \SI{50}{\micro\second} (Pronostia) / \SI{48}{\micro\second} (Monitoring); inference + online update
+\SI{251}{\micro\second} / \SI{239}{\micro\second}, versus $\approx$\,\SIrange{33}{35}{\micro\second} for the
+reference PC inference. The \texttt{.bss} footprint ranges over \SIrange{100}{145}{\kilo\byte}, below the
+\SI{256}{\kilo\byte} available. Figure~\ref{fig:latency} places these values against the
+\SI{100}{\milli\second} line.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig2_latency_gap2.png}
+\caption{Board latencies (inference vs inference + update) against the Gap~2 budget
+(\SI{100}{\milli\second}). \emph{Measured on-board} (\texttt{exp\_S36\_summary.json}).}
+\label{fig:latency}
+\end{figure}
+
+\subsection{Collapse of naive PTQ (measured on-board)}
+
+The \emph{legacy} INT8 quantization of the binary EWC head collapses on the board: F1 drops from
+$\approx$\,\num{0.92} (FP32) to \num{0.138} (Pronostia) and \num{0.1337} (Monitoring), for an
+INT8$\leftrightarrow$FP32 agreement of only $\approx$\,\numrange{0.60}{0.74}. Weight RAM is indeed divided by
+4, but the metric is destroyed (Table~\ref{tab:int8board}).
+
+\begin{table}[t]
+\centering
+\caption{INT8 \emph{legacy} vs FP32 on-board (\emph{measured}, \texttt{exp\_S36}). RAM $\div 4$ but collapsed
+F1.}
+\label{tab:int8board}
+\begin{tabular}{lcccc}
+\toprule
+Dataset & F1 FP32 & F1 INT8 legacy & INT8/FP32 agr. & RAM $\div$ \\
+\midrule
+Pronostia  & \num{0.9164} & \num{0.138}  & \num{0.7364} & $\times 4$ \\
+Monitoring & \num{0.9194} & \num{0.1337} & \num{0.5955} & $\times 4$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Diagnosis and recovery (bit-exact PC emulation)}
+
+A \emph{bit-exact PC-emulated} ablation (exact kernel reference) isolates the cause and demonstrates recovery
+(Table~\ref{tab:ablation}, Figure~\ref{fig:ablation}). The dominant factor is the \emph{calibrated
+per-tensor scale} on an \texttt{int32} accumulator: \texttt{per\_tensor\_calib} restores $+\,\num{0.88}$ F1
+(Pronostia \num{0.9462}, Monitoring \num{0.9201}). The \texttt{q15} format exactly matches FP32.
+
+\begin{table}[t]
+\centering
+\caption{INT8 ablation ladder (F1, \emph{bit-exact PC emulation}, \texttt{exp\_S39\_ablation}).}
+\label{tab:ablation}
+\begin{tabular}{lcc}
+\toprule
+Scheme & Pronostia F1 & Monitoring F1 \\
+\midrule
+FP32 (ref.)        & \num{0.9616} & \num{0.9194} \\
+\texttt{legacy\_c} & \num{0.0663} & \num{0.1178} \\
+\texttt{per\_tensor\_calib} & \textbf{\num{0.9462}} & \textbf{\num{0.9201}} \\
+\texttt{per\_channel\_int8} & \num{0.9426} & \num{0.9187} \\
+\texttt{q15}       & \num{0.9616} & \num{0.9194} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig3_ablation_ladder.png}
+\caption{Ablation ladder \texttt{legacy\_c}$\to$\texttt{per\_tensor\_calib}$\to$\texttt{per\_channel}
+$\to$\texttt{q15}. \emph{Bit-exact PC emulation} (\texttt{exp\_S39\_ablation}).}
+\label{fig:ablation}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig4_int8_recovery_board.png}
+\caption{INT8 vs FP32: \emph{legacy} collapse then recovery through a calibrated kernel. Collapse
+\emph{measured on-board} (Sprint~36); recovery \emph{PC-emulated} (Sprint~39). The \emph{board-v2}
+confirmation (Sprint~40) remains "to be measured" apart from the Pronostia per-channel cell already streamed.}
+\label{fig:recovery}
+\end{figure}
+
+\subsection{RAM $\times$ F1 $\times$ latency trade-off}
+
+Figure~\ref{fig:pareto} synthesizes the trade-off: the calibrated kernel brings the metric back to FP32 level
+while keeping the RAM gain (INT8 $\div 4$, Q15 $\div 2$), with no prohibitive latency cost. The \emph{on real
+hardware} recovery (Sprint~40, v2 kernel) is reported as "to be measured" for every cell not yet streamed, in
+line with the "no invented number" rule.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig5_pareto_ram_f1_latency.png}
+\caption{RAM $\times$ F1 $\times$ latency trade-off front. Mixed \emph{measured}/\emph{emulated} sources
+annotated per point.}
+\label{fig:pareto}
+\end{figure}

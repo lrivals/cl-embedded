@@ -1,0 +1,19 @@
+\section{Dispositif expérimental}
+\label{sec:setup}
+
+\paragraph{Cible matérielle.} NUCLEO-F439ZI (Cortex-M4 @ \SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM =
+\SI{192}{\kilo\byte} + \SI{64}{\kilo\byte} CCM, pas de NPU). Les latences sont mesurées par le compteur de
+cycles DWT ; l'empreinte statique est lue dans la section \texttt{.bss} du binaire. Le budget de latence
+est \SI{100}{\milli\second} par cycle inférence + mise à jour (Gap~2).
+
+\paragraph{Jeux de données et scénarios CL.} Deux jeux industriels aux scénarios contrastés :
+\emph{Pronostia} (roulements FEMTO, \emph{class-incremental} par condition normale/défaut) et
+\emph{Monitoring} (équipements industriels, \emph{domain-incremental} par type de machine). Deux
+conditions de features sont considérées : \texttt{5feat} (sous-ensemble embarqué) et \texttt{all}
+(features natives). Sur Monitoring, \texttt{5feat} et \texttt{all} coïncident (4 features natives).
+
+\paragraph{Conditions identiques.} Toutes les comparaisons partagent graine, ordre et normalisation
+(\S\ref{sec:method}). Les mesures FP32 et INT8-legacy sur carte proviennent de la campagne du Sprint~36
+(\texttt{exp\_S36}) ; l'ablation émulée du Sprint~39 (\texttt{exp\_S39\_ablation}) ; la campagne carte v2
+du Sprint~40 (\texttt{exp\_S40\_board\_v2}), partielle à la date de rédaction. Toute grandeur non encore
+streamée sur carte est reportée « à mesurer », sans valeur inventée.

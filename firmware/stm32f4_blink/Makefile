@@ -19,6 +19,7 @@ C_SOURCES   = src/main.c \
               src/mahalanobis_int8.c \
               src/ewc_head.c \
               src/ewc_head_int8.c \
+              src/ewc_head_int8_v2.c \
               src/ewc_head_regression.c \
               src/ewc_head_multiclass.c \
               src/tinyol.c \
@@ -47,7 +48,12 @@ MCU      = $(CPU) -mthumb $(FPU) $(FLOAT)
 CFLAGS   = $(MCU) $(C_INCLUDES) -DSTM32F439xx \
            -Wall -Wextra -Os -g3 \
            -ffunction-sections -fdata-sections \
+           -fstack-usage \
            -std=gnu11
+# -fstack-usage : émet un build/<unité>.su (cadre de pile par fonction). N'affecte
+#   PAS le code généré (fichier annexe uniquement → .text/.data/.bss bit-identiques).
+#   Exploité par scripts/stack_usage_report.py comme borne supérieure statique de pile,
+#   contre-vérifiée par le pic mesuré (scripts/measure_stack_watermark.py).
 
 # Flags additionnels passés en ligne de commande SANS clobber les flags ci-dessus.
 # Ex. marqueurs énergie (S3304) :  make all EXTRA_CFLAGS=-DENERGY_MARKERS
@@ -143,6 +149,7 @@ clean:
 TEST_CC  = gcc
 TEST_SRC = tests/test_mahalanobis.c tests/test_mahalanobis_q15.c tests/test_mahalanobis_int8.c tests/test_ewc_head.c \
            tests/test_ewc_int8.c \
+           tests/test_ewc_int8_v2.c \
            tests/test_profiling.c tests/test_pipeline.c tests/test_tinyol.c \
            tests/test_hdc.c \
            tests/test_ring_buffer.c \
@@ -155,7 +162,7 @@ TEST_SRC = tests/test_mahalanobis.c tests/test_mahalanobis_q15.c tests/test_maha
            tests/test_drift_detector.c \
            tests/test_runner.c \
            tests/unity/unity.c \
-           src/mahalanobis.c src/mahalanobis_q15.c src/mahalanobis_int8.c src/ewc_head.c src/ewc_head_int8.c src/ewc_head_regression.c \
+           src/mahalanobis.c src/mahalanobis_q15.c src/mahalanobis_int8.c src/ewc_head.c src/ewc_head_int8.c src/ewc_head_int8_v2.c src/ewc_head_regression.c \
            src/ewc_head_multiclass.c \
            src/tinyol.c src/tinyol_int8.c src/hdc.c src/hdc_int8.c \
            src/meta_head.c \
@@ -169,6 +176,12 @@ test: $(BUILD_DIR)
 	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -lm -o $(BUILD_DIR)/test_runner
 	./$(BUILD_DIR)/test_runner
 
+# Variante Q15 du kernel INT8 v2 (S3909) : recompile le runner avec -DEWC_INT8_Q15
+# (typedef 16 bits, exclusif de l'int8) pour exécuter test_v2_q15_parity.
+test-v2-q15: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT8_Q15 -lm -o $(BUILD_DIR)/test_runner_q15
+	./$(BUILD_DIR)/test_runner_q15
+
 TEST_MODELS_SRC = tests/test_models.c \
                   tests/unity/unity.c \
                   src/mahalanobis.c src/ewc_head.c src/tinyol.c src/metrics.c
@@ -178,4 +191,4 @@ test-models: $(BUILD_DIR)
 	           -DTEST_HOST -lm -o $(BUILD_DIR)/test_models_runner
 	./$(BUILD_DIR)/test_models_runner
 
-.PHONY: all flash debug clean test test-models size
+.PHONY: all flash debug clean test test-v2-q15 test-models size

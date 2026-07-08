@@ -1,0 +1,80 @@
+\relax 
+\providecommand\babel@aux[2]{}
+\@nameuse{bbl@beforestart}
+\catcode `:\active 
+\catcode `;\active 
+\catcode `!\active 
+\catcode `?\active 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{DeLange2021Survey}
+\citation{Hurtado2023CLPdM}
+\babel@aux{french}{}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\citation{Kirkpatrick2017EWC}
+\citation{DeLange2021Survey}
+\citation{Kirkpatrick2017EWC}
+\citation{Ren2021TinyOL}
+\citation{Benatti2019HDC}
+\citation{Kwon2023LifeLearner}
+\citation{Ravaglia2021QLRCL}
+\citation{Capogrosso2023TinyML}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Travaux connexes}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Travaux connexes}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Apprentissage continu embarqué.}{2}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Quantification INT8 et apprentissage.}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Méthode}{3}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{3}{Méthode}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Modèle EWC et portage C}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Protocole apparié PC$\leftrightarrow $carte}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Schémas de quantification}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Parité FP32 PC$\leftrightarrow $carte et performance (\emph  {mesuré sur carte}, \texttt  {exp\_S36}).}}{4}{table.caption.7}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:parity}{{1}{4}{Parité FP32 PC$\leftrightarrow $carte et performance (\emph {mesuré sur carte}, \texttt {exp\_S36})}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Dispositif expérimental}{4}{section.4}\protected@file@percent }
+\newlabel{sec:setup}{{4}{4}{Dispositif expérimental}{section.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cible matérielle.}{4}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Jeux de données et scénarios CL.}{4}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Conditions identiques.}{4}{section*.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Résultats}{4}{section.5}\protected@file@percent }
+\newlabel{sec:results}{{5}{4}{Résultats}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Parité FP32 PC$\leftrightarrow $carte (mesuré sur carte)}{4}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latence et RAM (Gap~2/Gap~3).}{4}{section*.9}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Parité FP32 PC$\leftrightarrow $carte : gelé (1.000) vs en ligne. \emph  {Mesuré sur carte} (\texttt  {exp\_S36\_parity\_*.json}).}}{5}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:parity}{{1}{5}{Parité FP32 PC$\leftrightarrow $carte : gelé (\num {1.000}) vs en ligne. \emph {Mesuré sur carte} (\texttt {exp\_S36\_parity\_*.json})}{figure.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces INT8 \emph  {legacy} vs FP32 sur carte (\emph  {mesuré}, \texttt  {exp\_S36}). RAM $\div 4$ mais F1 effondré.}}{5}{table.caption.11}\protected@file@percent }
+\newlabel{tab:int8board}{{2}{5}{INT8 \emph {legacy} vs FP32 sur carte (\emph {mesuré}, \texttt {exp\_S36}). RAM $\div 4$ mais F1 effondré}{table.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Effondrement de la PTQ naïve (mesuré sur carte)}{5}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Diagnostic et récupération (émulé PC bit-exact)}{5}{subsection.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Latences carte (inférence vs inférence + mise à jour) contre le budget Gap~2 (100\,ms). \emph  {Mesuré sur carte} (\texttt  {exp\_S36\_summary.json}).}}{6}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:latency}{{2}{6}{Latences carte (inférence vs inférence + mise à jour) contre le budget Gap~2 (\SI {100}{\milli \second }). \emph {Mesuré sur carte} (\texttt {exp\_S36\_summary.json})}{figure.caption.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Échelle d'ablation INT8 (F1, \emph  {émulé PC bit-exact}, \texttt  {exp\_S39\_ablation}).}}{6}{table.caption.12}\protected@file@percent }
+\newlabel{tab:ablation}{{3}{6}{Échelle d'ablation INT8 (F1, \emph {émulé PC bit-exact}, \texttt {exp\_S39\_ablation})}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Compromis RAM $\times $ F1 $\times $ latence}{6}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{6}{section.6}\protected@file@percent }
+\newlabel{sec:discussion}{{6}{6}{Discussion}{section.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Paradoxe de la latence INT8.}{6}{section*.16}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Échelle d'ablation \texttt  {legacy\_c}$\to $\texttt  {per\_tensor\_calib}$\to $\texttt  {per\_channel} $\to $\texttt  {q15}. \emph  {Émulé PC bit-exact} (\texttt  {exp\_S39\_ablation}).}}{7}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:ablation}{{3}{7}{Échelle d'ablation \texttt {legacy\_c}$\to $\texttt {per\_tensor\_calib}$\to $\texttt {per\_channel} $\to $\texttt {q15}. \emph {Émulé PC bit-exact} (\texttt {exp\_S39\_ablation})}{figure.caption.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces INT8 vs FP32 : effondrement \emph  {legacy} puis récupération par kernel calibré. Effondrement \emph  {mesuré sur carte} (Sprint~36) ; récupération \emph  {émulée PC} (Sprint~39). La confirmation \emph  {sur carte v2} (Sprint~40) reste « à mesurer » hors la cellule Pronostia per-canal déjà streamée.}}{7}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:recovery}{{4}{7}{INT8 vs FP32 : effondrement \emph {legacy} puis récupération par kernel calibré. Effondrement \emph {mesuré sur carte} (Sprint~36) ; récupération \emph {émulée PC} (Sprint~39). La confirmation \emph {sur carte v2} (Sprint~40) reste « à mesurer » hors la cellule Pronostia per-canal déjà streamée}{figure.caption.14}{}}
+\@writefile{toc}{\contentsline {paragraph}{Honnêteté « mesuré » vs « émulé ».}{7}{section*.17}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Front de compromis RAM $\times $ F1 $\times $ latence. Sources mixtes \emph  {mesuré}/\emph  {émulé} annotées par point.}}{8}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:pareto}{{5}{8}{Front de compromis RAM $\times $ F1 $\times $ latence. Sources mixtes \emph {mesuré}/\emph {émulé} annotées par point}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {paragraph}{Portée.}{8}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion et travaux futurs}{8}{section.7}\protected@file@percent }
+\newlabel{sec:conclusion}{{7}{8}{Conclusion et travaux futurs}{section.7}{}}
+\bibstyle{plain}
+\bibdata{references}
+\bibcite{Benatti2019HDC}{1}
+\bibcite{Capogrosso2023TinyML}{2}
+\bibcite{Hurtado2023CLPdM}{3}
+\bibcite{Kirkpatrick2017EWC}{4}
+\bibcite{Kwon2023LifeLearner}{5}
+\bibcite{DeLange2021Survey}{6}
+\bibcite{Ravaglia2021QLRCL}{7}
+\bibcite{Ren2021TinyOL}{8}
+\gdef \@abspage@last{9}

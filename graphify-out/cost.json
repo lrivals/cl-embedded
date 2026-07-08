@@ -92,8 +92,39 @@
       "input_tokens": 0,
       "output_tokens": 0,
       "files": 41
+    },
+    {
+      "date": "2026-07-01T13:21:09.401395+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 30
+    },
+    {
+      "date": "2026-07-02T11:17:35.315351+00:00",
+      "input_tokens": 0,
+      "output_tokens": 95653,
+      "files": 16
+    },
+    {
+      "date": "2026-07-06T09:23:36.049282+00:00",
+      "input_tokens": 395228,
+      "output_tokens": 12000,
+      "files": 45
+    },
+    {
+      "date": "2026-07-07T08:37:26.408256+00:00",
+      "input_tokens": 360876,
+      "output_tokens": 0,
+      "files": 22
+    },
+    {
+      "date": "2026-07-08T07:35:48.422690+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 78,
+      "note": "AST-only incremental (semantic skipped)"
     }
   ],
-  "total_input_tokens": 510913,
-  "total_output_tokens": 18000
+  "total_input_tokens": 1267017,
+  "total_output_tokens": 125653
 }

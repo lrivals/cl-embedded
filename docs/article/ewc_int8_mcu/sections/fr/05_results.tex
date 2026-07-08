@@ -1,0 +1,126 @@
+\section{Résultats}
+\label{sec:results}
+
+\subsection{Parité FP32 PC$\leftrightarrow$carte (mesuré sur carte)}
+
+En FP32, la parité prédiction-à-prédiction est \emph{exacte} en mode gelé (\num{1.000}) sur les deux jeux,
+et quasi exacte en mode en ligne (\num{0.9754} Pronostia, \num{0.9887} Monitoring) --- les écarts en ligne
+proviennent du \texttt{float32} de la carte contre le \texttt{float64} du PC sur les frontières de
+décision. Le Tableau~\ref{tab:parity} récapitule ; la Figure~\ref{fig:parity} l'illustre.
+
+\begin{table}[t]
+\centering
+\caption{Parité FP32 PC$\leftrightarrow$carte et performance (\emph{mesuré sur carte}, \texttt{exp\_S36}).}
+\label{tab:parity}
+\begin{tabular}{lccccc}
+\toprule
+Jeu & Cond. & F1 (PC/carte) & Parité gelé & Parité en ligne \\
+\midrule
+Pronostia  & 5feat & \num{0.9164} & \num{1.000} & \num{0.9754} \\
+Pronostia  & all   & \num{0.9180} & \num{1.000} & \num{0.9626} \\
+Monitoring & 5feat & \num{0.9194} & \num{1.000} & \num{0.9887} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig1_parity_fp32_pc_board.png}
+\caption{Parité FP32 PC$\leftrightarrow$carte : gelé (\num{1.000}) vs en ligne. \emph{Mesuré sur carte}
+(\texttt{exp\_S36\_parity\_*.json}).}
+\label{fig:parity}
+\end{figure}
+
+\paragraph{Latence et RAM (Gap~2/Gap~3).} Toutes les latences carte restent trois ordres de grandeur sous
+le budget : inférence \SI{50}{\micro\second} (Pronostia) / \SI{48}{\micro\second} (Monitoring) ;
+inférence + mise à jour continue \SI{251}{\micro\second} / \SI{239}{\micro\second}, contre
+$\approx$\,\SIrange{33}{35}{\micro\second} pour l'inférence PC de référence. L'empreinte \texttt{.bss} varie
+de \SIrange{100}{145}{\kilo\byte}, sous les \SI{256}{\kilo\byte} disponibles. La
+Figure~\ref{fig:latency} situe ces valeurs face à la ligne des \SI{100}{\milli\second}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig2_latency_gap2.png}
+\caption{Latences carte (inférence vs inférence + mise à jour) contre le budget Gap~2 (\SI{100}{\milli
+\second}). \emph{Mesuré sur carte} (\texttt{exp\_S36\_summary.json}).}
+\label{fig:latency}
+\end{figure}
+
+\subsection{Effondrement de la PTQ naïve (mesuré sur carte)}
+
+La quantification INT8 \emph{legacy} de la tête EWC binaire s'effondre sur la carte : le F1 chute de
+$\approx$\,\num{0.92} (FP32) à \num{0.138} (Pronostia) et \num{0.1337} (Monitoring), pour un accord
+INT8$\leftrightarrow$FP32 de seulement $\approx$\,\numrange{0.60}{0.74}. La RAM des poids est bien divisée
+par~4, mais la métrique est détruite (Tableau~\ref{tab:int8board}).
+
+\begin{table}[t]
+\centering
+\caption{INT8 \emph{legacy} vs FP32 sur carte (\emph{mesuré}, \texttt{exp\_S36}). RAM $\div 4$ mais
+F1 effondré.}
+\label{tab:int8board}
+\begin{tabular}{lcccc}
+\toprule
+Jeu & F1 FP32 & F1 INT8 legacy & Accord INT8/FP32 & RAM $\div$ \\
+\midrule
+Pronostia  & \num{0.9164} & \num{0.138}  & \num{0.7364} & $\times 4$ \\
+Monitoring & \num{0.9194} & \num{0.1337} & \num{0.5955} & $\times 4$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Diagnostic et récupération (émulé PC bit-exact)}
+
+Une ablation \emph{émulée bit-à-bit sur PC} (référence exacte du kernel) isole la cause et démontre la
+récupération (Tableau~\ref{tab:ablation}, Figure~\ref{fig:ablation}). Le facteur dominant est
+l'\emph{échelle par-tenseur calibrée} sur accumulateur \texttt{int32} : \texttt{per\_tensor\_calib}
+restaure $+\,\num{0.88}$ de F1 (Pronostia \num{0.9462}, Monitoring \num{0.9201}). Le format \texttt{q15}
+égale exactement le FP32.
+
+\begin{table}[t]
+\centering
+\caption{Échelle d'ablation INT8 (F1, \emph{émulé PC bit-exact}, \texttt{exp\_S39\_ablation}).}
+\label{tab:ablation}
+\begin{tabular}{lcc}
+\toprule
+Schéma & Pronostia F1 & Monitoring F1 \\
+\midrule
+FP32 (réf.)        & \num{0.9616} & \num{0.9194} \\
+\texttt{legacy\_c} & \num{0.0663} & \num{0.1178} \\
+\texttt{per\_tensor\_calib} & \textbf{\num{0.9462}} & \textbf{\num{0.9201}} \\
+\texttt{per\_channel\_int8} & \num{0.9426} & \num{0.9187} \\
+\texttt{q15}       & \num{0.9616} & \num{0.9194} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig3_ablation_ladder.png}
+\caption{Échelle d'ablation \texttt{legacy\_c}$\to$\texttt{per\_tensor\_calib}$\to$\texttt{per\_channel}
+$\to$\texttt{q15}. \emph{Émulé PC bit-exact} (\texttt{exp\_S39\_ablation}).}
+\label{fig:ablation}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig4_int8_recovery_board.png}
+\caption{INT8 vs FP32 : effondrement \emph{legacy} puis récupération par kernel calibré. Effondrement
+\emph{mesuré sur carte} (Sprint~36) ; récupération \emph{émulée PC} (Sprint~39). La confirmation
+\emph{sur carte v2} (Sprint~40) reste « à mesurer » hors la cellule Pronostia per-canal déjà streamée.}
+\label{fig:recovery}
+\end{figure}
+
+\subsection{Compromis RAM $\times$ F1 $\times$ latence}
+
+La Figure~\ref{fig:pareto} synthétise le compromis : le kernel calibré ramène la métrique au niveau FP32
+tout en conservant le gain RAM (INT8 $\div 4$, Q15 $\div 2$), sans coût de latence prohibitif. La
+récupération \emph{sur carte réelle} (Sprint~40, kernel v2) est reportée « à mesurer » pour toutes les
+cellules non encore streamées, conformément à la règle « aucun chiffre inventé ».
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig5_pareto_ram_f1_latency.png}
+\caption{Front de compromis RAM $\times$ F1 $\times$ latence. Sources mixtes \emph{mesuré}/\emph{émulé}
+annotées par point.}
+\label{fig:pareto}
+\end{figure}

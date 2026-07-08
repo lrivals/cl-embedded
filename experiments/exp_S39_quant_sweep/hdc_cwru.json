@@ -1,0 +1,27 @@
+{
+  "metric_name": "f1_faulty",
+  "n_features": 5,
+  "n_params": 7168,
+  "schemes": {
+    "fp32": {
+      "metric": 0.9545,
+      "ram_weights_bytes": 14336,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true,
+      "note": "HDC nativement bipolaire : INT8 == FP32 (témoin) ; seule la RAM diffère."
+    },
+    "int8": {
+      "metric": 0.9545,
+      "ram_weights_bytes": 7168,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true,
+      "note": "HDC nativement bipolaire : INT8 == FP32 (témoin) ; seule la RAM diffère."
+    }
+  },
+  "model": "hdc",
+  "dataset": "cwru",
+  "condition": "5feat",
+  "seed": 42
+}

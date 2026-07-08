@@ -1,0 +1,52 @@
+{
+  "metric_name": "f1_faulty",
+  "n_features": 4,
+  "n_params": 722,
+  "feature_names": [
+    "temperature",
+    "pressure",
+    "vibration",
+    "humidity"
+  ],
+  "schemes": {
+    "fp32": {
+      "metric": 0.9158,
+      "ram_weights_bytes": 2888,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true
+    },
+    "int8_legacy": {
+      "metric": 0.0267,
+      "ram_weights_bytes": 722,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    },
+    "int8_perchannel": {
+      "metric": 0.915,
+      "ram_weights_bytes": 722,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    },
+    "q15": {
+      "metric": 0.9158,
+      "ram_weights_bytes": 1444,
+      "bops_proxy": 0.25,
+      "lat_proxy_rel": 0.25,
+      "lat_proxy": true
+    },
+    "mixed": {
+      "metric": 0.9158,
+      "ram_weights_bytes": 722,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    }
+  },
+  "model": "ewc",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "seed": 42
+}

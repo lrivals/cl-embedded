@@ -1,0 +1,32 @@
+{
+  "metric_name": "auroc",
+  "n_features": 5,
+  "n_params": 257,
+  "feature_names": [
+    "sd",
+    "rms",
+    "kurtosis",
+    "crest",
+    "form"
+  ],
+  "schemes": {
+    "fp32": {
+      "metric": 0.9991,
+      "ram_weights_bytes": 1028,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true
+    },
+    "int8": {
+      "metric": 0.9991,
+      "ram_weights_bytes": 305,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    }
+  },
+  "model": "tinyol",
+  "dataset": "cwru",
+  "condition": "5feat",
+  "seed": 42
+}

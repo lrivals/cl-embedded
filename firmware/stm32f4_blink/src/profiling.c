@@ -94,15 +94,15 @@ extern uint32_t _sdata, _edata;
 #endif
 
 /* Fonction pure, testable sur host : la pile croît vers le bas depuis `high`.
- * Le startup a peint [low, high) avec `sentinel` ; on scanne de `low` (bas)
- * vers le haut jusqu'au premier mot écrasé → tout ce qui est au-dessus a été
- * touché par la pile. Retourne (high - premier_mot_utilisé) en octets. */
+ * Le startup a peint [low, high) avec un canary POSITION-DÉPENDANT (chaque mot =
+ * sa propre adresse) ; on scanne de `low` (bas) vers le haut jusqu'au premier mot
+ * dont la valeur ≠ son adresse → tout ce qui est au-dessus a été touché par la
+ * pile. Retourne (high - premier_mot_utilisé) en octets. */
 uint32_t profiling_stack_peak_from_region(const uint32_t *low,
-                                          const uint32_t *high,
-                                          uint32_t sentinel)
+                                          const uint32_t *high)
 {
     const uint32_t *p = low;
-    while (p < high && *p == sentinel) {
+    while (p < high && *p == (uint32_t)(uintptr_t)p) {
         p++;
     }
     return (uint32_t)((const uint8_t *)high - (const uint8_t *)p);
@@ -111,8 +111,7 @@ uint32_t profiling_stack_peak_from_region(const uint32_t *low,
 uint32_t profiling_stack_peak_bytes(void)
 {
 #ifndef TEST_HOST
-    return profiling_stack_peak_from_region(&_ebss, &_estack,
-                                            STACK_PAINT_SENTINEL);
+    return profiling_stack_peak_from_region(&_ebss, &_estack);
 #else
     return 0U;
 #endif

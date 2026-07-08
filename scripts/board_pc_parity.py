@@ -39,6 +39,11 @@ CONDITIONS = ["5feat", "all"]
 PROTOCOLS = ["frozen", "online"]
 DATASETS = ["pronostia", "monitoring"]
 
+# S4002 : campagne kernel INT8 v2 (exp_S40_board_v2). Réutilise les board_samples_* persistés
+# par run_s40_board_v2.py (pred_board + pred_pc = émulateur bit-exact en frozen, miroir en online).
+S40_DIR = EXPERIMENTS / "exp_S40_board_v2"
+S40_SCHEMES = ["per_channel", "q15", "int8_legacy"]
+
 
 def _pc_pred_conf_ewc(ckpt: Path, feats: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Forward EWC depuis un checkpoint → (pred argmax, confidence = softmax max)."""
@@ -147,12 +152,90 @@ def build_cell(condition: str, protocol: str, dataset: str) -> dict | None:
     return _build_online(condition, dataset)
 
 
+def _build_s40(scheme: str, protocol: str, dataset: str) -> dict | None:
+    """Table parité S4002 depuis exp_S40_board_v2/cell_*/board_samples.json.
+
+    frozen v2 (per_channel/q15) : ``pred_pc`` = émulateur bit-exact → parité attendue 1.000
+    (``exact_vs_emulator``). frozen legacy / online : parité approchée. Aucune reconstruction :
+    on lit les prédictions board réellement streamées.
+    """
+    bs_path = S40_DIR / f"cell_{scheme}_{dataset}_{protocol}" / "board_samples.json"
+    if not bs_path.exists():
+        print(f"  [skip s40 {scheme}/{protocol}/{dataset}] board_samples.json absent "
+              f"(lancer run_s40_board_v2.py)")
+        return None
+
+    is_v2 = scheme in ("per_channel", "q15")
+    bs = json.loads(bs_path.read_text())
+    rows, mismatches = [], []
+    for s in bs:
+        pc_pred, bpred = int(s["pred_pc"]), int(s["pred_board"])
+        match = (pc_pred == bpred)
+        row = {
+            "idx": int(s["idx"]), "true": int(s["true"]),
+            "pred_pc": pc_pred, "pred_board": bpred,
+            "conf_board": s.get("conf_board"), "match": match,
+        }
+        if "task_id" in s:
+            row["task_id"] = s.get("task_id")
+        rows.append(row)
+        if not match:
+            mismatches.append(row)
+
+    n = len(rows)
+    if protocol == "frozen":
+        parity_class = "exact_vs_emulator" if is_v2 else "approx_int8"
+    else:
+        parity_class = "approx"
+    return {
+        "exp_id": f"exp_S40_parity_{scheme}_{protocol}_{dataset}",
+        "scheme": scheme, "protocol": protocol, "dataset": dataset,
+        "parity_class": parity_class,
+        "n_compared": n,
+        "parity_rate": float(np.mean([r["match"] for r in rows])) if n else None,
+        "mismatch_count": len(mismatches),
+        "rows": rows,
+        "mismatches": mismatches,
+    }
+
+
+def _main_s40(scheme_arg, protocol_arg, dataset_arg) -> int:
+    """Boucle parité pour l'expérience exp_S40_board_v2 → parity_{scheme}_{proto}_{ds}.json."""
+    schemes = [scheme_arg] if scheme_arg else S40_SCHEMES
+    protocols = [protocol_arg] if protocol_arg else PROTOCOLS
+    datasets = [dataset_arg] if dataset_arg else DATASETS
+    written = 0
+    for ds in datasets:
+        for scheme in schemes:
+            for proto in protocols:
+                res = _build_s40(scheme, proto, ds)
+                if res is None:
+                    continue
+                out = S40_DIR / f"parity_{scheme}_{proto}_{ds}.json"
+                out.write_text(json.dumps(res, indent=2))
+                rate = res["parity_rate"]
+                rate_s = f"{rate:.4f}" if rate is not None else "n/a"
+                print(f"  {out.name:40s} n={res['n_compared']:6d} "
+                      f"parity={rate_s} mismatch={res['mismatch_count']}")
+                written += 1
+    return written
+
+
 def main() -> None:
-    p = argparse.ArgumentParser(description="Parité prédiction-par-prédiction PC↔board (S3605)")
+    p = argparse.ArgumentParser(description="Parité prédiction-par-prédiction PC↔board (S3605/S4002)")
     p.add_argument("--condition", choices=CONDITIONS, default=None)
     p.add_argument("--protocol", choices=PROTOCOLS, default=None)
     p.add_argument("--dataset", choices=DATASETS, default=None)
+    p.add_argument("--exp", choices=["exp_S36", "exp_S40_board_v2"], default="exp_S36",
+                   help="exp_S36 (défaut, EWC FP32/legacy) ou exp_S40_board_v2 (kernel INT8 v2)")
+    p.add_argument("--scheme", choices=S40_SCHEMES, default=None,
+                   help="(exp_S40_board_v2) filtre de schéma ; défaut = tous")
     args = p.parse_args()
+
+    if args.exp == "exp_S40_board_v2":
+        written = _main_s40(args.scheme, args.protocol, args.dataset)
+        print(f"\n{written} fichiers parité écrits dans {S40_DIR}/")
+        return
 
     conditions = [args.condition] if args.condition else CONDITIONS
     protocols = [args.protocol] if args.protocol else PROTOCOLS

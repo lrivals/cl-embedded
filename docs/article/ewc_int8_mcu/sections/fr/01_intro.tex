@@ -1,0 +1,24 @@
+\section{Introduction}
+\label{sec:intro}
+
+La maintenance prédictive industrielle exige de plus en plus des modèles capables d'\emph{apprendre en
+continu} sur l'équipement lui-même, sans retour vers un serveur : les conditions d'opération dérivent
+(usure, changement de régime, de machine), et un modèle figé se dégrade. L'apprentissage continu
+(\emph{continual learning}, CL) répond à ce besoin~\cite{DeLange2021Survey,Hurtado2023CLPdM}, mais son
+déploiement sur microcontrôleur (MCU) reste contraint : mémoire vive de l'ordre de la centaine de
+kilo-octets, absence d'accélérateur neuronal, budget de latence strict.
+
+Le présent travail se positionne sur un \textbf{triple gap} que peu de travaux comblent simultanément :
+(Gap~1) validation sur des séries temporelles industrielles réelles ; (Gap~2) fonctionnement sous
+\SI{100}{\kilo\byte} de RAM avec des chiffres \emph{mesurés} et une latence bornée ; (Gap~3)
+quantification INT8 compatible avec l'entraînement incrémental. Nous instancions ces trois axes sur un
+classifieur EWC~\cite{Kirkpatrick2017EWC} porté en C sur une carte NUCLEO-F439ZI (Cortex-M4
+\SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM, sans NPU).
+
+\paragraph{Contributions.} (i)~Un protocole \emph{apparié} PC$\leftrightarrow$carte (même graine, même
+ordre d'échantillons, même normalisation) établissant une parité FP32 \emph{exacte} en mode gelé et une
+latence inférence + apprentissage $\ll$~\SI{100}{\milli\second}. (ii)~La mise en évidence, \emph{sur
+carte réelle}, de l'effondrement de la PTQ naïve de la tête EWC binaire (F1 $0.92 \to 0.05$--$0.15$).
+(iii)~Une ablation \emph{émulée bit-exacte} qui isole la cause de l'effondrement et démontre la
+récupération par un kernel calibré (par-tenseur, par-canal, Q15), avec une distinction méthodologique
+stricte entre ce qui est \emph{mesuré sur carte} et ce qui est \emph{émulé sur PC}.

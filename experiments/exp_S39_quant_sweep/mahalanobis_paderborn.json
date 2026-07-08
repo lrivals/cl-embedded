@@ -1,0 +1,39 @@
+{
+  "metric_name": "auroc",
+  "n_features": 5,
+  "n_params": 30,
+  "feature_names": [
+    "energy_band_3",
+    "energy_band_2",
+    "energy_band_4",
+    "kurtosis",
+    "energy_band_1"
+  ],
+  "schemes": {
+    "fp32": {
+      "metric": 0.497,
+      "ram_weights_bytes": 120,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true
+    },
+    "int8": {
+      "metric": 0.4602,
+      "ram_weights_bytes": 30,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    },
+    "q15": {
+      "metric": 0.5129,
+      "ram_weights_bytes": 55,
+      "bops_proxy": 0.25,
+      "lat_proxy_rel": 0.25,
+      "lat_proxy": true
+    }
+  },
+  "model": "mahalanobis",
+  "dataset": "paderborn",
+  "condition": "5feat",
+  "seed": 42
+}

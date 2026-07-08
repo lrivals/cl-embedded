@@ -1,0 +1,12 @@
+{
+  "label": "EWC",
+  "model_flag": "ewc",
+  "dataset": "monitoring",
+  "condition": null,
+  "data_bytes": 460,
+  "bss_bytes": 105036,
+  "stack_peak_bytes": 4712,
+  "ram_peak_bytes": 110208,
+  "static_bound_bytes": 4768,
+  "bound_ge_measured": true
+}

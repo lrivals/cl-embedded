@@ -1,0 +1,13 @@
+# configs/quant_intermediate/fp32_monitoring.yaml — Schéma de quantification intermédiaire (Sprint 39, S3905).
+#
+# Un fichier par (schéma, dataset). La clé `quantization:` est mappée vers un QuantConfig
+# de src/utils/int8_c_emulation.py par la table unique SCHEME_TO_QUANTCONFIG de
+# scripts/run_s39_quant_sweep.py (S3906) — jamais d'hyperparamètre en dur (règle CLAUDE.md).
+# Les loaders/normalisations board sont réutilisés via src/evaluation/feature_conditions.
+
+model: ewc
+dataset: monitoring
+condition: 5feat
+quantization: fp32
+seed: 42
+metric: f1_faulty

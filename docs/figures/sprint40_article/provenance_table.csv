@@ -1,0 +1,35 @@
+grandeur,valeur,source_json,statut
+parité FP32 frozen pronostia,1.0,exp_S36_parity_5feat_frozen_pronostia.json,mesuré board
+parité FP32 online pronostia,0.9754,exp_S36_parity_5feat_online_pronostia.json,mesuré board
+parité FP32 frozen monitoring,1.0,exp_S36_parity_5feat_frozen_monitoring.json,mesuré board
+parité FP32 online monitoring,0.9887,exp_S36_parity_5feat_online_monitoring.json,mesuré board
+pronostia PC inf,33.7509,exp_S36_summary.json,mesuré PC
+pronostia board inf,50.0,exp_S36_summary.json,mesuré board
+pronostia board inf+MAJ,251.0,exp_S36_summary.json,mesuré board
+latence board v2 per_channel pronostia,68.0,exp_S40_board_v2/results_per_channel_pronostia_frozen.json,mesuré board
+monitoring PC inf,34.6429,exp_S36_summary.json,mesuré PC
+monitoring board inf,48.0,exp_S36_summary.json,mesuré board
+monitoring board inf+MAJ,239.0,exp_S36_summary.json,mesuré board
+saut F1 ablation pronostia (per_tensor_calib),0.8795,exp_S39_ablation/pronostia.json,émulé PC
+saut F1 ablation monitoring (per_tensor_calib),0.8783,exp_S39_ablation/monitoring.json,émulé PC
+F1 FP32 board pronostia,0.9164,exp_S36_summary.json,mesuré board
+F1 legacy board pronostia,0.138,exp_S36_summary.json,mesuré board
+F1 per_ch émulé pronostia,0.9437,exp_S39_quant_sweep/ewc_pronostia.json,émulé PC
+F1 q15 émulé pronostia,0.9666,exp_S39_quant_sweep/ewc_pronostia.json,émulé PC
+F1 per_ch board pronostia,0.8995,exp_S40_board_v2/results_per_channel_pronostia_frozen.json,mesuré board
+F1 q15 board pronostia,,exp_S40_board_v2/results_q15_pronostia_frozen.json,à mesurer
+F1 FP32 board monitoring,0.9194,exp_S36_summary.json,mesuré board
+F1 legacy board monitoring,0.1337,exp_S36_summary.json,mesuré board
+F1 per_ch émulé monitoring,0.915,exp_S39_quant_sweep/ewc_monitoring.json,émulé PC
+F1 q15 émulé monitoring,0.9158,exp_S39_quant_sweep/ewc_monitoring.json,émulé PC
+F1 per_ch board monitoring,,exp_S40_board_v2/results_per_channel_monitoring_frozen.json,à mesurer
+F1 q15 board monitoring,,exp_S40_board_v2/results_q15_monitoring_frozen.json,à mesurer
+RAM poids FP32 pronostia,3016.0,exp_S39_quant_sweep/ewc_pronostia.json,émulé PC
+RAM poids INT8 legacy pronostia,754.0,exp_S39_quant_sweep/ewc_pronostia.json,émulé PC
+RAM poids per_channel pronostia,754.0,exp_S39_quant_sweep/ewc_pronostia.json,émulé PC
+RAM poids q15 pronostia,1508.0,exp_S39_quant_sweep/ewc_pronostia.json,émulé PC
+RAM board v2 per_channel pronostia,704.0,exp_S40_board_v2/results_per_channel_pronostia_frozen.json,mesuré board
+RAM poids FP32 monitoring,2888.0,exp_S39_quant_sweep/ewc_monitoring.json,émulé PC
+RAM poids INT8 legacy monitoring,722.0,exp_S39_quant_sweep/ewc_monitoring.json,émulé PC
+RAM poids per_channel monitoring,722.0,exp_S39_quant_sweep/ewc_monitoring.json,émulé PC
+RAM poids q15 monitoring,1444.0,exp_S39_quant_sweep/ewc_monitoring.json,émulé PC

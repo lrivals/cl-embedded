@@ -1,0 +1,31 @@
+{
+  "metric_name": "auroc",
+  "n_features": 4,
+  "n_params": 174,
+  "feature_names": [
+    "temperature",
+    "pressure",
+    "vibration",
+    "humidity"
+  ],
+  "schemes": {
+    "fp32": {
+      "metric": 0.962,
+      "ram_weights_bytes": 696,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true
+    },
+    "int8": {
+      "metric": 0.9623,
+      "ram_weights_bytes": 222,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    }
+  },
+  "model": "tinyol",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "seed": 42
+}

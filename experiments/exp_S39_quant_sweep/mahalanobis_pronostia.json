@@ -1,0 +1,39 @@
+{
+  "metric_name": "auroc",
+  "n_features": 5,
+  "n_params": 30,
+  "feature_names": [
+    "std_acc_horiz",
+    "rms_acc_horiz",
+    "peak_acc_horiz",
+    "rms_acc_vert",
+    "temporal_position"
+  ],
+  "schemes": {
+    "fp32": {
+      "metric": 0.9208,
+      "ram_weights_bytes": 120,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true
+    },
+    "int8": {
+      "metric": 0.774,
+      "ram_weights_bytes": 30,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    },
+    "q15": {
+      "metric": 0.9206,
+      "ram_weights_bytes": 55,
+      "bops_proxy": 0.25,
+      "lat_proxy_rel": 0.25,
+      "lat_proxy": true
+    }
+  },
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "condition": "5feat",
+  "seed": 42
+}

@@ -1,0 +1,24 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Paradoxe de la latence INT8.} La quantification INT8 divise par~4 l'empreinte mémoire des poids
+mais \emph{n'accélère pas} l'inférence sur le Cortex-M4 : la latence INT8 est comparable, voire
+légèrement supérieure en mode en ligne (la mise à jour SGD n'est pas accélérée). La raison est structurelle :
+notre kernel déquantifie vers le FP32 et exécute la distance/décision sur le \emph{FPU} matériel, qui est
+déjà efficace en simple précision ; les gains INT8 supposeraient des instructions SIMD entières (SMLAD,
+etc.). Nous assumons ce constat plutôt que de le masquer : le bénéfice INT8 sur cette cible est
+\emph{mémoire}, pas \emph{vitesse}. Une piste directe est le portage sur noyaux SIMD entiers
+(CMSIS-NN), laissée en travaux futurs.
+
+\paragraph{Honnêteté « mesuré » vs « émulé ».} Nous séparons rigoureusement deux natures de résultats. Les
+parités FP32, l'effondrement INT8 legacy et les latences/RAM sont \emph{mesurés sur carte réelle}
+(Sprints~36 et~40). Le diagnostic causal et la récupération par kernel calibré sont \emph{émulés
+bit-à-bit sur PC} (Sprint~39) : l'émulateur reproduit exactement l'arithmétique du kernel C, ce qui en
+fait une référence fiable, mais ce n'est pas une mesure carte. La campagne carte v2 (Sprint~40) confirme
+partiellement la récupération (cellule Pronostia per-canal), le reste étant explicitement « à mesurer ».
+Cette discipline évite de sur-vendre une récupération qui, sur carte, n'est pour l'instant démontrée que
+sur un point.
+
+\paragraph{Portée.} Le résultat central --- une PTQ naïve peut détruire une tête de décision binaire, et une
+calibration par-tenseur/par-canal (ou un format Q15) la restaure --- dépasse le cas EWC : il concerne toute
+tête légère quantifiée en aval d'un extracteur, régime fréquent en TinyML.

@@ -1,0 +1,39 @@
+{
+  "metric_name": "auroc",
+  "n_features": 5,
+  "n_params": 30,
+  "feature_names": [
+    "sd",
+    "rms",
+    "kurtosis",
+    "crest",
+    "form"
+  ],
+  "schemes": {
+    "fp32": {
+      "metric": 0.6175,
+      "ram_weights_bytes": 120,
+      "bops_proxy": 1.0,
+      "lat_proxy_rel": 1.0,
+      "lat_proxy": true
+    },
+    "int8": {
+      "metric": 0.2899,
+      "ram_weights_bytes": 30,
+      "bops_proxy": 0.0625,
+      "lat_proxy_rel": 0.0625,
+      "lat_proxy": true
+    },
+    "q15": {
+      "metric": 0.646,
+      "ram_weights_bytes": 55,
+      "bops_proxy": 0.25,
+      "lat_proxy_rel": 0.25,
+      "lat_proxy": true
+    }
+  },
+  "model": "mahalanobis",
+  "dataset": "cwru",
+  "condition": "5feat",
+  "seed": 42
+}

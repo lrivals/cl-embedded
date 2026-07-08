@@ -1,0 +1,22 @@
+\section{Introduction}
+\label{sec:intro}
+
+Industrial predictive maintenance increasingly requires models able to \emph{learn continually} on the
+equipment itself, without a round-trip to a server: operating conditions drift (wear, regime or machine
+change), and a frozen model degrades. Continual learning (CL) answers this
+need~\cite{DeLange2021Survey,Hurtado2023CLPdM}, yet its deployment on microcontrollers (MCUs) remains
+constrained: SRAM in the range of a hundred kilobytes, no neural accelerator, a strict latency budget.
+
+This work targets a \textbf{triple gap} that few studies close simultaneously: (Gap~1) validation on real
+industrial time series; (Gap~2) operation under \SI{100}{\kilo\byte} of RAM with \emph{measured} figures
+and bounded latency; (Gap~3) INT8 quantization compatible with incremental training. We instantiate these
+three axes on an EWC classifier~\cite{Kirkpatrick2017EWC} ported to C on a NUCLEO-F439ZI board (Cortex-M4
+\SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM, no NPU).
+
+\paragraph{Contributions.} (i)~A \emph{paired} PC$\leftrightarrow$board protocol (same seed, same sample
+order, same normalization) establishing an \emph{exact} FP32 parity in the frozen protocol and an
+inference + learning latency $\ll$~\SI{100}{\milli\second}. (ii)~The demonstration, \emph{on real
+hardware}, of the collapse of naive PTQ of the binary EWC head (F1 $0.92 \to 0.05$--$0.15$). (iii)~A
+\emph{bit-exact PC-emulated} ablation that isolates the cause of the collapse and demonstrates recovery
+through a calibrated kernel (per-tensor, per-channel, Q15), with a strict methodological distinction
+between what is \emph{measured on-board} and what is \emph{emulated on PC}.

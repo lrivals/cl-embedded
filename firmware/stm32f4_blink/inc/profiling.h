@@ -35,13 +35,14 @@ extern ProfilingState g_profiling;
  * `.bss` (profiling_get_bss_bytes) ne compte PAS la pile. Le chemin HDC alloue
  * p.ex. float hv[HDC_DIM] = 4 Ko sur la pile : le pic RAM réel vaut donc
  *   .data + .bss + pic_de_pile.
- * Le startup peint [_ebss, _estack) avec STACK_PAINT_SENTINEL au boot ; après
- * exécution d'une charge, le plus bas mot écrasé donne la profondeur de pile.
- * Sentinelle improbable dans des données réelles (caveat : une valeur de pile
- * == sentinelle sous-estimerait le pic ; choix de 0xDEADBEEF pour le rendre
- * négligeable). Voir docs/context/ram_measurement.md.
+ * Le startup peint [_ebss, _estack) au boot avec une SENTINELLE POSITION-DÉPENDANTE :
+ * chaque mot reçoit **sa propre adresse** (canary = &mot). Après exécution d'une
+ * charge, le plus bas mot dont la valeur ≠ son adresse marque la profondeur de pile
+ * atteinte. Avantage vs constante fixe : un buffer de pile rempli d'une constante
+ * répétée ne peut PAS masquer une zone (chaque mot devrait valoir son adresse unique).
+ * Caveat résiduel : le seul mot-frontière valant par hasard sa propre adresse
+ * sous-estimerait le pic (~1/2³², négligeable). Voir docs/context/ram_measurement.md.
  */
-#define STACK_PAINT_SENTINEL 0xDEADBEEFU
 
 void     profiling_init(void);
 void     profiling_start(void);
@@ -52,11 +53,11 @@ uint16_t profiling_get_bss_bytes(void);
 uint16_t profiling_get_throughput_ips(void);
 
 /* Fonction pure (testable sur host) : scanne [low, high) de bas en haut et
- * retourne le nombre d'octets entre le premier mot != sentinel et `high`,
- * c.-à-d. la pile maximale utilisée (la pile croît vers le bas depuis high). */
+ * retourne le nombre d'octets entre le premier mot dont la valeur ≠ son adresse
+ * (canary position-dépendant) et `high` — c.-à-d. la pile maximale utilisée
+ * (la pile croît vers le bas depuis high). */
 uint32_t profiling_stack_peak_from_region(const uint32_t *low,
-                                          const uint32_t *high,
-                                          uint32_t sentinel);
+                                          const uint32_t *high);
 
 /* Pic de pile mesuré (octets) via les symboles linker _ebss/_estack. */
 uint32_t profiling_stack_peak_bytes(void);

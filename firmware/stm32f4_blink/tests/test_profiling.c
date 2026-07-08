@@ -106,21 +106,26 @@ void test_bss_size_within_limit(void)
     TEST_ASSERT_LESS_THAN_UINT32(65535U, (uint32_t)profiling_get_bss_bytes());
 }
 
+/* Canary position-dépendant : un mot « intact » vaut sa propre adresse. */
+static void paint_region(uint32_t *r, int n)
+{
+    for (int i = 0; i < n; i++) r[i] = (uint32_t)(uintptr_t)&r[i];
+}
+
 /* ── Test 7 : scan high-water — région à moitié utilisée ────────────────── */
 
 void test_stack_peak_partial_usage(void)
 {
-    /* Région de 8 mots peinte avec la sentinelle ; la pile (qui croît vers le
+    /* Région de 8 mots peinte (canary = adresse) ; la pile (qui croît vers le
      * haut de la région) a écrasé les 3 mots du haut. Le pic attendu = 3 mots
-     * = 12 octets (high - premier_mot_non_sentinelle). */
+     * = 12 octets (high - premier_mot dont valeur ≠ adresse). */
     uint32_t region[8];
-    for (int i = 0; i < 8; i++) region[i] = STACK_PAINT_SENTINEL;
+    paint_region(region, 8);
     region[5] = 0x12345678U;   /* premier mot écrasé (scan bas → haut) */
     region[6] = 0xCAFEBABEU;
     region[7] = 0x00000001U;
 
-    uint32_t used = profiling_stack_peak_from_region(region, region + 8,
-                                                     STACK_PAINT_SENTINEL);
+    uint32_t used = profiling_stack_peak_from_region(region, region + 8);
     TEST_ASSERT_EQUAL_UINT32(3U * sizeof(uint32_t), used);
 }
 
@@ -129,10 +134,9 @@ void test_stack_peak_partial_usage(void)
 void test_stack_peak_untouched_is_zero(void)
 {
     uint32_t region[16];
-    for (int i = 0; i < 16; i++) region[i] = STACK_PAINT_SENTINEL;
+    paint_region(region, 16);
 
-    uint32_t used = profiling_stack_peak_from_region(region, region + 16,
-                                                     STACK_PAINT_SENTINEL);
+    uint32_t used = profiling_stack_peak_from_region(region, region + 16);
     TEST_ASSERT_EQUAL_UINT32(0U, used);
 }
 
@@ -141,9 +145,23 @@ void test_stack_peak_untouched_is_zero(void)
 void test_stack_peak_fully_used(void)
 {
     uint32_t region[4];
-    for (int i = 0; i < 4; i++) region[i] = 0xAAAAAAAAU;   /* aucun sentinel */
+    for (int i = 0; i < 4; i++) region[i] = 0xAAAAAAAAU;   /* aucun canary intact */
 
-    uint32_t used = profiling_stack_peak_from_region(region, region + 4,
-                                                     STACK_PAINT_SENTINEL);
+    uint32_t used = profiling_stack_peak_from_region(region, region + 4);
     TEST_ASSERT_EQUAL_UINT32(4U * sizeof(uint32_t), used);
+}
+
+/* ── Test 10 : robustesse — buffer rempli d'une CONSTANTE répétée ────────── */
+
+void test_stack_peak_repeated_constant_not_masked(void)
+{
+    /* Une constante répétée (même si elle valait l'ancienne sentinelle) ne doit
+     * PAS être prise pour de la zone intacte : chaque mot devrait valoir SON
+     * adresse. Ici les 6 mots du haut sont une constante → considérés utilisés. */
+    uint32_t region[8];
+    paint_region(region, 8);
+    for (int i = 2; i < 8; i++) region[i] = 0xDEADBEEFU;   /* ancienne sentinelle */
+
+    uint32_t used = profiling_stack_peak_from_region(region, region + 8);
+    TEST_ASSERT_EQUAL_UINT32(6U * sizeof(uint32_t), used);
 }
