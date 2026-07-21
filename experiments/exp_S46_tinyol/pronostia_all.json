@@ -1,0 +1,41 @@
+{
+  "model": "tinyol",
+  "dataset": "pronostia",
+  "metric_name": "auroc_recon_error",
+  "seed": 42,
+  "config_path": "configs/quant_moment/tinyol_pronostia.yaml",
+  "timestamp": "2026-07-21T11:59:06",
+  "moments": {
+    "fp32": {
+      "metric": 0.665434,
+      "ram_weights_bytes": 4276,
+      "lat_proxy_rel": 1.0
+    },
+    "before": {
+      "metric": 0.65937,
+      "ram_weights_bytes": 1117,
+      "lat_proxy_rel": null,
+      "note": "borne haute (fake-quant inférence)"
+    },
+    "after": {
+      "metric": 0.65937,
+      "ram_weights_bytes": 1117,
+      "lat_proxy_rel": null,
+      "after_scheme": "per_tensor_calib",
+      "note": "PTQ activations UINT8 par-tenseur (per-canal absent)"
+    },
+    "both": {
+      "metric": 0.65937,
+      "ram_weights_bytes": 1117,
+      "lat_proxy_rel": null,
+      "after_scheme": "per_tensor_calib",
+      "note": "fidèle au déploiement (même forward INT8 par-tenseur)"
+    }
+  },
+  "delta_before_vs_fp32": -0.006064,
+  "delta_after_vs_fp32": -0.006064,
+  "delta_both_vs_fp32": -0.006064,
+  "gap3_metric_ok_both": true,
+  "gap3_ram_ok": true,
+  "na_note": "TinyOL : métrique = AUROC erreur de reconstruction. Pas de noyau per-canal ni de boucle QAT sur l'autoencodeur → before/after/both empruntent le même forward INT8 par-tenseur (fake-quant poids INT8 + activations UINT8) → valeurs proches par construction. Seul l'axe fake-quant réel serait la tête OtO (non retenu ici)."
+}

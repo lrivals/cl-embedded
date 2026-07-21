@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 44 |
 | **Priorité** | 🔴 Critique — famille supervisée de l'axe « supervisé ∥ non-supervisé à parité ». |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — `ddm.py`, `eddm.py`, `page_hinkley.py` (état O(1), `requires_label=True`) + `error_stream` ; tests `test_drift_detectors.py` (détection post-saut, PH ≤ DDM, O(1) constant). |
 | **Durée estimée** | 6h |
 | **Dépendances** | S4401 ✅ (interface `BaseDriftDetector`, config) · `src/models/ewc/ewc_mlp.py` ✅ ou `src/models/unsupervised/mahalanobis_detector.py` ✅ (source du flux d'erreur) |
 | **Fichiers cibles** | `src/models/drift/base.py`, `src/models/drift/ddm.py`, `src/models/drift/eddm.py`, `src/models/drift/page_hinkley.py` |

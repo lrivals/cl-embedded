@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | Sprint 41 |
 | **Démarrage** | 3 juillet 2026 |
-| **Statut** | 🟡 En cours — S4101–S4104 ✅ (infrastructure + cadrage + audits) ; S4105–S4110 déclenchées à la demande |
+| **Statut** | 🟡 En cours — S4101–S4106 ✅ + S4108 ✅ (infrastructure, cadrage, audits, ch. 1–4 + ch. 8 rédigés) ; S4107 (ch. 5–7), S4109, S4110 déclenchées à la demande |
 | **Livrable final** | `Manuscrit Final RIVALS.pdf` — ~30 pages de texte FR (hors abstracts, TOC, biblio, annexes), dépôt Moodle « Dépôt Manuscrit Final » |
 | **Dépendances** | Manuscrit intermédiaire + retours rapporteurs (Poss, Giroudeau) · Sprints 16–38 ✅ · Sprint 39 🟡 (INT8 v2, chiffres en évolution) · Sprint 40 🟡 |
 
@@ -68,10 +68,10 @@
 | S4102 | Fiches de cadrage des 8 chapitres (messages clés, chiffres+sources vérifiées, figures, refs, glossaire, budget) | ✅ |
 | S4103 | Audit biblio `references.bib` : entrées manquantes + doublons + BibTeX prêts | ✅ |
 | S4104 | Audit glossaire/acronymes : entrées obsolètes + nouvelles entrées à créer | ✅ |
-| S4105 | Rédaction ch. 1–3 (md) | ⏳ à la demande |
-| S4106 | Rédaction ch. 4 (md) | ⏳ à la demande |
+| S4105 | Rédaction ch. 1–3 (md) | ✅ (`01_introduction.md`, `02_contexte_etat_art.md`, `03_problematique.md`) |
+| S4106 | Rédaction ch. 4 (md) | ✅ (`04_methodologie.md`) |
 | S4107 | Rédaction ch. 5–7 (md, placeholders RAM/INT8) | ⏳ à la demande |
-| S4108 | Rédaction ch. 8 + abstracts FR/EN + annexes (md) | ⏳ à la demande |
+| S4108 | Rédaction ch. 8 + abstracts FR/EN + annexes (md) | ✅ (`08_perspectives_conclusion.md`, `09_abstracts_annexes.md` ; perspectives = 3 axes drift/CL, features, énergie ; Q15 exclu par décision) |
 | S4109 | Notebook figures `notebooks/manuscrit_final/figures.ipynb` (0 valeur en dur) → `docs/figures/manuscrit_final/` | ⏳ |
 | S4110 | Consolidation : résolution placeholders depuis S39/S40 finalisés, vérif croisée chiffres↔JSON, comptage pages, checklist consignes | ⏳ |
 

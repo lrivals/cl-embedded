@@ -1,0 +1,17 @@
+{
+  "exp_id": "exp_S45_board_psi_gas_sensor_drift",
+  "platform": "nucleo_f439zi",
+  "detector": "psi",
+  "dataset": "gas_sensor_drift",
+  "family": "unsupervised",
+  "requires_label": false,
+  "n_features": 128,
+  "n_samples": 13910,
+  "n_enroll": 3477,
+  "date": "2026-07-16T12:28:29",
+  "metric_value": null,
+  "na_reason": "build non \u00e9ditable board : signal PSI \u2190 Mahalanobis embarqu\u00e9 O(k\u00b2) ; \u00e0 k=128 features, sigma_inv (128\u00b2\u00d74 \u2248 64 Ko) fait d\u00e9border la SRAM (`.bss` overflow ~69 064 B au link, limite mat\u00e9rielle mesur\u00e9e, cf. S4503)",
+  "build_status": "sram_overflow",
+  "sram_overflow_bytes": 69064,
+  "stream_mode": "non flash\u00e9 (build \u00e9chou\u00e9)"
+}

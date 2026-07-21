@@ -130,7 +130,7 @@ def fit_tsne2d(
     tsne = TSNE(
         n_components=2,
         perplexity=perplexity,
-        n_iter=n_iter,
+        max_iter=n_iter,  # sklearn ≥1.5 : n_iter renommé max_iter (param public inchangé)
         random_state=42,
         init="pca",  # initialisation PCA pour reproductibilité
         learning_rate="auto",

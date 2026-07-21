@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 43 |
 | **Priorité** | 🔴 Critique — établit la nature/l'intensité du drift de chaque dataset et **valide la ground-truth** qui servira de référence aux détecteurs (S44). |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — `scripts/characterize_drift.py` produit `experiments/exp_S43_drift_char/<dataset>/characterization.json` pour les 4 datasets. KS/PSI/JS/MMD/Mahalanobis(`MahalanobisDetector` réutilisé)/PCA glissants + alignement par change-points. Synthétique : pics [1575,2925,4575] vs [1500,3000,4500] → `alignment_score=75` (±1 fenêtre) ; Gas : Maha batch1→2 saute ~7→760 ; Electricity : `alignment_score=null` (honnête). |
 | **Durée estimée** | 7h |
 | **Dépendances** | S4302 ✅ (loaders + `drift_points`) · `src/models/unsupervised/mahalanobis_detector.py` ✅ · `src/evaluation/plots.py` ✅ · `scipy.stats` (KS) |
 | **Fichiers cibles** | `scripts/characterize_drift.py`, `experiments/exp_S43_drift_char/<dataset>/characterization.json` |

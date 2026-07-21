@@ -1,0 +1,19 @@
+# Electricity / ELEC2 — config loader (Sprint 43, S4302)
+# Concept drift supervisé classique ; PAS de points de drift ponctuels → drift_points=None.
+data:
+  dataset: electricity
+  raw_path: "data/raw/The Elec2 Dataset/electricity-normalized.csv"
+  exclude_columns:         # colonnes hors features (temporel + label)
+    - date
+    - class
+  label_column: class      # UP → 1, DOWN → 0
+  normalization: none      # déjà normalisé [0,1] par Bifet
+  drift_type: gradual
+seed: 42
+
+characterization:
+  window_size: 1000
+  stride: 500
+  hist_bins: 20
+  mmd_gamma: null
+  top_k_features: 7

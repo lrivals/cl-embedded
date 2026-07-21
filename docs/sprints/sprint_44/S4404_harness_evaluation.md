@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 44 |
 | **Priorité** | 🔴 Critique — sans métriques dédiées, « détecter le drift » n'est pas quantifiable ni justifiable. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — `src/evaluation/drift_metrics.py` + `tests/test_drift_metrics.py` **12 PASS**. |
 | **Durée estimée** | 6h |
 | **Dépendances** | S4302 ✅ (ground-truth `drift_points`) · S4401 ✅ (interface détecteur) · `src/evaluation/memory_profiler.py` ✅ (RAM/latence proxies) · `src/evaluation/metrics.py` ✅ (pattern `save_metrics`) |
 | **Fichiers cibles** | `src/evaluation/drift_metrics.py` |

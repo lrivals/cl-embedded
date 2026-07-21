@@ -1,0 +1,215 @@
+Compte rendu — Réunion de suivi de stage
+16 juillet 2026 — 15h00 à 16h30
+Format : visioconférence — tous présents
+Thèmes : Comparaison PC / carte embarquée · Mesure RAM complète · Quantification INT8 · Références bibliographiques
+
+
+====================================================================
+1. COMPARAISON PC VS CARTE EMBARQUÉE
+====================================================================
+
+Contexte de l'expérience
+- Modèles évalués : EWC et Mahalanobis.
+- Configuration : 5 features, dataset PRONOSTIA Monitoring.
+- Conditions contrôlées : même sélection de groupes de données pour
+  l'entraînement, même protocole de mise à jour et d'évaluation
+  — base de comparaison équitable.
+
+Résultats observés
+- Précision : maintenue sur PC ; maintenue sur carte (légère différence).
+- RAM utilisée : légèrement différente de part et d'autre.
+- Latence : plus grande sur PC, plus faible sur carte.
+
+Interprétation
+La latence plus élevée sur PC s'explique par l'architecture multi-cœur :
+le partage des tâches entre cœurs introduit de l'overhead de scheduling
+là où la carte exécute séquentiellement sur un seul cœur dédié. Cette
+comparaison PC/carte n'est donc PAS directement exploitable : les
+conditions d'exécution matérielles sont trop différentes pour en tirer
+des conclusions généralisables.
+
+Conclusion principale : l'expérience montre que le modèle peut fonctionner
+sur carte seule, sans PC sur place — ce qui valide l'objectif
+d'embarquabilité.
+
+Réorientation de la démarche
+La mise en place expérimentale (mêmes données, même évaluation) est à
+réutiliser pour comparer deux cartes entre elles, ce qui sera plus
+pertinent et directement interprétable.
+
+
+====================================================================
+2. MESURE DE LA RAM — MÉTHODE COMPLÈTE
+====================================================================
+
+Formule retenue
+    RAM totale = .data + .bss + pic de pile
+
+- .data      : données initialisées (globales avec valeur initiale).
+- .bss       : données non initialisées / non constantes (zéro au démarrage).
+- Pic de pile : maximum atteint par la call stack durant l'exécution.
+
+/!\ Correction importante : la mesure précédente n'incluait pas le pic de
+pile — les valeurs de RAM rapportées étaient INCOMPLÈTES. À corriger dans
+toutes les expériences.
+
+Méthode : stack painting
+1. Remplir la zone réservée de la pile avec un motif binaire connu
+   (ex. 0xDEADBEEF) avant l'exécution.
+2. Après exécution, scanner la pile pour trouver la première adresse où le
+   motif est encore intact.
+3. Pic de pile = taille réservée − zone intacte.
+Mesure non-intrusive et précise, sans débogueur matériel.
+
+Corrections à apporter aux plots
+- Retirer les étiquettes d'étapes liées à des architectures de réseaux de
+  neurones (incohérentes avec les modèles utilisés).
+- Adapter les instants de mesure du pic de pile aux phases réelles
+  d'exécution des modèles.
+- Remplacer « RAM modulable » par « mémoire non constante » dans tous les
+  documents.
+
+
+====================================================================
+3. MÉTRIQUE GLOBALE D'ÉVALUATION SYSTÈME
+====================================================================
+
+Problème
+Aucune métrique unique ne capture simultanément toutes les dimensions de
+performance. Il faut définir un indicateur composite adapté au contexte
+embarqué.
+
+Proposition — score système intégrant :
+- Mémoire     : RAM totale (.data + .bss + pic de pile).
+- Calcul      : latence d'inférence (ms).
+- Énergie     : énergie par inférence (µJ ou mJ).
+- Modèle      : nombre de paramètres / MACs.
+- Performance : accuracy sur le jeu de test.
+
+Objectif : classer les configurations (modèle × carte × encodage) selon un
+critère global plutôt que de présenter des métriques isolées.
+
+
+====================================================================
+4. MESURE DE L'ÉNERGIE ÉLECTRIQUE
+====================================================================
+
+- Récupérer la carte à l'ENAC pour les mesures de consommation électrique.
+- Utiliser le setup logiciel posté sur le lien partagé.
+- Isoler les mesures par composant autant que possible (MCU seul,
+  périphériques, capteurs) pour des données détaillées.
+- Objectif : obtenir l'énergie consommée par inférence pour chaque modèle
+  et configuration.
+
+
+====================================================================
+5. QUANTIFICATION FP32 → INT8
+====================================================================
+
+Approche retenue
+Quantification proposée pour EWC : passage de FP32 vers INT8
+(v2 du système, fonctionnel).
+
+Résultats
+- Accuracy           : légère baisse, globalement maintenue.
+- RAM                : divisée par 4 (gain majeur).
+- Latence processeur : à détailler / à analyser.
+
+Point ouvert — latence INT8
+La carte n'est pas nativement INT8 (processeur FP32 avec FPU) — convertir
+vers INT8 implique des étapes supplémentaires de déquantification /
+requantification dans le pipeline.
+TÂCHE : détailler précisément ces étapes supplémentaires et quantifier
+leur coût en cycles.
+
+Analyse coût/bénéfice
+Évaluer si le gain de RAM (÷4) justifie :
+- la légère chute d'accuracy,
+- le surcoût éventuel de latence lié aux conversions.
+
+Justification dans le contexte du stage
+- Ce qu'on a reproduit depuis la littérature (voir sources ci-dessous).
+- Notre contribution spécifique : application à EWC sur PRONOSTIA, mesure
+  du compromis sur carte réelle.
+
+Perspectives
+- Tester sur une carte sans FPU native (INT8 natif) pour évaluer le gain
+  réel de latence.
+- Explorer d'autres schémas de quantification (INT4, mixte).
+
+
+====================================================================
+6. RÉFÉRENCES BIBLIOGRAPHIQUES MOBILISÉES
+====================================================================
+
+Quantification et TinyML
+1. Ravaglia et al. (2021) — TinyML Platform for On-Device CL with Quantized
+   Latent Replays : quantification 8 bits pour CL sur MCU ultra-basse
+   conso ; gain mémoire ÷4, perte < 0.26 %.
+2. Capogrosso et al. (2024) — ML-oriented Survey on TinyML : taxonomie
+   PTQ / QAT ; quantification comme levier de déploiement sur MCU.
+3. Zhu et al. (2024) — On-device Training: A First Overview : QAS pour
+   corriger la distorsion de gradient en INT8 ; systèmes Mandheling,
+   MiniLearn, TTE.
+5. Lin et al. (2023) — Tiny Machine Learning: Progress and Futures (MIT) :
+   QAS + réduction mémoire d'entraînement ÷2077 ; MCUNet.
+
+Apprentissage en ligne embarqué
+4. Benatti et al. (2019) — Online Learning of EMG Gestures on PULP :
+   apprentissage en ligne sur puce, budget énergétique 10 mJ ;
+   quantification des niveaux d'entrée.
+6. Giménez et al. (2022) — On-Device Training on MCU with Federated
+   Learning : PTQ post-entraînement sur MCU ; entraînement fédéré.
+
+Ces sources serviront à contextualiser et justifier les choix de
+quantification dans le rapport et la soutenance.
+
+
+====================================================================
+7. ACTIONS À MENER
+====================================================================
+
+- Relancer toutes les expériences avec les conditions définies (RAM
+  complète incluse) — remplace les mesures incomplètes.
+- Créer un fichier de documentation détaillée des consommations RAM par
+  expérience — export structuré pour le rapport.
+- Récupérer la carte à l'ENAC pour mesurer l'énergie électrique — setup
+  logiciel sur le lien partagé.
+
+- Détailler le coût de latence INT8 (étapes de conversion dans le pipeline).
+- Corriger les plots (retirer étiquettes réseau de neurones, adapter
+  instants de mesure).
+- Remplacer « RAM modulable » par « mémoire non constante » dans tous les
+  documents.
+
+- Détailler les spécificités matérielles du PC dans les slides de
+  soutenance.
+- Définir le score système composite (RAM + latence + énergie + accuracy).
+- Explorer d'autres schémas de quantification (INT4, mixte, carte sans FPU).
+
+
+====================================================================
+RÉFÉRENCES (FORMATS COMPLETS)
+====================================================================
+
+1. Ravaglia, L., Rusci, M., Nadalini, D., Capotondi, A., Conti, F., &
+   Benini, L. (2021). A TinyML Platform for On-Device Continual Learning
+   with Quantized Latent Replays. arXiv:2110.10486.
+2. Capogrosso, L., Cunico, F., Cheng, D. S., Fummi, F., & Cristani, M.
+   (2024). A Machine Learning-oriented Survey on Tiny Machine Learning.
+   arXiv:2309.11932v2.
+3. Zhu, S., Voigt, T., Ko, J., & Rahimian, F. (2024). On-device Training:
+   A First Overview on Existing Systems. ACM.
+   https://doi.org/10.1145/3696003
+4. Benatti, S., Montagna, F., Kartsch, V., Rahimi, A., Rossi, D., &
+   Benini, L. (2019). Online Learning and Classification of EMG-Based
+   Gestures on a Parallel Ultra-Low Power Platform Using Hyperdimensional
+   Computing. IEEE Trans. Biomed. Circuits Syst., 13(3), 516–528.
+   https://doi.org/10.1109/TBCAS.2019.2914476
+5. Lin, J., Zhu, L., Chen, W.-M., Wang, W.-C., & Han, S. (2023). Tiny
+   Machine Learning: Progress and Futures. IEEE Circuits and Systems
+   Magazine. https://doi.org/10.1109/MCAS.2023.3302182
+6. Giménez, N. L., Grau, M. M., Centelles, R. P., & Freitag, F. (2022).
+   On-Device Training of Machine Learning Models on Microcontrollers with
+   Federated Learning. Electronics, 11(4), 573.
+   https://doi.org/10.3390/electronics11040573

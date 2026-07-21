@@ -1,0 +1,25 @@
+# configs/quant_moment/tinyol_pronostia.yaml — Grille 3-way des moments de quantification
+# TinyOL (Sprint 46, S4604). Dataset Pronostia (D4, condition normal-vs-fault → AUROC sur
+# erreur de reconstruction MSE).
+#
+# Hérite de configs/tinyol_int8_pronostia.yaml (→ tinyol_pronostia_by_condition_config.yaml) :
+# backbone autoencoder + pretrain + data + training réutilisés tels quels, aucun hyperparamètre
+# en dur (conforme CLAUDE.md § Reproductibilité). Taxonomie : docs/context/quantization_moments.md.
+#
+# NB : modèle/dataset passés sur la CLI (--model/--dataset), pas en clé top-level (cf. EWC).
+#
+# Nuance honnête (S4604) : per-canal absent pour TinyOL ; `after`/`both` = calibration UINT8
+# par-tenseur ; `before` ≈ `after` sur l'erreur de reconstruction (pas de QAT autoencodeur).
+#
+# Usage :
+#   python scripts/run_s46_quant_moment.py --model tinyol --dataset pronostia \
+#       --moment all --after-scheme per_tensor_calib \
+#       --config configs/quant_moment/tinyol_pronostia.yaml \
+#       --output experiments/exp_S46_tinyol/pronostia_all.json
+
+extends: ../tinyol_int8_pronostia.yaml
+
+# Métadonnées Sprint 46 (informatives ; surchargées par la CLI).
+quant_moment: both                # before | after | both  (+ fp32 baseline)
+after_scheme: per_tensor_calib    # TinyOL : UINT8 par-tenseur (pas de per-canal)
+metric: recon_error               # AUROC sur erreur de reconstruction (S4604)

@@ -1,0 +1,28 @@
+# configs/quant_moment/tinyol_monitoring.yaml — Grille 3-way des moments de quantification
+# TinyOL (Sprint 46, S4604). Dataset Monitoring (D2, faulty binaire → AUROC sur erreur de
+# reconstruction MSE, normal-vs-fault).
+#
+# Hérite de configs/tinyol_int8_monitoring.yaml (→ tinyol_monitoring_config.yaml) : backbone
+# autoencoder + pretrain + data + training réutilisés tels quels, aucun hyperparamètre en dur
+# (conforme CLAUDE.md § Reproductibilité). Taxonomie : docs/context/quantization_moments.md (S4601).
+#
+# NB : le modèle (`tinyol`) et le dataset (`monitoring`) sont passés sur la CLI
+# (--model/--dataset) ; ils ne sont PAS mis en clé top-level ici (cohérent avec les configs EWC :
+# une clé `model:` scalaire collisionnerait avec des sections `model:` dict héritées).
+#
+# Nuance honnête (S4604) : TinyOL n'a pas de noyau entier per-canal ni de vraie boucle QAT sur
+# l'autoencodeur → sur l'erreur de reconstruction `before` ≈ `after` (collapse documenté) ;
+# `after`/`both` reposent sur la calibration UINT8 par-tenseur de tinyol_int8.py.
+#
+# Usage :
+#   python scripts/run_s46_quant_moment.py --model tinyol --dataset monitoring \
+#       --moment all --after-scheme per_tensor_calib \
+#       --config configs/quant_moment/tinyol_monitoring.yaml \
+#       --output experiments/exp_S46_tinyol/monitoring_all.json
+
+extends: ../tinyol_int8_monitoring.yaml
+
+# Métadonnées Sprint 46 (informatives ; surchargées par la CLI).
+quant_moment: both                # before | after | both  (+ fp32 baseline)
+after_scheme: per_tensor_calib    # TinyOL : UINT8 par-tenseur (pas de per-canal)
+metric: recon_error               # AUROC sur erreur de reconstruction (S4604)

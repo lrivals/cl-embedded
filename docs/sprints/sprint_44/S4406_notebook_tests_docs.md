@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 44 |
 | **Priorité** | 🟡 Moyenne — assemblage + **produit la reco de portage** consommée par S45. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — notebook + `test_drift_metrics.py` (12) + `test_drift_detectors.py` (50) + reco MCU. |
 | **Durée estimée** | 4h |
 | **Dépendances** | S4405 ✅ (grille + figures) · S4404 ✅ (métriques) · `pytest`, `nbconvert` |
 | **Fichiers cibles** | `notebooks/cl_eval/drift_detection/comparison.ipynb`, `tests/test_drift_detectors.py`, `tests/test_drift_metrics.py`, `docs/roadmap_phase2.md`, `CLAUDE.md` |

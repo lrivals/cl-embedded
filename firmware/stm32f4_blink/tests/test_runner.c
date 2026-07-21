@@ -114,6 +114,14 @@ void test_drift_triggers_on_ratio(void);
 void test_drift_reset_clears_window(void);
 void test_drift_sequence_parity_python(void);
 
+/* ── Déclarations — test_drift_methods.c (S4502) ────────────────────────── */
+void test_ph_drift_on_mean_shift(void);
+void test_ph_reset_clears_state(void);
+void test_ddm_warning_then_drift(void);
+void test_ddm_reset_restores_init(void);
+void test_psi_drift_on_collapsed_block(void);
+void test_psi_reset_clears_block(void);
+
 /* ── Déclarations — test_tinyol.c ───────────────────────────────────────── */
 void test_tinyol_encode_zero_weights(void);
 void test_tinyol_decode_zero_emb(void);
@@ -286,6 +294,13 @@ int main(void)
     RUN_TEST(test_drift_triggers_on_ratio);
     RUN_TEST(test_drift_reset_clears_window);
     RUN_TEST(test_drift_sequence_parity_python);
+
+    RUN_TEST(test_ph_drift_on_mean_shift);
+    RUN_TEST(test_ph_reset_clears_state);
+    RUN_TEST(test_ddm_warning_then_drift);
+    RUN_TEST(test_ddm_reset_restores_init);
+    RUN_TEST(test_psi_drift_on_collapsed_block);
+    RUN_TEST(test_psi_reset_clears_block);
 
     /* TinyOL */
     RUN_TEST(test_tinyol_encode_zero_weights);

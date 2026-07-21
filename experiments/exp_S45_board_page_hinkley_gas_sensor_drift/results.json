@@ -1,0 +1,53 @@
+{
+  "exp_id": "exp_S45_board_page_hinkley_gas_sensor_drift",
+  "platform": "nucleo_f439zi",
+  "detector": "page_hinkley",
+  "dataset": "gas_sensor_drift",
+  "family": "supervised",
+  "requires_label": true,
+  "date": "2026-07-09T15:37:29",
+  "seed": 42,
+  "n_samples": 13910,
+  "n_enroll": 3477,
+  "n_features": 128,
+  "drift_points": [
+    445,
+    1689,
+    3275,
+    3436,
+    3633,
+    5933,
+    9546,
+    9840,
+    10310
+  ],
+  "tolerance": 200,
+  "stream_mode": "chronologique (sans --update, proto v3, EWC path)",
+  "verdict_counts_board": {
+    "NORMAL": 13907,
+    "WARNING": 0,
+    "DRIFT": 3
+  },
+  "drift_metrics": {
+    "mean_detection_delay": null,
+    "missed_detection_rate": 1.0,
+    "false_alarm_rate": 0.0002470152326060107,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "mtfa": 3213.5,
+    "mtd": null,
+    "n_true_drifts": 9,
+    "n_alarms": 3,
+    "n_detected": 0,
+    "n_false_alarms": 3,
+    "tolerance": 200
+  },
+  "metric_value": 0.0,
+  "na_reason": null,
+  "mean_latency_us": 270.0,
+  "latency_us_p50": 270.0,
+  "latency_us_p99": 270.0,
+  "gap2_ok": true,
+  "bss_bytes": 166352
+}

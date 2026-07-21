@@ -30,13 +30,16 @@ C_SOURCES   = src/main.c \
               src/metrics.c \
               src/ring_buffer.c \
               src/drift_detector.c \
+              src/drift/page_hinkley.c \
+              src/drift/ddm.c \
+              src/drift/psi.c \
               src/pipeline.c \
               src/profiling.c \
               src/syscalls.c
 ASM_SOURCES = startup/startup_stm32f439xx.s
 
 # ── Includes ─────────────────────────────────────────────────────────────
-C_INCLUDES = -Iinc
+C_INCLUDES = -Iinc -Iinc/drift
 
 # ── CPU flags ────────────────────────────────────────────────────────────
 CPU      = -mcpu=cortex-m4
@@ -93,6 +96,16 @@ endif
 ifdef DRIFT_WINDOW_MAX
 CFLAGS += -DDRIFT_WINDOW_MAX=$(DRIFT_WINDOW_MAX)
 endif
+# Sélection du détecteur de drift porté (S4502). Activation build-time (nibble UART saturé) :
+#   make EXTRA_CFLAGS="-DDRIFT_DETECT -DDRIFT_METHOD=DRIFT_PSI"     # une méthode par binaire
+# PSI_BINS / PSI_BLOCK_SIZE surchargeables (histogramme à bacs fixes). -DDRIFT_DETECT non posé
+# par défaut → détecteurs liés mais inactifs, .bss invariant.
+ifdef PSI_BINS
+CFLAGS += -DPSI_BINS=$(PSI_BINS)
+endif
+ifdef PSI_BLOCK_SIZE
+CFLAGS += -DPSI_BLOCK_SIZE=$(PSI_BLOCK_SIZE)
+endif
 
 ASFLAGS  = $(MCU) -g3
 
@@ -110,6 +123,11 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).bin
 
 $(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+# Détecteurs de drift portés en sous-répertoire src/drift/ (S4502). Objets aplatis
+# (notdir) — pas de collision de noms avec src/*.c.
+$(BUILD_DIR)/%.o: src/drift/%.c | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.o: startup/%.s | $(BUILD_DIR)
@@ -160,6 +178,7 @@ TEST_SRC = tests/test_mahalanobis.c tests/test_mahalanobis_q15.c tests/test_maha
            tests/test_ewc_multiclass.c \
            tests/test_meta_head.c \
            tests/test_drift_detector.c \
+           tests/test_drift_methods.c \
            tests/test_runner.c \
            tests/unity/unity.c \
            src/mahalanobis.c src/mahalanobis_q15.c src/mahalanobis_int8.c src/ewc_head.c src/ewc_head_int8.c src/ewc_head_int8_v2.c src/ewc_head_regression.c \
@@ -168,9 +187,10 @@ TEST_SRC = tests/test_mahalanobis.c tests/test_mahalanobis_q15.c tests/test_maha
            src/meta_head.c \
            src/ring_buffer.c \
            src/drift_detector.c \
+           src/drift/page_hinkley.c src/drift/ddm.c src/drift/psi.c \
            src/profiling.c src/pipeline.c \
            src/metrics.c
-TEST_INC = -Iinc -Itests/unity
+TEST_INC = -Iinc -Iinc/drift -Itests/unity
 
 test: $(BUILD_DIR)
 	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -lm -o $(BUILD_DIR)/test_runner

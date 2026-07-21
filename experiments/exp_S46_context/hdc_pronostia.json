@@ -1,0 +1,19 @@
+{
+  "model": "hdc",
+  "dataset": "pronostia",
+  "axis": "structural",
+  "moments_3way": "N/A",
+  "na_reason": "HDC natif entier (hypervecteurs int8 ±1, mémoire associative int16) : quantification structurelle, pas de moment avant/après.",
+  "metric_name": "f1_macro",
+  "config_path": "configs/hdc_int8_pronostia.yaml",
+  "seed": 42,
+  "timestamp": "2026-07-21T12:05:50",
+  "values": {
+    "fp32": 0.723091,
+    "int8_native": 0.723091
+  },
+  "fp32_is_hypothetical": true,
+  "ram_fp32_bytes": 14344,
+  "ram_int8_bytes": 6152,
+  "ram_ratio": 2.3316
+}

@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 43 |
 | **Priorité** | 🟠 Haute — support visuel pour présentations/manuscrit ; rend le drift « lisible » et justifie le choix des datasets. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — catalogue `src/figures/catalogs/drift_datasets.py` (registre S4201) → **17 PNG** `docs/figures/drift_datasets/` : timelines (pic mesuré ↔ vérité-terrain), shift avant/après (réutilise `plot_anomaly_score_distributions`), trajectoire PCA temporelle, heatmap JS fenêtre×fenêtre, comparatif inter-datasets. Labels FR, synthétique étiqueté « validation », 0 chiffre en dur (garde AST S4305). Figures JSON-only (timeline/comparatif) + raw via `DRIFT_LOADERS` (shift/PCA/heatmap, skip gracieux si `data/raw` absent). |
 | **Durée estimée** | 4h |
 | **Dépendances** | S4303 ✅ (`characterization.json`) · `src/evaluation/plots.py` ✅ (`plot_anomaly_score_distributions`) · `src/evaluation/eda_plots.py` ✅ · `src/figures/` 🟡 (registre S4201, si présent) |
 | **Fichiers cibles** | `docs/figures/drift_datasets/*.png` (+ éventuel `src/figures/catalogs/drift_datasets.py` si registre S42 disponible) |

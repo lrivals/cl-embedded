@@ -1,0 +1,461 @@
+{
+  "generated": "2026-07-16T12:43:10",
+  "sprint": 45,
+  "detectors": [
+    "page_hinkley",
+    "ddm",
+    "psi"
+  ],
+  "datasets": [
+    "gas_sensor_drift",
+    "hydraulic",
+    "synthetic",
+    "electricity"
+  ],
+  "bss_default": 105036,
+  "bss_delta_by_method": {
+    "page_hinkley": 36,
+    "ddm": 40,
+    "psi": 132
+  },
+  "ram_budget_bytes": 262144,
+  "gap2_latency_us": 100000,
+  "results": {
+    "gas_sensor_drift": {
+      "page_hinkley": {
+        "board": {
+          "measured": true,
+          "n_samples": 13910,
+          "n_features": 128,
+          "family": "supervised",
+          "requires_label": true,
+          "latency_us_p50": 270.0,
+          "latency_us_p99": 270.0,
+          "mean_latency_us": 270.0,
+          "bss_bytes": 166352,
+          "f1": 0.0,
+          "metric_value": 0.0,
+          "na_reason": null,
+          "verdict_counts": {
+            "NORMAL": 13907,
+            "WARNING": 0,
+            "DRIFT": 3
+          },
+          "verdict_parity": 1.0,
+          "pred_parity": 1.0,
+          "verdict_mismatch_count": 0,
+          "gap2_ok": true,
+          "gap3_ram_ok": true
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 3.5638219277513543,
+          "state_bytes_algo": 16,
+          "ram_peak_bytes": 453256,
+          "f1": 0.16666666666666666,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 36,
+        "latency_board_vs_proxy_us": 266.43617807224865,
+        "na_reason": null
+      },
+      "ddm": {
+        "board": {
+          "measured": true,
+          "n_samples": 13910,
+          "n_features": 128,
+          "family": "supervised",
+          "requires_label": true,
+          "latency_us_p50": 270.0,
+          "latency_us_p99": 271.0,
+          "mean_latency_us": 270.2742631200575,
+          "bss_bytes": 166356,
+          "f1": 0.1904761904761905,
+          "metric_value": 0.1904761904761905,
+          "na_reason": null,
+          "verdict_counts": {
+            "NORMAL": 13176,
+            "WARNING": 722,
+            "DRIFT": 12
+          },
+          "verdict_parity": 1.0,
+          "pred_parity": 1.0,
+          "verdict_mismatch_count": 0,
+          "gap2_ok": true,
+          "gap3_ram_ok": true
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 6.104393758284468,
+          "state_bytes_algo": 20,
+          "ram_peak_bytes": 453264,
+          "f1": 0.2105263157894737,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 40,
+        "latency_board_vs_proxy_us": 263.89560624171554,
+        "na_reason": null
+      },
+      "psi": {
+        "board": {
+          "measured": false,
+          "n_samples": 13910,
+          "n_features": 128,
+          "family": "unsupervised",
+          "requires_label": false,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": "build non \u00e9ditable board : signal PSI \u2190 Mahalanobis embarqu\u00e9 O(k\u00b2) ; \u00e0 k=128 features, sigma_inv (128\u00b2\u00d74 \u2248 64 Ko) fait d\u00e9border la SRAM (`.bss` overflow ~69 064 B au link, limite mat\u00e9rielle mesur\u00e9e, cf. S4503)",
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 635.7233930251584,
+          "state_bytes_algo": 15872,
+          "ram_peak_bytes": 483632,
+          "f1": 0.23076923076923078,
+          "viabilite_mcu": "moyenne",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 132,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "build non \u00e9ditable board : signal PSI \u2190 Mahalanobis embarqu\u00e9 O(k\u00b2) ; \u00e0 k=128 features, sigma_inv (128\u00b2\u00d74 \u2248 64 Ko) fait d\u00e9border la SRAM (`.bss` overflow ~69 064 B au link, limite mat\u00e9rielle mesur\u00e9e, cf. S4503)"
+      }
+    },
+    "hydraulic": {
+      "page_hinkley": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 1.8455945414674728,
+          "state_bytes_algo": 16,
+          "ram_peak_bytes": 69208,
+          "f1": 0.0,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 36,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "non flash\u00e9 (runbook \u2014 board 1 colonne mesur\u00e9e, cf. S4503)"
+      },
+      "ddm": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 2.7807673812651683,
+          "state_bytes_algo": 20,
+          "ram_peak_bytes": 69224,
+          "f1": 0.15384615384615385,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 40,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "non flash\u00e9 (runbook \u2014 board 1 colonne mesur\u00e9e, cf. S4503)"
+      },
+      "psi": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 138.48443583218983,
+          "state_bytes_algo": 2108,
+          "ram_peak_bytes": 76320,
+          "f1": 0.3076923076923077,
+          "viabilite_mcu": "moyenne",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 132,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "non flash\u00e9 (runbook \u2014 board 1 colonne mesur\u00e9e, cf. S4503)"
+      }
+    },
+    "synthetic": {
+      "page_hinkley": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 1.609578498270518,
+          "state_bytes_algo": 16,
+          "ram_peak_bytes": 195136,
+          "f1": 0.8,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 36,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "non flash\u00e9 (runbook \u2014 board 1 colonne mesur\u00e9e, cf. S4503)"
+      },
+      "ddm": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 3.624618642788846,
+          "state_bytes_algo": 20,
+          "ram_peak_bytes": 197208,
+          "f1": 0.8,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 40,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "non flash\u00e9 (runbook \u2014 board 1 colonne mesur\u00e9e, cf. S4503)"
+      },
+      "psi": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 38.635286823288574,
+          "state_bytes_algo": 744,
+          "ram_peak_bytes": 200016,
+          "f1": 0.2608695652173913,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 132,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "non flash\u00e9 (runbook \u2014 board 1 colonne mesur\u00e9e, cf. S4503)"
+      }
+    },
+    "electricity": {
+      "page_hinkley": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 3.2001705230926345,
+          "state_bytes_algo": 16,
+          "ram_peak_bytes": 1480368,
+          "f1": null,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 36,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "pas de v\u00e9rit\u00e9-terrain ponctuelle"
+      },
+      "ddm": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 3.5726859588512627,
+          "state_bytes_algo": 20,
+          "ram_peak_bytes": 1480400,
+          "f1": null,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 40,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "pas de v\u00e9rit\u00e9-terrain ponctuelle"
+      },
+      "psi": {
+        "board": {
+          "measured": false,
+          "n_samples": null,
+          "n_features": null,
+          "family": null,
+          "requires_label": null,
+          "latency_us_p50": null,
+          "latency_us_p99": null,
+          "mean_latency_us": null,
+          "bss_bytes": null,
+          "f1": null,
+          "metric_value": null,
+          "na_reason": null,
+          "verdict_counts": null,
+          "verdict_parity": null,
+          "pred_parity": null,
+          "verdict_mismatch_count": null,
+          "gap2_ok": null,
+          "gap3_ram_ok": null
+        },
+        "pc_proxy": {
+          "measured": true,
+          "is_proxy": true,
+          "latency_us_per_update": 39.0658048404737,
+          "state_bytes_algo": 868,
+          "ram_peak_bytes": 1484688,
+          "f1": null,
+          "viabilite_mcu": "haute",
+          "na_reason": null
+        },
+        "bss_delta_vs_default": 132,
+        "latency_board_vs_proxy_us": null,
+        "na_reason": "pas de v\u00e9rit\u00e9-terrain ponctuelle"
+      }
+    }
+  }
+}

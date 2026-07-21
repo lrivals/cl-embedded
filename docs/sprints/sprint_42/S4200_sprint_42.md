@@ -88,6 +88,7 @@ figures futures de présentations/rapports **non liées à un sprint spécifique
 |----|-------|:---:|---------------|:------:|
 | S4206 | Notebook catalogue (galerie commentée : chaque figure + son explication FR prête à copier en slide/manuscrit), nbconvert OK | 🟠 | `notebooks/cl_eval/quantization_figures/catalog.ipynb` | 📝 Doc |
 | S4207 | Tests Python (registre, 0 chiffre en dur, régénération idempotente, honnêteté « à mesurer ») + roadmap + `CLAUDE.md` + `graphify_sprint_update` | 🟡 | `tests/test_figures_library.py`, `docs/roadmap_phase2.md` | 📝 Doc |
+| S4208 | **Extension présentation EWC-only** (post-sprint) : doc narratif 3-axes FP32/INT8, **catalogue séparé `quantization_ewc`** (7 PNG EWC, sans Q15, isole I4 RAM et retire les résidus Q15) + **complétion mesures board v2 monitoring** (frozen+online) qui débloque la cellule « à mesurer » | 🟠 | `docs/context/quantization_presentation.md`, `src/figures/catalogs/quant_ewc.py` → `docs/figures/quantization_ewc/` | ✅ Implémenté |
 
 ## Ordre d'exécution recommandé
 
@@ -147,5 +148,49 @@ S4202 peut démarrer en parallèle de S4201 (pur doc). S4203–S4205 sont indép
 | S4205 | ✅ | ~4h | Catalogue `quantization/impact` I1–I6, 0 chiffre en dur (garde AST) |
 | S4206 | ✅ | ~2h | `catalog.ipynb` 49 cellules, nbconvert OK, valeurs chargées |
 | S4207 | ✅ | ~2h | `test_figures_library.py` 7/7 PASS, 714 collectés 0 erreur, docs+graphify |
+| S4208 | ✅ | ~3h | Doc narratif + catalogue `quantization_ewc` (7 PNG) + 2 cellules board v2 monitoring mesurées (voir Extension) |
 
 **Livrables réels** : bibliothèque `src/figures/` (style/loaders/registre/`schematic.py` + 3 catalogues) · CLI `scripts/generate_figures.py` · **17 PNG** sous `docs/figures/quantization/{pedagogy,pipeline,impact}/` · inventaire `docs/context/quantization_strategies.md` · notebook-galerie `notebooks/cl_eval/quantization_figures/catalog.ipynb` · `tests/test_figures_library.py` (7 PASS). Règles d'honnêteté respectées (badges plateforme, « à mesurer », métriques nommées, 0 littéral de résultat). `TODO(arnaud)` (notations manuscrit) et `TODO(dorra)` (scales per-channel kernel v2) laissés ouverts.
+
+## Extension S4208 (16 juillet 2026) — variante présentation EWC-only + complétion board v2
+
+**Motivation.** Les figures d'impact du sprint (S4205) juxtaposent plusieurs modèles (EWC, HDC,
+TinyOL, Maha) et plusieurs stratégies (dont Q15) dans un même graphe. Pour le fil de présentation
+FP32/INT8 centré **tête EWC**, il fallait des figures **isolant EWC** et **retirant Q15**, sans
+écraser le jeu d'origine.
+
+**Décisions utilisateur.** (1) Version narrative de l'inventaire en **3 temps** — `fp32` référence /
+pourquoi comparer `int8_qat` (QAT PC) et `int8_ptq_legacy` (PTQ board figée) **n'est pas pertinent**
+(erreur de catégorie : moment/lieu/calibration/mesure diffèrent, la perte legacy vient du **scale
+figé** pas du post-training, ablation S39) / `int8_v2` comme meilleure approche ; **Q15 écarté du fil**.
+(2) **Dossier de figures séparé** pour ne pas modifier les `quantization/*` existants.
+(3) Périmètre mesures board : **per_channel / monitoring / {frozen, online}** uniquement (Q15 et
+int8_legacy hors périmètre EWC).
+
+**Livrables.**
+- `docs/context/quantization_presentation.md` — doc narratif 3-axes (aucun chiffre inventé, repris de
+  l'inventaire S4202 ; renvoie Q15/int16_am vers `quantization_strategies.md`).
+- `src/figures/catalogs/quant_ewc.py` (catalogue `quantization_ewc`, enregistré dans
+  `catalogs/__init__.py`) → **7 PNG** sous `docs/figures/quantization_ewc/` : réutilise les loaders de
+  `quant_impact`/`quant_pedagogy` (**0 chiffre en dur**). **I4 isolée EWC** (`ram_gap3_ewc` : ratio ×4
+  par dataset, plus de HDC/TinyOL/Maha) ; **résidus Q15 retirés** de `metrique_par_strategie_ewc` (I1),
+  `ablation_perte_f1_ewc` (I2), `erreur_quantification_poids_ewc` (P4) et couleur Q15 de
+  `qat_vs_ptq_resultats_ewc` (I6) ; `paradoxe_latence_ewc` (I5) et `mapping_affine_int8_ewc` (P1)
+  réexportés tels quels. Génération : `python scripts/generate_figures.py --catalog quantization_ewc`.
+- **Mesures board réelles NUCLEO-F439ZI** (kernel INT8 v2 per-channel, tête EWC × monitoring, via
+  `run_s40_board_v2.py`), qui comblent la seule cellule « à mesurer » des figures EWC
+  (`_board_v2_f1('monitoring','frozen')`) :
+
+| Cellule | F1_faulty | Parité board↔PC | Latence P50 | Gap 2 | CRC | RAM | Fichier |
+|---|---|---|---|---|---|---|---|
+| frozen | **0,9173** | **1,000** (`exact_vs_emulator`) | 65 µs | ✅ | 0 | ×4 | `exp_S40_board_v2/results_per_channel_monitoring_frozen.json` |
+| online | **0,9016** | 0,989 (`approx`, float32 board vs float64 PC) | 577 µs (inf 65 + MAJ 512) | ✅ | 0 | ×4 | `…_monitoring_online.json` |
+
+`.bss=101 236 B`, n_streamé ≈ 7 670. Après mesure, `qat_vs_ptq_resultats_ewc.png` affiche le F1 board
+réel (0,92) au lieu de « à mesurer ».
+
+**Contrôles.** `test_figures_library.py` **7/7 PASS** · dossier `docs/figures/quantization/` d'origine
+**intact** (aucun écrasement) · aucune modification de code figures/firmware (le pipeline consomme la
+valeur dès que le JSON board existe). **Reste** (optionnel) : rafraîchir la figure d'origine
+`quantization/impact/qat_vs_ptq_resultats.png` (lit aussi cette cellule) ; actualiser la note « online
+v2 à mesurer » du doc de présentation (désormais mesuré).

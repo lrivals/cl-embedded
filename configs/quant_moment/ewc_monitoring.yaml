@@ -1,0 +1,23 @@
+# configs/quant_moment/ewc_monitoring.yaml — Grille 3-way des moments de quantification
+# (Sprint 46, S4603). Dataset Monitoring (D2, faulty binaire → AUROC propre).
+#
+# Hérite de configs/ewc_int8_monitoring.yaml (→ ewc_config.yaml) : archi + hyperparamètres
+# EWC réutilisés tels quels, aucun hyperparamètre en dur (conforme CLAUDE.md § Reproductibilité).
+# Taxonomie : docs/context/quantization_moments.md (S4601).
+#
+# NB : le modèle (`ewc`) et le dataset (`monitoring`) sont passés sur la CLI
+# (--model/--dataset) ; ils ne sont PAS mis en clé top-level ici car `model:` collisionne
+# avec la section `model:` (dict) de ewc_config.yaml lors du deep-merge `extends`.
+#
+# Usage :
+#   python scripts/run_s46_quant_moment.py --model ewc --dataset monitoring \
+#       --moment all --after-scheme per_tensor_calib \
+#       --config configs/quant_moment/ewc_monitoring.yaml \
+#       --output experiments/exp_S46_ewc/monitoring_all.json
+
+extends: ../ewc_int8_monitoring.yaml
+
+# Métadonnées Sprint 46 (informatives ; surchargées par la CLI).
+quant_moment: both                # before | after | both  (+ fp32 baseline)
+after_scheme: per_tensor_calib    # legacy_c | per_tensor_calib | per_channel_int8 | q15
+metric: auroc                     # voie de référence EWC (S4601)

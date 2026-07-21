@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 43 |
 | **Priorité** | 🔴 Critique — sans loaders exposant le ground-truth de drift, aucune métrique de délai de détection n'est calculable. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — 4 loaders (`gas_sensor_drift`/`hydraulic`/`electricity`/`synthetic_drift`) + module commun `src/data/drift_dataset.py` (`DriftDataset`+`freeze_zscore`) + 4 configs + `scripts/download_drift_datasets.py` (idempotent) + registre `src/data/__init__.py` (`DRIFT_LOADERS`/`DRIFT_CONFIGS`). INSECTS→Hydraulic, `river`→numpy (décisions utilisateur). |
 | **Durée estimée** | 7h |
 | **Dépendances** | S4301 ✅ (sélection) · `src/data/pump_dataset.py` ✅ (style de loader + normalisation figée) · `src/data/__init__.py` ✅ (registre de loaders) |
 | **Fichiers cibles** | `scripts/download_drift_datasets.py`, `src/data/gas_sensor_drift_dataset.py`, `src/data/insects_dataset.py`, `src/data/electricity_dataset.py`, `src/data/synthetic_drift_dataset.py`, `configs/gas_sensor_drift_config.yaml`, `configs/insects_drift_config.yaml`, `configs/electricity_drift_config.yaml`, `configs/synthetic_drift_config.yaml` |

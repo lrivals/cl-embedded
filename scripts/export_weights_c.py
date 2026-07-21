@@ -485,6 +485,89 @@ def export_drift_thresholds_to_c(thresholds_json: Path, out_path: Path) -> dict:
     return th
 
 
+def export_drift_methods_to_c(methods_json: Path, out_path: Path) -> dict:
+    """Émet inc/drift_methods_params.h depuis un JSON de paramètres calibrés (S4503).
+
+    Consommé par pipeline.c sous ``-DDRIFT_DETECT`` (sélection de méthode ``-DDRIFT_METHOD``).
+    Le board reçoit **exactement** les mêmes paramètres que le PC (calibrés sur le segment
+    d'enrôlement) → **parité par construction**. Jamais édité à la main (règle CLAUDE.md).
+
+    Le header pose ``DRIFT_METHODS_PARAMS_PROVIDED`` + toutes les macros (Page-Hinkley, DDM,
+    PSI). Les sections absentes du JSON retombent sur des valeurs **neutres** (non
+    déclenchantes) → un binaire compile toujours quelle que soit la méthode sélectionnée.
+
+    Parameters
+    ----------
+    methods_json : Path
+        JSON ``{"page_hinkley": {...}, "ddm": {...}, "psi": {...}}`` (run_sprint45_board).
+    out_path : Path
+        Répertoire de sortie (firmware/stm32f4_blink/inc).
+
+    Returns
+    -------
+    dict
+        Les paramètres chargés (log / réutilisation).
+    """
+    with open(methods_json) as f:
+        params = json.load(f)
+
+    ph = params.get("page_hinkley", {})
+    ph_delta = float(ph.get("delta", 0.005))
+    ph_lambda = float(ph.get("lambda", ph.get("lambda_", 1.0e30)))  # neutre si absent
+    min_instances = int(ph.get("min_instances", params.get("ddm", {}).get("min_instances", 30)))
+
+    ddm = params.get("ddm", {})
+    ddm_warn = float(ddm.get("warning_level", 1.0e30))
+    ddm_drift = float(ddm.get("drift_level", 1.0e30))
+
+    psi = params.get("psi", {})
+    edges = [float(e) for e in psi.get("edges", [i / 10.0 for i in range(11)])]
+    ref_probs = [float(p) for p in psi.get("ref_probs", [0.10000001] * 10)]
+    psi_bins = int(psi.get("bins", len(ref_probs)))
+    psi_block = int(psi.get("block_size", 200))
+    psi_thr = float(psi.get("threshold", psi.get("psi_threshold", 1.0e30)))  # neutre si absent
+
+    edges_c = "{ " + ", ".join(_fmt_float(v) for v in edges) + " }"
+    ref_c = "{ " + ", ".join(_fmt_float(v) for v in ref_probs) + " }"
+
+    lines = [
+        "/* drift_methods_params.h — Paramètres calibrés des détecteurs de drift — Sprint 45 S4503 */",
+        "/* GÉNÉRÉ par scripts/export_weights_c.py --drift-methods. NE PAS ÉDITER À LA MAIN. */",
+        f"/* Source : {methods_json} */",
+        "",
+        "#ifndef DRIFT_METHODS_PARAMS_H",
+        "#define DRIFT_METHODS_PARAMS_H",
+        "",
+        "#define DRIFT_METHODS_PARAMS_PROVIDED 1",
+        "",
+        "/* ── Page-Hinkley (supervisé) ─────────────────────────────────────────────── */",
+        f"#define PAGE_HINKLEY_DELTA   {_fmt_float(ph_delta)}",
+        f"#define PAGE_HINKLEY_LAMBDA  {_fmt_float(ph_lambda)}",
+        "",
+        "/* ── DDM (supervisé) ──────────────────────────────────────────────────────── */",
+        f"#define DDM_WARN_SIGMA       {_fmt_float(ddm_warn)}",
+        f"#define DDM_DRIFT_SIGMA      {_fmt_float(ddm_drift)}",
+        "",
+        "/* ── Commun supervisés ────────────────────────────────────────────────────── */",
+        f"#define DRIFT_MIN_INSTANCES  {min_instances}",
+        "",
+        "/* ── PSI (non-supervisé, histogramme à bacs fixes) ────────────────────────── */",
+        f"#define PSI_REF_BINS         {psi_bins}",
+        f"#define PSI_BLOCK_SIZE_PARAM {psi_block}",
+        f"#define PSI_THRESHOLD_PARAM  {_fmt_float(psi_thr)}",
+        f"#define PSI_BIN_EDGES {edges_c}",
+        f"#define PSI_REF_PROBS {ref_c}",
+        "",
+        "#endif /* DRIFT_METHODS_PARAMS_H */",
+    ]
+    header_path = out_path / "drift_methods_params.h"
+    header_path.write_text("\n".join(lines) + "\n")
+    print(f"[export] drift_methods_params.h écrit → {header_path}")
+    print(f"  ph(delta={ph_delta}, lambda={ph_lambda}) ddm(w={ddm_warn}, d={ddm_drift}) "
+          f"psi(bins={psi_bins}, block={psi_block}, thr={psi_thr})")
+    return params
+
+
 # ── Export méta-modèle (stacking, Sprint 31 / S3105) ───────────────────────
 
 def _sigmoid(z: np.ndarray | float) -> np.ndarray:
@@ -1022,6 +1105,11 @@ def _parse_args() -> argparse.Namespace:
              "(run_sprint38_pc) → inc/drift_thresholds.h (gate -DEWC_AUTO_UPDATE, S3803).",
     )
     p.add_argument(
+        "--drift-methods", type=Path, default=None,
+        help="JSON {page_hinkley,ddm,psi} calibré (run_sprint45_board) → "
+             "inc/drift_methods_params.h (détecteurs -DDRIFT_DETECT, S4503).",
+    )
+    p.add_argument(
         "--int8-v2", nargs="?", default=None, const=_AUTO,
         help="Checkpoint EWCMlpMulticlass(k,2,[32,16]) → ewc_head_int8_v2_weights.h "
              "(kernel v2, poids int8 par-canal + scales calibrés, S3908). Sans valeur + "
@@ -1128,6 +1216,11 @@ def main() -> None:
         export_drift_thresholds_to_c(args.drift_thresholds, out_path)
     else:
         print("[export] --drift-thresholds non fourni : drift_thresholds.h inchangé")
+
+    if args.drift_methods is not None:
+        export_drift_methods_to_c(args.drift_methods, out_path)
+    else:
+        print("[export] --drift-methods non fourni : drift_methods_params.h inchangé")
 
     # Sprint 39 — kernel v2 : poids int8 par-canal + scales calibrés.
     int8_v2_ckpt: Path | None = None

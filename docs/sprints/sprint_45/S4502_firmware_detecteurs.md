@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 45 |
 | **Priorité** | 🔴 Critique — cœur du sprint : rendre les détecteurs exécutables sur Cortex-M4, à parité avec le Python. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — 3 détecteurs portés (parité C↔Python), intégrés sous `-DDRIFT_DETECT`, `.bss` défaut invariant. |
 | **Durée estimée** | 10h |
 | **Dépendances** | S4501 ✅ (liste + cadrage) · `firmware/.../inc/ring_buffer.h` ✅ (fenêtre 0 malloc) · `firmware/.../src/drift_detector.c` ✅ (précédent de port bit-à-bit, S3803) · `firmware/.../src/profiling.c` ✅ · S4402/S4403 ✅ (réf. Python) |
 | **Fichiers cibles** | `firmware/stm32f4_blink/inc/drift/{page_hinkley,ddm,psi}.h`, `src/drift/{page_hinkley,ddm,psi}.c`, `src/pipeline.c`, `Makefile`, `tests/test_drift_methods.c`, `tests/test_runner.c` |
@@ -78,3 +78,43 @@ make size                                                        # .bss défaut 
 ```
 - `test_drift_methods` : verdicts == sortie Python des détecteurs S4402/S4403 sur la même séquence.
 - `.bss` build par défaut identique à l'actuel (105 036 B) ; delta documenté par méthode.
+
+---
+
+## Résolution (implémentée)
+
+**Fichiers créés** : `inc/drift/{drift_method,page_hinkley,ddm,psi}.h` + `src/drift/{page_hinkley,
+ddm,psi}.c` + `tests/test_drift_methods.c`. Chaque détecteur = struct à backing statique, 0 malloc,
+init en place (footgun S3803), `# MEM:` annotés, tailles en `#define` surchargeables.
+
+**Interface commune** `drift_method.h` : `DriftMethodVerdict {DM_NORMAL,DM_WARNING,DM_DRIFT}` +
+IDs `DRIFT_PAGE_HINKLEY/DDM/PSI` (défaut neutre). Chaque détecteur : `*_init / *_update(value) ->
+verdict / *_reset`.
+
+**Parité bit-à-bit** vérifiée sur séquences dont les verdicts attendus sont produits par le Python
+lui-même (`src/models/drift/*.py`) : Page-Hinkley DRIFT au bon indice sur saut de moyenne ; DDM
+franchit 2σ (WARNING) puis 3σ (DRIFT) ; PSI DRIFT à la fin du bloc effondré (statistique 14.99 ± tol
+FP32). `*_reset` remet l'état à zéro. **`make test` : 6/6 nouveaux PASS** (134 tests, 2 TinyOL
+préexistants hors périmètre, **0 régression**).
+
+**Intégration `pipeline.c`** sous `#ifdef DRIFT_DETECT` : global `g_drift_method` (type selon
+`#if DRIFT_METHOD`), init depuis `inc/drift_methods_params.h` (généré S4503, neutre par défaut) ;
+dans le chemin EWC — signal = `maha_score` (PSI) ou `1[pred != g_recv_label]` (PH/DDM) → `*_update`
+→ `g_drift_method_verdict` remonté via `snap.auroc` (+ `snap.forgetting` = nb DRIFT cumulés). **Wire
+format V3 (23 B) inchangé**, `sensor_stream.py` intact.
+
+**Makefile** : `src/drift/*.c` ajoutés à `C_SOURCES` **et** `TEST_SRC` ; règle de motif
+`$(BUILD_DIR)/%.o: src/drift/%.c` + `-Iinc/drift` ; `PSI_BINS`/`PSI_BLOCK_SIZE`/`DRIFT_METHOD` via
+`EXTRA_CFLAGS` (pas de clobber).
+
+**Vérification build (NUCLEO-F439ZI, arm-none-eabi-gcc)** :
+
+| Build | `.bss` | Δ vs défaut |
+|-------|-------:|------------:|
+| défaut (sans `-DDRIFT_DETECT`) | **105 036 B** | 0 (invariant, 0 régression) |
+| `-DDRIFT_METHOD=DRIFT_PAGE_HINKLEY` | 105 072 B | **+36 B** |
+| `-DDRIFT_METHOD=DRIFT_DDM` | 105 076 B | **+40 B** |
+| `-DDRIFT_METHOD=DRIFT_PSI` | 105 168 B | **+132 B** (histogramme (3·PSI_BINS+1)·4) |
+
+Les 3 builds actifs compilent sans warning issu des fichiers `drift/` (warnings restants
+pré-existants : `model_weights_*.h`, `uart_send_response_v2`, `pipeline.c:435`).

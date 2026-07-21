@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 44 |
 | **Priorité** | 🔴 Critique — famille non-supervisée de l'axe « supervisé ∥ non-supervisé à parité » ; c'est celle réaliste pour une carte déployée seule (pas de labels). |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — `adwin.py` (buckets bornés `max_rows`), `kswin.py`, `ks_test.py`, `mmd.py` (estimateur linéaire), `psi.py` (O(bins)) + `multivariate.py` ; `requires_label=False`. Tests : détection post-saut, PSI indépendant de W, ADWIN/KSWIN retrouvent [1500,3000,4500] ± 100. |
 | **Durée estimée** | 8h |
 | **Dépendances** | S4401 ✅ (interface `BaseDriftDetector`) · S4402 ✅ (`base.py`) · `firmware/.../inc/ring_buffer.h` ✅ (miroir de fenêtre bornée pour cohérence board) |
 | **Fichiers cibles** | `src/models/drift/adwin.py`, `src/models/drift/kswin.py`, `src/models/drift/ks_test.py`, `src/models/drift/mmd.py`, `src/models/drift/psi.py` |

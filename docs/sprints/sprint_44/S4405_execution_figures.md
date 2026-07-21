@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 44 |
 | **Priorité** | 🟠 Haute — produit les chiffres et visuels comparant tous les détecteurs sur tous les datasets. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — `scripts/run_sprint44_pc.py` (grille 36/36) + `src/figures/catalogs/drift_detection_pc.py` (5 PNG). |
 | **Durée estimée** | 6h |
 | **Dépendances** | S4402 ✅ + S4403 ✅ (détecteurs) · S4404 ✅ (harnais) · S4302 ✅ (loaders) · `src/evaluation/plots.py` ✅ |
 | **Fichiers cibles** | `scripts/run_sprint44_pc.py`, `experiments/exp_S44_PC_{detector}_{dataset}/results.json`, `docs/figures/drift_detection_pc/*.png` |

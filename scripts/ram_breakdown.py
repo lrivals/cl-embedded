@@ -8,7 +8,7 @@ Pour chaque modèle du firmware NUCLEO-F439ZI on distingue :
 
   • STATIQUE   : poids figés après l'init (chargés de la Flash → copie de travail
                  en `.bss`). Ne bougent pas pendant l'apprentissage en ligne.
-  • MODULABLE  : état de continual learning mis à jour à bord (SGD, Fisher, θ*,
+  • NON CONSTANTE : état de continual learning mis à jour à bord (SGD, Fisher, θ*,
                  mémoire associative HDC, moyenne EMA Mahalanobis, tête OtO…).
                  Vit dans la MÊME struct pré-allouée en `.bss`.
   • PILE       : tableaux temporaires alloués pendant forward / update. Ne sont
@@ -16,7 +16,7 @@ Pour chaque modèle du firmware NUCLEO-F439ZI on distingue :
                  réel mesuré par scripts/measure_stack_watermark.py).
 
 Le total `.bss` de chaque modèle est lu **réellement** depuis l'ELF via
-`arm-none-eabi-nm --print-size` (source de vérité). Le split statique/modulable
+`arm-none-eabi-nm --print-size` (source de vérité). Le split statique/non constante
 est calculé analytiquement depuis les `#define` de dimension des headers, puis
 **vérifié** contre la taille nm (garde-fou anti-dérive).
 
@@ -91,7 +91,7 @@ def read_defines(headers: list[Path] | None = None) -> dict[str, int]:
 
 # ── Décomposition analytique par modèle (dataset Monitoring, dims 5-feat) ─────
 def monitoring_layout(defines: dict[str, int]) -> dict[str, dict[str, Any]]:
-    """Décompose statique/modulable/pile pour les 4 modèles Monitoring.
+    """Décompose statique/non constante/pile pour les 4 modèles Monitoring.
 
     Les formules suivent exactement les définitions de struct des headers
     firmware ; elles sont recoupées avec les tailles nm par ``monitoring_breakdown``.
@@ -177,7 +177,7 @@ def monitoring_breakdown(
     """Assemble le bilan RAM des 4 modèles Monitoring.
 
     Attache la taille `.bss` réelle (nm) et vérifie qu'elle égale (± tol) la somme
-    analytique statique+modulable.
+    analytique statique+non constante.
     """
     defines = read_defines(headers)
     layout = monitoring_layout(defines)
@@ -216,7 +216,7 @@ def main() -> int:
           f"EWC_IN={defines['EWC_IN']}  MAHA_DIM={defines['MAHA_DIM']}  "
           f"HDC_DIM={defines['HDC_DIM']}  TINYOL_IN={defines['TINYOL_IN']}\n")
 
-    hdr = f"{'Modèle':<12}{'statique':>12}{'modulable':>12}{'.bss nm':>12}" \
+    hdr = f"{'Modèle':<12}{'statique':>12}{'non const.':>12}{'.bss nm':>12}" \
           f"{'pile inf.':>12}{'pile entr.':>12}"
     print(hdr)
     print("-" * len(hdr))
@@ -225,7 +225,7 @@ def main() -> int:
               f"{_fmt(m['bss_real_nm']):>12}{_fmt(m['stack_infer']):>12}"
               f"{_fmt(m['stack_train']):>12}")
     print("\nNote : `.bss` identique en inférence et en entraînement (aucun malloc ;")
-    print("l'état modulable est pré-alloué). Seule la pile transitoire varie.")
+    print("l'état non constant est pré-alloué). Seule la pile transitoire varie.")
     print("Pic réel de pile → scripts/measure_stack_watermark.py (carte requise).")
     return 0
 

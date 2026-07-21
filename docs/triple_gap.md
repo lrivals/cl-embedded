@@ -99,6 +99,22 @@ les pas de SGD** sur les échantillons NORMAL. Résultat : la latence **moyenne*
 une latence moyenne ~3× plus faible que `always`. Détail : `experiments/exp_S38_summary.json`
 (`economy_table`), `docs/sprints/sprint_38/`.
 
+**Renforcement Sprint 45 — détecteurs de drift portés (board réelle NUCLEO-F439ZI)** : les détecteurs
+de drift (Page-Hinkley/DDM O(1), PSI O(bins)) sont portés en C sous `-DDRIFT_DETECT` (sélection à la
+compilation, wire format V3 inchangé). **Colonne `gas_sensor_drift` mesurée** (128 features, 13 910
+échantillons, seed 42, 0 CRC) : **Page-Hinkley et DDM** — latence DWT **270 µs** (P50 ≈ P99) **≪ 100 ms
+⇒ Gap 2 préservé**, **parité verdict board↔PC = 1.000** (0 mismatch / 13 910 chacun) : le board décide
+exactement comme le Python. **Coût `.bss` du détecteur** : **+36 B** (Page-Hinkley) / **+40 B** (DDM) /
+**+132 B** (PSI, histogramme (3·bins+1)·4) sur le build par défaut invariant (105 036 B) — négligeable
+dans le budget 256 Ko. **PSI × gas_sensor_drift = N/A honnête (limite Gap 3 mesurée)** : PSI est piloté
+à bord par le score Mahalanobis (`signal ← maha_score`), dont la covariance est **O(k²)** ; à k=128
+features, `sigma_inv` (128²×4 ≈ 64 Ko) fait **déborder la SRAM** au link (`.bss` overflow ~69 Ko) →
+**PSI n'est portable qu'en basse dimension** (le goulot est sa source de signal, pas l'état O(bins) du
+détecteur). **Écart proxy-PC ↔ board** : le proxy Python S44 (DDM ≈ 6 µs/update) **n'est pas prédictif**
+de la latence board (270 µs, chemin d'inférence EWC dominant, paradoxe FPU S29) — seule la mesure board
+fait foi. Agrégat `experiments/exp_S45_summary.json` (`aggregate_sprint45.py`, mesuré-board vs
+proxy-PC), `exp_S45_board_*`, `exp_S45_parity_*`, `docs/sprints/sprint_45/`.
+
 ### Gap 3 — INT8 pendant l'apprentissage incrémental (mis à jour Sprint 29)
 
 **Critère** : ΔAUROC < 0.02 (métrique préservée) **ET** réduction RAM pendant l'entraînement incrémental INT8.
@@ -173,6 +189,28 @@ ablation). Le résultat de récupération (`per_tensor_calib` +0.88 F1, Q15 = FP
 complète reste explicitement **« à mesurer »** (règle « aucun chiffre inventé »). Tant que la campagne carte v2
 n'est pas complète, le critère « RAM ÷4 sans perte de métrique sur MCU réel » est donc **confirmé par émulation +
 un point board**, pas encore généralisé — l'axe honnête émulateur reste la formulation de référence.
+
+**Renforcement Sprint 46 — les trois *moments* de quantification comparés frontalement (PC + board réelle)** :
+là où les sprints précédents ont établi le QAT (S28), la PTQ effondrée puis récupérée (S36/S39) et Q15
+(S34) de façon **dispersée**, le Sprint 46 les met côte à côte à modèle/dataset/seed fixés, sur **EWC** puis
+**TinyOL** × **Monitoring/Pronostia**, selon trois moments : **avant** l'entraînement (QAT / fake-quant),
+**après** (PTQ sur FP32 figé), et **les deux** (QAT → export PTQ = le chemin réel du firmware). Message :
+*le moment et la calibration dominent la préservation de métrique* ; `before` (fake-quant à l'inférence)
+est une **borne haute** que la carte n'atteint pas, `both` (noyau entier) est la seule variante **fidèle au
+déploiement**. Cadrage honnête : **HDC** (natif entier, INT8≡FP32 structurel) et **Mahalanobis** (PTQ-only,
+axe INT8-vs-Q15) sont documentés en **contexte N/A**, sans cellule 3-way artificielle. Harnais
+`scripts/run_s46_quant_moment.py` réutilise `EWCMlpInt8Classifier` + `int8_c_emulation.py` et **câble le
+seul maillon manquant** (QAT→`from_state_dict`→`forward_quant`) → `experiments/exp_S46_{ewc,tinyol,context}/`.
+**Colonne `both` mesurée sur carte réelle NUCLEO-F439ZI (S4608)** : réconciliation d'architecture — le head
+firmware étant multiclasse 2 sorties, un **head QAT multiclasse** (`EWCMlpMulticlassInt8`, nouveau) est
+entraîné puis exporté vers le kernel v2 calibré (`-DEWC_INT8_V2`, driver `run_sprint46_board.py`). Résultats
+board (frozen, 5feat) : **F1 `both` = 0.9213 (Monitoring) / 0.9072 (Pronostia)**, **parité board↔émulateur
+= 1.000** (0 mismatch, par construction), **latence DWT 65 / 68 µs ≪ 100 ms (Gap 2 ✅)**, **`.bss` 101 236 /
+106 152 B — RAM poids ÷4 (Gap 3 ✅)**, **0 CRC**. **A/B `both` ≥ `after`** (source FP32,
+`experiments/exp_S40_board_v2`) : **+0.004 / +0.008** — le QAT préserve la métrique et **égale** (marginalement
+au-dessus) la PTQ calibrée sur ce head : sur la NUCLEO, c'est la **calibration du noyau v2** qui récupère
+l'essentiel, le QAT n'ajoutant pas de gain décisif au-delà (constat honnête, pas d'effet inventé). Détail :
+`docs/sprints/sprint_46/`.
 
 **Volet énergie (Sprint 33)** : le constat « INT8 réduit la RAM sans accélérer la latence FPU » ouvre une
 question énergie potentiellement originale — l'INT8 réduit-il néanmoins les **µJ** (moins d'accès mémoire) ? La

@@ -1,0 +1,81 @@
+# Sprint 44 — Détection de drift en ligne (S4401–S4403). PC-only (socle portage board S45).
+# Source de vérité des hyperparamètres : AUCUNE valeur n'est codée en dur dans src/models/drift/.
+# Voir docs/context/drift_detectors.md pour la taxonomie et la viabilité MCU.
+seed: 42
+
+# Datasets de validation (registre src/data.DRIFT_LOADERS, Sprint 43).
+datasets:
+  - synthetic        # vérité-terrain EXACTE [1500, 3000, 4500] → calibration des métriques
+  - gas_sensor_drift
+  - hydraulic
+  - electricity
+
+# Méthode de calibration des seuils : percentile sur segment d'enrôlement (portable board S45),
+# vs valeurs de littérature. "enrollment_percentile" = cohérent Sprint 38.
+calibration:
+  method: enrollment_percentile   # enrollment_percentile | literature
+  enrollment_fraction: 0.25       # part initiale du flux servant de référence figée
+  # Agrégation multivariée (sauf MMD, nativement multivarié).
+  aggregation: max                # max | fraction
+  fraction_threshold: 0.3         # DRIFT si > 30 % des features dérivent (mode "fraction")
+
+# ---- Supervisés (flux d'erreur 0/1, état O(1), requires_label = True) — S4402 ----
+ddm:
+  warning_level: 2.0     # p+s >= p_min + 2·s_min → WARNING
+  drift_level: 3.0       # p+s >= p_min + 3·s_min → DRIFT
+  min_instances: 30      # échantillons min. avant tout verdict
+
+eddm:
+  alpha: 0.95            # rapport (p'+2s')/(p'_max+2s'_max) < alpha → WARNING
+  beta: 0.90             # rapport < beta → DRIFT
+  min_errors: 30         # erreurs min. avant tout verdict
+
+page_hinkley:
+  delta: 0.005           # tolérance (magnitude ignorée)
+  lambda_: 50.0          # seuil de détection sur le cumul
+  min_instances: 30
+
+# ---- Non-supervisés (features/score, fenêtre bornée, requires_label = False) — S4403 ----
+adwin:
+  delta: 0.002           # confiance borne de Hoeffding (plus petit = moins sensible)
+  max_buckets: 5         # M : buckets max. par niveau (histogramme exponentiel)
+  min_window_length: 5   # longueur min. de sous-fenêtre pour tester une coupe
+  min_clock: 32          # ne tester une coupe qu'un échantillon sur min_clock
+  max_rows: 40           # borne du nombre de niveaux → état MAJORÉ (argument MCU)
+
+kswin:
+  window_size: 100       # W : fenêtre glissante bornée
+  stat_size: 30          # r : échantillons récents comparés au réservoir
+  alpha: 0.005           # DRIFT si p-valeur KS < alpha
+  seed: 42
+
+ks_test:
+  window_size: 100       # fenêtre courante bornée
+  stride: 50             # évaluer le test tous les `stride` échantillons
+  alpha: 0.01            # DRIFT si p-valeur < alpha
+  ref_size: 200          # taille max. de la fenêtre de référence figée
+
+mmd:
+  window_size: 100
+  stride: 50
+  gamma: null            # null → heuristique de la médiane sur la référence
+  estimator: linear      # linear (O(W)) | quadratic (O(W²)) — linéaire = viable MCU
+  calib_percentile: 99.0 # seuil = percentile des MMD² inter-blocs de référence
+  calib_blocks: 20
+  seed: 42
+
+psi:
+  bins: 10               # bacs fixes calibrés sur l'enrôlement → état O(bins) indépendant de W
+  block_size: 200        # échantillons par bloc de comparaison
+  metric: psi            # psi | js
+  psi_threshold: 0.2     # PSI > 0.2 = changement significatif (standard)
+  js_threshold: 0.1
+
+# ---- Baseline projet (cataloguée, réutilisée — pas réimplémentée) ----
+# src/evaluation/drift_detector.py::SlidingWindowDriftDetector (Sprint 9/38), déjà porté C
+# (firmware/.../src/drift_detector.c). Verdict "NORMAL"/"FAULT"/"DRIFT".
+sliding_window_baseline:
+  window_size: 50
+  fault_multiplier: 2.5
+  drift_multiplier: 1.3
+  drift_ratio: 0.6

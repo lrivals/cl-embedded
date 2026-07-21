@@ -1,0 +1,39 @@
+{
+  "model": "ewc",
+  "dataset": "equipment_monitoring",
+  "metric_name": "auroc",
+  "seed": 42,
+  "config_path": "configs/quant_moment/ewc_monitoring.yaml",
+  "timestamp": "2026-07-21T10:32:39",
+  "moments": {
+    "fp32": {
+      "metric": 0.97464,
+      "ram_weights_bytes": 2820,
+      "lat_proxy_rel": 1.0
+    },
+    "before": {
+      "metric": 0.974477,
+      "ram_weights_bytes": 705,
+      "lat_proxy_rel": null,
+      "note": "borne haute (fake-quant inférence)"
+    },
+    "after": {
+      "metric": 0.497523,
+      "ram_weights_bytes": 705,
+      "lat_proxy_rel": 0.0625,
+      "after_scheme": "legacy_c"
+    },
+    "both": {
+      "metric": 0.509351,
+      "ram_weights_bytes": 705,
+      "lat_proxy_rel": 0.0625,
+      "after_scheme": "legacy_c",
+      "note": "fidèle au déploiement (noyau entier)"
+    }
+  },
+  "delta_before_vs_fp32": -0.000163,
+  "delta_after_vs_fp32": -0.477117,
+  "delta_both_vs_fp32": -0.465289,
+  "gap3_metric_ok_both": false,
+  "gap3_ram_ok": true
+}

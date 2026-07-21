@@ -1,0 +1,18 @@
+{
+  "model": "mahalanobis",
+  "dataset": "equipment_monitoring",
+  "axis": "format_int8_q15",
+  "moments_3way": "N/A",
+  "na_reason": "Maha PTQ-only (fit statistique, pas d'entraînement gradient) ; axe = format Sigma^-1 (int8 affine vs q15 int16).",
+  "metric_name": "auroc",
+  "config_path": "configs/mahalanobis_int8_monitoring.yaml",
+  "seed": 42,
+  "timestamp": "2026-07-21T12:06:09",
+  "values": {
+    "fp32": 0.972501,
+    "int8": 0.972557,
+    "q15": 0.972501
+  },
+  "delta_int8": 5.6e-05,
+  "delta_q15": 0.0
+}

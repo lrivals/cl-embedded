@@ -38,6 +38,13 @@
 #include "drift_detector.h"            /* gate de mise à jour autonome — S3803 */
 #include "drift_thresholds.h"          /* généré (neutre par défaut) — S3803 */
 #endif
+#ifdef DRIFT_DETECT
+#include "drift/drift_method.h"        /* détecteurs de drift portés — S4502 */
+#include "drift/page_hinkley.h"
+#include "drift/ddm.h"
+#include "drift/psi.h"
+#include "drift_methods_params.h"      /* généré (neutre par défaut) — S4503 */
+#endif
 #include "stm32f4xx.h"
 #include <math.h>
 #include <string.h>
@@ -155,6 +162,20 @@ MahalanobisInt8 g_maha_int8;
 static DriftDetector g_drift;
 static uint32_t      g_n_updates;   /* SGD réellement déclenchés par le gate (mesure board) */
 static DriftVerdict  g_last_verdict; /* verdict du dernier échantillon (0=NORMAL,1=FAULT,2=DRIFT) — S3805 */
+#endif
+
+#ifdef DRIFT_DETECT
+/* S4502 — détecteur de drift porté, sélectionné à la compilation (-DDRIFT_METHOD).
+ * Un binaire = une méthode. Présent uniquement sous -DDRIFT_DETECT (build défaut inchangé). */
+#if DRIFT_METHOD == DRIFT_PSI
+static PSI         g_drift_method;   /* # MEM: (3·PSI_BINS+1)·4 B — branché sur maha_score */
+#elif DRIFT_METHOD == DRIFT_DDM
+static DDM         g_drift_method;   /* # MEM: ~20 B — flux d'erreur 1[pred!=label] */
+#else
+static PageHinkley g_drift_method;   /* # MEM: ~16 B — flux d'erreur 1[pred!=label] */
+#endif
+static DriftMethodVerdict g_drift_method_verdict;  /* dernier verdict (remonté dans snap.auroc) */
+static uint32_t           g_drift_method_alarms;   /* nb de DRIFT cumulés (remonté dans snap.forgetting) */
 #endif
 
 /* MEM: métriques on-board — 302 B @ SRAM + 16 B OnlineRMSE + ~202 B OnlineF1Macro */
@@ -561,6 +582,24 @@ void pipeline_init(void)
                DRIFT_DRIFT_THRESHOLD, DRIFT_RATIO);
     g_n_updates = 0;
     g_last_verdict = DRIFT_NORMAL;   /* S3805 */
+#endif
+#ifdef DRIFT_DETECT
+    /* S4502 — init du détecteur porté depuis inc/drift_methods_params.h (généré par
+     * export_weights_c.py --drift-methods, valeurs neutres par défaut → aucun déclenchement). */
+#if DRIFT_METHOD == DRIFT_PSI
+    {
+        static const float k_psi_edges[] = PSI_BIN_EDGES;
+        static const float k_psi_ref[]   = PSI_REF_PROBS;
+        psi_init(&g_drift_method, PSI_REF_BINS, PSI_BLOCK_SIZE_PARAM,
+                 PSI_THRESHOLD_PARAM, k_psi_edges, k_psi_ref);
+    }
+#elif DRIFT_METHOD == DRIFT_DDM
+    ddm_init(&g_drift_method, DDM_WARN_SIGMA, DDM_DRIFT_SIGMA, DRIFT_MIN_INSTANCES);
+#else
+    ph_init(&g_drift_method, PAGE_HINKLEY_DELTA, PAGE_HINKLEY_LAMBDA, DRIFT_MIN_INSTANCES);
+#endif
+    g_drift_method_verdict = DM_NORMAL;
+    g_drift_method_alarms  = 0;
 #endif
     /* S3403 — buffer de streaming instrumenté (ring_buffer générique, taille STREAM_BUF_W) */
     ring_buffer_init(&g_stream_rb, (uint8_t *)g_stream_storage,
@@ -1039,6 +1078,26 @@ void pipeline_run(void)
         float e1 = expf(logits[1]);
         confidence = e1 / (e0 + e1);   /* prob(faulty=1) pour AUROC */
 
+#ifdef DRIFT_DETECT
+        /* S4502 — détecteur de drift (build-time). Signal selon la famille (S4501) :
+         * PSI (non-supervisé) sur le score Maha déjà calculable ; PH/DDM (supervisés)
+         * sur le flux d'erreur 1[pred != label]. Aucune adaptation du modèle — on mesure
+         * la détection. Verdict remonté via snap.auroc (wire format V3 inchangé). */
+        {
+#if DRIFT_METHOD == DRIFT_PSI
+            float drift_sig = maha_score(&g_detector, raw);
+            g_drift_method_verdict = psi_update(&g_drift_method, drift_sig);
+#elif DRIFT_METHOD == DRIFT_DDM
+            float drift_sig = (pred != (int)g_recv_label) ? 1.0f : 0.0f;
+            g_drift_method_verdict = ddm_update(&g_drift_method, drift_sig);
+#else
+            float drift_sig = (pred != (int)g_recv_label) ? 1.0f : 0.0f;
+            g_drift_method_verdict = ph_update(&g_drift_method, drift_sig);
+#endif
+            if (g_drift_method_verdict == DM_DRIFT) g_drift_method_alarms++;
+        }
+#endif
+
 #ifdef EWC_AUTO_UPDATE
         /* ── Gate autonome (S3803) : remplace le déclencheur humain PROTO_FLAG_UPDATE.
          * Le score Mahalanobis nourrit le détecteur de dérive ; le verdict décide à
@@ -1229,6 +1288,16 @@ void pipeline_run(void)
     if (g_recv_flags & PROTO_FLAG_EWC_MODE) {
         snap.auroc      = (float)g_last_verdict;   /* 0=NORMAL,1=FAULT,2=DRIFT */
         snap.forgetting = (float)g_n_updates;      /* compteur cumulé de SGD déclenchés */
+    }
+#endif
+
+#ifdef DRIFT_DETECT
+    /* S4502 — remontée du verdict de drift SOUS -DDRIFT_DETECT UNIQUEMENT (wire format V3
+     * inchangé : sensor_stream lit toujours [acc][auroc][forgetting]). auroc ← verdict
+     * (0=NORMAL,1=WARNING,2=DRIFT), forgetting ← nb de DRIFT cumulés. accuracy inchangée. */
+    if (g_recv_flags & PROTO_FLAG_EWC_MODE) {
+        snap.auroc      = (float)g_drift_method_verdict;
+        snap.forgetting = (float)g_drift_method_alarms;
     }
 #endif
 

@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 44 |
 | **Priorité** | 🔴 Critique — fige la taxonomie, l'interface commune et la config ; conditionne S4402–S4406. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — `base.py` (`BaseDriftDetector`, `DriftVerdict`, `error_stream`), `docs/context/drift_detectors.md`, `configs/sprint44_drift_detection.yaml`. |
 | **Durée estimée** | 4h |
 | **Dépendances** | Sprint 43 ✅ (datasets) · `src/evaluation/drift_detector.py` ✅ (baseline à cataloguer) |
 | **Fichiers cibles** | `docs/context/drift_detectors.md` (source de vérité), `configs/sprint44_drift_detection.yaml` |

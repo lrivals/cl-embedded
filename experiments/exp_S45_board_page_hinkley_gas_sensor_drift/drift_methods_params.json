@@ -1,0 +1,9 @@
+{
+  "page_hinkley": {
+    "delta": 0.005,
+    "lambda": 50.0,
+    "warning_level": null,
+    "drift_level": null,
+    "min_instances": 30
+  }
+}

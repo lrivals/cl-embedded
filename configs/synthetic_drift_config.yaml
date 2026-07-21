@@ -1,0 +1,29 @@
+# Synthétique — config loader (Sprint 43, S4302)
+# Vérité-terrain de drift EXACTE (points imposés) pour calibrer les métriques S44. PC-only.
+data:
+  dataset: synthetic
+  # gradual_mixture = drift COVARIATE (décalage de moyenne) → détectable par la chaîne
+  # KS/MMD/Mahalanobis de S4303 ; transition_width=0 → saut net exactement au drift_point.
+  # (sea = concept drift pur, P(x) constant, non détecté par une chaîne covariate — dispo mais
+  #  non recommandé pour valider la mesure.)
+  generator: gradual_mixture   # sea | rotating_hyperplane | gradual_mixture
+  n_samples: 6000
+  drift_points:             # points de drift imposés (== retournés par le loader)
+    - 1500
+    - 3000
+    - 4500
+  n_features: 6
+  transition_width: 0       # 0 = saut net ; >0 = transition graduelle
+  sea_thresholds:           # seuil theta par segment (utilisé seulement si generator=sea)
+    - 8.0
+    - 12.0
+    - 8.0
+    - 12.0
+seed: 42
+
+characterization:
+  window_size: 200
+  stride: 50               # résolution fine → alignement pic ↔ drift_point proche de 0
+  hist_bins: 20
+  mmd_gamma: null
+  top_k_features: 6

@@ -27,17 +27,25 @@ QUANT_CATALOGS = {
     "quantization/pedagogy",
     "quantization/pipeline",
     "quantization/impact",
+    "quantization/moment",
 }
-IMPACT_SRC = Path(__file__).resolve().parents[1] / "src/figures/catalogs/quant_impact.py"
+_CATALOGS_DIR = Path(__file__).resolve().parents[1] / "src/figures/catalogs"
+IMPACT_SRC = _CATALOGS_DIR / "quant_impact.py"
 
-# Constantes de mise en page autorisées dans quant_impact.py (positions, largeurs de
-# barres, alpha, tailles de police, limites d'axes) — AUCUNE n'est un résultat. Un
-# littéral hors de cette liste blanche fait échouer le test : c'est le garde-fou
-# « aucun chiffre de résultat en dur » (règle Sprints 33/40).
+# Constantes de mise en page autorisées (positions, largeurs de barres, alpha, tailles de
+# police, limites d'axes, figsizes) — AUCUNE n'est un résultat. Un littéral hors de cette
+# liste blanche fait échouer le test : c'est le garde-fou « aucun chiffre de résultat en
+# dur » (règle Sprints 33/40). Scanné sur quant_impact.py (S4205) ET quant_moment.py (S4606).
 LAYOUT_WHITELIST: set[float] = {
-    0.0, 0.005, 0.01, 0.05, 0.15, 0.2, 0.3, 0.35, 0.4, 0.5, 0.55, 0.6,
-    0.9, 0.92, 0.98, 1.0, 1.05, 1.2, 1.4, 1.5, 2.0, 4.5, 8.5,
+    0.0, 0.005, 0.01, 0.02, 0.03, 0.05, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.55, 0.6,
+    0.82, 0.9, 0.92, 0.98, 1.0, 1.05, 1.2, 1.4, 1.5, 2.0, 4.5, 5.0, 8.0, 8.5, 9.0, 11.0,
 }
+
+# Modules de catalogue soumis à la garde AST « 0 chiffre en dur ».
+HARDCODE_GUARDED_SRCS: list[Path] = [
+    IMPACT_SRC,
+    _CATALOGS_DIR / "quant_moment.py",
+]
 
 
 def test_registry_lists_catalogs() -> None:
@@ -58,9 +66,10 @@ def test_registry_lists_catalogs() -> None:
         registry._CATALOGS.pop(toy_name, None)  # nettoyage de l'état global
 
 
-def test_no_hardcoded_results() -> None:
-    """Scan AST de quant_impact.py : aucun flottant hors liste blanche de layout."""
-    tree = ast.parse(IMPACT_SRC.read_text(encoding="utf-8"))
+@pytest.mark.parametrize("src", HARDCODE_GUARDED_SRCS, ids=lambda p: p.name)
+def test_no_hardcoded_results(src: Path) -> None:
+    """Scan AST des catalogues gardés : aucun flottant hors liste blanche de layout."""
+    tree = ast.parse(src.read_text(encoding="utf-8"))
     offending = {
         node.value
         for node in ast.walk(tree)
@@ -69,7 +78,7 @@ def test_no_hardcoded_results() -> None:
         and node.value not in LAYOUT_WHITELIST
     }
     assert not offending, (
-        f"Littéraux flottants suspects dans quant_impact.py : {sorted(offending)} — "
+        f"Littéraux flottants suspects dans {src.name} : {sorted(offending)} — "
         "toute valeur de résultat doit être chargée via load_experiment, pas écrite en dur."
     )
 

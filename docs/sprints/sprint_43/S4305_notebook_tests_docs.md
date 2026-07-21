@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 43 |
 | **Priorité** | 🟡 Moyenne — assemblage, garanties de non-régression, clôture sprint. |
-| **Statut** | 📝 Doc — spec ; implémentation à venir. |
+| **Statut** | ✅ Implémenté — notebook `notebooks/cl_eval/drift_datasets/analysis.ipynb` (galerie FR commentée, résumés + tableau comparatif chargés depuis les JSON, nbconvert OK, skip gracieux si `data/raw` absent) ; `tests/test_drift_datasets.py` **16 PASS** (contrat loaders, ordre chronologique préservé, validité GT `drift_points`, normalisation figée segment 0, GT exacte synthétique, garde AST 0-chiffre sur `drift_datasets.py`, idempotence `characterize()`) ; roadmap + `CLAUDE.md` + graphify. |
 | **Durée estimée** | 3h |
 | **Dépendances** | S4302 ✅ (loaders) · S4303 ✅ (caractérisation) · S4304 ✅ (figures) · `pytest` · `nbconvert` |
 | **Fichiers cibles** | `notebooks/cl_eval/drift_datasets/analysis.ipynb`, `tests/test_drift_datasets.py`, `docs/roadmap_phase2.md`, `CLAUDE.md` |

@@ -20,9 +20,9 @@
     "semantic_hash": "2f1fe58af1eaad5e2cffafa086e2eb66"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/data/__init__.py": {
-    "mtime": 1775052170.7065709,
-    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
-    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+    "mtime": 1783501823.0232437,
+    "ast_hash": "cfde23bb02cf1513e8edd21a6e62674c",
+    "semantic_hash": "cfde23bb02cf1513e8edd21a6e62674c"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/data/pronostia_dataset.py": {
     "mtime": 1781791621.2049146,
@@ -95,9 +95,9 @@
     "semantic_hash": "e84409c3cf09fe93446fe625c0fe8e49"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/evaluation/feature_space_plots.py": {
-    "mtime": 1780318832.2518315,
-    "ast_hash": "c0bb3cab4f2099ca2a18f3a1b5e33749",
-    "semantic_hash": "c0bb3cab4f2099ca2a18f3a1b5e33749"
+    "mtime": 1783589696.5476508,
+    "ast_hash": "15d9d0ba34928e8aa596f54e82a95130",
+    "semantic_hash": "15d9d0ba34928e8aa596f54e82a95130"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/evaluation/plots.py": {
     "mtime": 1780318836.3558424,
@@ -165,9 +165,9 @@
     "semantic_hash": "3cea43f53780ec832de565746b0e108d"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/models/ewc/__init__.py": {
-    "mtime": 1780490315.3486264,
-    "ast_hash": "d1e5bab27eea5d44e09aeb21a8b54d6a",
-    "semantic_hash": "d1e5bab27eea5d44e09aeb21a8b54d6a"
+    "mtime": 1784631086.6823525,
+    "ast_hash": "9ecd4fee4d67c43229f5c46394f59a1e",
+    "semantic_hash": "9ecd4fee4d67c43229f5c46394f59a1e"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/models/ewc/ewc_oneclass.py": {
     "mtime": 1780318886.2957544,
@@ -240,9 +240,9 @@
     "semantic_hash": "7ac40af4529517e4d0fda33b08ddc572"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/export_weights_c.py": {
-    "mtime": 1782910695.4830403,
-    "ast_hash": "d13af275125a40eb7e515c35849f593b",
-    "semantic_hash": "d13af275125a40eb7e515c35849f593b"
+    "mtime": 1783602750.677815,
+    "ast_hash": "1161b054f138dd5ef3d0641f17c20f53",
+    "semantic_hash": "1161b054f138dd5ef3d0641f17c20f53"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/generate_cwru_severity_notebooks.py": {
     "mtime": 1777212689.937269,
@@ -395,9 +395,9 @@
     "semantic_hash": "70b4cccdf751ed27f7e8547aa71edff9"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/pipeline.c": {
-    "mtime": 1783420181.9520311,
-    "ast_hash": "bf4a0c531ecca6490badf691fc3f2313",
-    "semantic_hash": "bf4a0c531ecca6490badf691fc3f2313"
+    "mtime": 1783600087.0955875,
+    "ast_hash": "b46060be4184b13db53e80775fc66efe",
+    "semantic_hash": "b46060be4184b13db53e80775fc66efe"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/.vscode/c_cpp_properties.json": {
     "mtime": 1778478994.9784858,
@@ -430,9 +430,9 @@
     "semantic_hash": "a59e868ba4b027ad5ba070dbf71eaafc"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_runner.c": {
-    "mtime": 1782985143.5321178,
-    "ast_hash": "49facb32e287d2ba2651c9a955f7ef34",
-    "semantic_hash": "49facb32e287d2ba2651c9a955f7ef34"
+    "mtime": 1783602573.3158,
+    "ast_hash": "6763dfeb6db4cb6fcaa301c590b038d0",
+    "semantic_hash": "6763dfeb6db4cb6fcaa301c590b038d0"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/mock_data.h": {
     "mtime": 1779890559.8929589,
@@ -500,9 +500,9 @@
     "semantic_hash": "c177e5e68823ec3df8cda1a15532f899"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/model_weights.h": {
-    "mtime": 1783421375.2941625,
-    "ast_hash": "dcad1576cd541597ad67da97d9e49461",
-    "semantic_hash": "dcad1576cd541597ad67da97d9e49461"
+    "mtime": 1784631546.3992321,
+    "ast_hash": "f66d699cfc8ebd09fbd8caad0049ed64",
+    "semantic_hash": "f66d699cfc8ebd09fbd8caad0049ed64"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/stm32f4xx.h": {
     "mtime": 1778482498.1380942,
@@ -520,9 +520,9 @@
     "semantic_hash": "d308c44b3fb4c75aeca6a0849f760980"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/triple_gap.md": {
-    "mtime": 1783422969.6471016,
-    "ast_hash": "7d10473d58e1bf0b31e0531024e6e6e5",
-    "semantic_hash": "7d10473d58e1bf0b31e0531024e6e6e5"
+    "mtime": 1784631795.076249,
+    "ast_hash": "9fb6936fac6e5c7fd95c92a43a9c93cc",
+    "semantic_hash": "9fb6936fac6e5c7fd95c92a43a9c93cc"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/roadmap.md": {
     "mtime": 1779359321.895805,
@@ -530,9 +530,9 @@
     "semantic_hash": "d1cf0bc8b0e211965aedde8bc99d2490"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/roadmap_phase2.md": {
-    "mtime": 1783495150.0200253,
-    "ast_hash": "546bb7c4bcf64e122b9767177d8c29fe",
-    "semantic_hash": "546bb7c4bcf64e122b9767177d8c29fe"
+    "mtime": 1784631762.4053633,
+    "ast_hash": "375942e53f74e5a0206b679423aa0b04",
+    "semantic_hash": "375942e53f74e5a0206b679423aa0b04"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/embedded_demo_guide.md": {
     "mtime": 1779304998.1706638,
@@ -9720,9 +9720,9 @@
     "semantic_hash": "ec8a869e7cf0fa3c1125e1c838b66467"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/CLAUDE.md": {
-    "mtime": 1783495436.9600499,
-    "ast_hash": "481290289666711f7eca4a871d90f83a",
-    "semantic_hash": "481290289666711f7eca4a871d90f83a"
+    "mtime": 1784631908.053182,
+    "ast_hash": "dd1da81f4b459a5d6e7a8af4d0d89f22",
+    "semantic_hash": "dd1da81f4b459a5d6e7a8af4d0d89f22"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/requirements.txt": {
     "mtime": 1778480325.7052853,
@@ -17385,9 +17385,9 @@
     "semantic_hash": "8e03e01daa9469ce4d2a3eb2ddbedfca"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/model_weights_ewc.h": {
-    "mtime": 1783421376.4488454,
-    "ast_hash": "b0c8e9f8abcacd3383fabcc2c4b3aaa1",
-    "semantic_hash": "b0c8e9f8abcacd3383fabcc2c4b3aaa1"
+    "mtime": 1784631547.2595444,
+    "ast_hash": "2f093ebb21596029539fba34f63e0929",
+    "semantic_hash": "2f093ebb21596029539fba34f63e0929"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/battery_feature_selection.py": {
     "mtime": 1782212802.2175734,
@@ -24645,9 +24645,9 @@
     "semantic_hash": "b651863e93731050d94d91e7694ad915"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/ewc_head_int8_v2_weights.h": {
-    "mtime": 1783421376.567477,
-    "ast_hash": "2c38fb9f31238aca16889a75b6a57191",
-    "semantic_hash": "2c38fb9f31238aca16889a75b6a57191"
+    "mtime": 1784631552.8073776,
+    "ast_hash": "fd0205096b16a7fbb9c9b06c47f74de9",
+    "semantic_hash": "fd0205096b16a7fbb9c9b06c47f74de9"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/ewc_head_int8_v2.h": {
     "mtime": 1782898776.6174202,
@@ -25065,9 +25065,9 @@
     "semantic_hash": "e3e34a1eca3e1e475af5bc22311fbc9d"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/ram_breakdown.py": {
-    "mtime": 1782977263.4610913,
-    "ast_hash": "b138091141ade3c7a85cc4769daa774d",
-    "semantic_hash": "b138091141ade3c7a85cc4769daa774d"
+    "mtime": 1784195911.755448,
+    "ast_hash": "dbe037f46ff77720bb18638279dd8780",
+    "semantic_hash": "dbe037f46ff77720bb18638279dd8780"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/stack_usage_report.py": {
     "mtime": 1782986475.5693555,
@@ -25110,37 +25110,37 @@
     "semantic_hash": "e8328ae70e8bb22af50ff1006e38aaeb"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_stack_painting.png": {
-    "mtime": 1783067323.75409,
+    "mtime": 1784196359.7298908,
     "ast_hash": "cc33eaf1d871e01253de975b0910a3a2",
     "semantic_hash": "cc33eaf1d871e01253de975b0910a3a2"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_stack_bound.png": {
-    "mtime": 1783067327.051204,
-    "ast_hash": "26adba45c7ebab172be6f914d8f3af1b",
-    "semantic_hash": "26adba45c7ebab172be6f914d8f3af1b"
+    "mtime": 1784196362.2511606,
+    "ast_hash": "1d4cccfd341db09c1fb880387560f89b",
+    "semantic_hash": "1d4cccfd341db09c1fb880387560f89b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_infer_vs_train.png": {
-    "mtime": 1783067326.2071896,
+    "mtime": 1784196361.5569122,
     "ast_hash": "030e8348de574ee5ac924e23c0e6f942",
     "semantic_hash": "030e8348de574ee5ac924e23c0e6f942"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_model_maps.png": {
-    "mtime": 1783067324.2718313,
-    "ast_hash": "2b9c6fec5e27eab9a6a7766ec3d61987",
-    "semantic_hash": "2b9c6fec5e27eab9a6a7766ec3d61987"
+    "mtime": 1784196360.1592567,
+    "ast_hash": "61b679d0f1c20303945b2d9f9c905488",
+    "semantic_hash": "61b679d0f1c20303945b2d9f9c905488"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_monitoring_stacked.png": {
-    "mtime": 1783067325.7801821,
-    "ast_hash": "0e824843c969c356f8e63a3ac627bd0c",
-    "semantic_hash": "0e824843c969c356f8e63a3ac627bd0c"
+    "mtime": 1784196361.2439086,
+    "ast_hash": "6e4ca971f160c27fa199112ef4ba55f1",
+    "semantic_hash": "6e4ca971f160c27fa199112ef4ba55f1"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_shared_frame.png": {
-    "mtime": 1783067326.5561955,
+    "mtime": 1784196361.8389156,
     "ast_hash": "2678a3cfa36221f31429799ef99adeda",
     "semantic_hash": "2678a3cfa36221f31429799ef99adeda"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_memory_map.png": {
-    "mtime": 1783067323.3391402,
+    "mtime": 1784196359.3838868,
     "ast_hash": "5685b0247cf8434c447ce2746fa572c6",
     "semantic_hash": "5685b0247cf8434c447ce2746fa572c6"
   },
@@ -25295,9 +25295,9 @@
     "semantic_hash": "3d47637e8a4a0421f272e198bafb237c"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4100_sprint_41.md": {
-    "mtime": 1783082027.8237767,
-    "ast_hash": "c7a76e411e863e591b0c922f281c189d",
-    "semantic_hash": "c7a76e411e863e591b0c922f281c189d"
+    "mtime": 1783496977.8921814,
+    "ast_hash": "30a4e7a34c50756f1919c03bc8525606",
+    "semantic_hash": "30a4e7a34c50756f1919c03bc8525606"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_41/S4104_audit_glossaire.md": {
     "mtime": 1783082298.6992273,
@@ -25330,69 +25330,59 @@
     "semantic_hash": "cb8acaf37fca800722947388044b4a7b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_maha.png": {
-    "mtime": 1783067330.249259,
-    "ast_hash": "554629f570d217fa0f45ff59dd564d88",
-    "semantic_hash": "554629f570d217fa0f45ff59dd564d88"
+    "mtime": 1784196364.6540868,
+    "ast_hash": "b5a5b9987cec9ce2197f78437df21f72",
+    "semantic_hash": "b5a5b9987cec9ce2197f78437df21f72"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_hdc.png": {
-    "mtime": 1783067329.1772406,
-    "ast_hash": "5fe719bf76f3f21e8f690531ba096495",
-    "semantic_hash": "5fe719bf76f3f21e8f690531ba096495"
+    "mtime": 1784196363.767856,
+    "ast_hash": "6a267b262d9d94a11fef3c830b255e3d",
+    "semantic_hash": "6a267b262d9d94a11fef3c830b255e3d"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_ewc.png": {
-    "mtime": 1783067327.97822,
-    "ast_hash": "45d59ab5e47809f2617cd4f6c73011a6",
-    "semantic_hash": "45d59ab5e47809f2617cd4f6c73011a6"
+    "mtime": 1784196362.9477282,
+    "ast_hash": "fd3a8f5da58a7185706b4a19d5a27d32",
+    "semantic_hash": "fd3a8f5da58a7185706b4a19d5a27d32"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_lifecycle_tinyol.png": {
-    "mtime": 1783067331.3612783,
-    "ast_hash": "729e43f97b21fc118c0222c4e565bdf4",
-    "semantic_hash": "729e43f97b21fc118c0222c4e565bdf4"
+    "mtime": 1784196365.4941213,
+    "ast_hash": "bfffc2fcd10f1940ee777e1681720861",
+    "semantic_hash": "bfffc2fcd10f1940ee777e1681720861"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_cases_compare.png": {
-    "mtime": 1783067332.1692922,
+    "mtime": 1784196366.1780493,
     "ast_hash": "c2e9564058d59d9ad99f20842e96b4f2",
     "semantic_hash": "c2e9564058d59d9ad99f20842e96b4f2"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/fig_section3_detail.png": {
-    "mtime": 1783067324.900167,
-    "ast_hash": "2af230b81888a41c93d0a6c6893c4465",
-    "semantic_hash": "2af230b81888a41c93d0a6c6893c4465"
+    "mtime": 1784196360.7359028,
+    "ast_hash": "0786bcab469408078cf998d5bce95083",
+    "semantic_hash": "0786bcab469408078cf998d5bce95083"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_maha.png": {
-    "mtime": 1783067330.249259,
-    "ast_hash": "554629f570d217fa0f45ff59dd564d88",
-    "semantic_hash": "554629f570d217fa0f45ff59dd564d88"
+    "mtime": 1784196364.6540868,
+    "ast_hash": "b5a5b9987cec9ce2197f78437df21f72",
+    "semantic_hash": "b5a5b9987cec9ce2197f78437df21f72"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_hdc.png": {
-    "mtime": 1783067329.1772406,
-    "ast_hash": "5fe719bf76f3f21e8f690531ba096495",
-    "semantic_hash": "5fe719bf76f3f21e8f690531ba096495"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/2fig_stack_painting.png": {
-    "mtime": 1783067323.75409,
-    "ast_hash": "cc33eaf1d871e01253de975b0910a3a2",
-    "semantic_hash": "cc33eaf1d871e01253de975b0910a3a2"
+    "mtime": 1784196363.767856,
+    "ast_hash": "6a267b262d9d94a11fef3c830b255e3d",
+    "semantic_hash": "6a267b262d9d94a11fef3c830b255e3d"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_ewc.png": {
-    "mtime": 1783067327.97822,
-    "ast_hash": "45d59ab5e47809f2617cd4f6c73011a6",
-    "semantic_hash": "45d59ab5e47809f2617cd4f6c73011a6"
+    "mtime": 1784196362.9477282,
+    "ast_hash": "fd3a8f5da58a7185706b4a19d5a27d32",
+    "semantic_hash": "fd3a8f5da58a7185706b4a19d5a27d32"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_model_maps.png": {
-    "mtime": 1783067324.2718313,
-    "ast_hash": "2b9c6fec5e27eab9a6a7766ec3d61987",
-    "semantic_hash": "2b9c6fec5e27eab9a6a7766ec3d61987"
-  },
-  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/1fig_memory_map.png": {
-    "mtime": 1783067323.3391402,
-    "ast_hash": "5685b0247cf8434c447ce2746fa572c6",
-    "semantic_hash": "5685b0247cf8434c447ce2746fa572c6"
+    "mtime": 1784196360.1592567,
+    "ast_hash": "61b679d0f1c20303945b2d9f9c905488",
+    "semantic_hash": "61b679d0f1c20303945b2d9f9c905488"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_lifecycle_tinyol.png": {
-    "mtime": 1783067331.3612783,
-    "ast_hash": "729e43f97b21fc118c0222c4e565bdf4",
-    "semantic_hash": "729e43f97b21fc118c0222c4e565bdf4"
+    "mtime": 1784196365.4941213,
+    "ast_hash": "bfffc2fcd10f1940ee777e1681720861",
+    "semantic_hash": "bfffc2fcd10f1940ee777e1681720861"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/scenario_usecase/C_budget_ram.png": {
     "mtime": 1782998351.3281324,
@@ -25445,9 +25435,9 @@
     "semantic_hash": "255e0fd63270d9c2cdc3e80e18d44727"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/__init__.py": {
-    "mtime": 1783423863.0391445,
-    "ast_hash": "7af82d8b152cb17c46b74dc64efc5e71",
-    "semantic_hash": "7af82d8b152cb17c46b74dc64efc5e71"
+    "mtime": 1784628560.2493398,
+    "ast_hash": "1beb1aa58bc1d971bb77e0c9e955e9d0",
+    "semantic_hash": "1beb1aa58bc1d971bb77e0c9e955e9d0"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/quant_pedagogy.py": {
     "mtime": 1783410660.7326999,
@@ -25485,9 +25475,9 @@
     "semantic_hash": "ff28ee02088c186cb1b6e5561efa0829"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4200_sprint_42.md": {
-    "mtime": 1783495096.1050208,
-    "ast_hash": "c355713b613e78167cf219c9103163a1",
-    "semantic_hash": "c355713b613e78167cf219c9103163a1"
+    "mtime": 1784194646.6684334,
+    "ast_hash": "0609eaa2f62e105e6a4f41d0d12ae23b",
+    "semantic_hash": "0609eaa2f62e105e6a4f41d0d12ae23b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_42/S4203_figures_pedagogiques.md": {
     "mtime": 1783412371.55418,
@@ -25560,9 +25550,9 @@
     "semantic_hash": "8c3df4dc0a4fd5716328b3592f0b943e"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/tests/test_figures_library.py": {
-    "mtime": 1783424327.4233854,
-    "ast_hash": "da8edccf7eb8c4ead0d734023d2059f5",
-    "semantic_hash": "da8edccf7eb8c4ead0d734023d2059f5"
+    "mtime": 1784628875.677013,
+    "ast_hash": "df8ee5647ad7b6259330546986a111de",
+    "semantic_hash": "df8ee5647ad7b6259330546986a111de"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json": {
     "mtime": 1783421198.3169534,
@@ -25600,29 +25590,29 @@
     "semantic_hash": "5f2bf80b805dafac070eeff07afde72c"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4401_inventaire_methodes.md": {
-    "mtime": 1783413364.2942648,
-    "ast_hash": "eaf0a63564a37e9579d6a4708c16c4bd",
-    "semantic_hash": "eaf0a63564a37e9579d6a4708c16c4bd"
+    "mtime": 1783511429.876265,
+    "ast_hash": "787b37b743becc4f3eae712186a794c3",
+    "semantic_hash": "787b37b743becc4f3eae712186a794c3"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4405_execution_figures.md": {
-    "mtime": 1783413484.2952394,
-    "ast_hash": "0eeddc6f4e6e372df7f39074c7379ebd",
-    "semantic_hash": "0eeddc6f4e6e372df7f39074c7379ebd"
+    "mtime": 1783587878.1731668,
+    "ast_hash": "79c538e46e4067183aa9b57772cdee46",
+    "semantic_hash": "79c538e46e4067183aa9b57772cdee46"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4404_harness_evaluation.md": {
-    "mtime": 1783413453.967447,
-    "ast_hash": "b3c5918a8b143630c62b8e153574be12",
-    "semantic_hash": "b3c5918a8b143630c62b8e153574be12"
+    "mtime": 1783587870.792266,
+    "ast_hash": "ab7e5becaf6cd79081b8cf761b1379df",
+    "semantic_hash": "ab7e5becaf6cd79081b8cf761b1379df"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4403_detecteurs_non_supervises.md": {
-    "mtime": 1783413426.08827,
-    "ast_hash": "de4c3e80341399f99f6d3580c28ffb2d",
-    "semantic_hash": "de4c3e80341399f99f6d3580c28ffb2d"
+    "mtime": 1783511447.7706761,
+    "ast_hash": "c97beb6f9793ea58db2db61e21322227",
+    "semantic_hash": "c97beb6f9793ea58db2db61e21322227"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4406_notebook_tests_docs.md": {
-    "mtime": 1783413510.177277,
-    "ast_hash": "ad74f8d0b5e75d1ed87af540277c3e4e",
-    "semantic_hash": "ad74f8d0b5e75d1ed87af540277c3e4e"
+    "mtime": 1783587883.4763584,
+    "ast_hash": "98eea20fed4d73aff326ba5fc6c9ae68",
+    "semantic_hash": "98eea20fed4d73aff326ba5fc6c9ae68"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4400_sprint_44.md": {
     "mtime": 1783413329.4636993,
@@ -25630,49 +25620,49 @@
     "semantic_hash": "8515f536a9a9a9d3e4965375e6de2155"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_44/S4402_detecteurs_supervises.md": {
-    "mtime": 1783413391.557267,
-    "ast_hash": "42853807ce86721855afa5181715afcb",
-    "semantic_hash": "42853807ce86721855afa5181715afcb"
+    "mtime": 1783511438.2756364,
+    "ast_hash": "fde5e1b4ede203265030c79a496af052",
+    "semantic_hash": "fde5e1b4ede203265030c79a496af052"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4303_caracterisation_drift.md": {
-    "mtime": 1783413221.5256565,
-    "ast_hash": "d639034bc29b2fbc48efba87bf59dbd6",
-    "semantic_hash": "d639034bc29b2fbc48efba87bf59dbd6"
+    "mtime": 1783503425.907958,
+    "ast_hash": "9e6a79e5e614203bb29d8ab17bd79359",
+    "semantic_hash": "9e6a79e5e614203bb29d8ab17bd79359"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4305_notebook_tests_docs.md": {
-    "mtime": 1783413268.6760976,
-    "ast_hash": "8b8dd282a3e30e4bc97aa1dafca7f840",
-    "semantic_hash": "8b8dd282a3e30e4bc97aa1dafca7f840"
+    "mtime": 1783508418.5186825,
+    "ast_hash": "bdbdbbacbc5e53dc5e5f7773099ca527",
+    "semantic_hash": "bdbdbbacbc5e53dc5e5f7773099ca527"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4301_recherche_datasets.md": {
-    "mtime": 1783426572.9284663,
-    "ast_hash": "2eae4f74f3e0edc31f3229819b3c8cb0",
-    "semantic_hash": "2eae4f74f3e0edc31f3229819b3c8cb0"
+    "mtime": 1783503406.0387914,
+    "ast_hash": "12c0413e3bcdcf53467927baadbdcc12",
+    "semantic_hash": "12c0413e3bcdcf53467927baadbdcc12"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4302_acquisition_loaders.md": {
-    "mtime": 1783413191.2642498,
-    "ast_hash": "e85619f06b63ced2c0eacc0cf4f3b83d",
-    "semantic_hash": "e85619f06b63ced2c0eacc0cf4f3b83d"
+    "mtime": 1783503413.7107313,
+    "ast_hash": "78a892409160f0fd6da723cdd1cb6b0b",
+    "semantic_hash": "78a892409160f0fd6da723cdd1cb6b0b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4300_sprint_43.md": {
-    "mtime": 1783413119.8768995,
-    "ast_hash": "46b87d08a79abc6e061ca8b26a917907",
-    "semantic_hash": "46b87d08a79abc6e061ca8b26a917907"
+    "mtime": 1783588425.7862315,
+    "ast_hash": "cac589444ae5c45a415793a7a7e0e2d3",
+    "semantic_hash": "cac589444ae5c45a415793a7a7e0e2d3"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4304_figures_analyse.md": {
-    "mtime": 1783413245.5886576,
-    "ast_hash": "8fd2a4ce7ddd4ebf79c497bd6aac500e",
-    "semantic_hash": "8fd2a4ce7ddd4ebf79c497bd6aac500e"
+    "mtime": 1783508408.7018251,
+    "ast_hash": "44132aae1fe7b02310fdf4ec39a8f31f",
+    "semantic_hash": "44132aae1fe7b02310fdf4ec39a8f31f"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4503_export_parite.md": {
-    "mtime": 1783421154.2771142,
-    "ast_hash": "637ea7d6fd7f58fbc5b1eabc0c78b019",
-    "semantic_hash": "637ea7d6fd7f58fbc5b1eabc0c78b019"
+    "mtime": 1783604343.2589512,
+    "ast_hash": "430592c4223518b19f9ab728604dfdc1",
+    "semantic_hash": "430592c4223518b19f9ab728604dfdc1"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4502_firmware_detecteurs.md": {
-    "mtime": 1783421125.7791119,
-    "ast_hash": "b72c869b4daeec6b62073abb3852fdfa",
-    "semantic_hash": "b72c869b4daeec6b62073abb3852fdfa"
+    "mtime": 1783603805.5034008,
+    "ast_hash": "c645d71ddada55abf20a5388c2c1cc72",
+    "semantic_hash": "c645d71ddada55abf20a5388c2c1cc72"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4500_sprint_45.md": {
     "mtime": 1783413565.5286489,
@@ -25680,19 +25670,19 @@
     "semantic_hash": "ac80b5310986e5f29801026e17ed5454"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4505_notebook_tests_docs.md": {
-    "mtime": 1783421206.6931188,
-    "ast_hash": "fe65e238f4cc1424698292912707c5b7",
-    "semantic_hash": "fe65e238f4cc1424698292912707c5b7"
+    "mtime": 1784198800.8057964,
+    "ast_hash": "cafe61a7eaa1c72f61694a1023053a13",
+    "semantic_hash": "cafe61a7eaa1c72f61694a1023053a13"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4504_mesure_board.md": {
-    "mtime": 1783421183.7253342,
-    "ast_hash": "4a3ee64c9b0c02a49e8fc74f9dd195a6",
-    "semantic_hash": "4a3ee64c9b0c02a49e8fc74f9dd195a6"
+    "mtime": 1784198766.9556355,
+    "ast_hash": "d50b7936dbfa703f740245c575fcc221",
+    "semantic_hash": "d50b7936dbfa703f740245c575fcc221"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_45/S4501_selection_cadrage.md": {
-    "mtime": 1783413594.4702845,
-    "ast_hash": "c01df4bac59ef22673e2362f0872c78a",
-    "semantic_hash": "c01df4bac59ef22673e2362f0872c78a"
+    "mtime": 1783599869.720569,
+    "ast_hash": "ba070ff20033e420d0845a4ccd5228f1",
+    "semantic_hash": "ba070ff20033e420d0845a4ccd5228f1"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/context/drift_fault_tandem.md": {
     "mtime": 1783421264.137114,
@@ -25813,5 +25803,1150 @@
     "mtime": 1783422331.9447,
     "ast_hash": "f41fc4d81438591570b367c29b36e70b",
     "semantic_hash": "f41fc4d81438591570b367c29b36e70b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/data/hydraulic_dataset.py": {
+    "mtime": 1783501719.3895867,
+    "ast_hash": "37b8c27ef8bfd16174ec457894b370ae",
+    "semantic_hash": "37b8c27ef8bfd16174ec457894b370ae"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/data/drift_dataset.py": {
+    "mtime": 1783501654.365581,
+    "ast_hash": "fa0270185626c33339efcaedc93a2207",
+    "semantic_hash": "fa0270185626c33339efcaedc93a2207"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/data/synthetic_drift_dataset.py": {
+    "mtime": 1783501775.1895914,
+    "ast_hash": "5edee6974bdcdc32ab791690e24d7c00",
+    "semantic_hash": "5edee6974bdcdc32ab791690e24d7c00"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/data/electricity_dataset.py": {
+    "mtime": 1783501913.8582876,
+    "ast_hash": "02a84c9b08e95273c959d9a7746f42f4",
+    "semantic_hash": "02a84c9b08e95273c959d9a7746f42f4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/data/gas_sensor_drift_dataset.py": {
+    "mtime": 1783501682.7045112,
+    "ast_hash": "d122844ecffbc71451afb65a5d313ffd",
+    "semantic_hash": "d122844ecffbc71451afb65a5d313ffd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/download_drift_datasets.py": {
+    "mtime": 1783501848.1074858,
+    "ast_hash": "8f0f48d9ecea9b9c2ea7d29a73343f0a",
+    "semantic_hash": "8f0f48d9ecea9b9c2ea7d29a73343f0a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/characterize_drift.py": {
+    "mtime": 1783502663.5296674,
+    "ast_hash": "02d8550c19c67ef32fc4eefb31372c9d",
+    "semantic_hash": "02d8550c19c67ef32fc4eefb31372c9d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S43_drift_char/electricity/characterization.json": {
+    "mtime": 1783502855.9571745,
+    "ast_hash": "f9db2e6c89c4e5956ebb3ccafeeb2c38",
+    "semantic_hash": "f9db2e6c89c4e5956ebb3ccafeeb2c38"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S43_drift_char/synthetic/characterization.json": {
+    "mtime": 1783502693.0027444,
+    "ast_hash": "dc76588190fe124fb864c40272fb96d2",
+    "semantic_hash": "dc76588190fe124fb864c40272fb96d2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S43_drift_char/hydraulic/characterization.json": {
+    "mtime": 1783502851.4695578,
+    "ast_hash": "0460f3338b02688208d89917c1f0c1aa",
+    "semantic_hash": "0460f3338b02688208d89917c1f0c1aa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S43_drift_char/gas_sensor_drift/characterization.json": {
+    "mtime": 1783502844.1526828,
+    "ast_hash": "d261ad2b0d0e5aec4f8f3c32edb6f1ec",
+    "semantic_hash": "d261ad2b0d0e5aec4f8f3c32edb6f1ec"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/electricity_drift_config.yaml": {
+    "mtime": 1783501805.9574528,
+    "ast_hash": "09b92cd59b28355fd136268925d69630",
+    "semantic_hash": "09b92cd59b28355fd136268925d69630"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/hydraulic_drift_config.yaml": {
+    "mtime": 1783501799.3404205,
+    "ast_hash": "1291c2e889df139c3a4b77b9a476037d",
+    "semantic_hash": "1291c2e889df139c3a4b77b9a476037d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/gas_sensor_drift_config.yaml": {
+    "mtime": 1783501789.5323615,
+    "ast_hash": "9e67fad3d85570b94dbf4bb8657f91dd",
+    "semantic_hash": "9e67fad3d85570b94dbf4bb8657f91dd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/synthetic_drift_config.yaml": {
+    "mtime": 1783502670.222668,
+    "ast_hash": "26787d4f147eb2456812f2778a96f264",
+    "semantic_hash": "26787d4f147eb2456812f2778a96f264"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/drift_datasets.md": {
+    "mtime": 1783503338.020397,
+    "ast_hash": "f50b30e46fe93d5ce8cd3fb119f943c7",
+    "semantic_hash": "f50b30e46fe93d5ce8cd3fb119f943c7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/drift_datasets.py": {
+    "mtime": 1783504407.6860857,
+    "ast_hash": "750edf6a0fca65b64c3e90a9c5db8a2b",
+    "semantic_hash": "750edf6a0fca65b64c3e90a9c5db8a2b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_drift_datasets.py": {
+    "mtime": 1783507455.1620834,
+    "ast_hash": "7738dcce565240dded7a354eb7256e5b",
+    "semantic_hash": "7738dcce565240dded7a354eb7256e5b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/pca_gas_sensor_drift.png": {
+    "mtime": 1783507329.3030727,
+    "ast_hash": "92e1b74b85cbaf41b4989327ddb6c2bd",
+    "semantic_hash": "92e1b74b85cbaf41b4989327ddb6c2bd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/heatmap_gas_sensor_drift.png": {
+    "mtime": 1783507331.274073,
+    "ast_hash": "3f1ea9b40048bb6163a910d8019439f9",
+    "semantic_hash": "3f1ea9b40048bb6163a910d8019439f9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/timeline_electricity.png": {
+    "mtime": 1783510436.526338,
+    "ast_hash": "b5fed42ff72a8e0b571d7fdb4cefe2b3",
+    "semantic_hash": "b5fed42ff72a8e0b571d7fdb4cefe2b3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/shift_hydraulic.png": {
+    "mtime": 1783507336.4478974,
+    "ast_hash": "111eceacf9e9d4b315642852f8c17651",
+    "semantic_hash": "111eceacf9e9d4b315642852f8c17651"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/comparatif_datasets.png": {
+    "mtime": 1783510436.7289,
+    "ast_hash": "3699bfa56010a3c7f79ebdb30fa10c53",
+    "semantic_hash": "3699bfa56010a3c7f79ebdb30fa10c53"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/shift_gas_sensor_drift.png": {
+    "mtime": 1783507327.4850318,
+    "ast_hash": "31f706e11e061a2d3dcb1e4c560d8707",
+    "semantic_hash": "31f706e11e061a2d3dcb1e4c560d8707"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/heatmap_synthetic.png": {
+    "mtime": 1783507325.0213103,
+    "ast_hash": "a2637b6f4a9d473e3221b3b2958b2c0b",
+    "semantic_hash": "a2637b6f4a9d473e3221b3b2958b2c0b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/heatmap_electricity.png": {
+    "mtime": 1783507349.9280744,
+    "ast_hash": "e2e82e076b543028c5bb0dff159b4f8b",
+    "semantic_hash": "e2e82e076b543028c5bb0dff159b4f8b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/timeline_hydraulic.png": {
+    "mtime": 1783510436.293338,
+    "ast_hash": "d9c19d2a086cd7051ab6719f6ab094d1",
+    "semantic_hash": "d9c19d2a086cd7051ab6719f6ab094d1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/shift_electricity.png": {
+    "mtime": 1783507348.2560742,
+    "ast_hash": "2a48bbb81c974af20751a6a29da6eb7b",
+    "semantic_hash": "2a48bbb81c974af20751a6a29da6eb7b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/timeline_synthetic.png": {
+    "mtime": 1783510435.958338,
+    "ast_hash": "30511ccdfb90f1b7a3da64016c86cf26",
+    "semantic_hash": "30511ccdfb90f1b7a3da64016c86cf26"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/pca_hydraulic.png": {
+    "mtime": 1783507341.2320738,
+    "ast_hash": "ad6ddbd34efcda831c83e00fc1953320",
+    "semantic_hash": "ad6ddbd34efcda831c83e00fc1953320"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/heatmap_hydraulic.png": {
+    "mtime": 1783507345.981074,
+    "ast_hash": "4ccb30f612673d0ef56eac54cfcec96e",
+    "semantic_hash": "4ccb30f612673d0ef56eac54cfcec96e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/pca_electricity.png": {
+    "mtime": 1783507348.4670744,
+    "ast_hash": "50f27e8847564abd5130127908072e73",
+    "semantic_hash": "50f27e8847564abd5130127908072e73"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/timeline_gas_sensor_drift.png": {
+    "mtime": 1783510436.1363382,
+    "ast_hash": "d375dce12e2c251d014cc7ae2ba90824",
+    "semantic_hash": "d375dce12e2c251d014cc7ae2ba90824"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/shift_synthetic.png": {
+    "mtime": 1783507323.494527,
+    "ast_hash": "7a026eca6e95bb194b85428bf47ac42c",
+    "semantic_hash": "7a026eca6e95bb194b85428bf47ac42c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_datasets/pca_synthetic.png": {
+    "mtime": 1783507323.7410722,
+    "ast_hash": "5f570c3de13be0aef3e6a6c3fbaae298",
+    "semantic_hash": "5f570c3de13be0aef3e6a6c3fbaae298"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/kswin.py": {
+    "mtime": 1783510848.2483733,
+    "ast_hash": "f2ee33169f5af811c206b5957dc94ea8",
+    "semantic_hash": "f2ee33169f5af811c206b5957dc94ea8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/psi.py": {
+    "mtime": 1783510808.1529212,
+    "ast_hash": "a6415687495c7bc1d8a889a82d8482cf",
+    "semantic_hash": "a6415687495c7bc1d8a889a82d8482cf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/ks_test.py": {
+    "mtime": 1783510825.3653715,
+    "ast_hash": "456aa5d47c59b6cca6b6da6aa1d4b78d",
+    "semantic_hash": "456aa5d47c59b6cca6b6da6aa1d4b78d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/mmd.py": {
+    "mtime": 1783511105.5393953,
+    "ast_hash": "8301abaa081373fe2d09199b0e008ac0",
+    "semantic_hash": "8301abaa081373fe2d09199b0e008ac0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/ddm.py": {
+    "mtime": 1783510654.7678382,
+    "ast_hash": "5c7fd39831419e30ffea1e621af492df",
+    "semantic_hash": "5c7fd39831419e30ffea1e621af492df"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/base.py": {
+    "mtime": 1783510605.0090606,
+    "ast_hash": "7856fb0b06e675910cd2103edba98070",
+    "semantic_hash": "7856fb0b06e675910cd2103edba98070"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/__init__.py": {
+    "mtime": 1783511027.4813886,
+    "ast_hash": "25a451974655eb0dccd85186b19a30c7",
+    "semantic_hash": "25a451974655eb0dccd85186b19a30c7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/adwin.py": {
+    "mtime": 1783510996.475386,
+    "ast_hash": "79337068452ea6b31cafba6d7301a614",
+    "semantic_hash": "79337068452ea6b31cafba6d7301a614"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/multivariate.py": {
+    "mtime": 1783511015.4008021,
+    "ast_hash": "21b07b1381882ed4cde7c33d45ef3e15",
+    "semantic_hash": "21b07b1381882ed4cde7c33d45ef3e15"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/eddm.py": {
+    "mtime": 1783510675.0263586,
+    "ast_hash": "32ef2f42454dce989994f63047b282e3",
+    "semantic_hash": "32ef2f42454dce989994f63047b282e3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/drift/page_hinkley.py": {
+    "mtime": 1783510697.0593767,
+    "ast_hash": "7fb0f4e6a867c9bbdbaf47de6d18daf3",
+    "semantic_hash": "7fb0f4e6a867c9bbdbaf47de6d18daf3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_drift_detectors.py": {
+    "mtime": 1783516473.4045668,
+    "ast_hash": "86993a4389b7c364bc4d451aa24917ed",
+    "semantic_hash": "86993a4389b7c364bc4d451aa24917ed"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/sprint44_drift_detection.yaml": {
+    "mtime": 1783511199.1229908,
+    "ast_hash": "f38bd7d28e5a9fe56de4b70799326a74",
+    "semantic_hash": "f38bd7d28e5a9fe56de4b70799326a74"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/drift_detectors.md": {
+    "mtime": 1783587682.9707916,
+    "ast_hash": "cf964407c2bd4a46371909b5f14e05d5",
+    "semantic_hash": "cf964407c2bd4a46371909b5f14e05d5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/drift_detection_pc.py": {
+    "mtime": 1783516429.5791833,
+    "ast_hash": "a1c876d6420541bd25747207c9862f4d",
+    "semantic_hash": "a1c876d6420541bd25747207c9862f4d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/evaluation/drift_metrics.py": {
+    "mtime": 1783515697.3236704,
+    "ast_hash": "93e1b9e476d973379bf8375c6c10d9da",
+    "semantic_hash": "93e1b9e476d973379bf8375c6c10d9da"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_sprint44_pc.py": {
+    "mtime": 1783516296.337218,
+    "ast_hash": "e046612fdde63c22432702350690366b",
+    "semantic_hash": "e046612fdde63c22432702350690366b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_drift_metrics.py": {
+    "mtime": 1783516642.2631059,
+    "ast_hash": "be6111e0579a117bee6248d8b4b45bfc",
+    "semantic_hash": "be6111e0579a117bee6248d8b4b45bfc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_eddm_hydraulic/results.json": {
+    "mtime": 1783516362.5648544,
+    "ast_hash": "165070ca36aac8442469278c4f2a9fcf",
+    "semantic_hash": "165070ca36aac8442469278c4f2a9fcf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_mmd_gas_sensor_drift/results.json": {
+    "mtime": 1783587663.4085648,
+    "ast_hash": "b073d5fb2965b28792b61ebd9190de16",
+    "semantic_hash": "b073d5fb2965b28792b61ebd9190de16"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ddm_synthetic/results.json": {
+    "mtime": 1783516350.4420788,
+    "ast_hash": "a63ed45f39ad9f6a572d05480a6defa3",
+    "semantic_hash": "a63ed45f39ad9f6a572d05480a6defa3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ddm_electricity/results.json": {
+    "mtime": 1783516356.6402402,
+    "ast_hash": "2789707e34f1cc96fd347a6572bfd023",
+    "semantic_hash": "2789707e34f1cc96fd347a6572bfd023"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_psi_gas_sensor_drift/results.json": {
+    "mtime": 1783587425.3079224,
+    "ast_hash": "ebb45b2ddfcd6e6da7789f29174e6c8a",
+    "semantic_hash": "ebb45b2ddfcd6e6da7789f29174e6c8a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_mmd_electricity/results.json": {
+    "mtime": 1783587643.997818,
+    "ast_hash": "60653921112f6742c04c29b0ac0b0334",
+    "semantic_hash": "60653921112f6742c04c29b0ac0b0334"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ks_test_electricity/results.json": {
+    "mtime": 1783587461.5931697,
+    "ast_hash": "fa4e0cde3abef1be104b05620135127a",
+    "semantic_hash": "fa4e0cde3abef1be104b05620135127a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_sliding_window_baseline_electricity/results.json": {
+    "mtime": 1783587435.2188275,
+    "ast_hash": "8c9f1db48fe72d00aa6a23dc9f453505",
+    "semantic_hash": "8c9f1db48fe72d00aa6a23dc9f453505"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_psi_hydraulic/results.json": {
+    "mtime": 1783587404.3052175,
+    "ast_hash": "934e06b4268050952a2f8ca2d2809090",
+    "semantic_hash": "934e06b4268050952a2f8ca2d2809090"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ks_test_gas_sensor_drift/results.json": {
+    "mtime": 1783587709.9816535,
+    "ast_hash": "f876449a24a26abdafff023a87df3ba1",
+    "semantic_hash": "f876449a24a26abdafff023a87df3ba1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_kswin_hydraulic/results.json": {
+    "mtime": 1783587471.7340457,
+    "ast_hash": "69e4a8f01e3835531bb86e66032c22af",
+    "semantic_hash": "69e4a8f01e3835531bb86e66032c22af"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_kswin_gas_sensor_drift/results.json": {
+    "mtime": 1783588600.1196747,
+    "ast_hash": "4d6e87e9c78dd522e34915a7ba8c133c",
+    "semantic_hash": "4d6e87e9c78dd522e34915a7ba8c133c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_page_hinkley_electricity/results.json": {
+    "mtime": 1783516368.882289,
+    "ast_hash": "af5287b2459d4a04def7bd19437e0c68",
+    "semantic_hash": "af5287b2459d4a04def7bd19437e0c68"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ddm_hydraulic/results.json": {
+    "mtime": 1783516356.379601,
+    "ast_hash": "076c2db6b6d2c524038d40b8749c5b02",
+    "semantic_hash": "076c2db6b6d2c524038d40b8749c5b02"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_adwin_synthetic/results.json": {
+    "mtime": 1783516369.5232935,
+    "ast_hash": "b1a3df29c01cd734a679366a1d42a96f",
+    "semantic_hash": "b1a3df29c01cd734a679366a1d42a96f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_mmd_hydraulic/results.json": {
+    "mtime": 1783587640.987023,
+    "ast_hash": "633355493cae2437aec0ebf5352cf488",
+    "semantic_hash": "633355493cae2437aec0ebf5352cf488"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ks_test_synthetic/results.json": {
+    "mtime": 1783587442.9222877,
+    "ast_hash": "a887da9a398ee55a8c42b4da02d69fca",
+    "semantic_hash": "a887da9a398ee55a8c42b4da02d69fca"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_sliding_window_baseline_hydraulic/results.json": {
+    "mtime": 1783587432.2720017,
+    "ast_hash": "2944c98d1b59439d6bb7de496272263b",
+    "semantic_hash": "2944c98d1b59439d6bb7de496272263b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ddm_gas_sensor_drift/results.json": {
+    "mtime": 1783516351.5808082,
+    "ast_hash": "c871d66aa8c277280ceba71caf01079d",
+    "semantic_hash": "c871d66aa8c277280ceba71caf01079d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_adwin_gas_sensor_drift/results.json": {
+    "mtime": 1783516395.954808,
+    "ast_hash": "ea5247d4c990b987047a337a14d4856c",
+    "semantic_hash": "ea5247d4c990b987047a337a14d4856c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_psi_synthetic/results.json": {
+    "mtime": 1783516317.4170017,
+    "ast_hash": "a3c85ffbfbfd86389bbacfb01b7735e7",
+    "semantic_hash": "a3c85ffbfbfd86389bbacfb01b7735e7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_psi_electricity/results.json": {
+    "mtime": 1783587410.2146473,
+    "ast_hash": "6bd8828fa1c0be0eff4d36dea9d8b690",
+    "semantic_hash": "6bd8828fa1c0be0eff4d36dea9d8b690"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_eddm_gas_sensor_drift/results.json": {
+    "mtime": 1783516357.8790817,
+    "ast_hash": "daaf27a188afee160a4a25fbffef9f19",
+    "semantic_hash": "daaf27a188afee160a4a25fbffef9f19"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_ks_test_hydraulic/results.json": {
+    "mtime": 1783587450.6985288,
+    "ast_hash": "7d780ffafa742975420829c6c18d3846",
+    "semantic_hash": "7d780ffafa742975420829c6c18d3846"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_adwin_hydraulic/results.json": {
+    "mtime": 1783516401.394495,
+    "ast_hash": "07103cc3c4059fb535732e43d57ff485",
+    "semantic_hash": "07103cc3c4059fb535732e43d57ff485"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_mmd_synthetic/results.json": {
+    "mtime": 1783516321.9954996,
+    "ast_hash": "5e1aa1ff87c346ebdaade877b61ee67c",
+    "semantic_hash": "5e1aa1ff87c346ebdaade877b61ee67c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_kswin_electricity/results.json": {
+    "mtime": 1783587634.0791342,
+    "ast_hash": "1a679d942bf39ea6eb0b51e0b46e2276",
+    "semantic_hash": "1a679d942bf39ea6eb0b51e0b46e2276"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_sliding_window_baseline_gas_sensor_drift/results.json": {
+    "mtime": 1783587439.0283926,
+    "ast_hash": "a32afae3921dc8f0e7d5299566d4d03f",
+    "semantic_hash": "a32afae3921dc8f0e7d5299566d4d03f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_page_hinkley_hydraulic/results.json": {
+    "mtime": 1783516368.5646634,
+    "ast_hash": "ff2a797edf14dc1c1e782dba26b597f8",
+    "semantic_hash": "ff2a797edf14dc1c1e782dba26b597f8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_adwin_electricity/results.json": {
+    "mtime": 1783516406.5970309,
+    "ast_hash": "fb5dcf38f76c078cbff669480efdb818",
+    "semantic_hash": "fb5dcf38f76c078cbff669480efdb818"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_page_hinkley_gas_sensor_drift/results.json": {
+    "mtime": 1783516363.978788,
+    "ast_hash": "3a1fc88b973cdd0efc9aa682dd38a0ce",
+    "semantic_hash": "3a1fc88b973cdd0efc9aa682dd38a0ce"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_sliding_window_baseline_synthetic/results.json": {
+    "mtime": 1783516319.6787865,
+    "ast_hash": "be0d0c94c6a82b156e55a42951c32c0c",
+    "semantic_hash": "be0d0c94c6a82b156e55a42951c32c0c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_kswin_synthetic/results.json": {
+    "mtime": 1783516440.7680035,
+    "ast_hash": "865623bcf4e26dc032991189cfc2ac9a",
+    "semantic_hash": "865623bcf4e26dc032991189cfc2ac9a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_page_hinkley_synthetic/results.json": {
+    "mtime": 1783516362.8541908,
+    "ast_hash": "efa7eb3689260b581df8128cade76ad4",
+    "semantic_hash": "efa7eb3689260b581df8128cade76ad4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_eddm_electricity/results.json": {
+    "mtime": 1783516362.773042,
+    "ast_hash": "8c77692ff3088013046924db556ac2d6",
+    "semantic_hash": "8c77692ff3088013046924db556ac2d6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S44_PC_eddm_synthetic/results.json": {
+    "mtime": 1783516356.7223215,
+    "ast_hash": "a8ad5544929720541b8e7d86150becd4",
+    "semantic_hash": "a8ad5544929720541b8e7d86150becd4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4308_eda_electricity.md": {
+    "mtime": 1783590058.015779,
+    "ast_hash": "6e4d08c2cb2bb58770c3dfe6856d0a9e",
+    "semantic_hash": "6e4d08c2cb2bb58770c3dfe6856d0a9e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4306_eda_gas_sensor.md": {
+    "mtime": 1783590045.7407258,
+    "ast_hash": "4f4cbb139b526860cdbecb8ebe316fd2",
+    "semantic_hash": "4f4cbb139b526860cdbecb8ebe316fd2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_43/S4307_eda_hydraulic.md": {
+    "mtime": 1783590052.3691733,
+    "ast_hash": "1f0a11369075edb7be1da7951eaa97d0",
+    "semantic_hash": "1f0a11369075edb7be1da7951eaa97d0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_detection_pc/cost_bars.png": {
+    "mtime": 1783588619.8312867,
+    "ast_hash": "0cf92ee6750e65ca57f10e1028b83501",
+    "semantic_hash": "0cf92ee6750e65ca57f10e1028b83501"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_detection_pc/family_synthesis.png": {
+    "mtime": 1783588620.4152868,
+    "ast_hash": "dab6fe2991ef46f35f79a311b4fd2bc5",
+    "semantic_hash": "dab6fe2991ef46f35f79a311b4fd2bc5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_detection_pc/delay_vs_far.png": {
+    "mtime": 1783588619.474795,
+    "ast_hash": "d768f1af88ed96c14f8326bf377c3eca",
+    "semantic_hash": "d768f1af88ed96c14f8326bf377c3eca"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_detection_pc/alarms_timeline_synthetic.png": {
+    "mtime": 1783588619.5762866,
+    "ast_hash": "d592af929bfd07b363e425aadbc54b23",
+    "semantic_hash": "d592af929bfd07b363e425aadbc54b23"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/drift_detection_pc/f1_heatmap.png": {
+    "mtime": 1783588619.9912868,
+    "ast_hash": "b2aeef6a42c4694c8047914510bbae5d",
+    "semantic_hash": "b2aeef6a42c4694c8047914510bbae5d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/drift/psi.c": {
+    "mtime": 1783599988.678579,
+    "ast_hash": "828604054f11e73183917801118c1e7a",
+    "semantic_hash": "828604054f11e73183917801118c1e7a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/drift/ddm.c": {
+    "mtime": 1783599942.589253,
+    "ast_hash": "3fd0ecdd7b9b79d15a0ab9da84284c0f",
+    "semantic_hash": "3fd0ecdd7b9b79d15a0ab9da84284c0f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/src/drift/page_hinkley.c": {
+    "mtime": 1783599917.2398212,
+    "ast_hash": "7ac339498b6c562bf2fa53dfabc5e27b",
+    "semantic_hash": "7ac339498b6c562bf2fa53dfabc5e27b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/tests/test_drift_methods.c": {
+    "mtime": 1783602541.177797,
+    "ast_hash": "1ac8379bacb0c9afeeffb2cb06020243",
+    "semantic_hash": "1ac8379bacb0c9afeeffb2cb06020243"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/drift_methods_params.h": {
+    "mtime": 1784197577.5743554,
+    "ast_hash": "15a5f515a25a748d76b146e4cce1948a",
+    "semantic_hash": "15a5f515a25a748d76b146e4cce1948a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/drift/psi.h": {
+    "mtime": 1783599972.38164,
+    "ast_hash": "3a8d5fba010c68a20142e651642c15e0",
+    "semantic_hash": "3a8d5fba010c68a20142e651642c15e0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/drift/drift_method.h": {
+    "mtime": 1783599894.275589,
+    "ast_hash": "442dfacc172f6e6bdc8db636f088cd3b",
+    "semantic_hash": "442dfacc172f6e6bdc8db636f088cd3b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/drift/ddm.h": {
+    "mtime": 1783599933.106237,
+    "ast_hash": "966ddc3d3c1deae336a88f169934b361",
+    "semantic_hash": "966ddc3d3c1deae336a88f169934b361"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/firmware/stm32f4_blink/inc/drift/page_hinkley.h": {
+    "mtime": 1783599907.327572,
+    "ast_hash": "6480529df09e690b6f673ae4d84d1d6a",
+    "semantic_hash": "6480529df09e690b6f673ae4d84d1d6a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/board_pc_parity45.py": {
+    "mtime": 1783603446.2818744,
+    "ast_hash": "190cb028fd0dfb39baf97600a13f0063",
+    "semantic_hash": "190cb028fd0dfb39baf97600a13f0063"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_sprint45_board.py": {
+    "mtime": 1783603359.2368672,
+    "ast_hash": "7a6cfd9cd727e577d7192f60df85a76b",
+    "semantic_hash": "7a6cfd9cd727e577d7192f60df85a76b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_sprint45_board.py": {
+    "mtime": 1784195088.0873103,
+    "ast_hash": "02070f09a769e6fc0ff97d3c7296a42c",
+    "semantic_hash": "02070f09a769e6fc0ff97d3c7296a42c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_parity_page_hinkley_gas_sensor_drift.json": {
+    "mtime": 1783604286.4229462,
+    "ast_hash": "8a6dc549ce20574031795ddfeeafdccd",
+    "semantic_hash": "8a6dc549ce20574031795ddfeeafdccd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_page_hinkley_gas_sensor_drift/board_samples.json": {
+    "mtime": 1783604249.8629432,
+    "ast_hash": "0fe503c396b902c930ff03b09b479d52",
+    "semantic_hash": "0fe503c396b902c930ff03b09b479d52"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_page_hinkley_gas_sensor_drift/results.json": {
+    "mtime": 1783604249.8759432,
+    "ast_hash": "285b51bbfd31fd23ce00e297ac7c83b4",
+    "semantic_hash": "285b51bbfd31fd23ce00e297ac7c83b4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_page_hinkley_gas_sensor_drift/drift_methods_params.json": {
+    "mtime": 1783603489.564114,
+    "ast_hash": "0805d7b55bcb0b9c652123e366cc8aee",
+    "semantic_hash": "0805d7b55bcb0b9c652123e366cc8aee"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/box_by_prix.png": {
+    "mtime": 1783590155.6134179,
+    "ast_hash": "5361dfba36754ff3740be30c65747074",
+    "semantic_hash": "5361dfba36754ff3740be30c65747074"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/projection_2d.png": {
+    "mtime": 1783590167.3864188,
+    "ast_hash": "fe88f0f9821ed808a4a4d04ff6ac4d7d",
+    "semantic_hash": "fe88f0f9821ed808a4a4d04ff6ac4d7d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/label_dist_prix.png": {
+    "mtime": 1783590150.9604175,
+    "ast_hash": "1821740688d2a738de64b5015859e762",
+    "semantic_hash": "1821740688d2a738de64b5015859e762"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/corr_features.png": {
+    "mtime": 1783590157.513418,
+    "ast_hash": "71414d9e2cb6dddb9a09af456beef41f",
+    "semantic_hash": "71414d9e2cb6dddb9a09af456beef41f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/rolling_stats.png": {
+    "mtime": 1783590152.6714177,
+    "ast_hash": "2e5bf08498279dff7d14a75f3121d0e4",
+    "semantic_hash": "2e5bf08498279dff7d14a75f3121d0e4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/label_rate_par_fenetre.png": {
+    "mtime": 1783590151.3674176,
+    "ast_hash": "c369fb72058a5710d8b95e447d247ba0",
+    "semantic_hash": "c369fb72058a5710d8b95e447d247ba0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/kde_by_prix.png": {
+    "mtime": 1783590157.201418,
+    "ast_hash": "7fbad5e5fabe63d8e9311fa95c354c66",
+    "semantic_hash": "7fbad5e5fabe63d8e9311fa95c354c66"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/temporal_prix.png": {
+    "mtime": 1783590152.1394176,
+    "ast_hash": "0d558873c91aa84eb51f2bb1a8487d7e",
+    "semantic_hash": "0d558873c91aa84eb51f2bb1a8487d7e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/electricity/hist_by_prix.png": {
+    "mtime": 1783590154.6004179,
+    "ast_hash": "e2eeae620a60eb91b66d6bfcad76ea4f",
+    "semantic_hash": "e2eeae620a60eb91b66d6bfcad76ea4f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/mi_ranking.png": {
+    "mtime": 1783589920.3903978,
+    "ast_hash": "618325d41aec4fd6c935475ba90b6cdd",
+    "semantic_hash": "618325d41aec4fd6c935475ba90b6cdd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/projection_2d.png": {
+    "mtime": 1783589920.1583977,
+    "ast_hash": "aa20b78dd84299ef48ccc6d3aa0b399c",
+    "semantic_hash": "aa20b78dd84299ef48ccc6d3aa0b399c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/violin_condition_faute.png": {
+    "mtime": 1783589916.4833975,
+    "ast_hash": "bf6d5d3dc234738f8d2ab52779d89181",
+    "semantic_hash": "bf6d5d3dc234738f8d2ab52779d89181"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/label_dist_faute.png": {
+    "mtime": 1783589913.3383973,
+    "ast_hash": "61f69ac0c448f9f1c1d2b406394ef9fd",
+    "semantic_hash": "61f69ac0c448f9f1c1d2b406394ef9fd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/kde_by_faute.png": {
+    "mtime": 1783589915.3293974,
+    "ast_hash": "8ca81faae39dc344fad284c671c15580",
+    "semantic_hash": "8ca81faae39dc344fad284c671c15580"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/box_by_faute.png": {
+    "mtime": 1783589913.9813972,
+    "ast_hash": "f1973ab538a049c1f9ff5684f6ee83fc",
+    "semantic_hash": "f1973ab538a049c1f9ff5684f6ee83fc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/violin_by_faute.png": {
+    "mtime": 1783589914.7293973,
+    "ast_hash": "dc9bce55f555ed16c3b6630e2afe7b38",
+    "semantic_hash": "dc9bce55f555ed16c3b6630e2afe7b38"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/corr_capteurs.png": {
+    "mtime": 1783589916.7123973,
+    "ast_hash": "17eb8af142c008fa8d1d6ecf5a6b1995",
+    "semantic_hash": "17eb8af142c008fa8d1d6ecf5a6b1995"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/hydraulic/fault_rate_par_condition.png": {
+    "mtime": 1783589913.4273973,
+    "ast_hash": "06a413de17c3d72e85e668a26790e990",
+    "semantic_hash": "06a413de17c3d72e85e668a26790e990"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/label_dist_gaz.png": {
+    "mtime": 1783590675.1154623,
+    "ast_hash": "4e9bd09d4f71d64e8965eec800919177",
+    "semantic_hash": "4e9bd09d4f71d64e8965eec800919177"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/projection_2d.png": {
+    "mtime": 1783590690.4594636,
+    "ast_hash": "5a52aec096f648533ef1c05068e201a8",
+    "semantic_hash": "5a52aec096f648533ef1c05068e201a8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/box_batch_gaz.png": {
+    "mtime": 1783590683.123463,
+    "ast_hash": "4cd6b9c29a48dbf6c5afa09bf2437310",
+    "semantic_hash": "4cd6b9c29a48dbf6c5afa09bf2437310"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/hist_by_gaz.png": {
+    "mtime": 1783590676.9704623,
+    "ast_hash": "51e89d239087df5ea961aa26077ba890",
+    "semantic_hash": "51e89d239087df5ea961aa26077ba890"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/label_dist_batch.png": {
+    "mtime": 1783590675.2184622,
+    "ast_hash": "d5096253f2b53b711693f96cccca3a5e",
+    "semantic_hash": "d5096253f2b53b711693f96cccca3a5e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/drift_magnitude.png": {
+    "mtime": 1783590690.7294636,
+    "ast_hash": "208b2718fa91445d64337afaf8904602",
+    "semantic_hash": "208b2718fa91445d64337afaf8904602"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/violin_by_gaz.png": {
+    "mtime": 1783590678.9834626,
+    "ast_hash": "cb026c77a2668b9e1f0a3e41f7274843",
+    "semantic_hash": "cb026c77a2668b9e1f0a3e41f7274843"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/kde_by_gaz.png": {
+    "mtime": 1783590680.0684626,
+    "ast_hash": "d60d6427aaca8c2cce9af71f135be966",
+    "semantic_hash": "d60d6427aaca8c2cce9af71f135be966"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/box_by_gaz.png": {
+    "mtime": 1783590677.6704624,
+    "ast_hash": "dc6d5228fe91aa8d194d270862944c19",
+    "semantic_hash": "dc6d5228fe91aa8d194d270862944c19"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/corr_capteurs.png": {
+    "mtime": 1783590684.004463,
+    "ast_hash": "87b3620318c443803a19cf8b02d21103",
+    "semantic_hash": "87b3620318c443803a19cf8b02d21103"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/notebooks/cl_eval/drift_datasets/figures/eda/gas_sensor_drift/temporal_gaz.png": {
+    "mtime": 1783590683.746463,
+    "ast_hash": "46c60fa3abf24a8d971a5e949134df6b",
+    "semantic_hash": "46c60fa3abf24a8d971a5e949134df6b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/quant_ewc.py": {
+    "mtime": 1784191118.3620868,
+    "ast_hash": "c032e1514b1d2cce75495ca39b7deeec",
+    "semantic_hash": "c032e1514b1d2cce75495ca39b7deeec"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/aggregate_sprint45.py": {
+    "mtime": 1784197721.9292142,
+    "ast_hash": "4bdd367fda54eb0238bb4ecd076fbaae",
+    "semantic_hash": "4bdd367fda54eb0238bb4ecd076fbaae"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_parity_ddm_gas_sensor_drift.json": {
+    "mtime": 1784197534.7737398,
+    "ast_hash": "145465e72b86639611f930e8cb1654b8",
+    "semantic_hash": "145465e72b86639611f930e8cb1654b8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_summary.json": {
+    "mtime": 1784198590.9769957,
+    "ast_hash": "c3c8e7b34ca2931ff372f834d83c45f4",
+    "semantic_hash": "c3c8e7b34ca2931ff372f834d83c45f4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_ddm_gas_sensor_drift/board_samples.json": {
+    "mtime": 1784195987.1653986,
+    "ast_hash": "6a0d15745119e21d456b3eb6dc56a276",
+    "semantic_hash": "6a0d15745119e21d456b3eb6dc56a276"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_ddm_gas_sensor_drift/results.json": {
+    "mtime": 1784195987.1772153,
+    "ast_hash": "3d9b91db7b84737b0c022da2ba38b900",
+    "semantic_hash": "3d9b91db7b84737b0c022da2ba38b900"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_ddm_gas_sensor_drift/drift_methods_params.json": {
+    "mtime": 1784195009.9218595,
+    "ast_hash": "6834d7da13579e9b6f142f3feb425e8f",
+    "semantic_hash": "6834d7da13579e9b6f142f3feb425e8f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json": {
+    "mtime": 1784194081.6630967,
+    "ast_hash": "ba45b66ea73a7540f42912df6a7d82d2",
+    "semantic_hash": "ba45b66ea73a7540f42912df6a7d82d2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json": {
+    "mtime": 1784194467.329367,
+    "ast_hash": "9529064b62184edf91dd67dd7b8b17eb",
+    "semantic_hash": "9529064b62184edf91dd67dd7b8b17eb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_monitoring_online/board_samples.json": {
+    "mtime": 1784194467.3132074,
+    "ast_hash": "d847504eff1740bb9c923da40fba3c4c",
+    "semantic_hash": "d847504eff1740bb9c923da40fba3c4c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_monitoring_online/task_0_metrics.json": {
+    "mtime": 1784194357.5189328,
+    "ast_hash": "560dac8c9cc433c44f9efdf352c9f9fd",
+    "semantic_hash": "560dac8c9cc433c44f9efdf352c9f9fd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_monitoring_online/task_2_metrics.json": {
+    "mtime": 1784194460.9631994,
+    "ast_hash": "2937d6347f2241a2c842993402f8e4e4",
+    "semantic_hash": "2937d6347f2241a2c842993402f8e4e4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_monitoring_online/task_1_metrics.json": {
+    "mtime": 1784194409.3591037,
+    "ast_hash": "f1d5741e441e22fdc3d1651cb5dbdf81",
+    "semantic_hash": "f1d5741e441e22fdc3d1651cb5dbdf81"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S40_board_v2/cell_per_channel_monitoring_frozen/board_samples.json": {
+    "mtime": 1784194081.6613927,
+    "ast_hash": "6ff2f2d32fd1ae8ff2807781c373d14b",
+    "semantic_hash": "6ff2f2d32fd1ae8ff2807781c373d14b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_psi_gas_sensor_drift/results.json": {
+    "mtime": 1784197709.8636062,
+    "ast_hash": "6ca179589f38bc788a19a17bf41696cb",
+    "semantic_hash": "6ca179589f38bc788a19a17bf41696cb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S45_board_psi_gas_sensor_drift/drift_methods_params.json": {
+    "mtime": 1784197576.725209,
+    "ast_hash": "02f6bd9a5e1bd51e0abe0ec7a21d8293",
+    "semantic_hash": "02f6bd9a5e1bd51e0abe0ec7a21d8293"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/quantization_presentation.md": {
+    "mtime": 1784194699.535703,
+    "ast_hash": "486163440a976cfe40260ea68cf32bd9",
+    "semantic_hash": "486163440a976cfe40260ea68cf32bd9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/qat_vs_ptq_resultats_ewc.png": {
+    "mtime": 1784194549.4708076,
+    "ast_hash": "d3cea68c10f2d855c5860675107da39a",
+    "semantic_hash": "d3cea68c10f2d855c5860675107da39a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/ram_gap3_ewc.png": {
+    "mtime": 1784194549.2133796,
+    "ast_hash": "d3cd1e4d08c1d9fc8d6a747b2fd40040",
+    "semantic_hash": "d3cd1e4d08c1d9fc8d6a747b2fd40040"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/ablation_perte_f1_ewc.png": {
+    "mtime": 1784194549.0977914,
+    "ast_hash": "f0b6a27fd607fd5016385070c63365bb",
+    "semantic_hash": "f0b6a27fd607fd5016385070c63365bb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/paradoxe_latence_ewc.png": {
+    "mtime": 1784194549.3478065,
+    "ast_hash": "32cfb7f456681bfb921a6c384c010aea",
+    "semantic_hash": "32cfb7f456681bfb921a6c384c010aea"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/erreur_quantification_poids_ewc.png": {
+    "mtime": 1784194549.804811,
+    "ast_hash": "e7665399a7e2b41f51ea7f4aa4ed04c5",
+    "semantic_hash": "e7665399a7e2b41f51ea7f4aa4ed04c5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/metrique_par_strategie_ewc.png": {
+    "mtime": 1784194548.9648025,
+    "ast_hash": "c396d9921d4406c4110b76b9b80e826b",
+    "semantic_hash": "c396d9921d4406c4110b76b9b80e826b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_ewc/mapping_affine_int8_ewc.png": {
+    "mtime": 1784194550.0288131,
+    "ast_hash": "b9d827353c562d08dfb4159487290986",
+    "semantic_hash": "b9d827353c562d08dfb4159487290986"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_stack_painting.png": {
+    "mtime": 1784196359.7298908,
+    "ast_hash": "cc33eaf1d871e01253de975b0910a3a2",
+    "semantic_hash": "cc33eaf1d871e01253de975b0910a3a2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/ram_measurement/Try/fig_memory_map.png": {
+    "mtime": 1784196359.3838868,
+    "ast_hash": "5685b0247cf8434c447ce2746fa572c6",
+    "semantic_hash": "5685b0247cf8434c447ce2746fa572c6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/figures/catalogs/quant_moment.py": {
+    "mtime": 1784628810.8313916,
+    "ast_hash": "b35f670893252d33a57e3b3495c94395",
+    "semantic_hash": "b35f670893252d33a57e3b3495c94395"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/src/models/ewc/ewc_mlp_multiclass_int8.py": {
+    "mtime": 1784631073.0761929,
+    "ast_hash": "6f960938bc230201ac835f8257b89cda",
+    "semantic_hash": "6f960938bc230201ac835f8257b89cda"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s46_quant_moment.py": {
+    "mtime": 1784626924.9330828,
+    "ast_hash": "c37df51b71adfcf57f6d26b72f27a541",
+    "semantic_hash": "c37df51b71adfcf57f6d26b72f27a541"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_sprint46_board.py": {
+    "mtime": 1784631164.6892614,
+    "ast_hash": "ce2b695f03cd40aad639abc14659c88c",
+    "semantic_hash": "ce2b695f03cd40aad639abc14659c88c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_s46_quant_moment.py": {
+    "mtime": 1784631444.0824494,
+    "ast_hash": "c43a2c1a3be51d05607a9391b5814792",
+    "semantic_hash": "c43a2c1a3be51d05607a9391b5814792"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_context/maha_pronostia.json": {
+    "mtime": 1784628376.5019345,
+    "ast_hash": "489f1913093c73552d832592215c4ea5",
+    "semantic_hash": "489f1913093c73552d832592215c4ea5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_context/maha_monitoring.json": {
+    "mtime": 1784628369.1286113,
+    "ast_hash": "02177fca355b28c64cb5ab8d8a4c3fae",
+    "semantic_hash": "02177fca355b28c64cb5ab8d8a4c3fae"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_context/hdc_monitoring.json": {
+    "mtime": 1784628341.8157046,
+    "ast_hash": "c67c065e3cc7e2effa01134d61a33240",
+    "semantic_hash": "c67c065e3cc7e2effa01134d61a33240"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_context/hdc_pronostia.json": {
+    "mtime": 1784628350.4663641,
+    "ast_hash": "02ad9dd33fde9aee7c57c67a4f2820f5",
+    "semantic_hash": "02ad9dd33fde9aee7c57c67a4f2820f5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_tinyol/pronostia_all.json": {
+    "mtime": 1784627946.3999908,
+    "ast_hash": "b81f4579aa523130e4a29ff8a7f64654",
+    "semantic_hash": "b81f4579aa523130e4a29ff8a7f64654"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_tinyol/monitoring_all.json": {
+    "mtime": 1784627931.3627305,
+    "ast_hash": "f3238603f0db6667f430ec03d8994325",
+    "semantic_hash": "f3238603f0db6667f430ec03d8994325"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/pronostia_legacy_c.json": {
+    "mtime": 1784622810.087168,
+    "ast_hash": "4c155c6533545eddfeed2835dba7c820",
+    "semantic_hash": "4c155c6533545eddfeed2835dba7c820"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/pronostia_all.json": {
+    "mtime": 1784622679.095029,
+    "ast_hash": "169a5d6ea4fdb700dfb7db7d6e5fd8fc",
+    "semantic_hash": "169a5d6ea4fdb700dfb7db7d6e5fd8fc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/monitoring_all.json": {
+    "mtime": 1784284812.9097607,
+    "ast_hash": "f57e205568b292963e003c50196c9492",
+    "semantic_hash": "f57e205568b292963e003c50196c9492"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/monitoring_per_channel_int8.json": {
+    "mtime": 1784622778.6087852,
+    "ast_hash": "edd5d787901ef70da8fc36d5675ba2f8",
+    "semantic_hash": "edd5d787901ef70da8fc36d5675ba2f8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/monitoring_legacy_c.json": {
+    "mtime": 1784622759.070584,
+    "ast_hash": "d34a54d29afcd33a916e8504e114345a",
+    "semantic_hash": "d34a54d29afcd33a916e8504e114345a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/pronostia_per_channel_int8.json": {
+    "mtime": 1784622912.0489671,
+    "ast_hash": "7a97cab3b8e56ce1518de6383b924ff3",
+    "semantic_hash": "7a97cab3b8e56ce1518de6383b924ff3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_board/pronostia_both.json": {
+    "mtime": 1784631709.3016465,
+    "ast_hash": "1973976a452d2cf7927b7e684eeb7e54",
+    "semantic_hash": "1973976a452d2cf7927b7e684eeb7e54"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_board/monitoring_both.json": {
+    "mtime": 1784631471.1566043,
+    "ast_hash": "1da917d9f88fedcfa25ed38402ed43aa",
+    "semantic_hash": "1da917d9f88fedcfa25ed38402ed43aa"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_board/cell_both_pronostia_frozen/board_samples.json": {
+    "mtime": 1784631709.3006012,
+    "ast_hash": "ddecdc04468a14e868bf85d9d3321def",
+    "semantic_hash": "ddecdc04468a14e868bf85d9d3321def"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_board/cell_both_monitoring_frozen/board_samples.json": {
+    "mtime": 1784631471.153754,
+    "ast_hash": "0de7bdb084f0c8bdf5700275b78d9011",
+    "semantic_hash": "0de7bdb084f0c8bdf5700275b78d9011"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_moment/ewc_monitoring.yaml": {
+    "mtime": 1784283856.2097723,
+    "ast_hash": "f2f6e4f468b92c84a5f03db4078974a3",
+    "semantic_hash": "f2f6e4f468b92c84a5f03db4078974a3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_moment/tinyol_monitoring.yaml": {
+    "mtime": 1784626756.9757276,
+    "ast_hash": "a27ca7dd1f84aafa78d4a6c1d30e75eb",
+    "semantic_hash": "a27ca7dd1f84aafa78d4a6c1d30e75eb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_moment/ewc_pronostia.yaml": {
+    "mtime": 1784284466.7902374,
+    "ast_hash": "6838df56e2910f32334d4b8a0899bb19",
+    "semantic_hash": "6838df56e2910f32334d4b8a0899bb19"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_moment/tinyol_pronostia.yaml": {
+    "mtime": 1784626769.3527842,
+    "ast_hash": "6673d53afb6092b90985ee17f2ced76b",
+    "semantic_hash": "6673d53afb6092b90985ee17f2ced76b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/presentation/CR_reunion_16juillet2026.txt": {
+    "mtime": 1784628260.588977,
+    "ast_hash": "1b317b31ccbd3c0a33622bf1847feffc",
+    "semantic_hash": "1b317b31ccbd3c0a33622bf1847feffc"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/presentation/CR_reunion_16juillet2026.md": {
+    "mtime": 1784628039.8465075,
+    "ast_hash": "9e312bb75655c7bdba1393de6098eff8",
+    "semantic_hash": "9e312bb75655c7bdba1393de6098eff8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4804_driver_board_mesures.md": {
+    "mtime": 1784284208.8170564,
+    "ast_hash": "8b671588b9ea7323c003a3ff83ebf3af",
+    "semantic_hash": "8b671588b9ea7323c003a3ff83ebf3af"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4802_kernels_subint8_firmware.md": {
+    "mtime": 1784284024.5848343,
+    "ast_hash": "a14731ea2a1cef8d8a3f50bb97442baf",
+    "semantic_hash": "a14731ea2a1cef8d8a3f50bb97442baf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4803_export_test_vectors.md": {
+    "mtime": 1784284089.5067968,
+    "ast_hash": "1660195d4158cdfc450ede774978aaf5",
+    "semantic_hash": "1660195d4158cdfc450ede774978aaf5"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4806_notebook_figures_board.md": {
+    "mtime": 1784284383.9055948,
+    "ast_hash": "f239530f6760b1c4ef747c8faf38951e",
+    "semantic_hash": "f239530f6760b1c4ef747c8faf38951e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4800_sprint_48.md": {
+    "mtime": 1784283932.1496363,
+    "ast_hash": "620610cbf046bbd3b4439b2bc47e1320",
+    "semantic_hash": "620610cbf046bbd3b4439b2bc47e1320"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4807_tests_docs.md": {
+    "mtime": 1784284405.230474,
+    "ast_hash": "b144535f2555e9208caf31e8dacc3f48",
+    "semantic_hash": "b144535f2555e9208caf31e8dacc3f48"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4805_parite_agregation.md": {
+    "mtime": 1784284234.1703665,
+    "ast_hash": "bfc1a73b5f2e646417b3d7c2ff110b0f",
+    "semantic_hash": "bfc1a73b5f2e646417b3d7c2ff110b0f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_48/S4801_selection_cadrage.md": {
+    "mtime": 1784283988.3104057,
+    "ast_hash": "fbed3a435c58d4ac89ea971ce718093f",
+    "semantic_hash": "fbed3a435c58d4ac89ea971ce718093f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4702_extension_emulateur_harnais.md": {
+    "mtime": 1784283533.094665,
+    "ast_hash": "ebb3d5927860435228aa49137428c7e9",
+    "semantic_hash": "ebb3d5927860435228aa49137428c7e9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4703_sweep_profondeur_granularite.md": {
+    "mtime": 1784283562.2887874,
+    "ast_hash": "7a024dec8937e17d386e82957c8ffd0c",
+    "semantic_hash": "7a024dec8937e17d386e82957c8ffd0c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4705_contexte_hdc_maha_tinyol.md": {
+    "mtime": 1784283632.1118684,
+    "ast_hash": "35b83dc1c8ab570de9ce06ca047b6db3",
+    "semantic_hash": "35b83dc1c8ab570de9ce06ca047b6db3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4701_cadrage_taxonomie.md": {
+    "mtime": 1784282887.1649506,
+    "ast_hash": "563ad09b2942f8910035b09fd662b870",
+    "semantic_hash": "563ad09b2942f8910035b09fd662b870"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4700_sprint_47.md": {
+    "mtime": 1784281979.2876606,
+    "ast_hash": "e6569c770cb0a111e47c730b7b369d64",
+    "semantic_hash": "e6569c770cb0a111e47c730b7b369d64"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4704_axe_symetrie_zeropoint.md": {
+    "mtime": 1784283583.1691213,
+    "ast_hash": "e89eac0be209b8a7f3f714888664e45b",
+    "semantic_hash": "e89eac0be209b8a7f3f714888664e45b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4708_pointeur_board.md": {
+    "mtime": 1784283848.2417927,
+    "ast_hash": "6552c5e52f2aaf9ed5141a9810de96cb",
+    "semantic_hash": "6552c5e52f2aaf9ed5141a9810de96cb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4706_figures_notebook.md": {
+    "mtime": 1784283657.207828,
+    "ast_hash": "0573774eba2bc67f20b1e4388cff0c03",
+    "semantic_hash": "0573774eba2bc67f20b1e4388cff0c03"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4707_tests_docs.md": {
+    "mtime": 1784283680.5316975,
+    "ast_hash": "bc5e4ace7be91a29635865fac1ea54ad",
+    "semantic_hash": "bc5e4ace7be91a29635865fac1ea54ad"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4602_harnais_pc.md": {
+    "mtime": 1784623027.7406645,
+    "ast_hash": "d91e39221444af1f9196769df9d00bf2",
+    "semantic_hash": "d91e39221444af1f9196769df9d00bf2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4603_ewc_experiences.md": {
+    "mtime": 1784623050.6730273,
+    "ast_hash": "7c46fdc0eddde4f501e9c67a0e14707c",
+    "semantic_hash": "7c46fdc0eddde4f501e9c67a0e14707c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4600_sprint_46.md": {
+    "mtime": 1784631872.4780645,
+    "ast_hash": "e3b4844e1ef364f3a6aa713b851e03d3",
+    "semantic_hash": "e3b4844e1ef364f3a6aa713b851e03d3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4608_board_differee.md": {
+    "mtime": 1784631849.1372066,
+    "ast_hash": "a7860d9ff47c4ad7398e25cd040cfae1",
+    "semantic_hash": "a7860d9ff47c4ad7398e25cd040cfae1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4604_tinyol_experiences.md": {
+    "mtime": 1784630228.8676848,
+    "ast_hash": "63e7025428830f1a7ec8e26c27d0b92a",
+    "semantic_hash": "63e7025428830f1a7ec8e26c27d0b92a"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4605_hdc_maha_contexte.md": {
+    "mtime": 1784630248.6423671,
+    "ast_hash": "74755e3f5cc169b828935cab8364ca63",
+    "semantic_hash": "74755e3f5cc169b828935cab8364ca63"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4606_figures_notebook.md": {
+    "mtime": 1784630269.0897157,
+    "ast_hash": "51c528ae6404bbda3904a724b574ab10",
+    "semantic_hash": "51c528ae6404bbda3904a724b574ab10"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4607_tests_docs.md": {
+    "mtime": 1784631815.9558802,
+    "ast_hash": "fe72b65a6eae9a5473b74a3597b28715",
+    "semantic_hash": "fe72b65a6eae9a5473b74a3597b28715"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_46/S4601_cadrage_taxonomie.md": {
+    "mtime": 1784623005.3048236,
+    "ast_hash": "7da9c011c38d1dbcf60e76ebb0c8e61d",
+    "semantic_hash": "7da9c011c38d1dbcf60e76ebb0c8e61d"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/quantization_moments.md": {
+    "mtime": 1784283622.9018734,
+    "ast_hash": "d4702728483f616ff886094d1e511230",
+    "semantic_hash": "d4702728483f616ff886094d1e511230"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_context/config_snapshot.yaml": {
+    "mtime": 1784628376.5029378,
+    "ast_hash": "40098f2e99259dc5edb5d20fd6d11e2e",
+    "semantic_hash": "40098f2e99259dc5edb5d20fd6d11e2e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_tinyol/config_snapshot.yaml": {
+    "mtime": 1784627946.4013832,
+    "ast_hash": "1f143dc7d5c3dea0a618fde3a13f269f",
+    "semantic_hash": "1f143dc7d5c3dea0a618fde3a13f269f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S46_ewc/config_snapshot.yaml": {
+    "mtime": 1784622912.0506866,
+    "ast_hash": "50e81f719fe14300e930de88c061c502",
+    "semantic_hash": "50e81f719fe14300e930de88c061c502"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_moment/M2_moment_heatmap.png": {
+    "mtime": 1784629441.1901898,
+    "ast_hash": "5e97899298bccf7e968f0643d6991529",
+    "semantic_hash": "5e97899298bccf7e968f0643d6991529"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_moment/M3_calibration_effect.png": {
+    "mtime": 1784629441.2951908,
+    "ast_hash": "bf09094cae32f204a4fb16790a62f4c0",
+    "semantic_hash": "bf09094cae32f204a4fb16790a62f4c0"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_moment/M4_hdc_maha_context.png": {
+    "mtime": 1784629441.5051928,
+    "ast_hash": "50ce92d8ec0018e20a996949cc609026",
+    "semantic_hash": "50ce92d8ec0018e20a996949cc609026"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/figures/quantization_moment/M1_moments_bars.png": {
+    "mtime": 1784629441.0351884,
+    "ast_hash": "20b69fd8e02fefa43a7832c05e319b53",
+    "semantic_hash": "20b69fd8e02fefa43a7832c05e319b53"
   }
 }

@@ -1,0 +1,18 @@
+# Gas Sensor Array Drift Dataset — config loader (Sprint 43, S4302)
+# Drift capteur réel sur 36 mois, 10 batches temporels = ground-truth structurelle.
+data:
+  dataset: gas_sensor_drift
+  raw_path: "data/raw/Gas Sensor Array Drift Dataset/Dataset"
+  file_template: "batch{i}.dat"
+  n_batches: 10
+  n_features: 128          # 16 capteurs × 8 descripteurs
+  normalization: zscore    # figée sur le batch 1 (drift laissé visible)
+seed: 42
+
+# Caractérisation (S4303)
+characterization:
+  window_size: 500         # fenêtre glissante de dérive
+  stride: 250
+  hist_bins: 20            # PSI / Jensen-Shannon
+  mmd_gamma: null          # null → heuristique médiane
+  top_k_features: 10

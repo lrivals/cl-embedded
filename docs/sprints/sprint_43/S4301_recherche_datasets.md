@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | 43 |
 | **Priorité** | 🔴 Critique — définit le corpus sur lequel toute l'évaluation drift (S44/S45) reposera. |
-| **Statut** | 📝 Doc — spec ; sélection finale à valider (`TODO(arnaud)`). |
+| **Statut** | ✅ Implémenté — `docs/context/drift_datasets.md` produit ; sélection : Gas Sensor ⭐, Electricity, Hydraulic (remplace INSECTS), synthétique numpy (remplace `river`). `TODO(arnaud)` = valider substitutions. |
 | **Durée estimée** | 5h |
 | **Dépendances** | Aucune (tâche documentaire) · s'appuie sur le nœud « drift ≠ faute » de Sprint 38 (`docs/sprints/sprint_38/S3800_sprint_38.md`) |
 | **Fichiers cibles** | `docs/context/drift_datasets.md` (source de vérité) |

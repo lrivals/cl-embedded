@@ -1,0 +1,9 @@
+{
+  "ddm": {
+    "delta": null,
+    "lambda": null,
+    "warning_level": 2.0,
+    "drift_level": 3.0,
+    "min_instances": 30
+  }
+}

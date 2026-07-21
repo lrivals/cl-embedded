@@ -1,0 +1,39 @@
+{
+  "model": "ewc",
+  "dataset": "pronostia",
+  "metric_name": "auroc",
+  "seed": 42,
+  "config_path": "configs/quant_moment/ewc_pronostia.yaml",
+  "timestamp": "2026-07-21T10:35:12",
+  "moments": {
+    "fp32": {
+      "metric": 0.998703,
+      "ram_weights_bytes": 3972,
+      "lat_proxy_rel": 1.0
+    },
+    "before": {
+      "metric": 0.997811,
+      "ram_weights_bytes": 993,
+      "lat_proxy_rel": null,
+      "note": "borne haute (fake-quant inférence)"
+    },
+    "after": {
+      "metric": 0.997787,
+      "ram_weights_bytes": 993,
+      "lat_proxy_rel": 0.0625,
+      "after_scheme": "per_channel_int8"
+    },
+    "both": {
+      "metric": 0.998185,
+      "ram_weights_bytes": 993,
+      "lat_proxy_rel": 0.0625,
+      "after_scheme": "per_channel_int8",
+      "note": "fidèle au déploiement (noyau entier)"
+    }
+  },
+  "delta_before_vs_fp32": -0.000892,
+  "delta_after_vs_fp32": -0.000916,
+  "delta_both_vs_fp32": -0.000518,
+  "gap3_metric_ok_both": true,
+  "gap3_ram_ok": true
+}

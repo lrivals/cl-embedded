@@ -1,0 +1,53 @@
+{
+  "exp_id": "exp_S45_board_ddm_gas_sensor_drift",
+  "platform": "nucleo_f439zi",
+  "detector": "ddm",
+  "dataset": "gas_sensor_drift",
+  "family": "supervised",
+  "requires_label": true,
+  "date": "2026-07-16T11:59:47",
+  "seed": 42,
+  "n_samples": 13910,
+  "n_enroll": 3477,
+  "n_features": 128,
+  "drift_points": [
+    445,
+    1689,
+    3275,
+    3436,
+    3633,
+    5933,
+    9546,
+    9840,
+    10310
+  ],
+  "tolerance": 200,
+  "stream_mode": "chronologique (sans --update, proto v3, EWC path)",
+  "verdict_counts_board": {
+    "NORMAL": 13176,
+    "WARNING": 722,
+    "DRIFT": 12
+  },
+  "drift_metrics": {
+    "mean_detection_delay": 146.0,
+    "missed_detection_rate": 0.7777777777777778,
+    "false_alarm_rate": 0.0008233841086867024,
+    "precision": 0.16666666666666666,
+    "recall": 0.2222222222222222,
+    "f1": 0.1904761904761905,
+    "mtfa": 1400.888888888889,
+    "mtd": 146.0,
+    "n_true_drifts": 9,
+    "n_alarms": 12,
+    "n_detected": 2,
+    "n_false_alarms": 10,
+    "tolerance": 200
+  },
+  "metric_value": 0.1904761904761905,
+  "na_reason": null,
+  "mean_latency_us": 270.2742631200575,
+  "latency_us_p50": 270.0,
+  "latency_us_p99": 271.0,
+  "gap2_ok": true,
+  "bss_bytes": 166356
+}

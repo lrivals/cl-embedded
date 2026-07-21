@@ -6,22 +6,23 @@
 #pragma once
 #include "mahalanobis.h"
 
-/* d = 4, seuil = 4.368432 */
-#define MAHA_NATIVE_DIM 4   /* dim des poids ci-dessous (cf. MAHA_DIM au build, S3507) */
+/* d = 5, seuil = 3.511633 */
+#define MAHA_NATIVE_DIM 5   /* dim des poids ci-dessous (cf. MAHA_DIM au build, S3507) */
 
-static const float ZSCORE_MEAN[4] = {0.00000000f, 0.00000000f, 0.00000000f, 0.00000000f};
-static const float ZSCORE_STD[4] = {1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f};
+static const float ZSCORE_MEAN[5] = {0.00000000f, 0.00000000f, 0.00000000f, 0.00000000f, 0.00000000f};
+static const float ZSCORE_STD[5] = {1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f, 1.00000000f};
 
-static const float MAHA_MEAN_INIT[4] = {0.01827731f, 0.01038230f, -0.00216165f, -0.01522415f};
+static const float MAHA_MEAN_INIT[5] = {-0.15572107f, -0.15559286f, -0.14144537f, 0.02815899f, 0.00000000f};
 
-static const float MAHA_PRECISION_INIT[4][4] = {
-    {0.95475507f, -0.04404623f, -0.05653474f, 0.00047288f},
-    {-0.04404623f, 1.03170180f, -0.07370766f, 0.01699380f},
-    {-0.05653474f, -0.07370766f, 0.93351299f, -0.02557010f},
-    {0.00047288f, 0.01699380f, -0.02557010f, 1.00648308f}
+static const float MAHA_PRECISION_INIT[5][5] = {
+    {16457.08203125f, -16471.35937500f, 16.91123009f, 0.49560118f, -1.74123657f},
+    {-16471.35937500f, 16496.92773438f, -25.84669685f, -1.69284761f, 1.10314047f},
+    {16.91123009f, -25.84669685f, 10.34018612f, -0.52457184f, -0.10262230f},
+    {0.49560118f, -1.69284761f, -0.52457184f, 1.85744214f, -0.00128564f},
+    {-1.74123657f, 1.10314047f, -0.10262230f, -0.00128564f, 1.25825238f}
 };
 
-static const float MAHA_THRESHOLD_INIT = 4.36843234f;
+static const float MAHA_THRESHOLD_INIT = 3.51163255f;
 static const float MAHA_EMA_ALPHA      = 0.10000000f;
 
 /* ── TinyOL encoder weights — MEM: ~2.8 Ko @ FP32 en Flash ──────────── */

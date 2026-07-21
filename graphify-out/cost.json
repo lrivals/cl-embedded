@@ -123,8 +123,38 @@
       "output_tokens": 0,
       "files": 78,
       "note": "AST-only incremental (semantic skipped)"
+    },
+    {
+      "date": "2026-07-08T09:52:59.729293+00:00",
+      "input_tokens": 139906,
+      "output_tokens": 4000,
+      "files": 23
+    },
+    {
+      "date": "2026-07-08T11:30:33.416662+00:00",
+      "input_tokens": 66288,
+      "output_tokens": 0,
+      "files": 8
+    },
+    {
+      "date": "2026-07-08T12:13:35.230504+00:00",
+      "input_tokens": 86615,
+      "output_tokens": 0,
+      "files": 18
+    },
+    {
+      "date": "2026-07-09T09:31:06.374592+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 57
+    },
+    {
+      "date": "2026-07-16T16:29:51.371099+00:00",
+      "input_tokens": 154731,
+      "output_tokens": 0,
+      "files": 14
     }
   ],
-  "total_input_tokens": 1267017,
-  "total_output_tokens": 125653
+  "total_input_tokens": 1714557,
+  "total_output_tokens": 129653
 }
