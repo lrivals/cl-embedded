@@ -1,0 +1,18 @@
+# configs/quant_depth/ewc_pronostia_ternaire_perchannel.yaml — Sweep profondeur × granularité (Sprint 47, S4703).
+# Cellule EWC × pronostia : weight_bits=ternaire · granularity=per_channel · symmetry=symmetric.
+# Hérite de ewc_int8_pronostia.yaml (archi + hyperparamètres EWC ; aucun hyperparamètre en dur).
+# Taxonomie : docs/context/quantization_depth.md (S4701). Axe orthogonal au moment (S46)
+# et au format (S4202). Métrique = AUROC binaire (voie S28/S4601).
+#
+# Usage :
+#   python scripts/run_s47_quant_depth.py --config configs/quant_depth/ewc_pronostia_ternaire_perchannel.yaml
+
+extends: ../ewc_int8_pronostia.yaml
+
+dataset: pronostia            # tag de nommage (le loader lit data.dataset hérité)
+weight_bits: "ternaire"
+granularity: per_channel
+symmetry: symmetric
+act_bits: 8
+seed: 42
+metric: auroc

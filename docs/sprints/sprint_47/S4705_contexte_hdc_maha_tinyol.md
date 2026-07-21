@@ -63,4 +63,22 @@ python -c "import json; d=json.load(open('experiments/exp_S47_context/context.js
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+✅ **S4705 implémenté.** `experiments/exp_S47_context/context.json` produit par un script
+**traçable** `scripts/write_s47_context.py` (règle dépôt « tout sort d'un run », pas de JSON
+à la main) — cadrage pur, **aucun champ métrique**.
+
+Contenu : `swept_models=["ewc"]` ; `context_models` = 3 cellules **N/A justifiées** avec
+`status` + `reason` + `ref` :
+- **HDC** `na_structural` (réf. `S4202§6, S28`) — nativement entier (HV ±1 int8, AM int16),
+  aucun scale de poids à réduire, INT8 ≡ FP32 par construction (Δ=0).
+- **Mahalanobis** `na_format_only` (réf. `S34`) — détecteur sans poids appris par gradient ;
+  axe pertinent = format de Σ⁻¹ (INT8 casse, Q15 récupère), pas de tête à balayer en bits.
+- **TinyOL** `na_out_of_scope` (réf. `S4700`) — tête entraînable (axe exerçable) mais périmètre
+  fixé EWC-only pour ce sprint.
+
+**Aucune cellule sub-INT8 fabriquée** pour ces trois modèles — le N/A est un résultat de
+cadrage. Consommé par la figure `scope_context.png` (S4706).
+
+**Vérification** : `python scripts/write_s47_context.py` ; `test -f experiments/exp_S47_context/context.json` ;
+`swept_models==['ewc']` et tous les `status` commencent par `na_` (assertions dans le script
+et le test S4707).

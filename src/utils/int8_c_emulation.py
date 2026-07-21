@@ -28,10 +28,14 @@ from typing import Literal
 
 import numpy as np
 
+from src.utils.quantization import compute_scale_zero_point
+
 # Types de schéma -------------------------------------------------------------
 WeightScale = Literal["fixed_128", "per_tensor", "per_channel"]
 ActRepr = Literal["q7_fixed", "q7_calib", "q15"]
 AccDtype = Literal["int16", "int32"]
+WeightMode = Literal["linear", "ternary", "binary"]
+Symmetry = Literal["symmetric", "affine"]
 
 
 # ── Primitives entières façon C ──────────────────────────────────────────────
@@ -73,6 +77,19 @@ class QuantConfig:
         ``q7_calib`` = 8-bit calibré. ``q15`` = 16-bit (évite le clamp, fidélité 256×).
     acc_dtype : "int16" | "int32"
         Accumulateur MAC. ``int16`` reproduit l'overflow latent du firmware.
+    weight_bits : int
+        Profondeur en bits de la grille de poids (S47). ``8`` = INT8 (défaut),
+        ``6/4/3/2`` = sub-INT8, ``16`` = Q15. ``qmax = (1<<(weight_bits-1))-1``.
+        Le preset ``q15()`` porte ``weight_bits=16`` (poids 16-bit).
+    weight_mode : "linear" | "ternary" | "binary"
+        Schéma de quantification des poids (S47). ``linear`` = grille signée
+        ``round(w/s)`` (chemin actuel). ``ternary`` = TWN {−1,0,+1} (seuil
+        ``0.7·mean|W[j,:]|`` par canal). ``binary`` = BWN {−1,+1} (scale par-canal),
+        **activations 8-bit**.
+    symmetry : "symmetric" | "affine"
+        Symétrie du mapping d'**activation** (S47). ``symmetric`` = signé (défaut,
+        inchangé). ``affine`` = zero-point (post-ReLU ≥ 0), via
+        ``compute_scale_zero_point``. Les poids restent symétriques signés.
     name : str
         Étiquette lisible (clé de résultat).
     """
@@ -80,6 +97,9 @@ class QuantConfig:
     weight_scale: WeightScale = "per_channel"
     act_repr: ActRepr = "q15"
     acc_dtype: AccDtype = "int32"
+    weight_bits: int = 8
+    weight_mode: WeightMode = "linear"
+    symmetry: Symmetry = "symmetric"
     name: str = "custom"
 
     @staticmethod
@@ -105,12 +125,39 @@ class QuantConfig:
     @staticmethod
     def q15() -> "QuantConfig":
         """Q15 16-bit poids+activations par-canal."""
-        return QuantConfig("per_channel", "q15", "int32", name="q15")
+        return QuantConfig("per_channel", "q15", "int32", weight_bits=16, name="q15")
 
     @staticmethod
     def mixed_int8w_q15act() -> "QuantConfig":
         """Poids INT8 par-canal (RAM) + activations Q15 (évite clamp Q7)."""
-        return QuantConfig("per_channel", "q15", "int32", name="mixed_int8w_q15act")
+        return QuantConfig("per_channel", "q15", "int32", weight_bits=8,
+                           name="mixed_int8w_q15act")
+
+    @staticmethod
+    def subint8(bits: int, granularity: WeightScale = "per_channel",
+                symmetry: Symmetry = "symmetric", mode: WeightMode = "linear",
+                act_repr: ActRepr = "q7_calib") -> "QuantConfig":
+        """Preset générique du sweep S47 (profondeur × granularité × symétrie).
+
+        Parameters
+        ----------
+        bits : int
+            Profondeur de la grille de poids (``8/6/4/3/2`` ; nominal ``2`` en
+            ternaire, ``1`` en binaire — la grille effective vient de ``mode``).
+        granularity : "per_tensor" | "per_channel"
+            Granularité du scale de poids (→ ``weight_scale``).
+        symmetry : "symmetric" | "affine"
+            Symétrie du mapping d'activation (poids toujours symétriques signés).
+        mode : "linear" | "ternary" | "binary"
+            Schéma de quantification des poids.
+        act_repr : "q7_calib" | "q15"
+            Représentation d'activation (défaut 8-bit calibré ; ``q15`` = 16-bit).
+        """
+        name = f"subint8_{mode}{bits}_{granularity}_{symmetry}"
+        return QuantConfig(
+            weight_scale=granularity, act_repr=act_repr, acc_dtype="int32",
+            weight_bits=int(bits), weight_mode=mode, symmetry=symmetry, name=name,
+        )
 
 
 # Ordre canonique d'ablation : du firmware actuel au schéma idéal ------------
@@ -174,6 +221,50 @@ def _quant_weight(w: np.ndarray, scales: np.ndarray, n_bits: int) -> np.ndarray:
     qmax = (1 << (n_bits - 1)) - 1
     q = np.round(w / scales[:, None])
     return np.clip(q, -qmax, qmax).astype(np.int64)
+
+
+def _ternary_weight(w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Quantifie W[out,in] en ternaire {−1,0,+1} (TWN, seuil/scale par-canal).
+
+    Schéma TWN standard (Li & Liu, 2016) : par ligne de sortie ``j``,
+    ``Δ_j = 0.7·mean|W[j,:]|`` ; ``q = sign(w)`` là où ``|w| > Δ_j``, ``0`` sinon ;
+    scale ``α_j = mean(|w[|w|>Δ_j]|)`` (1.0 si le canal est nul). Retourne
+    ``(q_int ∈ {−1,0,+1}, scales[n_out])`` consommés comme la voie linéaire.
+    """
+    absw = np.abs(w)
+    delta = 0.7 * np.mean(absw, axis=1)                      # [n_out]
+    mask = absw > delta[:, None]
+    q = (np.sign(w) * mask).astype(np.int64)
+    scales = np.ones(w.shape[0], dtype=np.float64)
+    for j in range(w.shape[0]):
+        kept = absw[j][mask[j]]
+        if kept.size:
+            scales[j] = float(np.mean(kept))
+    return q, scales
+
+
+def _binary_weight(w: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Quantifie W[out,in] en binaire {−1,+1} (BWN, scale par-canal).
+
+    Schéma BWN (Rastegari, 2016) : ``q = sign(w)`` (``sign(0) := +1``), scale
+    ``α_j = mean|W[j,:]|`` par ligne de sortie. Retourne ``(q_int ∈ {−1,+1}, scales)``.
+    """
+    q = np.where(w >= 0, 1, -1).astype(np.int64)
+    scales = np.mean(np.abs(w), axis=1).astype(np.float64)
+    scales[scales == 0] = 1.0
+    return q, scales
+
+
+def _quant_weight_mode(w: np.ndarray, mode: WeightMode, granularity: WeightScale,
+                       n_bits: int) -> tuple[np.ndarray, np.ndarray]:
+    """Dispatch (poids quantifiés, scales) selon ``weight_mode`` (S47)."""
+    if mode == "ternary":
+        return _ternary_weight(w)
+    if mode == "binary":
+        return _binary_weight(w)
+    # linear
+    scales = _weight_scales(w, granularity, n_bits)
+    return _quant_weight(w, scales, n_bits), scales
 
 
 def _act_params(act_repr: ActRepr, calib_max: float) -> tuple[float, int]:
@@ -240,37 +331,49 @@ def _forward_calibrated(
     ``act_max`` fournit les bornes calibrées des activations d'entrée de chaque couche
     (clés ``in``, ``h1``, ``h2``), estimées une fois sur un lot représentatif.
     """
-    w_bits = 16 if cfg.act_repr == "q15" else 8  # poids Q15 si schéma 16-bit, sinon int8
-    if cfg.name == "mixed_int8w_q15act":
-        w_bits = 8  # poids int8, activations q15
+    # Profondeur de poids : pilotée par cfg.weight_bits (S47). Rétro-compat : q15() porte
+    # weight_bits=16, mixed_int8w_q15act weight_bits=8 → mêmes bits qu'avant l'axe profondeur.
+    w_bits = int(cfg.weight_bits)
 
-    s1 = _weight_scales(w.w1, cfg.weight_scale, w_bits)
-    s2 = _weight_scales(w.w2, cfg.weight_scale, w_bits)
-    s3 = _weight_scales(w.w3, cfg.weight_scale, w_bits)
-    q1 = _quant_weight(w.w1, s1, w_bits)
-    q2 = _quant_weight(w.w2, s2, w_bits)
-    q3 = _quant_weight(w.w3, s3, w_bits)
+    q1, s1 = _quant_weight_mode(w.w1, cfg.weight_mode, cfg.weight_scale, w_bits)
+    q2, s2 = _quant_weight_mode(w.w2, cfg.weight_mode, cfg.weight_scale, w_bits)
+    q3, s3 = _quant_weight_mode(w.w3, cfg.weight_mode, cfg.weight_scale, w_bits)
 
-    def quant_act(a: np.ndarray, key: str) -> tuple[np.ndarray, float]:
-        sa, nb = _act_params(cfg.act_repr, act_max[key])
+    affine = cfg.symmetry == "affine"
+
+    def quant_act(a: np.ndarray, key: str) -> tuple[np.ndarray, float, int]:
+        _, nb = _act_params(cfg.act_repr, act_max[key])
+        if affine:
+            # Zero-point affine (post-ReLU ≥ 0) — réutilise src/utils/quantization.py.
+            # Borne l'activation sur [0, calib_max] pour un mapping cohérent au run.
+            a_c = np.clip(a, 0.0, act_max[key])
+            sa, z = compute_scale_zero_point(
+                np.array([0.0, act_max[key]], dtype=np.float64), n_bits=nb
+            )
+            n_levels = (1 << nb) - 1
+            q = np.clip(np.round(a_c / sa) + z, 0, n_levels).astype(np.int64)
+            return q, sa, int(z)
+        sa, _ = _act_params(cfg.act_repr, act_max[key])
         qmax = (1 << (nb - 1)) - 1
         q = np.clip(np.round(a / sa), -qmax, qmax).astype(np.int64)
-        return q, sa
+        return q, sa, 0
 
-    def dense_relu(a_q: np.ndarray, sa: float, wq: np.ndarray, sw: np.ndarray,
+    def dense_relu(a_q: np.ndarray, sa: float, z: int, wq: np.ndarray, sw: np.ndarray,
                    bias: np.ndarray, relu: bool) -> np.ndarray:
-        # a_q[N, in] @ wq[out, in]^T = acc[N, out] en int32 (pas de wrap)
-        acc = a_q.astype(np.int64) @ wq.astype(np.int64).T
+        # a_q[N, in] @ wq[out, in]^T = acc[N, out] en int32 (pas de wrap).
+        # Affine : accumule (q − z) pour retrouver l'activation déquantifiée (q−z)·s.
+        a_shift = a_q.astype(np.int64) - z if z else a_q.astype(np.int64)
+        acc = a_shift @ wq.astype(np.int64).T
         val = acc.astype(np.float64) * (sw * sa)[None, :] + bias[None, :]  # déquant par-canal
         return np.maximum(val, 0.0) if relu else val
 
     a = np.atleast_2d(np.asarray(x, dtype=np.float64))
-    xq, sx = quant_act(a, "in")
-    h1 = dense_relu(xq, sx, q1, s1, w.b1, relu=True)
-    h1q, s_h1 = quant_act(h1, "h1")
-    h2 = dense_relu(h1q, s_h1, q2, s2, w.b2, relu=True)
-    h2q, s_h2 = quant_act(h2, "h2")
-    return dense_relu(h2q, s_h2, q3, s3, w.b3, relu=False)
+    xq, sx, zx = quant_act(a, "in")
+    h1 = dense_relu(xq, sx, zx, q1, s1, w.b1, relu=True)
+    h1q, s_h1, z_h1 = quant_act(h1, "h1")
+    h2 = dense_relu(h1q, s_h1, z_h1, q2, s2, w.b2, relu=True)
+    h2q, s_h2, z_h2 = quant_act(h2, "h2")
+    return dense_relu(h2q, s_h2, z_h2, q3, s3, w.b3, relu=False)
 
 
 def calibrate_activations(w: EWCHeadWeights, X: np.ndarray) -> dict[str, float]:
@@ -350,3 +453,45 @@ def softmax_prob1(logits: np.ndarray) -> np.ndarray:
 def agreement(logits_a: np.ndarray, logits_b: np.ndarray) -> float:
     """Taux d'accord de prédiction entre deux schémas (proxy de parité board↔PC)."""
     return float(np.mean(predict(logits_a) == predict(logits_b)))
+
+
+# ── RAM théorique bit-packée (S47) ───────────────────────────────────────────
+
+def _effective_weight_bits(cfg: QuantConfig) -> float:
+    """Bits effectifs de la grille de poids (info-théorique, pour le ratio RAM)."""
+    if cfg.weight_mode == "binary":
+        return 1.0
+    if cfg.weight_mode == "ternary":
+        return 1.58  # log2(3) — encodage 2-bit ou RLE en pratique (S4701 §2)
+    return float(cfg.weight_bits)
+
+
+def theoretical_weight_ram(w: EWCHeadWeights, cfg: QuantConfig) -> tuple[int, float]:
+    """RAM **théorique** (bit-packée) des poids d'une tête EWC + ratio vs FP32.
+
+    Retourne ``(bytes_total, ratio_vs_fp32)`` où ``bytes_total`` inclut les poids
+    bit-packés + les scales (float32 : par-canal, ou 3 par-tenseur) + les biais FP32,
+    et ``ratio_vs_fp32 = 32 / bits_effectifs`` sur les **poids purs** (aligne la table
+    S4701 §2 : ×4 à 8 bits, ×8 à 4 bits, ×16 à 2 bits, ×32 en binaire).
+
+    **Théorique** : suppose un kernel bit-packé (S4701 §2) ; sur PC un poids INT4 stocké
+    dans un ``int8_t`` n'économise rien de plus — la RAM ``.bss`` réelle est mesurée au
+    Sprint 48.
+    """
+    n_params = int(w.w1.size + w.w2.size + w.w3.size)
+    n_out = int(w.w1.shape[0] + w.w2.shape[0] + w.w3.shape[0])
+    n_bias = int(w.b1.size + w.b2.size + w.b3.size)
+
+    bits = _effective_weight_bits(cfg)
+    # Octets de packing : binaire 1 bit, ternaire 2 bits, sinon weight_bits.
+    bits_pack = 1 if cfg.weight_mode == "binary" else (
+        2 if cfg.weight_mode == "ternary" else int(cfg.weight_bits)
+    )
+    weight_bytes = -(-n_params * bits_pack // 8)  # ceil(n_params·bits/8)
+    n_scales = n_out if cfg.weight_scale == "per_channel" else 3
+    scale_bytes = n_scales * 4
+    bias_bytes = n_bias * 4
+
+    total = int(weight_bytes + scale_bytes + bias_bytes)
+    ratio = round(32.0 / bits, 4)
+    return total, ratio

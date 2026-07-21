@@ -530,9 +530,9 @@
     "semantic_hash": "d1cf0bc8b0e211965aedde8bc99d2490"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/roadmap_phase2.md": {
-    "mtime": 1784631762.4053633,
-    "ast_hash": "375942e53f74e5a0206b679423aa0b04",
-    "semantic_hash": "375942e53f74e5a0206b679423aa0b04"
+    "mtime": 1784645902.352069,
+    "ast_hash": "5df1d9ec0f78c8b43d9db3fa2777cb36",
+    "semantic_hash": "5df1d9ec0f78c8b43d9db3fa2777cb36"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/embedded_demo_guide.md": {
     "mtime": 1779304998.1706638,
@@ -9720,9 +9720,9 @@
     "semantic_hash": "ec8a869e7cf0fa3c1125e1c838b66467"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/CLAUDE.md": {
-    "mtime": 1784631908.053182,
-    "ast_hash": "dd1da81f4b459a5d6e7a8af4d0d89f22",
-    "semantic_hash": "dd1da81f4b459a5d6e7a8af4d0d89f22"
+    "mtime": 1784632903.7620633,
+    "ast_hash": "df2e48851b3aa4d61800331e0ecc0221",
+    "semantic_hash": "df2e48851b3aa4d61800331e0ecc0221"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/requirements.txt": {
     "mtime": 1778480325.7052853,
@@ -24110,9 +24110,9 @@
     "semantic_hash": "dc92f4abe6ad0d4ee0140f16832235b5"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/src/utils/int8_c_emulation.py": {
-    "mtime": 1782827339.527802,
-    "ast_hash": "08e13628f6a049a3fded9c0f9208186b",
-    "semantic_hash": "08e13628f6a049a3fded9c0f9208186b"
+    "mtime": 1784644985.5322146,
+    "ast_hash": "a65ad5c552a8bb942382cdd5939faba5",
+    "semantic_hash": "a65ad5c552a8bb942382cdd5939faba5"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s39_int8_ablation.py": {
     "mtime": 1782892838.5713003,
@@ -26770,9 +26770,9 @@
     "semantic_hash": "6673d53afb6092b90985ee17f2ced76b"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/presentation/CR_reunion_16juillet2026.txt": {
-    "mtime": 1784628260.588977,
-    "ast_hash": "1b317b31ccbd3c0a33622bf1847feffc",
-    "semantic_hash": "1b317b31ccbd3c0a33622bf1847feffc"
+    "mtime": 1784632909.241122,
+    "ast_hash": "75457e954f2948c4b281e0918c67f241",
+    "semantic_hash": "75457e954f2948c4b281e0918c67f241"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/presentation/CR_reunion_16juillet2026.md": {
     "mtime": 1784628039.8465075,
@@ -26820,14 +26820,14 @@
     "semantic_hash": "fbed3a435c58d4ac89ea971ce718093f"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4702_extension_emulateur_harnais.md": {
-    "mtime": 1784283533.094665,
-    "ast_hash": "ebb3d5927860435228aa49137428c7e9",
-    "semantic_hash": "ebb3d5927860435228aa49137428c7e9"
+    "mtime": 1784645938.1104531,
+    "ast_hash": "7ef4f6788b23b48e0f09fc5658519bfb",
+    "semantic_hash": "7ef4f6788b23b48e0f09fc5658519bfb"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4703_sweep_profondeur_granularite.md": {
-    "mtime": 1784283562.2887874,
-    "ast_hash": "7a024dec8937e17d386e82957c8ffd0c",
-    "semantic_hash": "7a024dec8937e17d386e82957c8ffd0c"
+    "mtime": 1784645957.286901,
+    "ast_hash": "ac70c0980b95f82ed0cf4730b9c65c58",
+    "semantic_hash": "ac70c0980b95f82ed0cf4730b9c65c58"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4705_contexte_hdc_maha_tinyol.md": {
     "mtime": 1784283632.1118684,
@@ -26835,9 +26835,9 @@
     "semantic_hash": "35b83dc1c8ab570de9ce06ca047b6db3"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4701_cadrage_taxonomie.md": {
-    "mtime": 1784282887.1649506,
-    "ast_hash": "563ad09b2942f8910035b09fd662b870",
-    "semantic_hash": "563ad09b2942f8910035b09fd662b870"
+    "mtime": 1784645915.872621,
+    "ast_hash": "6fb22f8fdd3ebd1d37a806a00e5663e2",
+    "semantic_hash": "6fb22f8fdd3ebd1d37a806a00e5663e2"
   },
   "/home/leonard/Documents/ENAC/cl-embedded/docs/sprints/sprint_47/S4700_sprint_47.md": {
     "mtime": 1784281979.2876606,
@@ -26948,5 +26948,300 @@
     "mtime": 1784629441.0351884,
     "ast_hash": "20b69fd8e02fefa43a7832c05e319b53",
     "semantic_hash": "20b69fd8e02fefa43a7832c05e319b53"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/scripts/run_s47_quant_depth.py": {
+    "mtime": 1784645383.0644872,
+    "ast_hash": "1438e193c0deab81a0758acb32b7dd89",
+    "semantic_hash": "1438e193c0deab81a0758acb32b7dd89"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/tests/test_s47_quant_depth.py": {
+    "mtime": 1784645764.4655867,
+    "ast_hash": "5d79a3795d10c15569f2f967bacb3488",
+    "semantic_hash": "5d79a3795d10c15569f2f967bacb3488"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_tensor.json": {
+    "mtime": 1784645466.4143991,
+    "ast_hash": "02931b5a5cd29daf6ba7c61222bb9288",
+    "semantic_hash": "02931b5a5cd29daf6ba7c61222bb9288"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_channel.json": {
+    "mtime": 1784645472.77591,
+    "ast_hash": "5cabc4782b0b8b7287ae7a71fc91d2d1",
+    "semantic_hash": "5cabc4782b0b8b7287ae7a71fc91d2d1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_channel.json": {
+    "mtime": 1784645459.8795836,
+    "ast_hash": "6165f18885d4821c5425664bbb9fc760",
+    "semantic_hash": "6165f18885d4821c5425664bbb9fc760"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_channel.json": {
+    "mtime": 1784645498.5623634,
+    "ast_hash": "5bb7398b3c9dfaff7e39c385ce8c83b3",
+    "semantic_hash": "5bb7398b3c9dfaff7e39c385ce8c83b3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_tensor.json": {
+    "mtime": 1784645517.4994361,
+    "ast_hash": "a97afed776181caa123c409b48b57cdb",
+    "semantic_hash": "a97afed776181caa123c409b48b57cdb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_channel.json": {
+    "mtime": 1784645417.0294945,
+    "ast_hash": "9313bfc609f424a27f0b646230288317",
+    "semantic_hash": "9313bfc609f424a27f0b646230288317"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_channel.json": {
+    "mtime": 1784645486.23399,
+    "ast_hash": "4798d197f1128289789955c384dfc965",
+    "semantic_hash": "4798d197f1128289789955c384dfc965"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_channel.json": {
+    "mtime": 1784645447.6947708,
+    "ast_hash": "e3ab9e0447cc7ff9e6fd144952c2ef45",
+    "semantic_hash": "e3ab9e0447cc7ff9e6fd144952c2ef45"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_tensor.json": {
+    "mtime": 1784645426.441462,
+    "ast_hash": "df414b012a12e349099502d4b1c949d7",
+    "semantic_hash": "df414b012a12e349099502d4b1c949d7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_channel.json": {
+    "mtime": 1784645419.6052852,
+    "ast_hash": "fef519fbf5bdab130fb7cdaf84d191f8",
+    "semantic_hash": "fef519fbf5bdab130fb7cdaf84d191f8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_tensor.json": {
+    "mtime": 1784645420.9341638,
+    "ast_hash": "104db6459986d9eec40c882402c159fb",
+    "semantic_hash": "104db6459986d9eec40c882402c159fb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_channel.json": {
+    "mtime": 1784645427.878969,
+    "ast_hash": "36ed2f750b22f061a84d161a5264693f",
+    "semantic_hash": "36ed2f750b22f061a84d161a5264693f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_tensor.json": {
+    "mtime": 1784645415.7456694,
+    "ast_hash": "cd8764b1ed4312d32542260ce0b95625",
+    "semantic_hash": "cd8764b1ed4312d32542260ce0b95625"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_tensor.json": {
+    "mtime": 1784645492.39132,
+    "ast_hash": "b83d917770e83ea500fb68bff7699824",
+    "semantic_hash": "b83d917770e83ea500fb68bff7699824"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_tensor.json": {
+    "mtime": 1784645413.2053883,
+    "ast_hash": "d5ea289b12f2ebdb3afaa4c0e11616d3",
+    "semantic_hash": "d5ea289b12f2ebdb3afaa4c0e11616d3"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_channel.json": {
+    "mtime": 1784645414.477918,
+    "ast_hash": "eb58e00a8014e6962004eb0a8321e647",
+    "semantic_hash": "eb58e00a8014e6962004eb0a8321e647"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_channel.json": {
+    "mtime": 1784645424.804978,
+    "ast_hash": "7555a9ed76f3266a3e47ef69293e54e9",
+    "semantic_hash": "7555a9ed76f3266a3e47ef69293e54e9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_channel.json": {
+    "mtime": 1784645435.3529587,
+    "ast_hash": "49e12c487f039e43d395f750629e0ea9",
+    "semantic_hash": "49e12c487f039e43d395f750629e0ea9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_tensor.json": {
+    "mtime": 1784645441.5432289,
+    "ast_hash": "1936d97e66b2f411443348b92afd63bd",
+    "semantic_hash": "1936d97e66b2f411443348b92afd63bd"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_tensor.json": {
+    "mtime": 1784645479.3876975,
+    "ast_hash": "b7a49cb90ad5f55c257f98e32176778b",
+    "semantic_hash": "b7a49cb90ad5f55c257f98e32176778b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_channel.json": {
+    "mtime": 1784645411.9256573,
+    "ast_hash": "216edb3719e285719d7ce839fe815206",
+    "semantic_hash": "216edb3719e285719d7ce839fe815206"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_tensor.json": {
+    "mtime": 1784645418.3165836,
+    "ast_hash": "00034280305882120dfa2810c0b33a57",
+    "semantic_hash": "00034280305882120dfa2810c0b33a57"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_tensor.json": {
+    "mtime": 1784645423.5037942,
+    "ast_hash": "034465a4210d0a16fa76d74f3abc4dfb",
+    "semantic_hash": "034465a4210d0a16fa76d74f3abc4dfb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_tensor.json": {
+    "mtime": 1784645429.1904652,
+    "ast_hash": "dfbc318e7563be2385369252fea8e0c9",
+    "semantic_hash": "dfbc318e7563be2385369252fea8e0c9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_channel.json": {
+    "mtime": 1784645422.219525,
+    "ast_hash": "69006edd9b2a2bfe21b6f7433ba9b315",
+    "semantic_hash": "69006edd9b2a2bfe21b6f7433ba9b315"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_tensor.json": {
+    "mtime": 1784645504.789701,
+    "ast_hash": "bf8afc31c1f3442a3ad393985687fa69",
+    "semantic_hash": "bf8afc31c1f3442a3ad393985687fa69"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_channel.json": {
+    "mtime": 1784645511.3384242,
+    "ast_hash": "ed2461cbbda509df9976efef61c06cbb",
+    "semantic_hash": "ed2461cbbda509df9976efef61c06cbb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_tensor.json": {
+    "mtime": 1784645453.8042476,
+    "ast_hash": "d55cb8bb2823a690a1d0503ece3206c8",
+    "semantic_hash": "d55cb8bb2823a690a1d0503ece3206c8"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int2_pertensor.yaml": {
+    "mtime": 1784645201.9064536,
+    "ast_hash": "c86165dcad781acfb45716d3e287556f",
+    "semantic_hash": "c86165dcad781acfb45716d3e287556f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int8_perchannel.yaml": {
+    "mtime": 1784645201.9061594,
+    "ast_hash": "0ebc8dc225329d9c2d8395f4ddfb52c7",
+    "semantic_hash": "0ebc8dc225329d9c2d8395f4ddfb52c7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int2_perchannel.yaml": {
+    "mtime": 1784645201.9064963,
+    "ast_hash": "f722eddbc110ea2967a0fbd56458c2c6",
+    "semantic_hash": "f722eddbc110ea2967a0fbd56458c2c6"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int3_perchannel.yaml": {
+    "mtime": 1784645201.9057791,
+    "ast_hash": "663b0c90cb0eada49befe04586d7a7bb",
+    "semantic_hash": "663b0c90cb0eada49befe04586d7a7bb"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int2_pertensor.yaml": {
+    "mtime": 1784645201.9058208,
+    "ast_hash": "89ea2ecfda02d816655083895364f300",
+    "semantic_hash": "89ea2ecfda02d816655083895364f300"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_ternaire_perchannel.yaml": {
+    "mtime": 1784645201.9059603,
+    "ast_hash": "c612fbc77b750158e9dbebe516693c6f",
+    "semantic_hash": "c612fbc77b750158e9dbebe516693c6f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int3_pertensor.yaml": {
+    "mtime": 1784645201.9057364,
+    "ast_hash": "a1a9fd6ace3a65e11829e6c4724ba8ed",
+    "semantic_hash": "a1a9fd6ace3a65e11829e6c4724ba8ed"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int8_perchannel.yaml": {
+    "mtime": 1784645201.9053345,
+    "ast_hash": "e12b96ebc48ccb7f6d92ae598b55f49f",
+    "semantic_hash": "e12b96ebc48ccb7f6d92ae598b55f49f"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int6_perchannel.yaml": {
+    "mtime": 1784645201.9062443,
+    "ast_hash": "c1a017516d43ef89484dcefde64d1adf",
+    "semantic_hash": "c1a017516d43ef89484dcefde64d1adf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int6_pertensor.yaml": {
+    "mtime": 1784645201.9062028,
+    "ast_hash": "40737fe1ac7599fb42218497ee1d57de",
+    "semantic_hash": "40737fe1ac7599fb42218497ee1d57de"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_binaire_pertensor.yaml": {
+    "mtime": 1784645201.9066348,
+    "ast_hash": "60ec225b93ac2c703981de83f721cd59",
+    "semantic_hash": "60ec225b93ac2c703981de83f721cd59"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int3_perchannel.yaml": {
+    "mtime": 1784645201.9064107,
+    "ast_hash": "6b71debd812ae892a4c50bc8bb81e35b",
+    "semantic_hash": "6b71debd812ae892a4c50bc8bb81e35b"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int4_pertensor.yaml": {
+    "mtime": 1784645201.9055052,
+    "ast_hash": "14f019d684bbade88e1b42087a4bbf38",
+    "semantic_hash": "14f019d684bbade88e1b42087a4bbf38"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int8_pertensor.yaml": {
+    "mtime": 1784645201.9061174,
+    "ast_hash": "11f061dacc78f4cf685b9d01019089d1",
+    "semantic_hash": "11f061dacc78f4cf685b9d01019089d1"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_binaire_pertensor.yaml": {
+    "mtime": 1784645201.9060192,
+    "ast_hash": "ca1fab7ff6ccd7b3885ff63835e8d2c4",
+    "semantic_hash": "ca1fab7ff6ccd7b3885ff63835e8d2c4"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int4_perchannel.yaml": {
+    "mtime": 1784645201.9055555,
+    "ast_hash": "41caf8558acd1f6ea95795aa0bb44eaf",
+    "semantic_hash": "41caf8558acd1f6ea95795aa0bb44eaf"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int3_pertensor.yaml": {
+    "mtime": 1784645201.906368,
+    "ast_hash": "80d317c5b144356b59f4c53f2c4c23b7",
+    "semantic_hash": "80d317c5b144356b59f4c53f2c4c23b7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int6_pertensor.yaml": {
+    "mtime": 1784645201.9054,
+    "ast_hash": "f751905e32740f3e46e37a32d7c6d96e",
+    "semantic_hash": "f751905e32740f3e46e37a32d7c6d96e"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int2_perchannel.yaml": {
+    "mtime": 1784645201.9058626,
+    "ast_hash": "6b1be0c1cd81184e9d73b1c8658494f7",
+    "semantic_hash": "6b1be0c1cd81184e9d73b1c8658494f7"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int4_perchannel.yaml": {
+    "mtime": 1784645201.906326,
+    "ast_hash": "2da04fc737916406920c36d9e7299824",
+    "semantic_hash": "2da04fc737916406920c36d9e7299824"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_int4_pertensor.yaml": {
+    "mtime": 1784645201.9062848,
+    "ast_hash": "aa628ebc05046dbeced8f16c3d4a97e2",
+    "semantic_hash": "aa628ebc05046dbeced8f16c3d4a97e2"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int8_pertensor.yaml": {
+    "mtime": 1784645201.9052267,
+    "ast_hash": "4eed5f52b287b1692a0921ac29b6f32c",
+    "semantic_hash": "4eed5f52b287b1692a0921ac29b6f32c"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_ternaire_pertensor.yaml": {
+    "mtime": 1784645201.905911,
+    "ast_hash": "85eab8e3a340d7032bfa76b9a2130863",
+    "semantic_hash": "85eab8e3a340d7032bfa76b9a2130863"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_int6_perchannel.yaml": {
+    "mtime": 1784645201.905453,
+    "ast_hash": "bf51e470c788a60a6160e4b9bd61a944",
+    "semantic_hash": "bf51e470c788a60a6160e4b9bd61a944"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_binaire_perchannel.yaml": {
+    "mtime": 1784645201.906678,
+    "ast_hash": "aab623367e3661e0ea8e5fe5935c82ed",
+    "semantic_hash": "aab623367e3661e0ea8e5fe5935c82ed"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_ternaire_perchannel.yaml": {
+    "mtime": 1784645201.9065883,
+    "ast_hash": "d7c15ab8f870bbbea9d687bb4e9a8769",
+    "semantic_hash": "d7c15ab8f870bbbea9d687bb4e9a8769"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_monitoring_binaire_perchannel.yaml": {
+    "mtime": 1784645201.9060717,
+    "ast_hash": "28aec7e4605580289e2b365e61665fc9",
+    "semantic_hash": "28aec7e4605580289e2b365e61665fc9"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/configs/quant_depth/ewc_pronostia_ternaire_pertensor.yaml": {
+    "mtime": 1784645201.9065413,
+    "ast_hash": "5917b0cf722a1db0b8766f2ef02cb584",
+    "semantic_hash": "5917b0cf722a1db0b8766f2ef02cb584"
+  },
+  "/home/leonard/Documents/ENAC/cl-embedded/docs/context/quantization_depth.md": {
+    "mtime": 1784644895.636041,
+    "ast_hash": "81b33b40a51672e78c06477ea6adcfd3",
+    "semantic_hash": "81b33b40a51672e78c06477ea6adcfd3"
   }
 }

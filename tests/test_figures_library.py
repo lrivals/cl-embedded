@@ -28,6 +28,7 @@ QUANT_CATALOGS = {
     "quantization/pipeline",
     "quantization/impact",
     "quantization/moment",
+    "quant_depth",
 }
 _CATALOGS_DIR = Path(__file__).resolve().parents[1] / "src/figures/catalogs"
 IMPACT_SRC = _CATALOGS_DIR / "quant_impact.py"
@@ -37,14 +38,16 @@ IMPACT_SRC = _CATALOGS_DIR / "quant_impact.py"
 # liste blanche fait échouer le test : c'est le garde-fou « aucun chiffre de résultat en
 # dur » (règle Sprints 33/40). Scanné sur quant_impact.py (S4205) ET quant_moment.py (S4606).
 LAYOUT_WHITELIST: set[float] = {
-    0.0, 0.005, 0.01, 0.02, 0.03, 0.05, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.5, 0.55, 0.6,
-    0.82, 0.9, 0.92, 0.98, 1.0, 1.05, 1.2, 1.4, 1.5, 2.0, 4.5, 5.0, 8.0, 8.5, 9.0, 11.0,
+    0.0, 0.005, 0.01, 0.02, 0.03, 0.05, 0.06, 0.12, 0.15, 0.19, 0.2, 0.25, 0.3, 0.35, 0.4,
+    0.5, 0.55, 0.6, 0.72, 0.78, 0.8, 0.82, 0.86, 0.9, 0.92, 0.94, 0.98, 1.0, 1.05, 1.2, 1.4,
+    1.5, 2.0, 4.5, 5.0, 8.0, 8.5, 9.0, 11.0,
 }
 
 # Modules de catalogue soumis à la garde AST « 0 chiffre en dur ».
 HARDCODE_GUARDED_SRCS: list[Path] = [
     IMPACT_SRC,
     _CATALOGS_DIR / "quant_moment.py",
+    _CATALOGS_DIR / "quant_depth.py",
 ]
 
 

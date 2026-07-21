@@ -62,4 +62,40 @@ python -c "import json,glob; assert all('symmetry' in json.load(open(f)) for f i
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+✅ **S4704 implémenté.** **12 cellules mesurées** (EWC × {Monitoring, Pronostia} × bits
+critiques `{int2, int3, int4}` × `{symmetric, affine}`, granularité **per_channel** = gagnante
+S4703, seed 42). `int4` sert de **contrôle** (« affine sans effet notable » attendu aux bits
+moins rares).
+
+**Configs** : 12 fichiers `configs/quant_depth/ewc_sym_<dataset>_<bits>_<sym>.yaml` (héritent
+de `ewc_int8_<dataset>.yaml`, clés S4701, aucun hyperparamètre en dur). **Harnais** :
+`scripts/run_s47_quant_depth.py` étendu — `--filter <substr>` (sélection de configs sous
+`--sweep`) + **routage de sortie** (`_out_path` détecte `ewc_sym_*` → répertoire
+`experiments/exp_S47_symmetry/`, nom `exp_S47_ewc_<dataset>_<bits>_<sym>.json` avec tag de
+symétrie ; le chemin `exp_S47_depth/` reste **inchangé**, 0 régression). Le zero-point affine
+n'a **rien à ré-implémenter** : l'émulateur (S4702) câble déjà `symmetry="affine"` sur les
+activations post-ReLU via `src/utils/quantization.py::compute_scale_zero_point`.
+
+**Résultats mesurés — `delta_auroc` (quant − FP32), et gain affine = Δ(affine) − Δ(symétrique)** :
+
+| Dataset | bits | symmetric | affine | gain affine |
+|---------|:---:|:---:|:---:|:---:|
+| Monitoring | int2 | −0.0069 | −0.0619 | **−0.0550** |
+| Monitoring | int3 | −0.0026 | −0.0591 | −0.0565 |
+| Monitoring | int4 | −0.0005 | −0.0554 | −0.0549 |
+| Pronostia | int2 | −0.0086 | −0.0125 | −0.0040 |
+| Pronostia | int3 | −0.0021 | −0.0028 | −0.0007 |
+| Pronostia | int4 | −0.0016 | −0.0019 | −0.0003 |
+
+(valeurs issues des JSON `exp_S47_symmetry/`, jamais écrites à la main — table régénérable.)
+
+**Constat honnête (négatif mesuré)** : le **zero-point affine ne rachète pas la métrique** —
+il est **systématiquement ≤ symétrique** sur cette grille (gain toujours négatif). Sur
+Monitoring il **dégrade fortement** (−0.055) car les activations y sont déjà bien séparées et
+la grille signée n'est pas gaspillée au point de justifier le décentrage ; sur Pronostia le
+gain est quasi nul (−0.004 à −0.0003). **Conclusion : la per-channel (S4703) suffit ; l'affine
+n'apporte rien ici** — c'est la per-channel, pas le zero-point, qui repousse le cliff. Réserve :
+mesure émulée PC (bit-exact) ; confirmation board = Sprint 48.
+
+**Vérification** : `python scripts/run_s47_quant_depth.py --sweep configs/quant_depth/ --filter sym` ;
+`ls experiments/exp_S47_symmetry/*.json | wc -l` = **12** ; tous portent le champ `symmetry`.

@@ -61,4 +61,35 @@ jupyter nbconvert --to notebook --execute notebooks/cl_eval/quant_depth/comparis
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+✅ **S4706 implémenté.** Catalogue `quant_depth` + notebook galerie, **0 chiffre en dur**
+(garde AST), N/A gris, RAM étiquetée « théorique (bit-packée) ».
+
+**Catalogue** `src/figures/catalogs/quant_depth.py` (`@register_catalog("quant_depth")`,
+importé dans `catalogs/__init__.py`) → **5 PNG** sous `docs/figures/quantization_depth/`, toute
+valeur via `load_experiment`/`metric_or_na` :
+- `auroc_vs_bits.png` — Δ AUROC vs profondeur, 1 ligne/granularité, 1 panneau/dataset, seuil
+  cliff −0,02 annoté (rend visible le décrochage Pronostia int2 per-tensor et la récupération
+  per-canal) ;
+- `heatmap_bits_granularity.png` — heatmap Δ AUROC (granularité × bits) par dataset, N/A gris ;
+- `ram_vs_bits.png` — `ram_ratio_vs_fp32` vs bits effectifs (axe log₂), **badge d'honnêteté**
+  « RAM théorique — gain réel sous réserve de kernel bit-packé (Sprint 48) » ;
+- `symmetry_gain.png` — barres symmetric vs affine aux bits critiques (`exp_S47_symmetry/`) ;
+- `scope_context.png` — cartouche EWC balayé + 3 cartouches N/A justifiés (`context.json`).
+
+Couleurs cohérentes `STRATEGY_COLORS` (per-tensor = rouge `int8_ptq_legacy`, per-canal = orange
+`int8_v2`, affine = violet `q15`). Ordre des profondeurs par tags + bits effectifs **entiers**
+(structurels, pas des résultats) → axe log sans littéral de résultat.
+
+**Notebook** `notebooks/cl_eval/quant_depth/comparison.ipynb` (généré par
+`scripts/_build_s47_notebook.py`) : galerie FR + **tableaux rechargés par cellule** (Δ AUROC
+par grille, reco « plus petit bits viable » sous seuil −0,02 avec gain RAM, gain affine, contexte
+N/A). Exécuté via nbconvert **sans erreur** (0 cellule en échec).
+
+**Garde AST** : `quant_depth.py` ajouté à `HARDCODE_GUARDED_SRCS` + `"quant_depth"` à
+`QUANT_CATALOGS` dans `tests/test_figures_library.py` (8 flottants de layout du cartouche
+`scope_context` ajoutés à `LAYOUT_WHITELIST`) → `test_no_hardcoded_results` couvre le nouveau
+catalogue.
+
+**Vérification** : `python scripts/generate_figures.py --catalog quant_depth` (5 PNG) ;
+`jupyter nbconvert --to notebook --execute … --stdout` OK ;
+`pytest tests/ -k "s47_quant_depth or figures_library"` → **28 PASS**.

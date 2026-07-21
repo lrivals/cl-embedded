@@ -1,0 +1,23 @@
+{
+  "sprint": 47,
+  "swept_models": [
+    "ewc"
+  ],
+  "context_models": {
+    "hdc": {
+      "status": "na_structural",
+      "reason": "Nativement entier (hypervecteurs ±1 int8, mémoire associative int16) — aucun scale de poids à réduire ; profondeur fixée par la structure. Métrique INT8 ≡ FP32 par construction (Δ=0).",
+      "ref": "S4202§6, S28"
+    },
+    "mahalanobis": {
+      "status": "na_format_only",
+      "reason": "Détecteur sans poids appris par gradient (fit statistique μ, Σ⁻¹). Axe pertinent = format de Σ⁻¹ (INT8 casse, Q15 récupère) ; pas de tête neuronale à balayer en bits.",
+      "ref": "S34"
+    },
+    "tinyol": {
+      "status": "na_out_of_scope",
+      "reason": "Tête entraînable → axe de profondeur exerçable, mais périmètre fixé EWC-only pour ce sprint (décision utilisateur).",
+      "ref": "S4700"
+    }
+  }
+}

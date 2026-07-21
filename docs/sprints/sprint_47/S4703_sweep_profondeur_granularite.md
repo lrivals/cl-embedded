@@ -90,4 +90,33 @@ python -c "import json,glob; [print(json.load(open(f))['weight_bits'], json.load
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+✅ **S4703 implémenté.** **28 cellules mesurées** (EWC × {Monitoring, Pronostia} × {8,6,4,3,2,ternaire,binaire}
+× {per_tensor, per_channel}, seed 42, symétrie `symmetric`, activations 8-bit calibrées).
+
+**Configs** : 28 fichiers `configs/quant_depth/ewc_<dataset>_<bits>_<gran>.yaml` (héritent de
+`ewc_int8_<dataset>.yaml` via `extends`, clés S4701, aucun hyperparamètre en dur). **Sorties** : 28 JSON
+`experiments/exp_S47_depth/exp_S47_ewc_*.json` (schéma S4702).
+
+**Résultats (extraits `delta_auroc` / `agreement_vs_fp32`)** :
+
+| Dataset | granularité | 8 bits | 4 | 2 | ternaire | binaire |
+|---------|-------------|:---:|:---:|:---:|:---:|:---:|
+| Monitoring | per_tensor | +0.00001 | +0.00107 | −0.00284 | −0.00214 | −0.01170 |
+| Monitoring | per_channel | +0.00024 | −0.00053 | −0.00688 | −0.00214 | −0.01170 |
+| Pronostia | per_tensor | −0.00094 | −0.00119 | **−0.04637** | −0.01533 | −0.02750 |
+| Pronostia | per_channel | −0.00092 | −0.00158 | **−0.00857** | −0.01533 | −0.02750 |
+
+(valeurs issues des JSON, jamais écrites à la main — table régénérable.)
+
+**Constats mesurés** :
+- **Cliff Pronostia identifié** : à 2 bits **per_tensor** l'AUROC chute (Δ=−0.046, accord 0.908) ; **la
+  per-channel repousse le cliff** (Δ=−0.009, accord 0.951) → **H1 confirmée** (elle isole les canaux à grande
+  dynamique). Monitoring reste robuste jusqu'à 2 bits (bien séparé).
+- **Ternaire/binaire identiques per_tensor≡per_channel** (attendu : TWN/BWN ont un scale intrinsèquement
+  par-canal, la granularité ne s'applique pas).
+- **Plus petit `weight_bits` viable** (Δ<0.02) : Pronostia = **3 bits** (Δ=−0.002, ×10,7 RAM théorique) ou
+  **2 bits per_channel** (Δ=−0.009, ×16) ; Monitoring = **2 bits** (×16). Gain RAM **théorique (bit-packé)** —
+  latence/`.bss` réelles = Sprint 48.
+
+**Vérification** : `ls experiments/exp_S47_depth/exp_S47_ewc_*.json | wc -l` = **28** ; `ram_ratio`
+monotone décroissant en bits ; `pytest tests/test_s47_quant_depth.py` **19 PASS**.

@@ -125,4 +125,31 @@ python -c "import json,glob; d=json.load(open(sorted(glob.glob('experiments/exp_
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+✅ **S4702 implémenté.** Émulateur étendu + harnais de sweep, **0 régression**.
+
+**Extension `QuantConfig`** ([`src/utils/int8_c_emulation.py`](../../../src/utils/int8_c_emulation.py)) :
+3 champs rétro-compatibles `weight_bits: int = 8`, `weight_mode: WeightMode = "linear"`,
+`symmetry: Symmetry = "symmetric"` + `@staticmethod subint8(bits, granularity, symmetry, mode, act_repr)`.
+**Piège résolu** : `q15()` porte désormais `weight_bits=16` (préserve les poids 16-bit — l'ancienne dérivation
+`w_bits = 16 if act_repr=="q15"` a été retirée) ; `mixed_int8w_q15act` reste `weight_bits=8`.
+
+**Câblage forward** (`_forward_calibrated`) : `w_bits = cfg.weight_bits` ; dispatch `_quant_weight_mode`
+(linear = `_weight_scales`/`_quant_weight` existants ; `_ternary_weight` = TWN {−1,0,+1} seuil
+`0.7·mean|W[j,:]|` par canal ; `_binary_weight` = BWN {−1,+1} scale par-canal) ; `symmetry="affine"` sur les
+**activations** post-ReLU via `compute_scale_zero_point` ([`src/utils/quantization.py`](../../../src/utils/quantization.py),
+**non ré-implémenté**) → accumulation `(q − z) @ wq.T`. Le chemin `symmetric` par-défaut est **inchangé**.
+
+**RAM théorique** : `theoretical_weight_ram(head, cfg) -> (bytes, ratio)` — poids bit-packés (binaire 1b,
+ternaire 2b, sinon `weight_bits`) + scales float32 + biais FP32 ; `ratio = 32/bits_effectifs` (×4/×8/×16/×32,
+aligne S4701 §2 ; ternaire 32/1.58 ≈ ×20).
+
+**Harnais** [`scripts/run_s47_quant_depth.py`](../../../scripts/run_s47_quant_depth.py) : réutilise `EWCAdapter`
+(train FP32), `_first_task_train_X`, `_mean_auroc_over_tasks`, `_eval_quant_auroc`/`_task_eval_xy`/
+`_weights_from_model` (S46), `forward_fp32`/`forward_quant`/`calibrate_activations`/`subint8`/
+`theoretical_weight_ram`. Accord binaire = **seuil du logit d'anomalie** (`logit > 0`, la tête EWC a une sortie
+unique → `argmax` serait dégénéré). CLI `--config` (une cellule) **et** `--sweep DIR`. JSON schéma S4702
+(`auroc_fp32`/`auroc_quant`/`delta_auroc`/`agreement_vs_fp32`/`ram_*`/`config_snapshot`).
+
+**Vérification** : `pytest -k "int8_emulation or ablation or s39 or s47"` → **35 PASS** (presets S39 golden
+bit-identiques = 0 régression) ; smoke `--config ewc_monitoring_int4_perchannel.yaml` OK
+(`auroc_quant=0.9741`, `ram_ratio=×8`).

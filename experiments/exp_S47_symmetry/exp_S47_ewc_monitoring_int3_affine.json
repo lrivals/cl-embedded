@@ -1,0 +1,32 @@
+{
+  "model": "ewc",
+  "dataset": "monitoring",
+  "weight_bits": 3,
+  "weight_mode": "linear",
+  "granularity": "per_channel",
+  "symmetry": "affine",
+  "act_bits": 8,
+  "metric": "auroc",
+  "auroc_fp32": 0.97464,
+  "auroc_quant": 0.915527,
+  "delta_auroc": -0.059113,
+  "agreement_vs_fp32": 0.978502,
+  "ram_weight_bytes_theoretical": 638,
+  "ram_ratio_vs_fp32": 10.6667,
+  "ram_note": "théorique (bit-packée) ; RAM .bss réelle = Sprint 48",
+  "seed": 42,
+  "config_path": "configs/quant_depth/ewc_sym_monitoring_int3_affine.yaml",
+  "timestamp": "2026-07-21T17:19:22",
+  "config_snapshot": {
+    "weight_bits": 3,
+    "granularity": "per_channel",
+    "symmetry": "affine",
+    "act_bits": 8,
+    "seed": 42,
+    "input_dim": 4,
+    "hidden_dims": [
+      32,
+      16
+    ]
+  }
+}

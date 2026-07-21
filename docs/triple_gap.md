@@ -212,6 +212,19 @@ au-dessus) la PTQ calibrée sur ce head : sur la NUCLEO, c'est la **calibration 
 l'essentiel, le QAT n'ajoutant pas de gain décisif au-delà (constat honnête, pas d'effet inventé). Détail :
 `docs/sprints/sprint_46/`.
 
+**Renforcement Sprint 47 — profondeur & schéma de quantification (jusqu'où descendre en bits)** : troisième
+axe, orthogonal au *moment* (S46) et au *format* (S34), balayé **EWC-only × {Monitoring, Pronostia}, PC-only**
+via l'émulateur bit-exact `int8_c_emulation.py` (28 cellules profondeur `exp_S47_depth/` + 12 cellules symétrie
+`exp_S47_symmetry/`). **Jusqu'où descendre à AUROC préservée (Δ ≥ −0.02, per_channel symmetric)** : **Monitoring**
+tient jusqu'au **binaire** (Δ=−0.0117 ; int2 Δ=−0.0069) ; **Pronostia** casse au binaire (Δ=−0.0275) mais le
+**ternaire** tient (Δ=−0.0153). La **granularité per-channel repousse le cliff** (Pronostia 2-bit : per_tensor
+Δ=−0.046 → per_channel Δ=−0.009), tandis que le **zero-point affine ne rachète rien** (S4704 : gain ≤ 0 sur les
+6 cellules critiques). **Gain RAM = THÉORIQUE (bit-packé)** : ÷4 (8b) → ÷8 (4b) → ÷16 (2b) → ×20.25 (ternaire) →
+×32 (binaire) — un poids INT4 logé dans un `int8_t` n'économise rien de plus que l'INT8 ; **la `.bss` réelle et
+la latence sont hors de portée de l'émulateur et seront mesurées board au Sprint 48** (kernel bit-packé, avec/sans
+packing). Configs retenues pour le portage (S4708, traçable aux JSON) : frontière **ternaire**, agressive
+**binaire** (les 2 datasets), référence **int8** per_channel (déjà porté S39). Détail : `docs/sprints/sprint_47/`.
+
 **Volet énergie (Sprint 33)** : le constat « INT8 réduit la RAM sans accélérer la latence FPU » ouvre une
 question énergie potentiellement originale — l'INT8 réduit-il néanmoins les **µJ** (moins d'accès mémoire) ? La
 chaîne de mesure est livrée et fonctionnelle : marqueurs de phase GPIO firmware (PA8, `ENERGY_MARKERS`, S3304),

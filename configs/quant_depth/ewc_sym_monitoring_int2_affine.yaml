@@ -1,0 +1,19 @@
+# configs/quant_depth/ewc_sym_monitoring_int2_affine.yaml — Axe symétrie / zero-point (Sprint 47, S4704).
+# Cellule EWC × monitoring : weight_bits=2 · granularity=per_channel (gagnante S4703) · symmetry=affine.
+# Le zero-point affine s'applique aux ACTIVATIONS post-ReLU (≥ 0) ; les poids restent symétriques signés.
+# Bits critiques {2,3} + contrôle {4} (affine sans effet notable attendu à 4 bits).
+# Hérite de ewc_int8_monitoring.yaml (archi + hyperparamètres ; aucun hyperparamètre en dur).
+# Taxonomie : docs/context/quantization_depth.md (S4701). Métrique = AUROC binaire (voie S28/S4601).
+#
+# Usage (routé vers experiments/exp_S47_symmetry/) :
+#   python scripts/run_s47_quant_depth.py --sweep configs/quant_depth/ --filter sym
+
+extends: ../ewc_int8_monitoring.yaml
+
+dataset: monitoring                # tag de nommage (le loader lit data.dataset hérité)
+weight_bits: 2
+granularity: per_channel
+symmetry: affine
+act_bits: 8
+seed: 42
+metric: auroc

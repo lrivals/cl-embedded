@@ -1,0 +1,32 @@
+{
+  "model": "ewc",
+  "dataset": "pronostia",
+  "weight_bits": 3,
+  "weight_mode": "linear",
+  "granularity": "per_channel",
+  "symmetry": "affine",
+  "act_bits": 8,
+  "metric": "auroc",
+  "auroc_fp32": 0.998703,
+  "auroc_quant": 0.995919,
+  "delta_auroc": -0.002784,
+  "agreement_vs_fp32": 0.97679,
+  "ram_weight_bytes_theoretical": 746,
+  "ram_ratio_vs_fp32": 10.6667,
+  "ram_note": "théorique (bit-packée) ; RAM .bss réelle = Sprint 48",
+  "seed": 42,
+  "config_path": "configs/quant_depth/ewc_sym_pronostia_int3_affine.yaml",
+  "timestamp": "2026-07-21T17:19:44",
+  "config_snapshot": {
+    "weight_bits": 3,
+    "granularity": "per_channel",
+    "symmetry": "affine",
+    "act_bits": 8,
+    "seed": 42,
+    "input_dim": 13,
+    "hidden_dims": [
+      32,
+      16
+    ]
+  }
+}

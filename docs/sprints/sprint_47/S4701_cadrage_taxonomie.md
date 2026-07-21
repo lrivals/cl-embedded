@@ -124,4 +124,20 @@ grep -i "structurel\|format-only\|EWC" docs/context/quantization_depth.md       
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+✅ **S4701 implémenté.** Créé [`docs/context/quantization_depth.md`](../../context/quantization_depth.md)
+structuré selon les 6 sections de la spec :
+
+1. **Trois sous-axes** (`weight_bits` 8→6→4→3→2→ternaire→binaire ; `granularity` per_tensor/per_channel ;
+   `symmetry` symmetric/affine) — table + définitions (`qmax=2^(b−1)−1`, seuils TWN/BWN, zero-point affine
+   pour activations post-ReLU).
+2. **RAM théorique vs matérialisée** — table ratios ×4→×32 + note d'honnêteté (INT4 dans `int8_t` n'économise
+   rien de plus ; gain réel = kernel bit-packé, mesuré Sprint 48).
+3. **Mapping par modèle** justifié : EWC ✅ balayé · HDC ✖ structurel · Mahalanobis ✖ format-only ·
+   TinyOL 🟡 hors-périmètre.
+4. **Métrique** : AUROC binaire (S4601, `TODO(arnaud)`).
+5. **Clés config** `weight_bits`/`granularity`/`symmetry` + exemple YAML (héritage `extends`).
+6. **Renvois** S4202 (format) · S4601/`quantization_moments.md` (moment) · S34 (Q15) · CLAUDE.md Gap 3.
+
+Le vocabulaire fige les clés consommées par `QuantConfig.subint8(...)` (S4702) et le sweep (S4703).
+**Vérification** : `grep -c "weight_bits\|granularity\|symmetry"` > 0, `grep -ci "théorique\|bit-pack"` > 0,
+mapping `structurel/format-only/EWC` présent — OK.

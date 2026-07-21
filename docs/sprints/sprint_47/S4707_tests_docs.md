@@ -56,4 +56,29 @@ grep -c "Sprint 47" docs/roadmap_phase2.md
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+**Tests** — `tests/test_s47_quant_depth.py` **21 PASS** (le fichier préexistait avec 19 tests issus de
+S4702/S4703 ; **+2 tests de la spec ajoutés**) :
+
+- `test_na_honesty` : lit `experiments/exp_S47_context/context.json` ; vérifie `swept_models == ["ewc"]`
+  et que HDC/Maha/TinyOL portent un `status` `na_*` avec `reason`/`ref` non vides et **aucun champ métrique
+  fabriqué** (rejet de toute clé `auroc*`/`delta*`/`ram*` dans une cellule N/A).
+- `test_no_hardcoded_numbers` : garde AST auto-contenue sur `src/figures/catalogs/quant_depth.py`
+  (scan `ast.Constant` float hors liste blanche de layout, miroir de `test_figures_library.py`). Le catalogue
+  est **aussi** déjà gardé dans `test_figures_library.py::HARDCODE_GUARDED_SRCS`.
+- Couverture spec préexistante confirmée : `test_json_schema_and_honesty` (schéma JSON),
+  `test_ram_ratio_grows_when_bits_shrink` + `test_agreement_non_increasing_with_bits` (monotonie),
+  `test_no_regression_presets_golden` (0-régression golden S39), `test_subint8_fields` + grilles
+  linéaire/ternaire/binaire (presets `subint8`).
+
+`pytest tests/ -k "quant_depth or figures_library"` → **30 PASS, 0 régression** (garde AST intacte).
+
+**Documentation** :
+
+- `docs/roadmap_phase2.md` : bloc Sprint 47 → statut **✅ implémenté (S4701–S4708)** + bilan sweep + reco board.
+- `docs/triple_gap.md` (§ Gap 3) : paragraphe « Renforcement Sprint 47 — profondeur & schéma » (jusqu'où
+  descendre à AUROC préservée par dataset, per-channel repousse le cliff, affine n'aide pas, gain RAM
+  **théorique** avec réserve explicite `.bss`/latence → Sprint 48).
+- `CLAUDE.md` : ligne de statut Sprint 47.
+- `graphify_sprint_update` invoqué (évaluation d'un update du graphe).
+
+**Sprint PC-only** : firmware inchangé, `make test` non impacté (134, 2 TinyOL préexistants hors périmètre).

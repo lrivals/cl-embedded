@@ -809,6 +809,29 @@ DUAL_MODE validé board réelle NUCLEO-F439ZI (2026-06-12) :
 
 ---
 
+### Sprint 47 — Profondeur & schéma de quantification pour EWC (sub-INT8, granularité, symétrie) (23 – 29 juillet 2026)
+
+**Objectif** : **troisième axe** de la quantification, orthogonal au *moment* (S46) et au *format* (S4202) — *à quelle profondeur en bits (sub-INT8) et avec quelle calibration (granularité / symétrie)* la tête EWC casse, et quel schéma rachète la métrique. Périmètre **EWC-only × {Monitoring (D2), Pronostia (D4)}**, **PC-only** (émulateur bit-exact `int8_c_emulation.py`) ; le portage board est le **Sprint 48**.
+
+**Nœud honnête** : la **RAM reportée est THÉORIQUE (bit-packée)** — un poids INT4 dans un `int8_t` n'économise rien de plus que l'INT8 ; le gain ÷8/÷16 n'est réel qu'avec un kernel bit-packé (mesuré S48). L'émulateur mesure la **métrique** (AUROC) et une **RAM analytique**, pas la latence ni la `.bss` réelles.
+
+| Bloc | Tâches | Statut | Résultat |
+| ---- | ------ | :----: | -------- |
+| A — Cadrage & taxonomie | **S4701 ✅** | ✅ | `docs/context/quantization_depth.md` : 3 sous-axes (`weight_bits` 8→ternaire/binaire · `granularity` per_tensor/per_channel · `symmetry` symmetric/affine) + RAM théorique vs bit-packing + mapping **EWC balayé / HDC structurel / Maha format-only / TinyOL hors-périmètre** (N/A justifié) + AUROC binaire (S4601) |
+| B — Harnais PC | **S4702 ✅** | ✅ | `QuantConfig` étendu (`weight_bits`/`weight_mode`/`symmetry` + `subint8()`, **q15() → weight_bits=16** rétro-compat) ; forward câblé ternaire (TWN)/binaire (BWN)/affine (zero-point via `compute_scale_zero_point`) ; `theoretical_weight_ram` ; `scripts/run_s47_quant_depth.py` (réutilise `EWCAdapter`/`_eval_quant_auroc`/émulateur) ; **0 régression** presets S39 (golden figée) |
+| C — Expériences PC | **S4703 ✅** | ✅ | **28 cellules mesurées** (`exp_S47_depth/`, EWC × 2 ds × 7 profondeurs × 2 granularités, seed 42) : `delta_auroc`/`agreement_vs_fp32`/RAM théorique |
+| C — Symétrie / contexte | **S4704 ✅ · S4705 ✅** | ✅ | **S4704** : **12 cellules** `exp_S47_symmetry/` (EWC × 2 ds × bits critiques {int2,int3,int4} × {symmetric,affine}, per_channel) via `--filter sym` + routage sortie ; **gain affine négatif partout** (la per-channel suffit, le zero-point ne rachète rien). **S4705** : `exp_S47_context/context.json` (script traçable `write_s47_context.py`) — HDC/Maha/TinyOL en N/A justifié, aucun champ métrique |
+| D — Figures / notebook | **S4706 ✅** | ✅ | catalogue `quant_depth` (5 PNG `docs/figures/quantization_depth/`, 0 chiffre en dur garde AST, N/A gris, RAM « théorique bit-packée ») + notebook galerie `notebooks/cl_eval/quant_depth/comparison.ipynb` (tableaux rechargés par cellule, nbconvert OK) |
+| E–F — Tests / pointeur board | **S4707 ✅ · S4708 ✅** | ✅ | **S4707** : `tests/test_s47_quant_depth.py` **21 PASS** (schéma JSON, monotonie RAM bits↓, 0-régression golden S39, presets `subint8`/ternaire/binaire, **`test_na_honesty`** contexte HDC/Maha/TinyOL sans champ métrique fabriqué, **`test_no_hardcoded_numbers`** garde AST `quant_depth.py`) ; roadmap + `triple_gap.md` (§ Gap 3) + CLAUDE.md à jour ; `graphify_sprint_update`. **S4708** : table de sélection board figée (traçable `exp_S47_depth/`) → **frontière = ternaire, agressive = binaire** (Monitoring + Pronostia), référence int8 (déjà S39), **pas d'affine** (n'a pas aidé) ; nuance bit-packing → S48 |
+
+**Message scientifique (mesuré S4703/S4704)** : *quantifier ≠ quantifier* aussi en **profondeur**. **Monitoring** robuste jusqu'à 2 bits (per_channel Δ≈−0.003). **Pronostia** montre le « cliff » et l'effet de la granularité : **per_tensor 2-bit Δ=−0.046 / accord 0.908** vs **per_channel 2-bit Δ=−0.009 / accord 0.951** → **la per-channel repousse le cliff (H1 confirmée)** ; ternaire Δ=−0.015, binaire Δ=−0.028. RAM théorique ÷4 (8b) → ÷8 (4b) → ÷16 (2b) → ÷32 (binaire), **sous réserve d'un kernel bit-packé (S48)**. **Axe symétrie (S4704)** : le **zero-point affine ne rachète pas la métrique** (gain ≤ 0 sur les 6 cellules ; dégrade même Monitoring où les activations sont déjà bien séparées) → **c'est la per-channel, pas l'affine, qui repousse le cliff**.
+
+**Liens triple gap** : Gap 3 (jusqu'où descendre en bits avant que la métrique casse, et quel schéma la rachète). **Statut** : ✅ **Sprint 47 implémenté (S4701–S4708)** (taxonomie + émulateur étendu + harnais + 28 cellules profondeur + 12 cellules symétrie + contexte N/A + 5 figures + notebook + **tests 21 PASS + pointeur board figé**). **Configs gagnantes → board S48** : frontière **ternaire** (Monitoring Δ=−0.0021 / Pronostia Δ=−0.0153, ×20.25 théo.), agressive **binaire** (Monitoring Δ=−0.0117 encore ≥ −0.02 / Pronostia Δ=−0.0275 casse, ×32 théo.), référence **int8** per_channel (déjà S39/v2) ; **aucune variante affine** (S4704 : le zero-point ne rachète rien). **Réutilise** : `int8_c_emulation.py` (`_weight_scales`/`_quant_weight`/`_act_params` déjà `n_bits`-paramétrés, S39), `compute_scale_zero_point` (affine, `src/utils/quantization.py`), `EWCAdapter`/`_eval_quant_auroc` (S28/S46), registre figures `src/figures/` (S4201) ; nouveautés = modes ternaire/binaire, symétrie affine, `subint8()`, `theoretical_weight_ram`, harnais de sweep + routage symétrie, catalogue `quant_depth`.
+
+→ Détail : [`docs/sprints/sprint_47/S4700_sprint_47.md`](sprints/sprint_47/S4700_sprint_47.md)
+
+---
+
 ## Sprint P2-05 (18–24 juin 2026) — INT8 BACKPROP (Gap 3)
 
 **Objectif** : Explorer la quantification INT8 pendant l'update incrémental → Gap 3
