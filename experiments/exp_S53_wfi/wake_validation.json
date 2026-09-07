@@ -1,0 +1,17 @@
+{
+  "purpose": "valide que le réveil du WFI tient la cadence : un WFI mal armé perd des trames (il ne plante pas). Traçabilité seule — aucune valeur d'énergie ici.",
+  "firmware_build": "UART_WFI_IDLE",
+  "model": "ewc",
+  "dataset": "monitoring",
+  "protocol_version": 3,
+  "requested_rate_hz": 200.0,
+  "requested_n_samples": 300,
+  "n_samples_received": 300,
+  "crc_errors": 0,
+  "achieved_rate_hz": 166.76,
+  "duration_s": 1.793,
+  "latency_p50_us": 50.0,
+  "latency_p99_us": 50.0,
+  "power": "alimentation maintenue par la sonde pendant tout le flux (lpm01a_probe.py --hold-run) : hors acquisition la carte redémarre en boucle",
+  "timestamp": "2026-08-06T07:59:13.232261+00:00"
+}

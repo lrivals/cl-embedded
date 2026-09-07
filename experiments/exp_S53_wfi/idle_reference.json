@@ -1,0 +1,126 @@
+{
+  "default_polling": {
+    "firmware_build": "default_polling",
+    "method": "courant moyen au repos, port hôte fermé, session contre-balancée (rangs conservés, régime établi isolé)",
+    "i_idle_runs_a": [
+      {
+        "session_index": 0,
+        "i_a": 0.049890000000000004
+      },
+      {
+        "session_index": 1,
+        "i_a": 0.04984
+      },
+      {
+        "session_index": 2,
+        "i_a": 0.049780000000000005
+      },
+      {
+        "session_index": 3,
+        "i_a": 0.049780000000000005
+      },
+      {
+        "session_index": 4,
+        "i_a": 0.049740000000000006
+      },
+      {
+        "session_index": 5,
+        "i_a": 0.04973
+      },
+      {
+        "session_index": 6,
+        "i_a": 0.04973
+      },
+      {
+        "session_index": 7,
+        "i_a": 0.04977
+      },
+      {
+        "session_index": 8,
+        "i_a": 0.049780000000000005
+      },
+      {
+        "session_index": 9,
+        "i_a": 0.04975
+      }
+    ],
+    "i_idle_all_a": 0.049779000000000004,
+    "i_idle_established_a": 0.04976666666666667,
+    "i_idle_established_ma": 49.766666666666666,
+    "bench_dispersion_a": 3.464101615137722e-05,
+    "drift_slope_ma_per_acquisition": -0.011454545454545556,
+    "n_idle_discarded_as_settling": 1,
+    "warmup_discarded_a": [
+      0.06017000000000001,
+      0.050050000000000004
+    ],
+    "tension_v": 3.263,
+    "window_s": 10.0,
+    "timestamp": "2026-08-06T08:08:24.168770+00:00"
+  },
+  "UART_WFI_IDLE": {
+    "firmware_build": "UART_WFI_IDLE",
+    "method": "courant moyen au repos, port hôte fermé, session contre-balancée (rangs conservés, régime établi isolé)",
+    "i_idle_runs_a": [
+      {
+        "session_index": 0,
+        "i_a": 0.027520000000000003
+      },
+      {
+        "session_index": 1,
+        "i_a": 0.027420000000000003
+      },
+      {
+        "session_index": 2,
+        "i_a": 0.027410000000000004
+      },
+      {
+        "session_index": 3,
+        "i_a": 0.027420000000000003
+      },
+      {
+        "session_index": 4,
+        "i_a": 0.027430000000000003
+      },
+      {
+        "session_index": 5,
+        "i_a": 0.027360000000000002
+      },
+      {
+        "session_index": 6,
+        "i_a": 0.027370000000000002
+      },
+      {
+        "session_index": 7,
+        "i_a": 0.02738
+      },
+      {
+        "session_index": 8,
+        "i_a": 0.027370000000000002
+      },
+      {
+        "session_index": 9,
+        "i_a": 0.027370000000000002
+      }
+    ],
+    "i_idle_all_a": 0.027405000000000002,
+    "i_idle_established_a": 0.02737,
+    "i_idle_established_ma": 27.369999999999997,
+    "bench_dispersion_a": 7.071067811865188e-06,
+    "drift_slope_ma_per_acquisition": -0.012545454545454748,
+    "n_idle_discarded_as_settling": 5,
+    "warmup_discarded_a": [
+      0.03928,
+      0.027590000000000003
+    ],
+    "tension_v": 3.263,
+    "window_s": 10.0,
+    "timestamp": "2026-08-06T08:03:07.676185+00:00"
+  },
+  "wfi_gain": {
+    "i_idle_scrutation_a": 0.04976666666666667,
+    "i_idle_wfi_a": 0.02737,
+    "gain_ma": 22.39666666666667,
+    "gain_pct": 45.003348961821835
+  }
+}

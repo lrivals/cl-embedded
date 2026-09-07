@@ -1,0 +1,75 @@
+{
+  "firmware_build": "UART_WFI_IDLE",
+  "method": "delta vs repos UART_WFI_IDLE",
+  "i_idle_a": 0.02737,
+  "tension_v": 3.2640000000000002,
+  "window_s": 10.0,
+  "rate_hz": 100.0,
+  "cells": {
+    "maha_int8": {
+      "i_mean_a": 0.03184333333333334,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.004473333333333343,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 146.00960000000032,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "ewc_fp32": {
+      "i_mean_a": 0.03186666666666666,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.004496666666666663,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 146.77119999999988,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "ewc_int8": {
+      "i_mean_a": 0.03181333333333333,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.004443333333333334,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 145.03040000000001,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "hdc_fp32": {
+      "i_mean_a": 0.03379666666666667,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.006426666666666671,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 209.76640000000017,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "hdc_int8": {
+      "i_mean_a": 0.038836666666666665,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.011466666666666667,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 374.272,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "maha_fp32": {
+      "i_mean_a": 0.03149,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.004119999999999999,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 134.47679999999997,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "tinyol_fp32": {
+      "i_mean_a": 0.031790000000000006,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.004420000000000007,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 144.26880000000025,
+      "method": "delta vs repos UART_WFI_IDLE"
+    },
+    "tinyol_int8": {
+      "i_mean_a": 0.03169333333333333,
+      "i_idle_a": 0.02737,
+      "delta_a": 0.004323333333333332,
+      "n_inference": 1000,
+      "energy_uj_per_inference": 141.11359999999993,
+      "method": "delta vs repos UART_WFI_IDLE"
+    }
+  },
+  "timestamp": "2026-08-06T08:20:32.176402+00:00"
+}

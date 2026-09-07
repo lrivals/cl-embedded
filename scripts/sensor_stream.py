@@ -392,7 +392,25 @@ def _stream_uart(
     return results
 
 
+def _arrondi(valeur: float | None, digits: int = 4) -> float | None:
+    """Arrondi qui préserve un `None` — un N/A honnête n'est pas un zéro."""
+    return None if valeur is None else round(float(valeur), digits)
+
+
 def _compute_stats(results: list[dict]) -> dict:
+    """Statistiques d'un flux, dérivées CÔTÉ HÔTE depuis les prédictions et les labels.
+
+    Rien ici n'est calculé par le firmware : le protocole UART ne transporte ni accuracy ni
+    F1 (cf. `_dump_sample`). Ces grandeurs sont donc reproductibles hors banc à partir des
+    échantillons dumpés.
+
+    **Contrat binaire de `f1_faulty`** : `compute_fault_f1` mesure la détection de la classe
+    `faulty = 1` et suppose des labels ⊂ {0, 1}. Sur un flux MULTI-CLASSE (CWRU par type de
+    défaut, CMAPSS par régime), le nombre renvoyé reste calculable mais ne mesure plus ce
+    que son nom annonce. Il n'est donc pas supprimé — les pilotes S35/S36/S38/S45/S48 le
+    lisent — mais il est désormais accompagné de `n_classes` et, hors contrat, de
+    `f1_na_reason` : un consommateur peut tester le contrat au lieu de le supposer.
+    """
     if not results:
         return {"n_samples": 0, "accuracy": 0.0}
 
@@ -407,23 +425,79 @@ def _compute_stats(results: list[dict]) -> dict:
     # du protocole UART (F1 n'est pas calculé par le firmware).
     from src.evaluation.metrics import compute_fault_f1
 
-    f1 = compute_fault_f1(np.asarray(trues), np.asarray(preds))
+    # Domaine des labels RÉELLEMENT observés dans le flux : c'est lui qui dit si le contrat
+    # binaire est tenu, et non le dataset déclaré en ligne de commande. Le contrat se teste
+    # AVANT l'appel : hors binaire, `compute_fault_f1` ne rend pas un nombre discutable, il
+    # LÈVE (`average='binary'` sur une cible multiclasse), ce qui faisait échouer le flux
+    # entier au lieu de rapporter honnêtement une métrique inapplicable.
+    classes = sorted(set(trues) | set(preds))
+    contrat_binaire = set(classes) <= {0, 1}
+    if contrat_binaire:
+        f1 = compute_fault_f1(np.asarray(trues), np.asarray(preds))
+        f1_na_reason = None
+    else:
+        f1 = {k: None for k in ("f1_faulty", "f1_macro",
+                                "precision_faulty", "recall_faulty")}
+        f1_na_reason = (
+            f"labels non binaires ({classes}) : `f1_faulty` mesure la détection de la "
+            f"classe « faulty = 1 » et n'a pas de sens hors d'un contrat binaire. Les "
+            f"champs F1 sortent à `null` plutôt que faux — l'accuracy et les latences, "
+            f"elles, restent mesurées."
+        )
+
+    # Cadence RÉELLEMENT atteinte, dérivée des horodatages d'émission déjà portés par
+    # chaque échantillon (S5304). Sans elle, un flux commandé au-delà du plafond de
+    # transport UART (~209 inf/s : 32 B de requête + 23 B de réponse V3 à 115200 bauds)
+    # sature EN SILENCE — aucune trame perdue, aucun CRC, le flux tourne simplement moins
+    # vite que la consigne. Additif : aucun changement du protocole UART.
+    ts = [r["ts_ms"] for r in results if "ts_ms" in r]
+    duration_s = (max(ts) - min(ts)) / 1000.0 if len(ts) > 1 else 0.0
+    achieved_rate_hz = ((len(ts) - 1) / duration_s) if duration_s > 0 else None
 
     return {
         "n_samples": len(results),
+        "duration_s": round(duration_s, 4),
+        "achieved_rate_hz": (round(achieved_rate_hz, 3)
+                             if achieved_rate_hz is not None else None),
         "n_tasks": n_tasks,
+        "n_classes": len(classes),
         "accuracy": round(acc, 4),
-        "f1_faulty": round(f1["f1_faulty"], 4),
-        "f1_macro": round(f1["f1_macro"], 4),
-        "precision_faulty": round(f1["precision_faulty"], 4),
-        "recall_faulty": round(f1["recall_faulty"], 4),
+        "f1_binary_contract": contrat_binaire,
+        "f1_faulty": _arrondi(f1["f1_faulty"]),
+        "f1_macro": _arrondi(f1["f1_macro"]),
+        "precision_faulty": _arrondi(f1["precision_faulty"]),
+        "recall_faulty": _arrondi(f1["recall_faulty"]),
         "latency_mean_us": round(float(np.mean(latencies)), 2),
         "latency_p50_us":  round(float(np.percentile(latencies, 50)), 2),
         "latency_p99_us":  round(float(np.percentile(latencies, 99)), 2),
         "ram_mean_bytes":  int(np.mean([r["ram_bytes"] for r in results])),
         "throughput_mean_ips": int(np.mean([r["throughput_ips"] for r in results])),
         "crc_errors": sum(1 for r in results if r["status"] & STATUS_CRC_ERR),
+        **({"f1_na_reason": f1_na_reason} if f1_na_reason else {}),
     }
+
+
+def _dump_sample(r: dict) -> dict:
+    """Échantillon exporté par ``--dump-samples`` — champs bruts, aucun arbitrage hôte.
+
+    Les slots V3 `auroc` et `forgetting` sont exposés TELS QUELS quand ils sont présents.
+    Sous ``-DEWC_AUTO_UPDATE`` (Sprint 38), le firmware les réinterprète : `auroc` porte le
+    verdict du gate (0 NORMAL / 1 FAULT / 2 DRIFT) et `forgetting` le compteur CUMULÉ de
+    mises à jour (cf. `run_sprint38_board.py:313-337`). Sans eux, le taux de mise à jour
+    réellement déclenché à bord n'est visible que de `_stream_uart`, donc invisible d'un
+    pilote qui appelle ce script en sous-processus (S5306).
+
+    **Ajout strictement additif** : le format de trame, les drapeaux et la sémantique du
+    protocole UART sont inchangés — même précédent que `duration_s`/`achieved_rate_hz`
+    ajoutés à `_compute_stats` en S5304.
+    """
+    sample = {"pred": int(r["pred"]), "true": int(r["true"]),
+              "confidence": float(r.get("confidence", 0.0)),
+              "features": r.get("features")}
+    for slot in ("auroc", "forgetting"):
+        if slot in r:
+            sample[slot] = float(r[slot])
+    return sample
 
 
 def parse_cl_sequence(s: str) -> list[tuple[str, int]]:
@@ -829,7 +903,12 @@ def main() -> None:
         model_flags = FRAME_FLAGS_TRIPLE_MAHA_HDC
     elif args.model == "maha-q15":
         model_flags = FRAME_FLAGS_MAHA_Q15
-    # tinyol et mahalanobis n'ont pas de flag dédié (pipeline sélectionne via config firmware)
+    elif args.model == "tinyol":
+        model_flags = FRAME_FLAGS_TINYOL_MODE
+    # mahalanobis reste le SEUL modèle à flags=0 : c'est le chemin d'inférence par défaut
+    # du firmware (pipeline.c, branche `else`), volontairement emprunté, parité board↔PC 1,000.
+    # Ne PAS y ajouter d'autre modèle : un modèle sans flag exécute silencieusement Mahalanobis
+    # (bug historique de --model tinyol, cf. docs/sprints/sprint_52/S5201).
 
     print(f"Chargement dataset '{args.dataset}'...")
     if args.condition:
@@ -919,12 +998,7 @@ def main() -> None:
         stats = _compute_stats(raw_results)
         stats["mode"] = "dry-run"
         if args.dump_samples:
-            stats["samples"] = [
-                {"pred": int(r["pred"]), "true": int(r["true"]),
-                 "confidence": float(r.get("confidence", 0.0)),
-                 "features": r.get("features")}
-                for r in raw_results
-            ]
+            stats["samples"] = [_dump_sample(r) for r in raw_results]
 
         print("\n--- Résultats streaming ---")
         for k, v in stats.items():
@@ -945,12 +1019,7 @@ def main() -> None:
         stats["mode"] = "uart"
         stats["port"] = args.port
         if args.dump_samples:
-            stats["samples"] = [
-                {"pred": int(r["pred"]), "true": int(r["true"]),
-                 "confidence": float(r.get("confidence", 0.0)),
-                 "features": r.get("features")}
-                for r in raw_results
-            ]
+            stats["samples"] = [_dump_sample(r) for r in raw_results]
 
         print("\n--- Résultats streaming ---")
         for k, v in stats.items():

@@ -1,0 +1,61 @@
+{
+  "default_polling": {
+    "firmware_build": "default_polling",
+    "method": "courant moyen au repos, port hôte fermé, session contre-balancée (rangs conservés, régime établi isolé)",
+    "i_idle_runs_a": [
+      {
+        "session_index": 0,
+        "i_a": 0.04993
+      },
+      {
+        "session_index": 1,
+        "i_a": 0.04995
+      },
+      {
+        "session_index": 2,
+        "i_a": 0.04986
+      },
+      {
+        "session_index": 3,
+        "i_a": 0.04986
+      },
+      {
+        "session_index": 4,
+        "i_a": 0.049870000000000005
+      },
+      {
+        "session_index": 5,
+        "i_a": 0.049830000000000006
+      },
+      {
+        "session_index": 6,
+        "i_a": 0.049850000000000005
+      },
+      {
+        "session_index": 7,
+        "i_a": 0.049800000000000004
+      },
+      {
+        "session_index": 8,
+        "i_a": 0.04984
+      },
+      {
+        "session_index": 9,
+        "i_a": 0.049830000000000006
+      }
+    ],
+    "i_idle_all_a": 0.049862000000000004,
+    "i_idle_established_a": 0.049842500000000005,
+    "i_idle_established_ma": 49.84250000000001,
+    "bench_dispersion_a": 2.2519832529191367e-05,
+    "drift_slope_ma_per_acquisition": -0.012363636363635943,
+    "n_idle_discarded_as_settling": 2,
+    "warmup_discarded_a": [
+      0.060430000000000005,
+      0.049980000000000004
+    ],
+    "tension_v": 3.261,
+    "window_s": 10.0,
+    "timestamp": "2026-08-05T10:06:59.734558+00:00"
+  }
+}

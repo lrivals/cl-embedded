@@ -1,0 +1,333 @@
+{
+  "policy": "frozen",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "init_mode": "pretrained",
+  "firmware_build": "build par défaut",
+  "build_name": "default",
+  "bss_bytes": 100152,
+  "n_features": 4,
+  "update_flag_uart": false,
+  "points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.041593333333333336,
+      "i_std_a": 0.00024846193538112087,
+      "n_repeats": 3,
+      "session_index": [
+        30,
+        31,
+        39
+      ]
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.041606666666666674,
+      "i_std_a": 0.00016072751268321405,
+      "n_repeats": 3,
+      "session_index": [
+        1,
+        8,
+        33
+      ],
+      "achieved_rate_hz": 10.0
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.04147666666666667,
+      "i_std_a": 0.0002205296654269738,
+      "n_repeats": 3,
+      "session_index": [
+        34,
+        35,
+        40
+      ],
+      "achieved_rate_hz": 25.0
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.041666666666666664,
+      "i_std_a": 0.00014047538337137104,
+      "n_repeats": 3,
+      "session_index": [
+        0,
+        2,
+        11
+      ],
+      "achieved_rate_hz": 50.0
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.039823333333333336,
+      "i_std_a": 0.0014954709403172423,
+      "n_repeats": 3,
+      "session_index": [
+        14,
+        19,
+        36
+      ],
+      "achieved_rate_hz": 100.0
+    },
+    {
+      "rate_hz": 150.0,
+      "i_mean_a": 0.04148,
+      "i_std_a": 6.082762530298257e-05,
+      "n_repeats": 3,
+      "session_index": [
+        26,
+        37,
+        38
+      ],
+      "achieved_rate_hz": 150.0
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.040376666666666665,
+      "i_std_a": 0.0013439618050128258,
+      "n_repeats": 3,
+      "session_index": [
+        5,
+        21,
+        25
+      ],
+      "achieved_rate_hz": 184.227
+    }
+  ],
+  "protocol_check": {
+    "model_flag": "ewc",
+    "update_flag_uart": false,
+    "n_samples_expected": 300,
+    "n_samples_received": 300,
+    "samples_lost": 0,
+    "crc_errors": 0,
+    "latency_p50_us": 48.0,
+    "latency_p99_us": 48.0,
+    "achieved_rate_hz": 99.138,
+    "check_rate_hz": 100.0,
+    "f1_faulty": 0.9153,
+    "gate": {
+      "n_updates": 0,
+      "update_rate": 0.0,
+      "verdict_counts": {
+        "0": 4,
+        "1": 296
+      },
+      "counter_monotonic": false,
+      "plausible_gate_build": false
+    }
+  },
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "timestamp": "2026-09-07T11:19:53.519382+00:00",
+  "source": "lpm01a_current",
+  "method": "régression I(rate)",
+  "slope_ua_per_hz": -0.9365093540542587,
+  "slope_std_ua_per_hz": 0.6162284246906773,
+  "intercept_ma": 41.62265497273934,
+  "r2": 0.3660475359841633,
+  "n_points_fitted": 6,
+  "weighted_by_inverse_variance": true,
+  "energy_uj_per_inference": "à mesurer",
+  "energy_uncertainty_uj": 2.0113695781903704,
+  "saturation_rate_hz": 200.0,
+  "duty_cycle_at_max_rate": 0.0072,
+  "max_rate_fitted_hz": 150.0,
+  "tension_v": 3.2640000000000002,
+  "dwt_latency_us_p50": 48.0,
+  "energy_na_reason": "régression non significative : r²=0.366 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.",
+  "session": {
+    "sequence": [
+      {
+        "session_index": 0,
+        "policy": "frozen",
+        "rate_hz": 50.0,
+        "repeat": 0,
+        "i_a": 0.041800000000000004
+      },
+      {
+        "session_index": 1,
+        "policy": "frozen",
+        "rate_hz": 10.0,
+        "repeat": 0,
+        "i_a": 0.04179
+      },
+      {
+        "session_index": 2,
+        "policy": "frozen",
+        "rate_hz": 50.0,
+        "repeat": 1,
+        "i_a": 0.04168
+      },
+      {
+        "session_index": 5,
+        "policy": "frozen",
+        "rate_hz": 200.0,
+        "repeat": 0,
+        "i_a": 0.04104
+      },
+      {
+        "session_index": 8,
+        "policy": "frozen",
+        "rate_hz": 10.0,
+        "repeat": 1,
+        "i_a": 0.041490000000000006
+      },
+      {
+        "session_index": 11,
+        "policy": "frozen",
+        "rate_hz": 50.0,
+        "repeat": 2,
+        "i_a": 0.04152
+      },
+      {
+        "session_index": 14,
+        "policy": "frozen",
+        "rate_hz": 100.0,
+        "repeat": 0,
+        "i_a": 0.03894
+      },
+      {
+        "session_index": 19,
+        "policy": "frozen",
+        "rate_hz": 100.0,
+        "repeat": 1,
+        "i_a": 0.03898
+      },
+      {
+        "session_index": 21,
+        "policy": "frozen",
+        "rate_hz": 200.0,
+        "repeat": 2,
+        "i_a": 0.03883
+      },
+      {
+        "session_index": 25,
+        "policy": "frozen",
+        "rate_hz": 200.0,
+        "repeat": 1,
+        "i_a": 0.041260000000000005
+      },
+      {
+        "session_index": 26,
+        "policy": "frozen",
+        "rate_hz": 150.0,
+        "repeat": 1,
+        "i_a": 0.041440000000000005
+      },
+      {
+        "session_index": 30,
+        "policy": "frozen",
+        "rate_hz": 0.0,
+        "repeat": 0,
+        "i_a": 0.041440000000000005
+      },
+      {
+        "session_index": 31,
+        "policy": "frozen",
+        "rate_hz": 0.0,
+        "repeat": 2,
+        "i_a": 0.041460000000000004
+      },
+      {
+        "session_index": 33,
+        "policy": "frozen",
+        "rate_hz": 10.0,
+        "repeat": 2,
+        "i_a": 0.04154
+      },
+      {
+        "session_index": 34,
+        "policy": "frozen",
+        "rate_hz": 25.0,
+        "repeat": 0,
+        "i_a": 0.04129
+      },
+      {
+        "session_index": 35,
+        "policy": "frozen",
+        "rate_hz": 25.0,
+        "repeat": 2,
+        "i_a": 0.04172
+      },
+      {
+        "session_index": 36,
+        "policy": "frozen",
+        "rate_hz": 100.0,
+        "repeat": 2,
+        "i_a": 0.041550000000000004
+      },
+      {
+        "session_index": 37,
+        "policy": "frozen",
+        "rate_hz": 150.0,
+        "repeat": 0,
+        "i_a": 0.041550000000000004
+      },
+      {
+        "session_index": 38,
+        "policy": "frozen",
+        "rate_hz": 150.0,
+        "repeat": 2,
+        "i_a": 0.04145
+      },
+      {
+        "session_index": 39,
+        "policy": "frozen",
+        "rate_hz": 0.0,
+        "repeat": 1,
+        "i_a": 0.04188
+      },
+      {
+        "session_index": 40,
+        "policy": "frozen",
+        "rate_hz": 25.0,
+        "repeat": 1,
+        "i_a": 0.041420000000000005
+      }
+    ],
+    "shuffled": true,
+    "seed": 42,
+    "warmup_discarded_a": [
+      0.05954
+    ],
+    "session_label": "default_monitoring"
+  },
+  "session_anchor": {
+    "model": "mahalanobis",
+    "points": [
+      {
+        "rate_hz": 0.0,
+        "i_mean_a": 0.041440000000000005,
+        "i_std_a": 0.0,
+        "n_repeats": 1
+      },
+      {
+        "rate_hz": 100.0,
+        "i_mean_a": 0.041310000000000006,
+        "i_std_a": 0.0,
+        "n_repeats": 1
+      },
+      {
+        "rate_hz": 200.0,
+        "i_mean_a": 0.04116,
+        "i_std_a": 0.0,
+        "n_repeats": 1
+      }
+    ],
+    "method": "régression I(rate)",
+    "slope_ua_per_hz": -1.4000000000000123,
+    "slope_std_ua_per_hz": 0.05773502691898026,
+    "intercept_ma": 41.44333333333334,
+    "r2": 0.998302207130729,
+    "n_points_fitted": 3,
+    "weighted_by_inverse_variance": false,
+    "energy_uj_per_inference": "à mesurer",
+    "energy_uncertainty_uj": 0.18844712786355158,
+    "saturation_rate_hz": null,
+    "duty_cycle_at_max_rate": null,
+    "max_rate_fitted_hz": 200.0,
+    "tension_v": 3.2640000000000002,
+    "dwt_latency_us_p50": null,
+    "energy_na_reason": "régression non significative : pente=-1.400 ± 0.058 µA/Hz, soit moins de 2 σ au-dessus de zéro (r²=0.998) — l'énergie par inférence n'est pas séparable du bruit du banc à cette cadence."
+  }
+}

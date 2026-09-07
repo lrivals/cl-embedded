@@ -1,0 +1,163 @@
+{
+  "sysclk_mhz": 45,
+  "firmware_build": "-DSYSCLK_MHZ=45",
+  "pll": {
+    "pllm": 8,
+    "plln": 180,
+    "pllp": 8,
+    "ppre1": 1,
+    "ppre2": 1
+  },
+  "pclk1_hz": 45000000,
+  "pclk2_hz": 45000000,
+  "flash_ws": 1,
+  "overdrive": false,
+  "hw_check": {
+    "sysclk_reported_mhz": 45,
+    "pclk1_reported_hz": 45000000,
+    "sysclk_match": true,
+    "hw_banner": " 45 MHz  HCLK : 45 MHz  PCLK1 : 45 MHz  PCLK2 : 45 MHz\r\nRAM total : 256 Ko  BSS+data : 105496 B  Stack libre : 88 Ko\r\nPeripheriques actifs : GPIOD USART3 PWR \r\n=============================\r\nDWT calib : 1 000 000 cycles = 288889 us @ 45 MHz\r\n\r\n=== HW INFO -- STM32F439ZI ===\r\nMCU : STM32F439ZI  IDCODE=0x20036419\r\nCPU : Cortex-M4  CPUID=0x410FC241\r\nSYSCLK : 45 MHz  HCLK : 45 MHz  PCLK1 : 45 MHz  PCL"
+  },
+  "protocol_check": {
+    "mahalanobis": {
+      "n_samples_received": 300,
+      "n_samples_expected": 300,
+      "samples_lost": 0,
+      "crc_errors": 0,
+      "latency_p50_us": 18.0,
+      "latency_p99_us": 18.0
+    },
+    "ewc": {
+      "n_samples_received": 300,
+      "n_samples_expected": 300,
+      "samples_lost": 0,
+      "crc_errors": 0,
+      "latency_p50_us": 198.0,
+      "latency_p99_us": 198.0
+    },
+    "hdc": {
+      "n_samples_received": 300,
+      "n_samples_expected": 300,
+      "samples_lost": 0,
+      "crc_errors": 0,
+      "latency_p50_us": 2338.0,
+      "latency_p99_us": 2338.0
+    }
+  },
+  "dwt_latency_us_p50": {
+    "mahalanobis": 18.0,
+    "ewc": 198.0,
+    "hdc": 2338.0
+  },
+  "gap2_budget_us": 100000.0,
+  "gap2_ok": true,
+  "gap2_worst_us": 2338.0,
+  "gap2_margin_x": 42.7715996578272,
+  "gap2_verdict": "Gap 2 TENU à 45 MHz : pire latence mesurée 2338 µs (hdc) contre un budget de 100000 µs, soit une marge de ×43.",
+  "i_mean_ma_by_rate": [
+    {
+      "rate_hz": 0.0,
+      "i_ma": 18.245000000000005
+    },
+    {
+      "rate_hz": 10.0,
+      "i_ma": 18.865
+    },
+    {
+      "rate_hz": 25.0,
+      "i_ma": 19.555000000000003
+    },
+    {
+      "rate_hz": 50.0,
+      "i_ma": 20.85
+    },
+    {
+      "rate_hz": 100.0,
+      "i_ma": 22.105
+    },
+    {
+      "rate_hz": 200.0,
+      "i_ma": 21.78
+    }
+  ],
+  "current_points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.018245000000000004,
+      "i_std_a": 7.071067811865187e-06,
+      "n_repeats": 2
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.018865,
+      "i_std_a": 0.0008838834764831828,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.019555000000000003,
+      "i_std_a": 0.0017041273426595788,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.02085,
+      "i_std_a": 1.4142135623730373e-05,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.022105,
+      "i_std_a": 0.00010606601717798271,
+      "n_repeats": 2,
+      "achieved_rate_hz": 71.292,
+      "achieved_rate_source": "inféré du plafond mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.02178,
+      "i_std_a": 0.0001131370849898479,
+      "n_repeats": 2,
+      "achieved_rate_hz": 71.292,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "saturation_rate_hz": 100.0,
+  "n_points_fitted": 4,
+  "n_points_measured": 6,
+  "regression_model": "hdc_int8",
+  "energy_uj_per_inference": 170.05441263559308,
+  "method": "régression I(cadence) à fréquence SYSCLK fixée",
+  "acqmode_dyn": {
+    "attempted": true,
+    "succeeded": true,
+    "n_samples": 100000,
+    "n_samples_expected": 100000,
+    "i_mean_ma": 27.199199226265083,
+    "i_max_ma": 68.603515625,
+    "tension_v": 3.266,
+    "summary": "summary beg\r\nAcquisition mode:   dynamic\r\nSampling frequency: 100000 Hz\r\nAcquisition time:   1 s\r\nNumber of samples:  100000 samples\r\nCurrent min:        0.0 nA\r\nCurrent max:        68.7 mA\r\nsummary end\r\n\r\nPowerShield > Acquisition completed"
+  },
+  "tension_v": 3.2640000000000002,
+  "window_s": 10.0,
+  "warmup_discarded_a": [
+    0.03151,
+    0.023270000000000002
+  ],
+  "timestamp": "2026-09-02T16:49:56.863069+00:00",
+  "weighted_by_inverse_variance": true,
+  "duty_cycle_at_max_rate": 0.11689999999999999,
+  "max_rate_fitted_hz": 50.0,
+  "regression_latency_us_p50": 2338.0,
+  "slope_ua_per_hz": 52.10000387119886,
+  "slope_std_ua_per_hz": 0.025063801873600106,
+  "intercept_ma": 18.24500513305519,
+  "r2": 0.9999995371415665,
+  "energy_uncertainty_uj": 0.08180824931543076
+}

@@ -1,0 +1,52 @@
+{
+  "model": "hdc",
+  "encoding": "int8",
+  "dataset": "monitoring",
+  "sysclk_mhz": 45,
+  "acqmode": "dyn",
+  "fs_hz": 100000.0,
+  "rate_hz": 10.0,
+  "trigsrc": "sw",
+  "firmware_build": "-DSYSCLK_MHZ=45",
+  "timestamp": "2026-09-07T10:52:01.307470+00:00",
+  "warmup_discarded_a": [
+    0.031310000000000004
+  ],
+  "hw_check": {
+    "sysclk_reported_mhz": 45,
+    "pclk1_reported_hz": 45000000,
+    "sysclk_match": true,
+    "hw_banner": "5 MHz  HCLK : 45 MHz  PCLK1 : 45 MHz  PCLK2 : 45 MHz\r\nRAM total : 256 Ko  BSS+data : 105496 B  Stack libre : 88 Ko\r\nPeripheriques actifs : GPIOD USART3 PWR \r\n=============================\r\nDWT calib : 1 000 000 cycles = 288889 us @ 45 MHz\r\n\r\n=== HW INFO -- STM32F439ZI ===\r\nMCU : STM32F439ZI  IDCODE=0x20036419\r\nCPU : Cortex-M4  CPUID=0x410FC241\r\nSYSCLK : 45 MHz  HCLK : 45 MHz  PCLK1 : 45 MHz  PCLK2"
+  },
+  "acqmode_dyn_succeeded": true,
+  "acquisition": {
+    "succeeded": true,
+    "acqmode": "dyn",
+    "voltage_v": 3.266,
+    "i_mean_ma": 21.16382447491628,
+    "i_max_ma": 72.75390625,
+    "n_samples": 1000000,
+    "summary": "summary beg\r\nAcquisition mode:   dynamic\r\nSampling frequency: 100000 Hz\r\nAcquisition time:   10 s\r\nNumber of samples:  1000000 samples\r\nCurrent min:        0.0 nA\r\nCurrent max:        72.9 mA\r\nsummary end\r\n\r\nPowerShield > Acquisition completed"
+  },
+  "segmentation": "courant (voie A)",
+  "duration_s": 9.99999,
+  "n_samples": 1000000,
+  "method": "intégration du profil temporel",
+  "phases_na_reason": "marqueur 1 bit : startup/acquisition/inference partagent le niveau actif — une granularité 4 phases exigerait un encodage multi-bit (PA8 + PA9), amorcé nulle part dans le firmware.",
+  "threshold_a": 0.0220887451171875,
+  "n_bursts_detected": 3792,
+  "n_bursts_expected": 99.9999,
+  "detection_error_pct": 3692.003792003792,
+  "tolerance_pct": 5.0,
+  "samples_per_burst_median": 3.000000000008551,
+  "phases_uj": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "total_uj": "à mesurer",
+  "energy_uj_per_inference": "à mesurer",
+  "energy_uj_per_burst_gross": "à mesurer",
+  "energy_na_reason": "segmentation refusée : 3792 créneaux détectés pour 100 attendus (+3692.0 %, tolérance ±5 %) — le seuil ne découpe pas la suite des inférences, diviser par ce dénominateur fabriquerait une énergie."
+}

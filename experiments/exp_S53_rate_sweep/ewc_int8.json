@@ -1,0 +1,281 @@
+{
+  "model": "ewc",
+  "encoding": "int8",
+  "dataset": "monitoring",
+  "points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.03990000000000001,
+      "i_std_a": 0.0001212435565298199,
+      "n_repeats": 3,
+      "session_index": [
+        69,
+        134,
+        138
+      ]
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.03991,
+      "i_std_a": 0.00011532562594670838,
+      "n_repeats": 3,
+      "session_index": [
+        48,
+        88,
+        140
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.04045000000000001,
+      "i_std_a": 0.0006337980750996303,
+      "n_repeats": 3,
+      "session_index": [
+        84,
+        112,
+        146
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.04095666666666667,
+      "i_std_a": 0.00011547005383792445,
+      "n_repeats": 3,
+      "session_index": [
+        7,
+        15,
+        67
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.04181000000000001,
+      "i_std_a": 8.18535277187254e-05,
+      "n_repeats": 3,
+      "session_index": [
+        71,
+        102,
+        141
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 150.0,
+      "i_mean_a": 0.04294666666666667,
+      "i_std_a": 7.767453465154189e-05,
+      "n_repeats": 3,
+      "session_index": [
+        13,
+        44,
+        93
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.04331000000000001,
+      "i_std_a": 3.605551275464035e-05,
+      "n_repeats": 3,
+      "session_index": [
+        31,
+        41,
+        61
+      ],
+      "achieved_rate_hz": 167.789,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "protocol_check": {
+    "model_flag": "ewc-int8",
+    "n_samples_expected": 300,
+    "n_samples_received": 300,
+    "samples_lost": 0,
+    "crc_errors": 0,
+    "latency_p50_us": 53.0,
+    "latency_p99_us": 53.0,
+    "achieved_rate_hz": 98.033,
+    "check_rate_hz": 100.0
+  },
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "timestamp": "2026-09-01T18:09:14.810945+00:00",
+  "source": "lpm01a_current",
+  "method": "régression I(rate)",
+  "slope_ua_per_hz": 20.676776053732393,
+  "slope_std_ua_per_hz": 0.6848395326309858,
+  "intercept_ma": 39.81483132584867,
+  "r2": 0.9956311166516034,
+  "n_points_fitted": 6,
+  "weighted_by_inverse_variance": true,
+  "energy_uj_per_inference": 67.46832026332879,
+  "energy_uncertainty_uj": 2.234631394974907,
+  "saturation_rate_hz": 200.0,
+  "duty_cycle_at_max_rate": 0.00795,
+  "max_rate_fitted_hz": 150.0,
+  "tension_v": 3.263,
+  "dwt_latency_us_p50": 53.0,
+  "session": {
+    "sequence": [
+      {
+        "session_index": 7,
+        "cell": "ewc_int8",
+        "rate_hz": 50.0,
+        "repeat": 0,
+        "i_a": 0.04109
+      },
+      {
+        "session_index": 13,
+        "cell": "ewc_int8",
+        "rate_hz": 150.0,
+        "repeat": 2,
+        "i_a": 0.04301000000000001
+      },
+      {
+        "session_index": 15,
+        "cell": "ewc_int8",
+        "rate_hz": 50.0,
+        "repeat": 2,
+        "i_a": 0.04089
+      },
+      {
+        "session_index": 31,
+        "cell": "ewc_int8",
+        "rate_hz": 200.0,
+        "repeat": 0,
+        "i_a": 0.04335000000000001
+      },
+      {
+        "session_index": 41,
+        "cell": "ewc_int8",
+        "rate_hz": 200.0,
+        "repeat": 2,
+        "i_a": 0.043280000000000006
+      },
+      {
+        "session_index": 44,
+        "cell": "ewc_int8",
+        "rate_hz": 150.0,
+        "repeat": 0,
+        "i_a": 0.04297
+      },
+      {
+        "session_index": 48,
+        "cell": "ewc_int8",
+        "rate_hz": 10.0,
+        "repeat": 1,
+        "i_a": 0.039900000000000005
+      },
+      {
+        "session_index": 61,
+        "cell": "ewc_int8",
+        "rate_hz": 200.0,
+        "repeat": 1,
+        "i_a": 0.043300000000000005
+      },
+      {
+        "session_index": 67,
+        "cell": "ewc_int8",
+        "rate_hz": 50.0,
+        "repeat": 1,
+        "i_a": 0.04089
+      },
+      {
+        "session_index": 69,
+        "cell": "ewc_int8",
+        "rate_hz": 0.0,
+        "repeat": 0,
+        "i_a": 0.039880000000000006
+      },
+      {
+        "session_index": 71,
+        "cell": "ewc_int8",
+        "rate_hz": 100.0,
+        "repeat": 1,
+        "i_a": 0.04190000000000001
+      },
+      {
+        "session_index": 84,
+        "cell": "ewc_int8",
+        "rate_hz": 25.0,
+        "repeat": 2,
+        "i_a": 0.04086
+      },
+      {
+        "session_index": 88,
+        "cell": "ewc_int8",
+        "rate_hz": 10.0,
+        "repeat": 0,
+        "i_a": 0.04003
+      },
+      {
+        "session_index": 93,
+        "cell": "ewc_int8",
+        "rate_hz": 150.0,
+        "repeat": 1,
+        "i_a": 0.04286
+      },
+      {
+        "session_index": 102,
+        "cell": "ewc_int8",
+        "rate_hz": 100.0,
+        "repeat": 0,
+        "i_a": 0.04179
+      },
+      {
+        "session_index": 112,
+        "cell": "ewc_int8",
+        "rate_hz": 25.0,
+        "repeat": 0,
+        "i_a": 0.039720000000000005
+      },
+      {
+        "session_index": 134,
+        "cell": "ewc_int8",
+        "rate_hz": 0.0,
+        "repeat": 2,
+        "i_a": 0.039790000000000006
+      },
+      {
+        "session_index": 138,
+        "cell": "ewc_int8",
+        "rate_hz": 0.0,
+        "repeat": 1,
+        "i_a": 0.04003
+      },
+      {
+        "session_index": 140,
+        "cell": "ewc_int8",
+        "rate_hz": 10.0,
+        "repeat": 2,
+        "i_a": 0.0398
+      },
+      {
+        "session_index": 141,
+        "cell": "ewc_int8",
+        "rate_hz": 100.0,
+        "repeat": 2,
+        "i_a": 0.041740000000000006
+      },
+      {
+        "session_index": 146,
+        "cell": "ewc_int8",
+        "rate_hz": 25.0,
+        "repeat": 1,
+        "i_a": 0.04077
+      }
+    ],
+    "shuffled": true,
+    "seed": 42,
+    "warmup_discarded_a": [
+      0.060340000000000005
+    ]
+  }
+}

@@ -1,0 +1,281 @@
+{
+  "model": "hdc",
+  "encoding": "int8",
+  "dataset": "monitoring",
+  "points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.03980666666666667,
+      "i_std_a": 0.00017785762095938993,
+      "n_repeats": 3,
+      "session_index": [
+        26,
+        39,
+        62
+      ]
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.04087000000000001,
+      "i_std_a": 0.0003857460304397208,
+      "n_repeats": 3,
+      "session_index": [
+        40,
+        56,
+        98
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.04259666666666667,
+      "i_std_a": 0.0007571877794400359,
+      "n_repeats": 3,
+      "session_index": [
+        11,
+        63,
+        144
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.04312333333333334,
+      "i_std_a": 0.00020502032419575391,
+      "n_repeats": 3,
+      "session_index": [
+        4,
+        10,
+        89
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.046206666666666674,
+      "i_std_a": 2.5166114784236186e-05,
+      "n_repeats": 3,
+      "session_index": [
+        28,
+        103,
+        125
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 150.0,
+      "i_mean_a": 0.047946666666666665,
+      "i_std_a": 0.00019008769905844256,
+      "n_repeats": 3,
+      "session_index": [
+        59,
+        91,
+        92
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.04838666666666667,
+      "i_std_a": 0.0004437717130838034,
+      "n_repeats": 3,
+      "session_index": [
+        2,
+        14,
+        38
+      ],
+      "achieved_rate_hz": 126.32,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "protocol_check": {
+    "model_flag": "hdc-int8",
+    "n_samples_expected": 300,
+    "n_samples_received": 300,
+    "samples_lost": 0,
+    "crc_errors": 0,
+    "latency_p50_us": 1958.0,
+    "latency_p99_us": 1958.0,
+    "achieved_rate_hz": 98.065,
+    "check_rate_hz": 100.0
+  },
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "timestamp": "2026-09-01T18:09:14.811557+00:00",
+  "source": "lpm01a_current",
+  "method": "régression I(rate)",
+  "slope_ua_per_hz": 58.72214152310923,
+  "slope_std_ua_per_hz": 4.915254734157444,
+  "intercept_ma": 40.30317319577045,
+  "r2": 0.9727388274141299,
+  "n_points_fitted": 6,
+  "weighted_by_inverse_variance": true,
+  "energy_uj_per_inference": 191.6103477899054,
+  "energy_uncertainty_uj": 16.03847619755574,
+  "saturation_rate_hz": 200.0,
+  "duty_cycle_at_max_rate": 0.2937,
+  "max_rate_fitted_hz": 150.0,
+  "tension_v": 3.263,
+  "dwt_latency_us_p50": 1958.0,
+  "session": {
+    "sequence": [
+      {
+        "session_index": 2,
+        "cell": "hdc_int8",
+        "rate_hz": 200.0,
+        "repeat": 1,
+        "i_a": 0.048260000000000004
+      },
+      {
+        "session_index": 4,
+        "cell": "hdc_int8",
+        "rate_hz": 50.0,
+        "repeat": 2,
+        "i_a": 0.043120000000000006
+      },
+      {
+        "session_index": 10,
+        "cell": "hdc_int8",
+        "rate_hz": 50.0,
+        "repeat": 0,
+        "i_a": 0.04333
+      },
+      {
+        "session_index": 11,
+        "cell": "hdc_int8",
+        "rate_hz": 25.0,
+        "repeat": 0,
+        "i_a": 0.04313
+      },
+      {
+        "session_index": 14,
+        "cell": "hdc_int8",
+        "rate_hz": 200.0,
+        "repeat": 2,
+        "i_a": 0.04888000000000001
+      },
+      {
+        "session_index": 26,
+        "cell": "hdc_int8",
+        "rate_hz": 0.0,
+        "repeat": 0,
+        "i_a": 0.03973
+      },
+      {
+        "session_index": 28,
+        "cell": "hdc_int8",
+        "rate_hz": 100.0,
+        "repeat": 1,
+        "i_a": 0.04623000000000001
+      },
+      {
+        "session_index": 38,
+        "cell": "hdc_int8",
+        "rate_hz": 200.0,
+        "repeat": 0,
+        "i_a": 0.04802000000000001
+      },
+      {
+        "session_index": 39,
+        "cell": "hdc_int8",
+        "rate_hz": 0.0,
+        "repeat": 1,
+        "i_a": 0.03968
+      },
+      {
+        "session_index": 40,
+        "cell": "hdc_int8",
+        "rate_hz": 10.0,
+        "repeat": 1,
+        "i_a": 0.04071
+      },
+      {
+        "session_index": 56,
+        "cell": "hdc_int8",
+        "rate_hz": 10.0,
+        "repeat": 0,
+        "i_a": 0.04059
+      },
+      {
+        "session_index": 59,
+        "cell": "hdc_int8",
+        "rate_hz": 150.0,
+        "repeat": 0,
+        "i_a": 0.04814
+      },
+      {
+        "session_index": 62,
+        "cell": "hdc_int8",
+        "rate_hz": 0.0,
+        "repeat": 2,
+        "i_a": 0.040010000000000004
+      },
+      {
+        "session_index": 63,
+        "cell": "hdc_int8",
+        "rate_hz": 25.0,
+        "repeat": 2,
+        "i_a": 0.04173
+      },
+      {
+        "session_index": 89,
+        "cell": "hdc_int8",
+        "rate_hz": 50.0,
+        "repeat": 1,
+        "i_a": 0.04292000000000001
+      },
+      {
+        "session_index": 91,
+        "cell": "hdc_int8",
+        "rate_hz": 150.0,
+        "repeat": 1,
+        "i_a": 0.04794
+      },
+      {
+        "session_index": 92,
+        "cell": "hdc_int8",
+        "rate_hz": 150.0,
+        "repeat": 2,
+        "i_a": 0.047760000000000004
+      },
+      {
+        "session_index": 98,
+        "cell": "hdc_int8",
+        "rate_hz": 10.0,
+        "repeat": 2,
+        "i_a": 0.041310000000000006
+      },
+      {
+        "session_index": 103,
+        "cell": "hdc_int8",
+        "rate_hz": 100.0,
+        "repeat": 2,
+        "i_a": 0.04621
+      },
+      {
+        "session_index": 125,
+        "cell": "hdc_int8",
+        "rate_hz": 100.0,
+        "repeat": 0,
+        "i_a": 0.046180000000000006
+      },
+      {
+        "session_index": 144,
+        "cell": "hdc_int8",
+        "rate_hz": 25.0,
+        "repeat": 1,
+        "i_a": 0.04293
+      }
+    ],
+    "shuffled": true,
+    "seed": 42,
+    "warmup_discarded_a": [
+      0.060340000000000005
+    ]
+  }
+}

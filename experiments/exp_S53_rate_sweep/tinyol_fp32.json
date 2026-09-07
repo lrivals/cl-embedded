@@ -1,0 +1,281 @@
+{
+  "model": "tinyol",
+  "encoding": "fp32",
+  "dataset": "monitoring",
+  "points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.03987,
+      "i_std_a": 0.0001212435565298199,
+      "n_repeats": 3,
+      "session_index": [
+        19,
+        81,
+        85
+      ]
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.040060000000000005,
+      "i_std_a": 0.00025159491250818534,
+      "n_repeats": 3,
+      "session_index": [
+        24,
+        35,
+        117
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.040343333333333335,
+      "i_std_a": 0.00048418316093533923,
+      "n_repeats": 3,
+      "session_index": [
+        16,
+        64,
+        76
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.04092333333333334,
+      "i_std_a": 0.0001078579312490899,
+      "n_repeats": 3,
+      "session_index": [
+        37,
+        82,
+        100
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.041973333333333335,
+      "i_std_a": 6.506407098647624e-05,
+      "n_repeats": 3,
+      "session_index": [
+        68,
+        79,
+        120
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 150.0,
+      "i_mean_a": 0.04309666666666667,
+      "i_std_a": 6.110100926607538e-05,
+      "n_repeats": 3,
+      "session_index": [
+        77,
+        83,
+        86
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.043423333333333335,
+      "i_std_a": 1.5275252316521116e-05,
+      "n_repeats": 3,
+      "session_index": [
+        27,
+        60,
+        123
+      ],
+      "achieved_rate_hz": 166.574,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "protocol_check": {
+    "model_flag": "tinyol",
+    "n_samples_expected": 300,
+    "n_samples_received": 300,
+    "samples_lost": 0,
+    "crc_errors": 0,
+    "latency_p50_us": 85.0,
+    "latency_p99_us": 85.0,
+    "achieved_rate_hz": 98.55,
+    "check_rate_hz": 100.0
+  },
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "timestamp": "2026-09-01T18:09:14.811800+00:00",
+  "source": "lpm01a_current",
+  "method": "régression I(rate)",
+  "slope_ua_per_hz": 21.606132401352554,
+  "slope_std_ua_per_hz": 0.21258238138230665,
+  "intercept_ma": 39.839970473514185,
+  "r2": 0.999612927493565,
+  "n_points_fitted": 6,
+  "weighted_by_inverse_variance": true,
+  "energy_uj_per_inference": 70.50081002561338,
+  "energy_uncertainty_uj": 0.6936563104504666,
+  "saturation_rate_hz": 200.0,
+  "duty_cycle_at_max_rate": 0.012750000000000001,
+  "max_rate_fitted_hz": 150.0,
+  "tension_v": 3.263,
+  "dwt_latency_us_p50": 85.0,
+  "session": {
+    "sequence": [
+      {
+        "session_index": 16,
+        "cell": "tinyol_fp32",
+        "rate_hz": 25.0,
+        "repeat": 2,
+        "i_a": 0.04011
+      },
+      {
+        "session_index": 19,
+        "cell": "tinyol_fp32",
+        "rate_hz": 0.0,
+        "repeat": 2,
+        "i_a": 0.039850000000000003
+      },
+      {
+        "session_index": 24,
+        "cell": "tinyol_fp32",
+        "rate_hz": 10.0,
+        "repeat": 1,
+        "i_a": 0.040190000000000003
+      },
+      {
+        "session_index": 27,
+        "cell": "tinyol_fp32",
+        "rate_hz": 200.0,
+        "repeat": 0,
+        "i_a": 0.04342
+      },
+      {
+        "session_index": 35,
+        "cell": "tinyol_fp32",
+        "rate_hz": 10.0,
+        "repeat": 0,
+        "i_a": 0.040220000000000006
+      },
+      {
+        "session_index": 37,
+        "cell": "tinyol_fp32",
+        "rate_hz": 50.0,
+        "repeat": 1,
+        "i_a": 0.041
+      },
+      {
+        "session_index": 60,
+        "cell": "tinyol_fp32",
+        "rate_hz": 200.0,
+        "repeat": 2,
+        "i_a": 0.043440000000000006
+      },
+      {
+        "session_index": 64,
+        "cell": "tinyol_fp32",
+        "rate_hz": 25.0,
+        "repeat": 1,
+        "i_a": 0.040900000000000006
+      },
+      {
+        "session_index": 68,
+        "cell": "tinyol_fp32",
+        "rate_hz": 100.0,
+        "repeat": 2,
+        "i_a": 0.04197
+      },
+      {
+        "session_index": 76,
+        "cell": "tinyol_fp32",
+        "rate_hz": 25.0,
+        "repeat": 0,
+        "i_a": 0.04002
+      },
+      {
+        "session_index": 77,
+        "cell": "tinyol_fp32",
+        "rate_hz": 150.0,
+        "repeat": 0,
+        "i_a": 0.04315
+      },
+      {
+        "session_index": 79,
+        "cell": "tinyol_fp32",
+        "rate_hz": 100.0,
+        "repeat": 0,
+        "i_a": 0.04204
+      },
+      {
+        "session_index": 81,
+        "cell": "tinyol_fp32",
+        "rate_hz": 0.0,
+        "repeat": 1,
+        "i_a": 0.04
+      },
+      {
+        "session_index": 82,
+        "cell": "tinyol_fp32",
+        "rate_hz": 50.0,
+        "repeat": 2,
+        "i_a": 0.040970000000000006
+      },
+      {
+        "session_index": 83,
+        "cell": "tinyol_fp32",
+        "rate_hz": 150.0,
+        "repeat": 1,
+        "i_a": 0.043030000000000006
+      },
+      {
+        "session_index": 85,
+        "cell": "tinyol_fp32",
+        "rate_hz": 0.0,
+        "repeat": 0,
+        "i_a": 0.039760000000000004
+      },
+      {
+        "session_index": 86,
+        "cell": "tinyol_fp32",
+        "rate_hz": 150.0,
+        "repeat": 2,
+        "i_a": 0.04311
+      },
+      {
+        "session_index": 100,
+        "cell": "tinyol_fp32",
+        "rate_hz": 50.0,
+        "repeat": 0,
+        "i_a": 0.0408
+      },
+      {
+        "session_index": 117,
+        "cell": "tinyol_fp32",
+        "rate_hz": 10.0,
+        "repeat": 2,
+        "i_a": 0.03977
+      },
+      {
+        "session_index": 120,
+        "cell": "tinyol_fp32",
+        "rate_hz": 100.0,
+        "repeat": 1,
+        "i_a": 0.04191
+      },
+      {
+        "session_index": 123,
+        "cell": "tinyol_fp32",
+        "rate_hz": 200.0,
+        "repeat": 1,
+        "i_a": 0.043410000000000004
+      }
+    ],
+    "shuffled": true,
+    "seed": 42,
+    "warmup_discarded_a": [
+      0.060340000000000005
+    ]
+  }
+}

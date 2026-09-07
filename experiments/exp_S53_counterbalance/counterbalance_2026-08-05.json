@@ -1,0 +1,143 @@
+{
+  "protocol": "repos et cellules alternés, session unique (3 répétitions, 2 cellules)",
+  "sequence": [
+    {
+      "session_index": 0,
+      "condition": "idle",
+      "i_a": 0.05441000000000001
+    },
+    {
+      "session_index": 1,
+      "condition": "ewc_fp32",
+      "i_a": 0.04614
+    },
+    {
+      "session_index": 2,
+      "condition": "idle",
+      "i_a": 0.043980000000000005
+    },
+    {
+      "session_index": 3,
+      "condition": "hdc_fp32",
+      "i_a": 0.04739
+    },
+    {
+      "session_index": 4,
+      "condition": "idle",
+      "i_a": 0.043960000000000006
+    },
+    {
+      "session_index": 5,
+      "condition": "ewc_fp32",
+      "i_a": 0.04616000000000001
+    },
+    {
+      "session_index": 6,
+      "condition": "idle",
+      "i_a": 0.04395
+    },
+    {
+      "session_index": 7,
+      "condition": "hdc_fp32",
+      "i_a": 0.04743000000000001
+    },
+    {
+      "session_index": 8,
+      "condition": "idle",
+      "i_a": 0.04397
+    },
+    {
+      "session_index": 9,
+      "condition": "ewc_fp32",
+      "i_a": 0.046110000000000005
+    },
+    {
+      "session_index": 10,
+      "condition": "idle",
+      "i_a": 0.044000000000000004
+    },
+    {
+      "session_index": 11,
+      "condition": "hdc_fp32",
+      "i_a": 0.04746
+    },
+    {
+      "session_index": 12,
+      "condition": "idle",
+      "i_a": 0.043960000000000006
+    }
+  ],
+  "idle_by_rank": [
+    {
+      "session_index": 0,
+      "i_a": 0.05441000000000001
+    },
+    {
+      "session_index": 2,
+      "i_a": 0.043980000000000005
+    },
+    {
+      "session_index": 4,
+      "i_a": 0.043960000000000006
+    },
+    {
+      "session_index": 6,
+      "i_a": 0.04395
+    },
+    {
+      "session_index": 8,
+      "i_a": 0.04397
+    },
+    {
+      "session_index": 10,
+      "i_a": 0.044000000000000004
+    },
+    {
+      "session_index": 12,
+      "i_a": 0.043960000000000006
+    }
+  ],
+  "drift_slope_ma_per_acquisition": -0.5589285714285716,
+  "bench_dispersion_a": 1.7888543819998364e-05,
+  "cells": {
+    "ewc_fp32": 0.046136666666666666,
+    "hdc_fp32": 0.04742666666666667
+  },
+  "verdict": "artefact_ordre",
+  "verdict_rationale": "artefact d'ordre : une fois la session établie, le repos revient au niveau des cellules ou en dessous (≤ 3σ) et le surcoût de charge redevient positif — l'écart négatif du Sprint 50 est la queue de l'établissement de session, pas un effet de charge. premier repos 54.410 mA, dernier repos 43.960 mA, moyenne des cellules 46.782 mA, écart final -2.822 mA = -157.7σ (dispersion du régime établi 0.0179 mA sur 6 points, 1 écarté(s) comme queue d'établissement) ; dérive du repos sur la session -6.707 mA = 374.9σ (pente -0.5589 mA/acquisition, 7 points)",
+  "rate_hz": 100.0,
+  "window_s": 10.0,
+  "n_repeats": 3,
+  "tension_v": 3.261,
+  "warmup_discarded_a": [
+    0.0639
+  ],
+  "timestamp": "2026-08-05T09:41:41.585617+00:00",
+  "idle_established": [
+    {
+      "session_index": 2,
+      "i_a": 0.043980000000000005
+    },
+    {
+      "session_index": 4,
+      "i_a": 0.043960000000000006
+    },
+    {
+      "session_index": 6,
+      "i_a": 0.04395
+    },
+    {
+      "session_index": 8,
+      "i_a": 0.04397
+    },
+    {
+      "session_index": 10,
+      "i_a": 0.044000000000000004
+    },
+    {
+      "session_index": 12,
+      "i_a": 0.043960000000000006
+    }
+  ],
+  "i_idle_established_a": 0.04397000000000001
+}

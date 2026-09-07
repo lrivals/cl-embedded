@@ -1,0 +1,97 @@
+{
+  "model": "hdc",
+  "encoding": "fp32",
+  "tension_v": 3.263,
+  "n_inference": 1000,
+  "n_update": null,
+  "timestamp": "2026-08-06T07:38:37.712753+00:00",
+  "source": "lpm01a_current",
+  "method": "courant moyen mesuré sous charge d'inférence à cadence imposée (mode statique, préchauffage de session écarté)",
+  "phases_uj": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "phase_durations_s": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "phases_na_reason": "LPM01A sans voie de synchronisation + mode dynamique inaccessible (carte à 63 mA > plafond 59 mA) — profil temporel par phase impossible",
+  "total_uj": "à mesurer",
+  "energy_uj_per_inference": "à mesurer",
+  "energy_na_reason": "hors protocole de ce pilote (courant moyen, pas de soustraction) — et la référence au repos exige une session ÉTABLIE : le contre-balancement S5301 a montré que l'écart « repos plus consommateur que la charge » du Sprint 50 est un ARTEFACT D'ORDRE (référence prise en tête de session, encore dans la queue d'établissement). Une fois établi, le repos se stabilise SOUS les cellules et le surcoût de charge redevient positif et ordonné comme les latences. Les µJ par inférence se prennent par le protocole delta sur référence établie (S5302) ou par régression de cadence (S5304). Exploitable ici : le courant moyen par cellule et sa comparaison inter-cellules à cadence imposée (cf. `current_measurement`).",
+  "energy_uj_per_update": "à mesurer",
+  "energy_update_na_reason": "campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec --update, et se heurte à la même référence de scrutation active",
+  "by_component": {
+    "mcu": "à mesurer",
+    "periph": "à mesurer",
+    "sensor": "na",
+    "sensor_na_reason": "capteurs simulés par UART (S5001)"
+  },
+  "current_measurement": {
+    "i_mean_a": 0.04342750000000001,
+    "i_std_a": 0.00010626225419530091,
+    "i_runs_a": [
+      0.04352,
+      0.043300000000000005,
+      0.04338,
+      0.04351000000000001
+    ],
+    "n_repeats": 4,
+    "i_idle_a": 0.041190000000000004,
+    "delta_vs_idle_a": 0.0022375000000000034,
+    "rate_hz": 100.0,
+    "window_s": 10.0,
+    "warmup_discarded_a": 0.06017000000000001,
+    "i_idle_runs_a": [
+      {
+        "session_index": 0,
+        "i_a": 0.05013
+      },
+      {
+        "session_index": 2,
+        "i_a": 0.039970000000000006
+      },
+      {
+        "session_index": 4,
+        "i_a": 0.04011
+      },
+      {
+        "session_index": 6,
+        "i_a": 0.04016
+      },
+      {
+        "session_index": 8,
+        "i_a": 0.040100000000000004
+      },
+      {
+        "session_index": 10,
+        "i_a": 0.04002
+      },
+      {
+        "session_index": 12,
+        "i_a": 0.04021
+      },
+      {
+        "session_index": 14,
+        "i_a": 0.04014
+      },
+      {
+        "session_index": 16,
+        "i_a": 0.03987
+      }
+    ],
+    "i_idle_established_a": 0.040072500000000004,
+    "n_idle_discarded_as_settling": 1,
+    "delta_vs_idle_established_a": 0.003355000000000004,
+    "session_indices": [
+      3,
+      7,
+      11,
+      15
+    ]
+  }
+}

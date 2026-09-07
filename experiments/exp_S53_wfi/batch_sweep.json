@@ -1,0 +1,196 @@
+{
+  "ewc_fp32": {
+    "points": [
+      {
+        "n": 1,
+        "i_mean_a": 0.03207666666666666,
+        "i_std_a": 0.00012342339054382246,
+        "i_runs_a": [
+          0.03211,
+          0.03194,
+          0.03218
+        ],
+        "warmup_discarded_a": [
+          0.03867,
+          0.02766
+        ],
+        "achieved_rate_hz": 98.768,
+        "crc_errors": 0,
+        "latency_p50_us": 50.0,
+        "saturated": false,
+        "pred_parity_vs_n1": null,
+        "pred_parity_n_common": 1998
+      },
+      {
+        "n": 50,
+        "i_mean_a": 0.03987666666666667,
+        "i_std_a": 7.637626158259574e-05,
+        "i_runs_a": [
+          0.03996,
+          0.039810000000000005,
+          0.03986000000000001
+        ],
+        "warmup_discarded_a": [
+          0.03867,
+          0.027620000000000002
+        ],
+        "achieved_rate_hz": 99.25,
+        "crc_errors": 0,
+        "latency_p50_us": 2369.0,
+        "saturated": false,
+        "pred_parity_vs_n1": 1.0,
+        "pred_parity_n_common": 506
+      },
+      {
+        "n": 100,
+        "i_mean_a": 0.04748,
+        "i_std_a": 0.0002523885892824801,
+        "i_runs_a": [
+          0.04777000000000001,
+          0.047360000000000006,
+          0.047310000000000005
+        ],
+        "warmup_discarded_a": [
+          0.03882,
+          0.027630000000000002
+        ],
+        "achieved_rate_hz": 96.204,
+        "crc_errors": 0,
+        "latency_p50_us": 4735.0,
+        "saturated": false,
+        "pred_parity_vs_n1": 1.0,
+        "pred_parity_n_common": 538
+      },
+      {
+        "n": 200,
+        "i_mean_a": 0.051550000000000006,
+        "i_std_a": 0.0005556977595779917,
+        "i_runs_a": [
+          0.051910000000000005,
+          0.05183,
+          0.050910000000000004
+        ],
+        "warmup_discarded_a": [
+          0.03883,
+          0.027630000000000002
+        ],
+        "achieved_rate_hz": 66.229,
+        "crc_errors": 0,
+        "latency_p50_us": 9467.0,
+        "saturated": true,
+        "pred_parity_vs_n1": 1.0,
+        "pred_parity_n_common": 556
+      }
+    ],
+    "model": "ewc",
+    "encoding": "fp32",
+    "firmware_build": "UART_WFI_IDLE",
+    "rate_hz": 100.0,
+    "window_s": 10.0,
+    "tension_v": 3.263,
+    "saturation_rule": "point écarté de la régression si la cadence atteinte tombe sous 95% de la cadence demandée (100 Hz) : la carte ne tient plus la trame et le courant moyen porte alors moins d'inférences que « cadence × N ».",
+    "n_points_excluded_saturation": 1,
+    "slope_a_per_inference_per_frame": 0.0001555772457262051,
+    "intercept_a": 0.03198038974289212,
+    "r2": 0.999825687921351,
+    "energy_uj_per_inference": 5.076485528046073,
+    "method": "régression I(N) à cadence fixe, N imposé par -DINFER_BATCH_N"
+  },
+  "maha_fp32": {
+    "points": [
+      {
+        "n": 1,
+        "i_mean_a": 0.031893333333333336,
+        "i_std_a": 3.511884584284268e-05,
+        "i_runs_a": [
+          0.03193,
+          0.03186,
+          0.03189
+        ],
+        "warmup_discarded_a": [
+          0.03892,
+          0.027610000000000003
+        ],
+        "achieved_rate_hz": 98.099,
+        "crc_errors": 0,
+        "latency_p50_us": 5.0,
+        "saturated": false,
+        "pred_parity_vs_n1": null,
+        "pred_parity_n_common": 1998
+      },
+      {
+        "n": 50,
+        "i_mean_a": 0.03252,
+        "i_std_a": 6.244997998398476e-05,
+        "i_runs_a": [
+          0.03254,
+          0.03245,
+          0.03257
+        ],
+        "warmup_discarded_a": [
+          0.03896,
+          0.027620000000000002
+        ],
+        "achieved_rate_hz": 99.205,
+        "crc_errors": 0,
+        "latency_p50_us": 202.0,
+        "saturated": false,
+        "pred_parity_vs_n1": 1.0,
+        "pred_parity_n_common": 491
+      },
+      {
+        "n": 100,
+        "i_mean_a": 0.03318666666666667,
+        "i_std_a": 5.507570547285962e-05,
+        "i_runs_a": [
+          0.03325,
+          0.033150000000000006,
+          0.03316
+        ],
+        "warmup_discarded_a": [
+          0.038930000000000006,
+          0.02764
+        ],
+        "achieved_rate_hz": 98.852,
+        "crc_errors": 0,
+        "latency_p50_us": 402.0,
+        "saturated": false,
+        "pred_parity_vs_n1": 1.0,
+        "pred_parity_n_common": 500
+      },
+      {
+        "n": 200,
+        "i_mean_a": 0.03455333333333333,
+        "i_std_a": 3.511884584284268e-05,
+        "i_runs_a": [
+          0.03452,
+          0.03459,
+          0.034550000000000004
+        ],
+        "warmup_discarded_a": [
+          0.038930000000000006,
+          0.027590000000000003
+        ],
+        "achieved_rate_hz": 99.254,
+        "crc_errors": 0,
+        "latency_p50_us": 802.0,
+        "saturated": false,
+        "pred_parity_vs_n1": 1.0,
+        "pred_parity_n_common": 524
+      }
+    ],
+    "model": "maha",
+    "encoding": "fp32",
+    "firmware_build": "UART_WFI_IDLE",
+    "rate_hz": 100.0,
+    "window_s": 10.0,
+    "tension_v": 3.2640000000000002,
+    "saturation_rule": "point écarté de la régression si la cadence atteinte tombe sous 95% de la cadence demandée (100 Hz) : la carte ne tient plus la trame et le courant moyen porte alors moins d'inférences que « cadence × N ».",
+    "n_points_excluded_saturation": 0,
+    "slope_a_per_inference_per_frame": 1.3399152871060508e-05,
+    "intercept_a": 0.03186255766889778,
+    "r2": 0.9997874707435065,
+    "energy_uj_per_inference": 0.437348349711415,
+    "method": "régression I(N) à cadence fixe, N imposé par -DINFER_BATCH_N"
+  }
+}

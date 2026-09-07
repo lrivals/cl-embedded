@@ -1,0 +1,54 @@
+{
+  "model": "tinyol",
+  "encoding": "fp32",
+  "tension_v": 3.2640000000000002,
+  "n_inference": 1000,
+  "n_update": null,
+  "timestamp": "2026-08-06T08:15:27.692387+00:00",
+  "source": "lpm01a_current",
+  "method": "courant moyen mesuré sous charge d'inférence à cadence imposée (mode statique, préchauffage de session écarté)",
+  "phases_uj": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "phase_durations_s": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "phases_na_reason": "LPM01A sans voie de synchronisation + mode dynamique inaccessible (carte à 63 mA > plafond 59 mA) — profil temporel par phase impossible",
+  "total_uj": "à mesurer",
+  "energy_uj_per_inference": 144.26880000000025,
+  "energy_uj_per_update": "à mesurer",
+  "energy_update_na_reason": "campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec --update, et se heurte à la même référence de scrutation active",
+  "by_component": {
+    "mcu": "à mesurer",
+    "periph": "à mesurer",
+    "sensor": "na",
+    "sensor_na_reason": "capteurs simulés par UART (S5001)"
+  },
+  "current_measurement": {
+    "i_mean_a": 0.031790000000000006,
+    "i_std_a": 7.810249675906424e-05,
+    "i_runs_a": [
+      0.03184,
+      0.031700000000000006,
+      0.031830000000000004
+    ],
+    "n_repeats": 3,
+    "i_idle_a": 0.02737,
+    "delta_vs_idle_a": 0.004420000000000007,
+    "rate_hz": 100.0,
+    "window_s": 10.0,
+    "warmup_discarded_a": 0.027410000000000004,
+    "i_idle_source": "idle_reference.json"
+  },
+  "firmware_build": "UART_WFI_IDLE",
+  "infer_batch_n": 1,
+  "energy_method": "delta vs repos UART_WFI_IDLE",
+  "energy_delta_a": 0.004420000000000007,
+  "energy_source": "delta_recovery.json"
+}

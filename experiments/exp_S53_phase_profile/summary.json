@@ -1,0 +1,21 @@
+{
+  "description": "S5305 — profil temporel par phase (intégration), par cellule.",
+  "method": "intégration du profil temporel",
+  "estimator_note": "µJ par inférence obtenus par INTÉGRATION du profil temporel. À conserver côte à côte avec le protocole delta (S5302) et la régression de cadence (S5304), jamais fusionnés ni moyennés : leur comparaison est le contrôle de validité de la campagne (S5309).",
+  "phase_granularity_note": "marqueur 1 bit : startup/acquisition/inference partagent le niveau actif — une granularité 4 phases exigerait un encodage multi-bit (PA8 + PA9), amorcé nulle part dans le firmware.",
+  "cells": [
+    "hdc_45"
+  ],
+  "energy_uj_per_inference_by_cell": {
+    "hdc_45": "à mesurer"
+  },
+  "na_reason_by_cell": {
+    "hdc_45": "segmentation refusée : 3792 créneaux détectés pour 100 attendus (+3692.0 %, tolérance ±5 %) — le seuil ne découpe pas la suite des inférences, diviser par ce dénominateur fabriquerait une énergie."
+  },
+  "detection_error_pct_by_cell": {
+    "hdc_45": 3692.003792003792
+  },
+  "n_cells_published": 0,
+  "n_cells_total": 1,
+  "timestamp": "2026-09-07T10:52:54.197935+00:00"
+}

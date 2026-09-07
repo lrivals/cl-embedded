@@ -1,0 +1,421 @@
+{
+  "method": "différence de pentes I(rate) entre politiques",
+  "method_note": "estimateur PAR DIFFÉRENCE DE PENTES de régression (S5304) — à ne jamais fusionner avec l'estimateur par delta (S5302) ni avec l'intégration du profil par phase (S5305) : leur comparaison est elle-même un résultat.",
+  "by_dataset": {
+    "monitoring": {
+      "energy_uj_per_update": {
+        "value_uj": "à mesurer",
+        "na_reason": "différence non calculable : la régression de always, frozen n'est pas publiable (always : régression non significative : r²=0.696 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.; frozen : régression non significative : r²=0.366 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.).",
+        "method": "différence de pentes I(rate) entre politiques"
+      },
+      "gated": {
+        "gated_truelabel": {
+          "gate_overhead_uj_per_sample": {
+            "value_uj": "à mesurer",
+            "na_reason": "surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "energy_saved_vs_always": {
+            "saved_uj_per_sample": "à mesurer",
+            "saved_pct_of_always_marginal": "à mesurer",
+            "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "gate_verdict": {
+            "verdict": "à mesurer",
+            "rationale": "verdict non prononçable : surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "update_rate_used": 0.025550775648546475,
+          "update_rate_measured": null,
+          "update_rate_s38": 0.025550775648546475,
+          "update_rate_agreement": {
+            "agreement": null,
+            "na_reason": "concordance non évaluable : un des deux taux de mise à jour n'est pas disponible.",
+            "measured": null,
+            "s38": 0.025550775648546475
+          }
+        },
+        "gated_pseudolabel": {
+          "gate_overhead_uj_per_sample": {
+            "value_uj": "à mesurer",
+            "na_reason": "surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "energy_saved_vs_always": {
+            "saved_uj_per_sample": "à mesurer",
+            "saved_pct_of_always_marginal": "à mesurer",
+            "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "gate_verdict": {
+            "verdict": "à mesurer",
+            "rationale": "verdict non prononçable : surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "update_rate_used": 0.025550775648546475,
+          "update_rate_measured": null,
+          "update_rate_s38": 0.025550775648546475,
+          "update_rate_agreement": {
+            "agreement": null,
+            "na_reason": "concordance non évaluable : un des deux taux de mise à jour n'est pas disponible.",
+            "measured": null,
+            "s38": 0.025550775648546475
+          }
+        }
+      },
+      "ordering_check": {
+        "ordered": null,
+        "na_reason": "ordre non évaluable : moins de deux politiques publiables sur monitoring.",
+        "slopes_ua_per_hz": {}
+      }
+    },
+    "pronostia": {
+      "energy_uj_per_update": {
+        "value_uj": "à mesurer",
+        "na_reason": "différence non calculable : la régression de always, frozen n'est pas publiable (always : cellule absente; frozen : cellule absente).",
+        "method": "différence de pentes I(rate) entre politiques"
+      },
+      "gated": {
+        "gated_truelabel": {
+          "gate_overhead_uj_per_sample": {
+            "value_uj": "à mesurer",
+            "na_reason": "surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "energy_saved_vs_always": {
+            "saved_uj_per_sample": "à mesurer",
+            "saved_pct_of_always_marginal": "à mesurer",
+            "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "gate_verdict": {
+            "verdict": "à mesurer",
+            "rationale": "verdict non prononçable : surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "update_rate_used": 0.024691358024691357,
+          "update_rate_measured": null,
+          "update_rate_s38": 0.024691358024691357,
+          "update_rate_agreement": {
+            "agreement": null,
+            "na_reason": "concordance non évaluable : un des deux taux de mise à jour n'est pas disponible.",
+            "measured": null,
+            "s38": 0.024691358024691357
+          }
+        },
+        "gated_pseudolabel": {
+          "gate_overhead_uj_per_sample": {
+            "value_uj": "à mesurer",
+            "na_reason": "surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "energy_saved_vs_always": {
+            "saved_uj_per_sample": "à mesurer",
+            "saved_pct_of_always_marginal": "à mesurer",
+            "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "gate_verdict": {
+            "verdict": "à mesurer",
+            "rationale": "verdict non prononçable : surcoût du gate non calculable : une des deux régressions (gated, frozen) n'est pas publiable.",
+            "method": "différence de pentes I(rate) entre politiques"
+          },
+          "update_rate_used": 0.024691358024691357,
+          "update_rate_measured": null,
+          "update_rate_s38": 0.024691358024691357,
+          "update_rate_agreement": {
+            "agreement": null,
+            "na_reason": "concordance non évaluable : un des deux taux de mise à jour n'est pas disponible.",
+            "measured": null,
+            "s38": 0.024691358024691357
+          }
+        }
+      },
+      "ordering_check": {
+        "ordered": null,
+        "na_reason": "ordre non évaluable : moins de deux politiques publiables sur pronostia.",
+        "slopes_ua_per_hz": {}
+      }
+    }
+  },
+  "by_cell": {
+    "frozen_monitoring": {
+      "autonomy": {
+        "i_moy_ma": 41.52900403733391,
+        "rate_hz": 100.0,
+        "autonomy_hours": {
+          "220.0": 5.2975024347375035,
+          "1200.0": 28.895467825840928,
+          "2000.0": 48.15911304306821,
+          "3000.0": 72.23866956460232,
+          "10000.0": 240.79556521534104
+        },
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "always_monitoring": {
+      "autonomy": {
+        "i_moy_ma": 41.172170316759896,
+        "rate_hz": 100.0,
+        "autonomy_hours": {
+          "220.0": 5.343415183300282,
+          "1200.0": 29.14590099981972,
+          "2000.0": 48.5765016663662,
+          "3000.0": 72.8647524995493,
+          "10000.0": 242.882508331831
+        },
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "gated_truelabel_monitoring": {
+      "autonomy": {
+        "i_moy_ma": "à mesurer",
+        "na_reason": "autonomie non calculable : régression absente ou non chiffrée.",
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "gated_pseudolabel_monitoring": {
+      "autonomy": {
+        "i_moy_ma": "à mesurer",
+        "na_reason": "autonomie non calculable : régression absente ou non chiffrée.",
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "frozen_pronostia": {
+      "autonomy": {
+        "i_moy_ma": "à mesurer",
+        "na_reason": "autonomie non calculable : régression absente ou non chiffrée.",
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "always_pronostia": {
+      "autonomy": {
+        "i_moy_ma": "à mesurer",
+        "na_reason": "autonomie non calculable : régression absente ou non chiffrée.",
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "gated_truelabel_pronostia": {
+      "autonomy": {
+        "i_moy_ma": "à mesurer",
+        "na_reason": "autonomie non calculable : régression absente ou non chiffrée.",
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    },
+    "gated_pseudolabel_pronostia": {
+      "autonomy": {
+        "i_moy_ma": "à mesurer",
+        "na_reason": "autonomie non calculable : régression absente ou non chiffrée.",
+        "duty_cycle": null,
+        "regime_mesure": "flux continu à cadence imposée, carte jamais endormie — ce n'est PAS une autonomie duty-cyclée"
+      },
+      "energy_saved_vs_always": {
+        "saved_uj_per_sample": "à mesurer",
+        "saved_pct_of_always_marginal": "à mesurer",
+        "na_reason": "économie non calculable : une des trois régressions (politique, always, frozen) n'est pas publiable.",
+        "method": "différence de pentes I(rate) entre politiques"
+      }
+    }
+  },
+  "anchor_drift": {
+    "comparable": null,
+    "na_reason": "dérive non évaluable : moins de deux séances portent un témoin mesuré.",
+    "sessions": [
+      "default_monitoring"
+    ]
+  },
+  "cross_table": [
+    {
+      "policy": "frozen",
+      "dataset": "monitoring",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": -0.9365093540542587,
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": 41.52900403733391,
+      "autonomy_hours": {
+        "220.0": 5.2975024347375035,
+        "1200.0": 28.895467825840928,
+        "2000.0": 48.15911304306821,
+        "3000.0": 72.23866956460232,
+        "10000.0": 240.79556521534104
+      },
+      "updates_saved_pct_s38": 1.0,
+      "latency_saved_us_s38": 190.16,
+      "update_rate_s38": 0.0,
+      "f1_faulty_s38": 0.9193989071038251,
+      "ram_added_bytes_s38": null
+    },
+    {
+      "policy": "always",
+      "dataset": "monitoring",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": 7.824429207857759,
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": 41.172170316759896,
+      "autonomy_hours": {
+        "220.0": 5.343415183300282,
+        "1200.0": 29.14590099981972,
+        "2000.0": 48.5765016663662,
+        "3000.0": 72.8647524995493,
+        "10000.0": 242.882508331831
+      },
+      "updates_saved_pct_s38": 0.0,
+      "latency_saved_us_s38": 0.0,
+      "update_rate_s38": 1.0,
+      "f1_faulty_s38": 0.9012178619756428,
+      "ram_added_bytes_s38": null
+    },
+    {
+      "policy": "gated_truelabel",
+      "dataset": "monitoring",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": "à mesurer",
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": "à mesurer",
+      "autonomy_hours": "à mesurer",
+      "updates_saved_pct_s38": 0.9744492243514535,
+      "latency_saved_us_s38": 158.65302568113674,
+      "update_rate_s38": 0.025550775648546475,
+      "f1_faulty_s38": 0.9188820722563054,
+      "ram_added_bytes_s38": 300
+    },
+    {
+      "policy": "gated_pseudolabel",
+      "dataset": "monitoring",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": "à mesurer",
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": "à mesurer",
+      "autonomy_hours": "à mesurer",
+      "updates_saved_pct_s38": 0.9744492243514535,
+      "latency_saved_us_s38": 158.87398774605657,
+      "update_rate_s38": 0.025550775648546475,
+      "f1_faulty_s38": 0.9188820722563054,
+      "ram_added_bytes_s38": 300
+    },
+    {
+      "policy": "frozen",
+      "dataset": "pronostia",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": "à mesurer",
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": "à mesurer",
+      "autonomy_hours": "à mesurer",
+      "updates_saved_pct_s38": 1.0,
+      "latency_saved_us_s38": 200.99,
+      "update_rate_s38": 0.0,
+      "f1_faulty_s38": 0.9164086687306502,
+      "ram_added_bytes_s38": null
+    },
+    {
+      "policy": "always",
+      "dataset": "pronostia",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": "à mesurer",
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": "à mesurer",
+      "autonomy_hours": "à mesurer",
+      "updates_saved_pct_s38": 0.0,
+      "latency_saved_us_s38": 0.0,
+      "update_rate_s38": 1.0,
+      "f1_faulty_s38": 0.9297439264609324,
+      "ram_added_bytes_s38": null
+    },
+    {
+      "policy": "gated_truelabel",
+      "dataset": "pronostia",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": "à mesurer",
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": "à mesurer",
+      "autonomy_hours": "à mesurer",
+      "updates_saved_pct_s38": 0.9753086419753086,
+      "latency_saved_us_s38": 168.70936811363336,
+      "update_rate_s38": 0.024691358024691357,
+      "f1_faulty_s38": 0.8891640866873065,
+      "ram_added_bytes_s38": 300
+    },
+    {
+      "policy": "gated_pseudolabel",
+      "dataset": "pronostia",
+      "init_mode": "pretrained",
+      "slope_ua_per_hz": "à mesurer",
+      "energy_uj_per_sample": "à mesurer",
+      "i_moy_ma": "à mesurer",
+      "autonomy_hours": "à mesurer",
+      "updates_saved_pct_s38": 0.9753086419753086,
+      "latency_saved_us_s38": 168.72436877737954,
+      "update_rate_s38": 0.024691358024691357,
+      "f1_faulty_s38": 0.5043304463690873,
+      "ram_added_bytes_s38": 300
+    }
+  ],
+  "battery_capacities_mah": [
+    220.0,
+    1200.0,
+    2000.0,
+    3000.0,
+    10000.0
+  ],
+  "autonomy_rate_hz": 100.0,
+  "sources": {
+    "s38_summary": "/home/leonard/Documents/ENAC/cl-embedded/experiments/exp_S38_summary.json",
+    "s38_loaded": true,
+    "hw_profile": "/home/leonard/Documents/ENAC/cl-embedded/configs/hw_profile_f439zi.yaml",
+    "cells": [
+      "always_monitoring",
+      "frozen_monitoring"
+    ]
+  },
+  "timestamp": "2026-09-07T11:19:53.531863+00:00"
+}

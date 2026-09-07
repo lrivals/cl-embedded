@@ -1,0 +1,138 @@
+{
+  "protocol": "quatre états de repos/charge en cycles alternés, session unique (2 cycles), rang consigné ; seul l'hôte varie, firmware identique",
+  "board_port": "/dev/serial/by-id/usb-STMicroelectronics_STM32_STLink_0668FF565382515067144319-if02",
+  "dataset": "monitoring",
+  "model": "ewc",
+  "rate_hz": 100.0,
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "n_cycles": 2,
+  "warmup_discarded_a": 0.06072,
+  "sequence": [
+    {
+      "session_index": 0,
+      "state": "port_ferme",
+      "i_a": 0.03978
+    },
+    {
+      "session_index": 1,
+      "state": "port_ouvert_inactif",
+      "i_a": 0.039880000000000006
+    },
+    {
+      "session_index": 2,
+      "state": "flux",
+      "i_a": 0.042
+    },
+    {
+      "session_index": 3,
+      "state": "apres_flux",
+      "i_a": 0.039920000000000004
+    },
+    {
+      "session_index": 4,
+      "state": "port_ferme",
+      "i_a": 0.03987
+    },
+    {
+      "session_index": 5,
+      "state": "port_ouvert_inactif",
+      "i_a": 0.039880000000000006
+    },
+    {
+      "session_index": 6,
+      "state": "flux",
+      "i_a": 0.042010000000000006
+    },
+    {
+      "session_index": 7,
+      "state": "apres_flux",
+      "i_a": 0.03994
+    }
+  ],
+  "states_a": {
+    "port_ferme": [
+      0.03978,
+      0.03987
+    ],
+    "port_ouvert_inactif": [
+      0.039880000000000006,
+      0.039880000000000006
+    ],
+    "flux": [
+      0.042,
+      0.042010000000000006
+    ],
+    "apres_flux": [
+      0.039920000000000004,
+      0.03994
+    ]
+  },
+  "state_mean_a": {
+    "port_ferme": 0.039825,
+    "port_ouvert_inactif": 0.039880000000000006,
+    "flux": 0.042005,
+    "apres_flux": 0.03993000000000001
+  },
+  "state_std_a": {
+    "port_ferme": 6.363961030678913e-05,
+    "port_ouvert_inactif": 0.0,
+    "flux": 7.071067811867641e-06,
+    "apres_flux": 1.4142135623730373e-05
+  },
+  "pooled_dispersion_a": 3.2787192621509986e-05,
+  "board_responsive_initial": true,
+  "board_responsive_after": {
+    "apres_flux": [
+      true,
+      true
+    ],
+    "port_ferme": [
+      true,
+      true
+    ]
+  },
+  "probe_frames": 20,
+  "power_cycle_check": {
+    "i_idle_after_power_cycle_a": 0.049870000000000005,
+    "settling_series_a": [
+      {
+        "session_index": 0,
+        "i_a": 0.049870000000000005
+      },
+      {
+        "session_index": 1,
+        "i_a": 0.049870000000000005
+      },
+      {
+        "session_index": 2,
+        "i_a": 0.049870000000000005
+      }
+    ],
+    "settling_slope_a_per_acquisition": 0.0,
+    "i_idle_port_open_before_any_frame_a": 0.049890000000000004,
+    "i_idle_after_dtr_pulse_before_any_frame_a": 0.04990000000000001,
+    "post_first_stream_series_a": [
+      {
+        "session_index": 0,
+        "i_a": 0.04005
+      },
+      {
+        "session_index": 1,
+        "i_a": 0.040080000000000005
+      },
+      {
+        "session_index": 2,
+        "i_a": 0.040080000000000005
+      }
+    ],
+    "step_first_stream_a": -0.009800000000000003,
+    "power_off_s": 10.0,
+    "board_responsive": true,
+    "n_frames_received": 20
+  },
+  "verdict": "repos_coherent",
+  "verdict_rationale": "les états de repos sont interchangeables à l'échelle du surcoût de charge : ni l'ouverture du port ni l'interruption du flux n'explique l'écart entre sessions, la cause est ailleurs. référence port_ferme 39.825 mA ; port_ouvert_inactif 39.880 mA (+0.055 mA = +1.7σ) ; flux 42.005 mA (+2.180 mA = +66.5σ) ; apres_flux 39.930 mA (+0.105 mA = +3.2σ) ; dispersion intra-état 0.0328 mA ; réponse de la carte après état : apres_flux=oui, port_ferme=oui Résidus retenus comme négligeables : apres_flux s'écarte de +0.105 mA (+3.2σ) mais reste sous 0.1 × le surcoût de charge mesuré (2.180 mA) : significatif, négligeable.",
+  "timestamp": "2026-08-05T11:36:22.036565+00:00",
+  "verdict_recompute_note": "verdict recalculé par la règle affinée (résidu significatif mais négligeable devant le surcoût de charge) ; courants mesurés inchangés"
+}

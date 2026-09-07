@@ -1,0 +1,22 @@
+{
+  "build": "default",
+  "extra_cflags": "",
+  "policy_flashed": "frozen",
+  "policies_supported": [
+    "frozen",
+    "always"
+  ],
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "init_mode": "pretrained",
+  "n_features": 4,
+  "feature_names": [
+    "temperature",
+    "pressure",
+    "vibration",
+    "humidity"
+  ],
+  "bss_bytes": 100152,
+  "pc_checkpoint": "experiments/exp_S38_PC_frozen_monitoring_pretrained/checkpoints/ewc_head.pt",
+  "timestamp": "2026-09-07T11:02:36.102704+00:00"
+}

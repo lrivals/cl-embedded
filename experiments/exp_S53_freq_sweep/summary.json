@@ -1,0 +1,102 @@
+{
+  "frequencies_mhz": [
+    45,
+    90,
+    180
+  ],
+  "energy_uj_per_inference_by_mhz": {
+    "180": 214.6117084427564,
+    "45": 170.05441263559308,
+    "90": "à mesurer"
+  },
+  "slope_ua_per_hz_by_mhz": {
+    "180": 65.75113616506016,
+    "45": 52.10000387119886,
+    "90": 41.55732388234566
+  },
+  "i_idle_ma_by_mhz": {
+    "180": 39.87500000000001,
+    "45": 18.245000000000005,
+    "90": 25.495000000000005
+  },
+  "dwt_latency_us_p50_by_mhz": {
+    "180": {
+      "mahalanobis": 5.0,
+      "ewc": 50.0,
+      "hdc": 585.0
+    },
+    "45": {
+      "mahalanobis": 18.0,
+      "ewc": 198.0,
+      "hdc": 2338.0
+    },
+    "90": {
+      "mahalanobis": 9.0,
+      "ewc": 99.0,
+      "hdc": 1169.0
+    }
+  },
+  "latency_scaling_vs_180": {
+    "180": {
+      "ratio_attendu": 1.0,
+      "ratio_mesure_par_modele": {
+        "mahalanobis": 1.0,
+        "ewc": 1.0,
+        "hdc": 1.0
+      }
+    },
+    "45": {
+      "ratio_attendu": 4.0,
+      "ratio_mesure_par_modele": {
+        "mahalanobis": 3.6,
+        "ewc": 3.96,
+        "hdc": 3.997
+      }
+    },
+    "90": {
+      "ratio_attendu": 2.0,
+      "ratio_mesure_par_modele": {
+        "mahalanobis": 1.8,
+        "ewc": 1.98,
+        "hdc": 1.998
+      }
+    }
+  },
+  "gap2_ok_by_mhz": {
+    "180": true,
+    "45": true,
+    "90": true
+  },
+  "gap2_worst_us_by_mhz": {
+    "180": 585.0,
+    "45": 2338.0,
+    "90": 1169.0
+  },
+  "gap2_verdict_by_mhz": {
+    "180": "Gap 2 TENU à 180 MHz : pire latence mesurée 585 µs (hdc) contre un budget de 100000 µs, soit une marge de ×171.",
+    "45": "Gap 2 TENU à 45 MHz : pire latence mesurée 2338 µs (hdc) contre un budget de 100000 µs, soit une marge de ×43.",
+    "90": "Gap 2 TENU à 90 MHz : pire latence mesurée 1169 µs (hdc) contre un budget de 100000 µs, soit une marge de ×86."
+  },
+  "sysclk_reported_mhz_by_mhz": {
+    "180": 180,
+    "45": 45,
+    "90": 90
+  },
+  "acqmode_dyn_by_mhz": {
+    "180": {
+      "succeeded": false,
+      "i_max_ma": 75.68359375
+    },
+    "45": {
+      "succeeded": true,
+      "i_max_ma": 68.603515625
+    },
+    "90": {
+      "succeeded": false,
+      "i_max_ma": 69.580078125
+    }
+  },
+  "tendance_energie": "croissante_avec_f",
+  "tendance_rationale": "l'énergie par inférence croît de +26.2 % de 45 à 180 MHz : ralentir le MCU réduit le coût par inférence — la marge du Gap 2 est convertible en autonomie.",
+  "timestamp": "2026-09-07T11:53:54.664920+00:00"
+}

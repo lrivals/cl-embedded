@@ -1,0 +1,165 @@
+{
+  "sysclk_mhz": 90,
+  "firmware_build": "-DSYSCLK_MHZ=90",
+  "pll": {
+    "pllm": 8,
+    "plln": 180,
+    "pllp": 4,
+    "ppre1": 2,
+    "ppre2": 1
+  },
+  "pclk1_hz": 45000000,
+  "pclk2_hz": 90000000,
+  "flash_ws": 2,
+  "overdrive": false,
+  "hw_check": {
+    "sysclk_reported_mhz": 90,
+    "pclk1_reported_hz": 45000000,
+    "sysclk_match": true,
+    "hw_banner": "O -- STM32F439ZI ===\r\nMCU : STM32F439ZI  IDCODE=0x20036419\r\nCPU : Cortex-M4  CPUID=0x410FC241\r\nSYSCLK : 90 MHz  HCLK : 90 MHz  PCLK1 : 45 MHz  PCLK2 : 90 MHz\r\nRAM total : 256 Ko  BSS+data : 105496 B  Stack libre : 88 Ko\r\nPerip�"
+  },
+  "protocol_check": {
+    "mahalanobis": {
+      "n_samples_received": 300,
+      "n_samples_expected": 300,
+      "samples_lost": 0,
+      "crc_errors": 0,
+      "latency_p50_us": 9.0,
+      "latency_p99_us": 9.0
+    },
+    "ewc": {
+      "n_samples_received": 300,
+      "n_samples_expected": 300,
+      "samples_lost": 0,
+      "crc_errors": 0,
+      "latency_p50_us": 99.0,
+      "latency_p99_us": 99.0
+    },
+    "hdc": {
+      "n_samples_received": 300,
+      "n_samples_expected": 300,
+      "samples_lost": 0,
+      "crc_errors": 0,
+      "latency_p50_us": 1169.0,
+      "latency_p99_us": 1169.0
+    }
+  },
+  "dwt_latency_us_p50": {
+    "mahalanobis": 9.0,
+    "ewc": 99.0,
+    "hdc": 1169.0
+  },
+  "gap2_budget_us": 100000.0,
+  "gap2_ok": true,
+  "gap2_worst_us": 1169.0,
+  "gap2_margin_x": 85.5431993156544,
+  "gap2_verdict": "Gap 2 TENU à 90 MHz : pire latence mesurée 1169 µs (hdc) contre un budget de 100000 µs, soit une marge de ×86.",
+  "i_mean_ma_by_rate": [
+    {
+      "rate_hz": 0.0,
+      "i_ma": 25.495000000000005
+    },
+    {
+      "rate_hz": 10.0,
+      "i_ma": 25.535000000000004
+    },
+    {
+      "rate_hz": 25.0,
+      "i_ma": 28.235000000000003
+    },
+    {
+      "rate_hz": 50.0,
+      "i_ma": 28.325000000000003
+    },
+    {
+      "rate_hz": 100.0,
+      "i_ma": 31.29
+    },
+    {
+      "rate_hz": 200.0,
+      "i_ma": 31.395000000000007
+    }
+  ],
+  "current_points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.025495000000000004,
+      "i_std_a": 2.121320343559556e-05,
+      "n_repeats": 2
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.025535000000000002,
+      "i_std_a": 0.00013435028842544592,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.028235000000000003,
+      "i_std_a": 7.071067811865187e-06,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.028325000000000003,
+      "i_std_a": 7.071067811865187e-06,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.03129,
+      "i_std_a": 1.4142135623730373e-05,
+      "n_repeats": 2,
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.031395000000000006,
+      "i_std_a": 0.00016263455967290667,
+      "n_repeats": 2,
+      "achieved_rate_hz": 99.933,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "saturation_rate_hz": 200.0,
+  "n_points_fitted": 5,
+  "n_points_measured": 6,
+  "regression_model": "hdc_int8",
+  "energy_uj_per_inference": "à mesurer",
+  "method": "régression I(cadence) à fréquence SYSCLK fixée",
+  "acqmode_dyn": {
+    "attempted": true,
+    "succeeded": false,
+    "n_samples": 21894,
+    "n_samples_expected": 100000,
+    "i_mean_ma": 41.06102767816549,
+    "i_max_ma": 69.580078125,
+    "tension_v": 3.266,
+    "summary": "summary beg\r\nAcquisition mode:   dynamic\r\nSampling frequency: 100000 Hz\r\nAcquisition time:   218 ms\r\nNumber of samples:  21894 samples\r\nCurrent min:        0.0 nA\r\nCurrent max:        69.6 mA\r\nsummary end\r\n\r\nPowerShield > Measurement interrupted due to errors (refer to error messages above)",
+    "na_reason": "acquisition dynamique interrompue par la sonde : 21894/100000 échantillons décodés, I_max=69.6 mA ; résumé : « Measurement interrupted »"
+  },
+  "tension_v": 3.2640000000000002,
+  "window_s": 10.0,
+  "warmup_discarded_a": [
+    0.040650000000000006,
+    0.02568
+  ],
+  "timestamp": "2026-09-02T16:30:14.478226+00:00",
+  "weighted_by_inverse_variance": true,
+  "duty_cycle_at_max_rate": 0.11689999999999999,
+  "max_rate_fitted_hz": 100.0,
+  "regression_latency_us_p50": 1169.0,
+  "slope_ua_per_hz": 41.55732388234566,
+  "slope_std_ua_per_hz": 12.630624148181605,
+  "intercept_ma": 26.705711117668887,
+  "r2": 0.7830087006364828,
+  "energy_uncertainty_uj": 41.22635721966476,
+  "energy_na_reason": "régression non significative : r²=0.783 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence."
+}

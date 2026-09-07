@@ -1,0 +1,281 @@
+{
+  "model": "tinyol",
+  "encoding": "int8",
+  "dataset": "monitoring",
+  "points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.039863333333333334,
+      "i_std_a": 0.00021962088546705215,
+      "n_repeats": 3,
+      "session_index": [
+        73,
+        80,
+        128
+      ]
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.03994,
+      "i_std_a": 0.00011532562594670868,
+      "n_repeats": 3,
+      "session_index": [
+        45,
+        57,
+        137
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.040380000000000006,
+      "i_std_a": 0.000518844870842915,
+      "n_repeats": 3,
+      "session_index": [
+        5,
+        32,
+        122
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.04080666666666667,
+      "i_std_a": 8.504900548115212e-05,
+      "n_repeats": 3,
+      "session_index": [
+        53,
+        78,
+        110
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.04194,
+      "i_std_a": 5.19615242270662e-05,
+      "n_repeats": 3,
+      "session_index": [
+        42,
+        51,
+        75
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 150.0,
+      "i_mean_a": 0.04298,
+      "i_std_a": 0.00014525839046333882,
+      "n_repeats": 3,
+      "session_index": [
+        9,
+        34,
+        111
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.04327,
+      "i_std_a": 0.0001212435565298199,
+      "n_repeats": 3,
+      "session_index": [
+        66,
+        114,
+        119
+      ],
+      "achieved_rate_hz": 167.226,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "protocol_check": {
+    "model_flag": "tinyol-int8",
+    "n_samples_expected": 300,
+    "n_samples_received": 300,
+    "samples_lost": 0,
+    "crc_errors": 0,
+    "latency_p50_us": 65.0,
+    "latency_p99_us": 65.0,
+    "achieved_rate_hz": 99.204,
+    "check_rate_hz": 100.0
+  },
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "timestamp": "2026-09-01T18:09:14.812037+00:00",
+  "source": "lpm01a_current",
+  "method": "régression I(rate)",
+  "slope_ua_per_hz": 21.81944959803071,
+  "slope_std_ua_per_hz": 0.38746014002042867,
+  "intercept_ma": 39.7450436095054,
+  "r2": 0.9987402654795611,
+  "n_points_fitted": 6,
+  "weighted_by_inverse_variance": true,
+  "energy_uj_per_inference": 71.19686403837422,
+  "energy_uncertainty_uj": 1.2642824368866588,
+  "saturation_rate_hz": 200.0,
+  "duty_cycle_at_max_rate": 0.00975,
+  "max_rate_fitted_hz": 150.0,
+  "tension_v": 3.263,
+  "dwt_latency_us_p50": 65.0,
+  "session": {
+    "sequence": [
+      {
+        "session_index": 5,
+        "cell": "tinyol_int8",
+        "rate_hz": 25.0,
+        "repeat": 2,
+        "i_a": 0.04054000000000001
+      },
+      {
+        "session_index": 9,
+        "cell": "tinyol_int8",
+        "rate_hz": 150.0,
+        "repeat": 1,
+        "i_a": 0.04313
+      },
+      {
+        "session_index": 32,
+        "cell": "tinyol_int8",
+        "rate_hz": 25.0,
+        "repeat": 1,
+        "i_a": 0.0408
+      },
+      {
+        "session_index": 34,
+        "cell": "tinyol_int8",
+        "rate_hz": 150.0,
+        "repeat": 2,
+        "i_a": 0.04297
+      },
+      {
+        "session_index": 42,
+        "cell": "tinyol_int8",
+        "rate_hz": 100.0,
+        "repeat": 0,
+        "i_a": 0.04197
+      },
+      {
+        "session_index": 45,
+        "cell": "tinyol_int8",
+        "rate_hz": 10.0,
+        "repeat": 1,
+        "i_a": 0.039830000000000004
+      },
+      {
+        "session_index": 51,
+        "cell": "tinyol_int8",
+        "rate_hz": 100.0,
+        "repeat": 2,
+        "i_a": 0.04197
+      },
+      {
+        "session_index": 53,
+        "cell": "tinyol_int8",
+        "rate_hz": 50.0,
+        "repeat": 2,
+        "i_a": 0.040810000000000006
+      },
+      {
+        "session_index": 57,
+        "cell": "tinyol_int8",
+        "rate_hz": 10.0,
+        "repeat": 2,
+        "i_a": 0.040060000000000005
+      },
+      {
+        "session_index": 66,
+        "cell": "tinyol_int8",
+        "rate_hz": 200.0,
+        "repeat": 2,
+        "i_a": 0.0434
+      },
+      {
+        "session_index": 73,
+        "cell": "tinyol_int8",
+        "rate_hz": 0.0,
+        "repeat": 0,
+        "i_a": 0.04
+      },
+      {
+        "session_index": 75,
+        "cell": "tinyol_int8",
+        "rate_hz": 100.0,
+        "repeat": 1,
+        "i_a": 0.04188
+      },
+      {
+        "session_index": 78,
+        "cell": "tinyol_int8",
+        "rate_hz": 50.0,
+        "repeat": 0,
+        "i_a": 0.04089
+      },
+      {
+        "session_index": 80,
+        "cell": "tinyol_int8",
+        "rate_hz": 0.0,
+        "repeat": 1,
+        "i_a": 0.03998
+      },
+      {
+        "session_index": 110,
+        "cell": "tinyol_int8",
+        "rate_hz": 50.0,
+        "repeat": 1,
+        "i_a": 0.040720000000000006
+      },
+      {
+        "session_index": 111,
+        "cell": "tinyol_int8",
+        "rate_hz": 150.0,
+        "repeat": 0,
+        "i_a": 0.04284
+      },
+      {
+        "session_index": 114,
+        "cell": "tinyol_int8",
+        "rate_hz": 200.0,
+        "repeat": 1,
+        "i_a": 0.043160000000000004
+      },
+      {
+        "session_index": 119,
+        "cell": "tinyol_int8",
+        "rate_hz": 200.0,
+        "repeat": 0,
+        "i_a": 0.043250000000000004
+      },
+      {
+        "session_index": 122,
+        "cell": "tinyol_int8",
+        "rate_hz": 25.0,
+        "repeat": 0,
+        "i_a": 0.0398
+      },
+      {
+        "session_index": 128,
+        "cell": "tinyol_int8",
+        "rate_hz": 0.0,
+        "repeat": 2,
+        "i_a": 0.039610000000000006
+      },
+      {
+        "session_index": 137,
+        "cell": "tinyol_int8",
+        "rate_hz": 10.0,
+        "repeat": 0,
+        "i_a": 0.03993
+      }
+    ],
+    "shuffled": true,
+    "seed": 42,
+    "warmup_discarded_a": [
+      0.060340000000000005
+    ]
+  }
+}

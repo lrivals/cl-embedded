@@ -1,0 +1,171 @@
+{
+  "method": "régression I(rate)",
+  "method_note": "estimateur PAR RÉGRESSION — à ne jamais fusionner avec l'estimateur par delta (S5302) ni avec l'intégration du profil par phase (S5305) : leur comparaison est elle-même un résultat.",
+  "cells": {
+    "ewc_fp32": {
+      "energy_uj_per_inference": 67.65168547398007,
+      "energy_uncertainty_uj": 0.6983058931060796,
+      "energy_na_reason": null,
+      "slope_ua_per_hz": 20.732971337413442,
+      "slope_std_ua_per_hz": 0.21400732243520673,
+      "r2": 0.9995740004750834,
+      "intercept_ma": 39.78247202694389,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.007500000000000001,
+      "dwt_latency_us_p50": 50.0,
+      "crc_errors": 0
+    },
+    "ewc_int8": {
+      "energy_uj_per_inference": 67.46832026332879,
+      "energy_uncertainty_uj": 2.234631394974907,
+      "energy_na_reason": null,
+      "slope_ua_per_hz": 20.676776053732393,
+      "slope_std_ua_per_hz": 0.6848395326309858,
+      "r2": 0.9956311166516034,
+      "intercept_ma": 39.81483132584867,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.00795,
+      "dwt_latency_us_p50": 53.0,
+      "crc_errors": 0
+    },
+    "hdc_fp32": {
+      "energy_uj_per_inference": "à mesurer",
+      "energy_uncertainty_uj": 17.073335870979157,
+      "energy_na_reason": "régression non significative : r²=0.885 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.",
+      "slope_ua_per_hz": 29.018700122336362,
+      "slope_std_ua_per_hz": 5.232404496162782,
+      "r2": 0.8849174534319327,
+      "intercept_ma": 40.45088815608158,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.08775000000000001,
+      "dwt_latency_us_p50": 585.0,
+      "crc_errors": 0
+    },
+    "hdc_int8": {
+      "energy_uj_per_inference": 191.6103477899054,
+      "energy_uncertainty_uj": 16.03847619755574,
+      "energy_na_reason": null,
+      "slope_ua_per_hz": 58.72214152310923,
+      "slope_std_ua_per_hz": 4.915254734157444,
+      "r2": 0.9727388274141299,
+      "intercept_ma": 40.30317319577045,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.2937,
+      "dwt_latency_us_p50": 1958.0,
+      "crc_errors": 0
+    },
+    "maha_fp32": {
+      "energy_uj_per_inference": 57.37747177326624,
+      "energy_uncertainty_uj": 7.53919568398508,
+      "energy_na_reason": null,
+      "slope_ua_per_hz": 17.584269620982603,
+      "slope_std_ua_per_hz": 2.3105104762442785,
+      "r2": 0.9354011055048698,
+      "intercept_ma": 40.010346242259295,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.00075,
+      "dwt_latency_us_p50": 5.0,
+      "crc_errors": 0
+    },
+    "tinyol_fp32": {
+      "energy_uj_per_inference": 70.50081002561338,
+      "energy_uncertainty_uj": 0.6936563104504666,
+      "energy_na_reason": null,
+      "slope_ua_per_hz": 21.606132401352554,
+      "slope_std_ua_per_hz": 0.21258238138230665,
+      "r2": 0.999612927493565,
+      "intercept_ma": 39.839970473514185,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.012750000000000001,
+      "dwt_latency_us_p50": 85.0,
+      "crc_errors": 0
+    },
+    "tinyol_int8": {
+      "energy_uj_per_inference": 71.19686403837422,
+      "energy_uncertainty_uj": 1.2642824368866588,
+      "energy_na_reason": null,
+      "slope_ua_per_hz": 21.81944959803071,
+      "slope_std_ua_per_hz": 0.38746014002042867,
+      "r2": 0.9987402654795611,
+      "intercept_ma": 39.7450436095054,
+      "saturation_rate_hz": 200.0,
+      "duty_cycle_at_max_rate": 0.00975,
+      "dwt_latency_us_p50": 65.0,
+      "crc_errors": 0
+    }
+  },
+  "slope_vs_latency": {
+    "uj_per_us_compute": 0.06557859934567503,
+    "uj_per_us_compute_std": 0.002158022817540708,
+    "uj_per_uart_frame": 63.413887202408716,
+    "r2": 0.9956870873959727,
+    "points": [
+      {
+        "cell": "ewc_fp32",
+        "dwt_latency_us_p50": 50.0,
+        "energy_uj_per_inference": 67.65168547398007
+      },
+      {
+        "cell": "ewc_int8",
+        "dwt_latency_us_p50": 53.0,
+        "energy_uj_per_inference": 67.46832026332879
+      },
+      {
+        "cell": "hdc_int8",
+        "dwt_latency_us_p50": 1958.0,
+        "energy_uj_per_inference": 191.6103477899054
+      },
+      {
+        "cell": "maha_fp32",
+        "dwt_latency_us_p50": 5.0,
+        "energy_uj_per_inference": 57.37747177326624
+      },
+      {
+        "cell": "tinyol_fp32",
+        "dwt_latency_us_p50": 85.0,
+        "energy_uj_per_inference": 70.50081002561338
+      },
+      {
+        "cell": "tinyol_int8",
+        "dwt_latency_us_p50": 65.0,
+        "energy_uj_per_inference": 71.19686403837422
+      }
+    ],
+    "cells_used": [
+      "ewc_fp32",
+      "ewc_int8",
+      "hdc_int8",
+      "maha_fp32",
+      "tinyol_fp32",
+      "tinyol_int8"
+    ],
+    "cells_excluded": {
+      "hdc_fp32": "régression non significative : r²=0.885 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence."
+    },
+    "method": "régression µJ(latence DWT) sur les cellules du balayage",
+    "timestamp": "2026-09-07T11:53:54.516096+00:00"
+  },
+  "gap3_energy_verdict": {
+    "verdict": "non_significatif",
+    "rationale": "l'énergie par inférence de ewc INT8 (67.5 µJ) et FP32 (67.7 µJ) diffèrent de -0.2 µJ pour une incertitude combinée de ±2.3 µJ (< 2 σ) : l'INT8 ne change pas mesurablement l'énergie par inférence. Le gain INT8 reste la RAM.",
+    "model": "ewc",
+    "energy_uj_int8": 67.46832026332879,
+    "energy_uj_fp32": 67.65168547398007,
+    "delta_uj": -0.18336521065127442,
+    "delta_sigma_uj": 2.3411981103174884,
+    "significant": false,
+    "latency_us_int8": 53.0,
+    "latency_us_fp32": 50.0
+  },
+  "coherence_check": {
+    "model": "ewc",
+    "delta_latency_us": 3.0,
+    "expected_delta_uj_from_second_level": 0.1967357980370251,
+    "measured_delta_uj": -0.18336521065127442,
+    "ratio_measured_over_expected": -0.9320378521897964,
+    "tolerance_factor": 3.0,
+    "coherent": false,
+    "rationale": "le second niveau prédit +0.2 µJ d'écart INT8↔FP32 (0.066 µJ/µs × +3.0 µs) ; le balayage en mesure -0.2 µJ."
+  },
+  "timestamp": "2026-09-07T11:53:54.516232+00:00"
+}
