@@ -1,0 +1,12 @@
+{
+  "uj_per_us_compute": "à mesurer",
+  "uj_per_uart_frame": "à mesurer",
+  "r2": null,
+  "cells_used": [],
+  "cells_excluded": {
+    "ewc_fp32": "régression non significative : r²=0.635 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence."
+  },
+  "na_reason": "0 cellule(s) publiable(s) à latences distinctes : la régression de second niveau en exige au moins trois.",
+  "method": "régression µJ(latence DWT) sur les cellules du balayage",
+  "timestamp": "2026-09-07T12:29:30.938589+00:00"
+}

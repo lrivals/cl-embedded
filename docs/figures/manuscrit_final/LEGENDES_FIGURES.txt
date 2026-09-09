@@ -1,0 +1,365 @@
+================================================================================
+FIGURES DU MANUSCRIT FINAL M2 — CL-EMBEDDED
+Nom du fichier · emplacement dans le manuscrit · texte de legende
+================================================================================
+Dossier          : docs/figures/manuscrit_final/
+Genere par       : src/figures/catalogs/manuscrit_final.py  (catalogue "manuscrit_final")
+Regeneration     : python scripts/generate_figures.py --catalog manuscrit_final --style manuscript
+Date             : 30 juillet 2026
+Nombre de figures: 16
+
+CONVENTIONS
+  - Nomenclature `ch<N>_<sujet>.png` : le prefixe donne le chapitre d'ORIGINE du
+    contenu. Le placement reel (corps ou annexe) est donne ci-dessous.
+  - Toute valeur tracee est chargee depuis un JSON de experiments/ — aucun chiffre
+    n'est ecrit en dur (garde AST `test_no_hardcoded_results`).
+  - Une cellule non mesuree est GRISE et etiquetee N/A — jamais tracee comme 0.
+  - Style `manuscript` (polices compatibles LaTeX).
+  - Perimetre : ch. 5 = grille complete 4 modeles x 3 datasets (l'argument
+    "accuracy trompeuse" repose sur HDC et sur Mahalanobis x CMAPSS) ;
+    ch. 6 et 7 = resserres sur EWC + Mahalanobis x Monitoring + Pronostia.
+
+RESERVE TINYOL SUR CARTE
+  Les cellules CARTE de TinyOL sont EXCLUES de toutes les figures (affichees N/A) :
+  la campagne de streaming a emprunte le chemin d'inference par defaut du firmware
+  au lieu de la route TinyOL dediee, si bien que ses valeurs embarquees sont
+  bit-a-bit identiques a celles de Mahalanobis sur les cinq jeux — metrique,
+  accuracy ET latence. Cf. reserve sous le tableau 5.1 du manuscrit et action 2.6
+  de docs/context/actions_restantes_resultats.txt. Les colonnes PC ne sont pas
+  concernees.
+
+PLACEMENT DANS LE MANUSCRIT (16 figures : 8 dans le corps, 8 en annexe)
+
+  CORPS — portent l'argument de leur section
+    ch5_accuracy_vs_f1.png .......... 5.2  fig 5.1  \ref{fig:gap1-accuracy-f1}
+    ch5_oubli_catastrophique.png .... 5.3  fig 5.2  \ref{fig:gap1-oubli}
+    ch6_ram_trois_niveaux.png ....... 6.1  fig 6.1  \ref{fig:gap2-ram-niveaux}
+    ch6_latence_inference_vs_maj.png  6.2  fig 6.2  \ref{fig:gap2-latence}
+    ch6_parite_gele_vs_online.png ... 6.3  fig 6.3  \ref{fig:gap2-parite}
+    ch7_ram_poids_vs_systeme.png .... 7.1  fig 7.1  \ref{fig:gap3-ram-echelles}
+    ch7_ablation_echelle.png ........ 7.3  fig 7.2  \ref{fig:gap3-ablation}
+    ch7_noyau_v2_recuperation.png ... 7.4  fig 7.3  \ref{fig:gap3-recuperation}
+
+  ANNEXE — documentent le detail, appelees par renvoi depuis le corps
+    ch5_f1_grille_pc_board.png ...... A.1  fig A.1  \ref{fig:annexe-gap1-grille}
+    ch5_paderborn_ewc_seul.png ...... A.1  fig A.2  \ref{fig:annexe-paderborn}
+    ch6_ram_totale_decomposee.png ... A.2  fig A.3  \ref{fig:annexe-ram-totale}
+    ch6_pic_pile_par_phase.png ...... A.2  fig A.4  \ref{fig:annexe-pic-pile}
+    ch6_latence_par_modele.png ...... A.2  fig A.5  \ref{fig:annexe-latence-modeles}
+    ch7_moment_quantification.png ... A.3  fig A.6  \ref{fig:annexe-moment}
+    ch7_profondeur_bits.png ......... NON UTILISEE dans le manuscrit (cf. [14])
+    ch7_latence_int8_breakdown.png .. A.3  fig A.8  \ref{fig:annexe-latence-int8}
+
+  Critere de repartition : une figure va dans le CORPS si elle porte l'argument
+  central de sa section ; en ANNEXE si elle en documente le detail ou double un
+  tableau deja present dans le texte (contrainte de ~30 pages).
+
+RAPPEL — les legendes ci-dessous sont DEJA integrees dans les .tex.
+  Corps   : sections/05_gap1_validation.tex, 06_gap2_ram_latence.tex,
+            07_gap3_quantification.tex
+  Annexe  : sections/09_abstracts_annexes.tex
+  Images  : Manuscrit_Final_Rivals/images/ (\graphicspath dans rapport.tex)
+  Ce fichier sert de reference de travail ; il n'est pas compile.
+
+
+
+================================================================================
+CHAPITRE 5 — GAP 1 : VALIDATION SUR DONNEES INDUSTRIELLES
+================================================================================
+
+--------------------------------------------------------------------------------
+[1] ch5_f1_grille_pc_board.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  ANNEXE A.1 (fig A.1) — double le tableau 5.1 deja present au corps ;
+             renvoi depuis la section "Grille de resultats sur les jeux focus".
+SOURCES      experiments/exp_S35_{PC,board}_5feat_{modele}_{dataset}/results.json
+LEGENDE
+  F1 de la classe "fautif" des quatre familles de modeles sur les trois jeux de
+  donnees focus, en condition 5feat, mesure en parallele sur PC et sur la carte
+  NUCLEO-F439ZI. EWC domine sur les trois jeux, et son avance se creuse sur
+  Pronostia, le scenario class-incremental le plus exigeant. Le passage sur carte
+  ne degrade pas systematiquement les scores : il les ameliore meme pour EWC sur
+  Monitoring et Pronostia, ce qui confirme l'absence de perte structurelle liee au
+  portage. HDC affiche un F1 nul sur carte alors que son accuracy y reste correcte.
+
+--------------------------------------------------------------------------------
+[2] ch5_accuracy_vs_f1.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  CORPS, section 5.2 (fig 5.1) — porte l'argument du chapitre.
+SOURCES      experiments/exp_S35_board_5feat_{modele}_{dataset}/results.json
+LEGENDE
+  Accuracy et F1 de la classe "fautif" pour les couples modele x jeu de
+  donnees mesures sur carte (TinyOL exclu, cf. reserve ci-dessus), tries par accuracy decroissante. L'ecart entre les
+  deux barres mesure exactement le piege des jeux desequilibres : plusieurs
+  configurations affichent une accuracy superieure a 0,85 pour un F1 quasi nul,
+  c'est-a-dire un modele qui ne detecte aucune panne tout en paraissant
+  performant. C'est la raison pour laquelle le F1 est la metrique de reference de
+  ce chapitre et l'accuracy n'est conservee que comme repere.
+
+--------------------------------------------------------------------------------
+[3] ch5_oubli_catastrophique.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  CORPS, section 5.3 (fig 5.2) — porte l'argument du chapitre.
+SOURCES      experiments/exp_S26_02/results.json
+LEGENDE
+  Quatre lectures du meme modele EWC multiclasse sur CWRU (trois taches). La
+  moyenne des F1 releves juste apres chaque tache est rassurante, mais elle mesure
+  chaque tache au moment ou elle vient d'etre apprise. Reevalue sur l'ensemble des
+  taches vues, le modele final s'effondre : l'ecart entre les deux premieres
+  barres est l'oubli lui-meme, quantifie par un oubli moyen AF(F1) proche de 0,85.
+  La carte reproduit ce comportement a l'identique en inference pure, ce qui
+  etablit que la contre-performance embarquee relevait de l'oubli et non d'un
+  defaut de portage. Le regime en ligne remonte parce qu'il rapprend partiellement
+  les taches anciennes.
+
+--------------------------------------------------------------------------------
+[4] ch5_paderborn_ewc_seul.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  ANNEXE A.1 (fig A.2) — renvoi depuis la section 5.4.
+SOURCES      experiments/exp_S35_{PC,board}_5feat_{modele}_paderborn/results.json
+LEGENDE
+  F1 de la classe "fautif" sur Paderborn, jeu strictement mono-classe par tache,
+  en condition 5feat. Ce scenario est le plus severe du corpus : seul EWC y
+  conserve un F1 exploitable, identique sur PC et sur carte, tandis que les
+  autres modeles se replient sur la prediction de la classe majoritaire. La
+  penalite de regularisation ponderee par l'information de Fisher est ce qui
+  distingue EWC dans ce regime.
+
+
+================================================================================
+CHAPITRE 6 — GAP 2 : RAM, LATENCE, PARITE PC / CARTE
+================================================================================
+
+--------------------------------------------------------------------------------
+[5] ch6_ram_trois_niveaux.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section "Mesure de la RAM coherente", en tete — illustre les trois
+             niveaux de claim enumeres dans le texte.
+SOURCES      exp_S18_01_board/results.json · exp_S48_summary.json ·
+             exp_S35_board_sweep_summary.json
+LEGENDE
+  Les trois niveaux de claim RAM du projet, rapportes au budget de la carte
+  NUCLEO-F439ZI. Le noyau minimal etablit la faisabilite mais ne decrit qu'un
+  modele isole ; le build multi-modele par defaut est le chiffre de reference du
+  manuscrit, avec les quatre familles co-residentes ; le pire cas correspond a la
+  condition "toutes variables" sur CMAPSS. Les trois restent dans l'enveloppe.
+  Ces valeurs portent sur `.bss` seul : la pile est comptabilisee separement.
+
+--------------------------------------------------------------------------------
+[6] ch6_ram_totale_decomposee.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section "Mesure de la RAM coherente", apres l'enonce de la formule
+             RAM totale = .data + .bss + pic de pile.
+SOURCES      experiments/exp_S49_ram/summary.json
+             experiments/exp_S49_ram/ewc_<dataset>_5feat_fp32_board.json (n_features)
+             scripts/ram_breakdown.py (decoupage statique / non constante, recoupe nm)
+LEGENDE
+  Decomposition de la RAM totale reellement consommee sur carte, sur les deux jeux
+  focus, du permanent (gauche) vers le transitoire (droite). Barres horizontales
+  reprenant la lecture du panneau (1) de fig_lifecycle_ewc.png, mais a l'echelle du
+  micrologiciel entier mesure, afin que le total trace reste celui qui porte la
+  revendication Gap 2. Le plancher permanent reunit .data et .bss ; la part de la
+  tete EWC y est isolee en deux teintes, selon qu'elle reste statique apres l'init
+  (poids du perceptron k->32->16->2) ou qu'elle est non constante, reecrite en place
+  a chaque mise a jour (Fisher diagonal, theta*, lambda). Le reste du plancher
+  regroupe les autres modeles de la meme image et les tampons du protocole. Dernier
+  segment, hachure : le pic de pile, obtenu par stack painting — la zone libre est
+  peinte au demarrage avec un motif dependant de l'adresse, puis relue pour
+  retrouver la profondeur atteinte.
+  UNE SEULE BARRE PAR JEU : FP32 et INT8 partagent le meme binaire (les deux tetes
+  coexistent en .bss, la precision est choisie a l'execution par un drapeau du
+  protocole), leurs .data et .bss sont donc identiques a l'octet pres. Tracer deux
+  barres jumelles n'apprendrait rien ; le constat est porte par la legende.
+
+--------------------------------------------------------------------------------
+[7] ch6_pic_pile_par_phase.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section "Mesure de la RAM coherente", en appui du dernier paragraphe
+             (cout memoire de l'adaptation en ligne).
+SOURCES      experiments/exp_S49_ram/summary.json  (champ stack_history)
+LEGENDE
+  Evolution du pic de pile d'EWC releve apres chaque phase, chronologiquement. La
+  mise a jour continue creuse la pile davantage que l'inference seule : le cout
+  memoire de l'adaptation en ligne, souvent passe sous silence dans la
+  litterature embarquee, est ici mesure — et il reste borne.
+
+--------------------------------------------------------------------------------
+[8] ch6_latence_inference_vs_maj.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section "Latences mesurees : toutes tres en deca de 100 ms",
+             figure principale.
+SOURCES      experiments/exp_S36_summary.json  (board_frozen / board_online)
+LEGENDE
+  Latence d'EWC mesuree au compteur de cycles DWT sur carte reelle, en regime gele
+  (inference seule) et en regime en ligne (inference suivie de la mise a jour
+  continue). Le rapport annote au-dessus de chaque paire quantifie le surcout de
+  l'adaptation, de l'ordre d'un facteur cinq. C'est precisement cet overhead que
+  la litterature ne mesure pas. Les deux regimes restent tres loin du budget de
+  100 ms retenu comme critere du Gap 2.
+
+--------------------------------------------------------------------------------
+[9] ch6_latence_par_modele.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section "Latences mesurees", a l'appui de la phrase sur la dispersion
+             entre modeles.
+SOURCES      experiments/exp_S35_board_sweep_summary.json
+LEGENDE
+  Latence d'inference (P50, compteur DWT) des quatre familles de modeles sur
+  carte, en condition 5feat et en echelle logarithmique. La dispersion couvre deux
+  ordres de grandeur, de quelques microsecondes pour le detecteur de Mahalanobis a
+  plusieurs centaines pour HDC, dont l'encodage hyperdimensionnel domine le cout.
+  Toutes les valeurs restent tres inferieures au budget de 100 ms.
+
+--------------------------------------------------------------------------------
+[10] ch6_parite_gele_vs_online.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section "Parite PC / carte : la validation scientifique du portage",
+             figure principale.
+SOURCES      experiments/exp_S36_summary.json  (champ parity_rate)
+LEGENDE
+  Taux de predictions identiques entre la reference PC et la carte, compare
+  echantillon par echantillon a poids, ordre et sequence identiques. A poids figes,
+  la parite est exacte : les deux implementations calculent bit a bit la meme
+  chose, ce qui etablit que le portage n'introduit aucune derive numerique. Mise a
+  jour activee, de petites divergences apparaissent, concentrees aux frontieres de
+  decision ; elles ne sont pas des bugs mais l'effet attendu du calcul en float32
+  sur la carte face au float64 du PC. Noter l'axe tronque : l'ecart reste
+  inferieur a quelques pour cent.
+
+
+================================================================================
+CHAPITRE 7 — GAP 3 : QUANTIFICATION PENDANT L'ENTRAINEMENT INCREMENTAL
+================================================================================
+
+--------------------------------------------------------------------------------
+[11] ch7_ablation_echelle.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section 7.3 "PTQ embarquee historique" — remplace le tableau
+             d'ablation a cinq etages.
+SOURCES      experiments/exp_S39_ablation/{monitoring,pronostia}.json
+LEGENDE
+  Diagnostic de l'effondrement de la quantification post-entrainement naive, mene
+  au moyen d'un emulateur bit-exact du noyau embarque. En partant du firmware
+  historique et en corrigeant les facteurs suspects un a un, un seul etage produit
+  un saut : la calibration de l'echelle, qui rapporte pres de 0,88 point de F1 sur
+  les deux jeux. L'accumulateur int32, souvent presente comme le coupable evident,
+  n'apporte rien et degrade meme Monitoring tant que l'echelle reste fausse ; le
+  passage au par-canal ne rachete plus rien une fois le par-tenseur calibre. La
+  perte tenait donc a un seul choix d'implementation, une echelle figee
+  arbitrairement, et non au principe de la quantification. Les pointilles
+  rappellent la reference FP32 de chaque jeu.
+
+--------------------------------------------------------------------------------
+[12] ch7_noyau_v2_recuperation.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section 7.4 "Correction : un noyau INT8 calibre, valide sur carte" —
+             remplace le tableau de validation carte.
+SOURCES      exp_S36_summary.json (board_frozen, board_frozen_int8) ·
+             exp_S40_board_v2/results_per_channel_{dataset}_frozen.json
+LEGENDE
+  F1 de la classe "fautif" mesure sur carte en regime gele, selon trois
+  implementations : la reference FP32, la quantification post-entrainement naive
+  du firmware historique, et le noyau INT8 v2 a echelles calibrees. La metrique
+  perdue est entierement recuperee sur la cible materielle, et non seulement en
+  simulation : le noyau v2 revient au niveau du FP32 tout en divisant par quatre
+  la memoire des poids. Sa parite face a l'emulateur bit-exact est exacte, ce qui
+  valide au passage la chaine de verification elle-meme.
+
+--------------------------------------------------------------------------------
+[13] ch7_moment_quantification.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section 7.5 "Le moment de la quantification".
+SOURCES      experiments/exp_S46_ewc/{monitoring,pronostia}_all.json
+LEGENDE
+  AUROC selon le moment ou la quantification est appliquee, a modele, jeu de
+  donnees et graine fixes : reference flottante, quantification consciente de
+  l'entrainement, quantification post-entrainement calibree, et combinaison des
+  deux qui correspond au deploiement reel. Noter l'echelle verticale tres
+  resserree — les quatre moments sont quasi confondus. Le message est a porter tel
+  quel : le QAT ne degrade pas, mais il n'apporte pas de gain decisif sur cette
+  tete ; c'est la calibration du noyau qui recupere l'essentiel de la metrique.
+
+--------------------------------------------------------------------------------
+[14] ch7_profondeur_bits.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  AUCUN — figure RETIREE du manuscrit (decision auteur, aout 2026 :
+             l'axe profondeur n'etait pas soutenu par le corps du texte, il n'y
+             etait mentionne que dans la phrase de renvoi en annexe). Le PNG
+             reste genere : materiau disponible pour un article ou une soutenance.
+SOURCES      experiments/exp_S48_summary.json  (volets pc et board)
+LEGENDE
+  A gauche, ecart d'AUROC par rapport au flottant en fonction de la profondeur des
+  poids : Monitoring tient jusqu'au binaire tandis que Pronostia casse au binaire
+  mais tient encore en ternaire. A droite, empreinte `.bss` reellement mesuree sur
+  carte, avec et sans compression des poids. C'est le noeud d'honnetete de cette
+  section : sans bit-packing, les valeurs sur 4, 2 ou 1 bit restent stockees dans
+  des conteneurs d'un octet et l'empreinte est rigoureusement identique dans les
+  trois modes. Le gain n'existe qu'avec le packing, et il croit a mesure que les
+  bits diminuent. Une "RAM theorique divisee par 32" ne devient donc reelle qu'au
+  prix d'un noyau de depacking.
+
+--------------------------------------------------------------------------------
+[15] ch7_latence_int8_breakdown.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section 7.7 "Le paradoxe de latence" — remplace le tableau des
+             postes de cycles.
+SOURCES      experiments/exp_S50_int8_latency/ewc.json
+LEGENDE
+  Decomposition au cycle pres du noyau INT8 instrumente sur carte. A gauche, les
+  trois postes du calcul : les produits scalaires entiers ne rapportent rien face
+  a la FPU, et c'est la requantification de sortie qui constitue le surcout
+  dominant. A droite, la consequence mesuree : l'INT8 est plus lent que le FP32.
+  La FPU du Cortex-M4 execute le flottant aussi vite que le coeur execute
+  l'entier, si bien que les conversions d'entree et de sortie s'ajoutent en pure
+  perte. Le benefice de la quantification est un gain de memoire, pas un gain de
+  temps — constat contre-intuitif, assume, et desormais chiffre poste par poste.
+
+--------------------------------------------------------------------------------
+[16] ch7_ram_poids_vs_systeme.png
+--------------------------------------------------------------------------------
+EMPLACEMENT  Section 7.1 "RAM : un gain demontre, mais qu'il faut delimiter".
+SOURCES      exp_S40_board_v2/results_per_channel_{dataset}_frozen.json ·
+             exp_S49_ram/summary.json
+LEGENDE
+  Le meme gain INT8 vu a deux echelles. A l'echelle du modele, la memoire des
+  poids est bien divisee par quatre, conformement au passage de quatre octets a un
+  seul. A l'echelle du firmware complet, la RAM totale est inchangee : les poids
+  de la tete ne pesent que quelques centaines d'octets sur une empreinte dominee
+  par les tampons du pipeline multi-modele. La distinction est essentielle pour ne
+  pas surestimer le resultat : le gain est reel et decisif sur le modele,
+  marginal sur le systeme dans cette configuration.
+
+
+================================================================================
+FIGURES NON PRODUITES — EN ATTENTE DE MESURES
+================================================================================
+Les figures ci-dessous sont prevues mais NON generees : les donnees necessaires
+n'existent pas encore. Elles sont inscrites comme dependances de production dans
+docs/context/actions_restantes_resultats.txt (section 1.1). Aucune version
+"placeholder" n'est deposee ici, conformement a la regle "aucun chiffre invente".
+
+  ch7_energie_int8_vs_fp32.png   Energie par inference (uJ), INT8 vs FP32, par
+                                 modele. C'est la figure qui trancherait la
+                                 question laissee ouverte au 7.7 : a latence
+                                 degradee, l'INT8 consomme-t-il moins ?
+                                 BLOQUEE PAR : campagne LPM01A (action 1.1).
+                                 SOURCE ATTENDUE : exp_S50_energy/summary.json
+
+  ch8_autonomie_batterie.png     Autonomie estimee en heures selon la capacite de
+                                 batterie et le modele deploye — argument
+                                 industriel du chapitre Perspectives.
+                                 BLOQUEE PAR : campagne LPM01A (action 1.1).
+                                 SOURCE ATTENDUE : exp_S50_energy/autonomy.json
+
+  ch7_subint8_online.png         Metrique et RAM des schemas sub-INT8 en regime
+                                 EN LIGNE. Le Sprint 48 ne couvre que le regime
+                                 gele ; or le coeur du Gap 3 est la quantification
+                                 PENDANT l'entrainement incremental.
+                                 BLOQUEE PAR : cablage de la route sub-INT8 sur le
+                                 chemin de mise a jour (action 2.2).
+                                 SOURCE ATTENDUE : exp_S48_summary.json etendu
+
+Des que la source correspondante existe, ajouter la fonction de figure dans
+src/figures/catalogs/manuscrit_final.py et relancer le catalogue : le present
+fichier et le dossier se completent alors d'un seul geste.
+================================================================================

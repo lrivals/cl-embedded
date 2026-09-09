@@ -1,0 +1,11 @@
+# source: X-NUCLEO-LPM01A (lpm01a_probe.py)
+# firmware: 1.0.1
+# sampling_rate_hz: 1000
+# acqmode: stat
+# funcmode: optim
+# trigsrc: sw
+# n_samples_decoded: 1
+# n_samples_expected: 1
+# duration_s: 10
+time,current,voltage
+0.000000000,6.324000000e-02,3.2660

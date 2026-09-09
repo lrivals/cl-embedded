@@ -1,0 +1,136 @@
+{
+  "question": "Qu'est-ce qui déclenche l'arrêt de l'acquisition dynamique — le pic, la moyenne, ou la durée ?",
+  "by_sysclk": {
+    "45": {
+      "candidates": {
+        "pic": {
+          "field": "i_max_ma",
+          "n_ok": 7,
+          "n_ko": 0,
+          "separable": false,
+          "reason": "aucun essai n'a échoué : la séparation n'est pas testable sur ce champ."
+        },
+        "moyenne": {
+          "field": "i_mean_ma",
+          "n_ok": 7,
+          "n_ko": 0,
+          "separable": false,
+          "reason": "aucun essai n'a échoué : la séparation n'est pas testable sur ce champ."
+        },
+        "durée": {
+          "field": "duration_s",
+          "n_ok": 7,
+          "n_ko": 0,
+          "separable": false,
+          "reason": "aucun essai n'a échoué : la séparation n'est pas testable sur ce champ."
+        }
+      },
+      "n_attempts": 9,
+      "n_no_data": 2,
+      "n_considered": 7,
+      "n_succeeded": 7,
+      "verdict": "indéterminé",
+      "rationale": "aucun des 3 candidats ne sépare les 7 essais (7 aboutis) : pic — aucun essai n'a échoué : la séparation n'est pas testable sur ce champ. moyenne — aucun essai n'a échoué : la séparation n'est pas testable sur ce champ. durée — aucun essai n'a échoué : la séparation n'est pas testable sur ce champ."
+    },
+    "90": {
+      "candidates": {
+        "pic": {
+          "field": "i_max_ma",
+          "n_ok": 0,
+          "n_ko": 7,
+          "separable": false,
+          "reason": "aucun essai n'a abouti : la séparation n'est pas testable sur ce champ."
+        },
+        "moyenne": {
+          "field": "i_mean_ma",
+          "n_ok": 0,
+          "n_ko": 7,
+          "separable": false,
+          "reason": "aucun essai n'a abouti : la séparation n'est pas testable sur ce champ."
+        },
+        "durée": {
+          "field": "duration_s",
+          "n_ok": 0,
+          "n_ko": 7,
+          "separable": false,
+          "reason": "aucun essai n'a abouti : la séparation n'est pas testable sur ce champ."
+        }
+      },
+      "n_attempts": 9,
+      "n_no_data": 2,
+      "n_considered": 7,
+      "n_succeeded": 0,
+      "verdict": "indéterminé",
+      "rationale": "aucun des 3 candidats ne sépare les 7 essais (0 aboutis) : pic — aucun essai n'a abouti : la séparation n'est pas testable sur ce champ. moyenne — aucun essai n'a abouti : la séparation n'est pas testable sur ce champ. durée — aucun essai n'a abouti : la séparation n'est pas testable sur ce champ."
+    }
+  },
+  "pooled": {
+    "candidates": {
+      "pic": {
+        "field": "i_max_ma",
+        "n_ok": 7,
+        "n_ko": 7,
+        "max_ok": 72.998046875,
+        "min_ok": 58.440000000000005,
+        "max_ko": 72.998046875,
+        "min_ko": 67.626953125,
+        "separable": false,
+        "overlap": 5.37109375,
+        "reason": "les essais réussis (58.440 … 72.998) et échoués (67.627 … 72.998) se recouvrent : aucun seuil sur ce champ ne les sépare."
+      },
+      "moyenne": {
+        "field": "i_mean_ma",
+        "n_ok": 7,
+        "n_ko": 7,
+        "max_ok": 27.40190992859237,
+        "min_ok": 22.5116341868127,
+        "max_ko": 41.422330489033165,
+        "min_ko": 41.25878039310612,
+        "separable": true,
+        "direction": "échec au-dessus du seuil",
+        "threshold_between": [
+          27.40190992859237,
+          41.25878039310612
+        ],
+        "margin": 13.85687046451375
+      },
+      "durée": {
+        "field": "duration_s",
+        "n_ok": 7,
+        "n_ko": 7,
+        "max_ok": 10.0,
+        "min_ok": 1.0,
+        "max_ko": 10.0,
+        "min_ko": 1.0,
+        "separable": false,
+        "overlap": 9.0,
+        "reason": "les essais réussis (1.000 … 10.000) et échoués (1.000 … 10.000) se recouvrent : aucun seuil sur ce champ ne les sépare."
+      }
+    },
+    "n_attempts": 18,
+    "n_no_data": 4,
+    "n_considered": 14,
+    "n_succeeded": 7,
+    "verdict": "moyenne",
+    "rationale": "sur 14 essais dont 7 aboutis, seul le candidat « moyenne » (i_mean_ma) sépare les essais : échec au-dessus du seuil, seuil entre 27.402 et 41.259 (marge 13.857). Les autres candidats se recouvrent."
+  },
+  "pooled_abort_time": {
+    "n": 7,
+    "mean_s": 0.2198057142857143,
+    "min_s": 0.2188,
+    "max_s": 0.22034,
+    "spread_ratio": 0.007006187282275317,
+    "rates_hz": [
+      0.0,
+      25.0,
+      50.0,
+      100.0,
+      200.0
+    ],
+    "constant": true,
+    "rationale": "7 arrêts exploitables, temps acquis 0.219–0.220 s (moyenne 0.220 s, dispersion 0.7%) sur des cadences 0–200 Hz : le temps d'arrêt ne suit pas la charge, ce qui oriente vers une limite fixe de l'instrument plutôt que vers une réaction au courant consommé."
+  },
+  "pooled_reserve": "les essais réunis proviennent de séances distinctes (une par binaire) : le courant de base y diffère, ce qui est précisément ce qui décorrèle la moyenne du pic, mais interdit d'interpréter un écart de quelques dixièmes de milliampère entre essais de séances différentes.",
+  "n_attempts": 18,
+  "timestamp": "2026-09-08T17:05:49.772155+00:00"
+}

@@ -1,0 +1,20 @@
+{
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "condition": "5feat",
+  "encoding": "int8",
+  "platform": "board",
+  "data_bytes": null,
+  "bss_bytes": null,
+  "stack_peak_inference_bytes": null,
+  "stack_peak_update_bytes": null,
+  "total_ram_bytes": null,
+  "stack_history": [],
+  "conditions": {
+    "same_groups": true,
+    "update_protocol": "SGD embarqué 1 échantillon (sensor_stream --update, protocole V3)",
+    "eval_protocol": "stream chronologique par tâche CL, seed 42, condition figée"
+  },
+  "status": "na",
+  "na_reason": "Maha INT8 = build compilation dédié -DMAHA_INT8 + export ; hors périmètre mesure RAM S49 (gain = poids ÷4, cf. Sprint 29)."
+}

@@ -277,6 +277,20 @@ class TestMaintienAlimentation:
         assert rc != 0, "le code de retour est propagé, jamais absorbé"
         assert "stop" in ser.commands, "l'acquisition est arrêtée par le finally"
 
+    def test_hold_run_ne_bloque_pas_indefiniment(self):
+        """Une commande hôte muette doit ÉCHOUER, pas figer la séance.
+
+        Constat de banc 2026-09-08 : la cible n'étant pas alimentée, un flux de contrôle
+        de 3 s a tourné 7 minutes sans fin — `sensor_stream.py` attendait des réponses
+        UART qui ne venaient pas, et toute l'acquisition était suspendue derrière lui.
+        L'échec porte désormais la cause la plus probable.
+        """
+        probe, ser = make_probe()
+        with pytest.raises(lp.LPM01AError) as exc:
+            lp.hold_run(probe, 3300, "sleep 5", timeout_s=0.2)
+        assert "alimentée" in str(exc.value)
+        assert "stop" in ser.commands, "l'acquisition est arrêtée même sur dépassement"
+
     def test_power_on_borne_le_maintien(self):
         probe, ser = make_probe({"volt get": "\r\nack volt get 3300-03\r\n"})
         assert "3.300" in lp.power_on(probe, 3300, hold_s=0.01)

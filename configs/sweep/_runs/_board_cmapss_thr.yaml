@@ -23,4 +23,4 @@ ram_budget_bytes: 65536
 WEIGHTS_HEADER: firmware/stm32f4_blink/inc/model_weights.h
 WEIGHTS_CHECKPOINT: experiments/exp_S22_cmapss_base/ewc_weights.pkl
 data:
-  faulty_threshold: 30
+  faulty_threshold: 50

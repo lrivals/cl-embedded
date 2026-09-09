@@ -89,6 +89,60 @@ def average_current_ma(
     return i_moy_a * 1000.0
 
 
+def average_current_ma_from_delta(
+    i_idle_a: float,
+    energy_uj_per_inference: float,
+    inference_period_s: float,
+    tension_v: float = 3.3,
+) -> float:
+    """Courant moyen I_moy (mA) à partir du **protocole delta** (S5008).
+
+    Voie alternative à `average_current_ma` lorsque le profil par phase est
+    inaccessible : le LPM01A n'a pas de voie de synchronisation et son mode
+    dynamique est hors de portée du courant de la F439ZI, si bien que la campagne
+    ne produit pas de `phases_uj`. Elle produit en revanche deux grandeurs
+    **mesurées** — le courant au repos et l'énergie marginale par inférence — dont
+    se déduit le courant moyen d'un cycle applicatif :
+
+        Q_inf (C)  = (uJ_inf / 1e6) / V              [charge marginale d'une inférence]
+        I_moy (mA) = (I_repos + Q_inf / T_periode) × 1000
+
+    Aucune extrapolation : `i_idle_a` et `energy_uj_per_inference` viennent tous deux
+    de la mesure, `inference_period_s` est l'hypothèse d'usage déclarée du manifeste
+    (`duty_cycle.inference_period_s`) — c'est un paramètre de scénario, pas un chiffre
+    inventé, et il est reporté tel quel dans le rapport.
+
+    Parameters
+    ----------
+    i_idle_a : float
+        Courant moyen au repos mesuré (A) — `delta_measurement.i_idle_a`.
+    energy_uj_per_inference : float
+        Énergie marginale par inférence mesurée (µJ).
+    inference_period_s : float
+        Période entre deux inférences dans le scénario d'usage (s).
+    tension_v : float
+        Tension d'alimentation (V), défaut 3.3 V (NUCLEO-F439ZI).
+
+    Returns
+    -------
+    float
+        Courant moyen en milliampères (mA).
+
+    Raises
+    ------
+    ValueError
+        Si `tension_v` ≤ 0 ou `inference_period_s` ≤ 0.
+    """
+    if tension_v <= 0.0:
+        raise ValueError(f"tension_v doit être > 0, reçu {tension_v!r}.")
+    if inference_period_s <= 0.0:
+        raise ValueError(
+            f"inference_period_s doit être > 0, reçu {inference_period_s!r}."
+        )
+    charge_c = (float(energy_uj_per_inference) / 1e6) / float(tension_v)
+    return (float(i_idle_a) + charge_c / float(inference_period_s)) * 1e3
+
+
 def autonomy_hours(capacite_mah: float, i_moy_ma: float) -> float:
     """Autonomie estimée (heures) = Capacité_mAh / I_moy_mA.
 

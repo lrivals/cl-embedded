@@ -4,9 +4,9 @@
 |-------|--------|
 | **Sprint** | Sprint 41 |
 | **Démarrage** | 3 juillet 2026 |
-| **Statut** | 🟡 En cours — S4101–S4106 ✅ + S4108 ✅ (infrastructure, cadrage, audits, ch. 1–4 + ch. 8 rédigés) ; S4107 (ch. 5–7), S4109, S4110 déclenchées à la demande |
+| **Statut** | 🟡 En cours — S4101–S4106 ✅ + S4108 ✅ (infrastructure, cadrage, audits, ch. 1–4 + ch. 8 rédigés) ; S4107 ch. 5–7 rédigés et **consolidés sur chiffres mesurés** (S4110, 30 juillet 2026) ; S4109 ⏳ |
 | **Livrable final** | `Manuscrit Final RIVALS.pdf` — ~30 pages de texte FR (hors abstracts, TOC, biblio, annexes), dépôt Moodle « Dépôt Manuscrit Final » |
-| **Dépendances** | Manuscrit intermédiaire + retours rapporteurs (Poss, Giroudeau) · Sprints 16–38 ✅ · Sprint 39 🟡 (INT8 v2, chiffres en évolution) · Sprint 40 🟡 |
+| **Dépendances** | Manuscrit intermédiaire + retours rapporteurs (Poss, Giroudeau) · Sprints 16–38 ✅ · Sprint 39 ✅ · Sprint 40 ✅ · Sprints 46–50 ✅ (moments, profondeur, sub-INT8 carte, RAM totale, breakdown latence INT8) |
 
 ## Consignes officielles
 
@@ -32,7 +32,7 @@
 | Chapitres 1–4 intermédiaires | **Condensés à ~8–10 p.** |
 | Cadrage supervisé/non-supervisé | **Assumer l'évolution** vers un cadre mixte (supervisé online + Mahalanobis non supervisé), expliqué dès l'intro |
 | Datasets dans le corps | **Focus CMAPSS + Pronostia + Monitoring** ; grilles complètes 4×5 et D1/D3/D6 en annexe |
-| Chiffres RAM / INT8-FP32 (S39/S40 en cours) | **Placeholders `[à confirmer — exp_XXX]`** + tâche S4110 de résolution finale |
+| Chiffres RAM / INT8-FP32 (S39/S40 en cours) | ~~**Placeholders `[à confirmer — exp_XXX]`**~~ → **résolus en S4110** pour les ch. 5–7 (S39/S40 terminés, + S46/S47/S48/S49/S50 mesurés carte) |
 
 ## Règles de production (workflow imposé)
 
@@ -72,8 +72,8 @@
 | S4106 | Rédaction ch. 4 (md) | ✅ (`04_methodologie.md`) |
 | S4107 | Rédaction ch. 5–7 (md, placeholders RAM/INT8) | ⏳ à la demande |
 | S4108 | Rédaction ch. 8 + abstracts FR/EN + annexes (md) | ✅ (`08_perspectives_conclusion.md`, `09_abstracts_annexes.md` ; perspectives = 3 axes drift/CL, features, énergie ; Q15 exclu par décision) |
-| S4109 | Notebook figures `notebooks/manuscrit_final/figures.ipynb` (0 valeur en dur) → `docs/figures/manuscrit_final/` | ⏳ |
-| S4110 | Consolidation : résolution placeholders depuis S39/S40 finalisés, vérif croisée chiffres↔JSON, comptage pages, checklist consignes | ⏳ |
+| S4109 | Figures du manuscrit (0 valeur en dur) → `docs/figures/manuscrit_final/` | ✅ (30 juillet 2026) — livré en **catalogue** `src/figures/catalogs/manuscrit_final.py` (registre S4201) plutôt qu'en notebook : régénérable par `generate_figures.py --catalog manuscrit_final --style manuscript`, garde AST active. **16 figures** + `LEGENDES_FIGURES.txt` (emplacement + légende par figure). Chaque tableau des ch. 5–7 a sa version tracée ; 3 figures restent bloquées par des mesures manquantes (énergie LPM01A, sub-INT8 online) |
+| S4110 | Consolidation : résolution placeholders depuis S39/S40 finalisés, vérif croisée chiffres↔JSON, comptage pages, checklist consignes | 🟡 **Placeholders ch. 5–7 résolus** (30 juillet 2026) — reste comptage pages + checklist consignes |
 
 ## Points de vigilance (informations manquantes ou à trancher)
 

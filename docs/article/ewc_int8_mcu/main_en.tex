@@ -36,6 +36,7 @@
 \providecommand{\byte}{B}
 \providecommand{\mega}{M}
 \providecommand{\hertz}{Hz}
+\providecommand{\joule}{J}
 
 \title{Incremental EWC learning on a microcontroller:\\
 measured FP32 parity, collapse of naive quantization\\
@@ -58,10 +59,14 @@ update latency $\ll$ \SI{100}{\milli\second} (Gap~2). \textbf{(2)} \emph{Naive} 
 \numrange{0.05}{0.15}. \textbf{(3)} A bit-exact PC-emulated ablation isolates the cause (\texttt{int8}
 accumulator, uncalibrated per-tensor scale) and demonstrates \emph{recovery} through a calibrated kernel:
 the \texttt{per\_tensor\_calib} scheme restores $+\!\num{0.88}$ F1 (Pronostia \num{0.9462}, Monitoring
-\num{0.9201}), and the \texttt{q15} scheme matches FP32. Weight RAM is divided by~4 (INT8) with no latency
-speed-up on the Cortex-M4 FPU --- a \emph{paradox} we acknowledge and tie to a SIMD (CMSIS-NN) direction.
-We systematically distinguish \emph{on-board} measurements from \emph{bit-exact PC emulation}, and
-explicitly leave "to be measured" the board-v2 campaign cells not yet streamed.
+\num{0.9201}), and the \texttt{q15} scheme matches FP32. \textbf{(4)} That recovery is now \emph{measured
+on-board} over four per-channel cells (F1 \num{0.9173} Monitoring, \num{0.8995} Pronostia; frozen parity
+\num{1.000} against the emulator; no CRC error). We finally extend the study to the quantization
+\emph{moment}, to sub-INT8 \emph{depth} and to the full system budget: weight RAM is divided by~4, yet total
+RAM is unchanged; latency \emph{increases} (\SI{74}{\micro\second} against \SIrange{48}{50}{\micro\second},
+requantization weighing a third of the budget) and energy does not move (\SI{67.47}{\micro\joule} against
+\SI{67.65}{\micro\joule}). We systematically distinguish \emph{on-board} measurements from \emph{bit-exact
+PC emulation}, and explicitly leave "to be measured" the cells not yet streamed.
 \end{abstract}
 
 \noindent\textbf{Keywords}: continual learning; EWC; INT8 quantization; PTQ; microcontroller; predictive
@@ -72,6 +77,8 @@ maintenance; TinyML.
 \input{sections/en/03_method}
 \input{sections/en/04_setup}
 \input{sections/en/05_results}
+\input{sections/en/05b_quant_axes}
+\input{sections/en/05c_system}
 \input{sections/en/06_discussion}
 \input{sections/en/07_conclusion}
 

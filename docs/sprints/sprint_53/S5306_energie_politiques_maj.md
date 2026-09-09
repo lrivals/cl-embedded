@@ -268,4 +268,59 @@ dépend du binaire flashé. La mécanique exacte **n'est pas établie** et n'est
 > Réserve sur l'isolation : `--prepare` ayant régénéré les en-têtes de poids, le binaire
 > « dimensions par défaut » n'est pas identique à celui de S5304 (`.text` 46 680 B contre
 > 51 976 B). La comparaison oppose « build S38 complet » à « dimensions par défaut », pas une
-> variable unique.
+> variable unique. **Réserve levée par la mesure B3 ci-dessous.**
+
+### B3 — isolation à variable unique (2026-09-07, carte réelle)
+
+La comparaison littéralement demandée — `EWC_IN=4` contre `EWC_IN=5` à en-têtes de poids
+identiques — **n'est pas réalisable** : la garde `pipeline.c:576`
+(`EWC_IN == EWC_HEAD_NATIVE_DIM`) empêche tout chargement à dimension différente, et une
+première couche `k×32` n'a de toute façon pas le même contenu à deux dimensions. C'est
+d'ailleurs ce qui s'était produit le matin même : la ligne « dimensions par défaut » du
+tableau ci-dessus tournait sur **Xavier**, pas sur les poids exportés — dimension ET poids
+variaient donc bien ensemble.
+
+Ce qui est réalisable, et qui tranche la même moitié du confondant : **tenir la dimension à
+k=4 et ne faire varier que les poids de la tête EWC**. Repli Xavier obtenu sans éditer aucun
+en-tête à la main, en compilant à `EWC_IN=4` contre un en-tête déclarant `NATIVE_DIM=5` —
+la garde refuse alors le chargement.
+
+| | A — poids exportés | C — repli Xavier | stock S5304 |
+|---|---|---|---|
+| `EWC_IN` / `.bss` | 4 / 100 152 B | 4 / 100 152 B | défaut |
+| `.text` | 42 180 B | 39 108 B (tables éliminées) | 51 976 B |
+| Contrôle UART | acc 0,974 · F1 0,857 | acc 0,436 · F1 0,267 | — |
+| Latence P50 | 48 µs | 49 µs | 50 µs |
+| **Pente** | **−1,071 ± 0,406 µA/Hz** | **+1,673 ± 0,750 µA/Hz** | **+20,73 ± 0,21** |
+| **r²** | **0,635** | **0,554** | **0,9996** |
+| Énergie | `"à mesurer"` | `"à mesurer"` | 67,7 µJ |
+
+Les deux binaires tiennent la dimension, la RAM (`.bss` au bit près), le Mahalanobis, la
+trame, la grille, la graine et l'ordre ; seules les tables de poids diffèrent — 3 072 B de
+`.text`, contre 5 296 B d'écart dans l'isolation confondue du matin.
+
+**La variante A reproduit l'anomalie** (−1,07 ± 0,41 contre −0,94 ± 0,62 le matin : compatible
+à moins de 0,2 σ, sur une autre séance). **La variante C aussi** : changer les poids ne
+restaure pas la dépendance à la cadence. **Les poids sont donc écartés comme cause**, et le
+candidat restant est le jeu de dimensions du build S38. Le mécanisme n'est pas établi et
+n'est pas supposé ici.
+
+Deux choses que cette mesure **ne** conclut **pas** :
+
+- L'écart de pente A−C vaut 2,74 ± 0,85 µA/Hz, soit 3,2 σ — mais la **règle A4 le refuse** :
+  la linéarité est exigée de chaque régression (r² 0,635 et 0,554 contre 0,9 requis), et la
+  différence de deux pentes qui ne décrivent aucun coût marginal n'en décrit pas davantage.
+  Il n'est donc pas publié comme une énergie. La règle vaut aussi contre soi.
+- L'offset de courant entre A et C (+0,585 mA au repos) **n'est pas attribuable au binaire** :
+  les deux cellules sont deux séances distinctes (bascule de JP5 entre les deux), et la dérive
+  de repos inter-séance mesurée en S5301 est du même ordre. Seules les pentes, qui absorbent
+  un offset constant, se comparent d'une séance à l'autre.
+
+Mesures : `experiments/exp_S53_build_isolation/{poids,xavier}/`, chaque répertoire portant le
+`firmware_state.json` du binaire **réellement flashé** (`.text`, `.bss`, empreinte SHA-256,
+contrôle UART), plus `summary.json` dont le verdict est calculé, jamais saisi.
+
+**Suite** : paire (ii) — Xavier des deux côtés, `EWC_IN=4` contre `EWC_IN=6` — pour confirmer
+que l'effet suit la dimension. Un indice inter-séances existe déjà (le build « dimensions par
+défaut » du matin, Xavier lui aussi, donnait +17,96 µA/Hz à r² 0,979), mais il n'a pas été
+mesuré dans une séance unique.

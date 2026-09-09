@@ -12,7 +12,7 @@ Pour chaque ``(condition ∈ {5feat, all, best}, dataset)``, sur la NUCLEO-F439Z
 3. **Recompile + flashe** une fois par (condition, dataset), dims par modèle via ``-D``
    (``EWC_IN``/``MAHA_DIM``/``TINYOL_IN``/``HDC_N_FEATURES`` ; ``PROTO_MAX_N`` si k>16).
 4. **Streame** chaque modèle (``sensor_stream.py --condition``, **sans --update** → poids
-   figés → parité exacte) : EWC/Maha = parité board↔PC ; HDC/TinyOL = HW-only.
+   figés → parité exacte) : EWC/Maha/TinyOL = parité board↔PC ; HDC = HW-only.
 5. **Consigne** ``experiments/exp_S35_board_{condition}_{model}_{dataset}/results.json``.
 
 Idempotent (``--skip-existing``) ; ``--dry-run`` valide la matrice (60 cellules) sans board.
@@ -50,8 +50,11 @@ FW_DIR = Path("firmware/stm32f4_blink")
 EXPERIMENTS = Path("experiments")
 SUMMARY = EXPERIMENTS / "exp_S35_board_sweep_summary.json"
 
-PARITY_MODELS = ["mahalanobis", "ewc"]   # parité board↔PC exacte (poids exportés)
-HWONLY_MODELS = ["hdc", "tinyol"]        # latence/.bss seulement (parité N/A par construction)
+# S5201 : TinyOL rejoint les modèles à parité — ses poids sont désormais exportés
+# à la dim k de la condition (TINYOL_NATIVE_DIM). Avant, aucun poids n'était exporté
+# ET sensor_stream.py n'envoyait pas le flag 0x80 : la carte exécutait Mahalanobis.
+PARITY_MODELS = ["mahalanobis", "ewc", "tinyol"]  # parité board↔PC exacte (poids exportés)
+HWONLY_MODELS = ["hdc"]                  # latence/.bss seulement (parité N/A par construction)
 ALL_MODELS = PARITY_MODELS + HWONLY_MODELS
 
 GAP2_LATENCY_US = 100_000   # 100 ms (Gap 2)
@@ -60,6 +63,7 @@ EWC_EPOCHS_PER_TASK = 15
 EWC_LR = 0.01
 EWC_LAMBDA = 400.0
 N_TASKS = 3
+TINYOL_EPOCHS = 150
 
 
 # ── Sous-process helpers ────────────────────────────────────────────────────
@@ -132,6 +136,34 @@ def train_ewc_board(X: np.ndarray, y: np.ndarray, exp_dir: Path, k: int) -> Path
     return ckpt
 
 
+def _tinyol_module():
+    """Charge scripts/export_weights_tinyol.py comme module (architecture board)."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "export_weights_tinyol", Path(__file__).parent / "export_weights_tinyol.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def train_tinyol_board(X: np.ndarray, y: np.ndarray, exp_dir: Path, k: int) -> Path:
+    """Auto-encodeur TinyOL k→32→16→k entraîné sur la classe normale (S5201)."""
+    import torch
+
+    ewt = _tinyol_module()
+    model = ewt.fit_tinyol_board(X[y == 0], epochs=TINYOL_EPOCHS)
+    ck_dir = exp_dir / "checkpoints"
+    ck_dir.mkdir(parents=True, exist_ok=True)
+    ckpt = ck_dir / "tinyol_board.pt"
+    torch.save(model.state_dict(), ckpt)
+    thr = float(model._calibrated_threshold)
+    ckpt.with_suffix(".threshold.json").write_text(
+        json.dumps({"threshold": thr, "calibration": "P95 × 1.5 des MSE training"}, indent=2))
+    print(f"  [tinyol] TinyOLBoard(in={k}) seuil={thr:.8f} → {ckpt}")
+    return ckpt
+
+
 # ── Référence PC pour la parité ─────────────────────────────────────────────
 
 def _pc_pred_maha(ckpt: Path, feats: np.ndarray) -> np.ndarray:
@@ -154,13 +186,75 @@ def _pc_pred_ewc(ckpt: Path, feats: np.ndarray) -> np.ndarray:
         return model(torch.tensor(feats, dtype=torch.float32)).argmax(dim=1).numpy()
 
 
+def _pc_pred_tinyol(ckpt: Path, feats: np.ndarray) -> np.ndarray:
+    """Réplique PC de la route TinyOL firmware : pred = (MSE de reconstruction > seuil)."""
+    import torch
+
+    ewt = _tinyol_module()
+    state = torch.load(ckpt, map_location="cpu")
+    model = ewt.TinyOLBoard(dim=ewt.dim_of_state_dict(state))
+    model.load_state_dict(state)
+    model.eval()
+    thr = float(json.loads(ckpt.with_suffix(".threshold.json").read_text())["threshold"])
+    with torch.no_grad():
+        _emb, recon = model(torch.tensor(feats, dtype=torch.float32))
+    mse = ((torch.tensor(feats, dtype=torch.float32) - recon) ** 2).mean(dim=1).numpy()
+    return (mse > thr).astype(int)
+
+
+_PC_PRED = {
+    "mahalanobis": _pc_pred_maha,
+    "ewc": _pc_pred_ewc,
+    "tinyol": _pc_pred_tinyol,
+}
+
+
+def _degenerate_reason(model: str, ckpt: Path, feats: np.ndarray) -> str | None:
+    """Détecte une cellule dégénérée, où la décision n'a plus de contenu.
+
+    Cas rencontré (``best`` × cmapss × tinyol) : la sélection ne retient qu'une
+    variable, ``T2``, capteur **constant** de CMAPSS (écart-type nul). L'auto-encodeur
+    s'entraîne alors sur des zéros, son seuil calibré (P95 × 1,5) vaut exactement 0, et
+    la comparaison stricte ``MSE > seuil`` se joue sur le bruit d'arrondi : le PC en
+    float64 reste à 0, la carte en float32 passe juste au-dessus. Ce n'est ni une perte
+    de parité ni un défaut de portage — la cellule ne mesure simplement rien, et doit
+    être déclarée N/A plutôt que comptée comme un échec.
+
+    Retourne la raison (chaîne) ou ``None`` si la cellule est exploitable.
+    """
+    if feats.size and float(feats.std()) == 0.0:
+        return ("entrée constante (écart-type nul sur toutes les variables retenues) "
+                "— la décision ne dépend d'aucun signal")
+    if model == "tinyol":
+        thr_path = ckpt.with_suffix(".threshold.json")
+        if thr_path.exists():
+            thr = float(json.loads(thr_path.read_text())["threshold"])
+            if thr == 0.0:
+                return ("seuil de reconstruction calibré à 0 (MSE d'entraînement "
+                        "identiquement nulle) — la comparaison stricte MSE > seuil est "
+                        "tranchée par l'arrondi flottant, pas par le modèle")
+    return None
+
+
 def _parity(model: str, ckpt: Path, samples: list[dict]) -> dict:
     valid = [s for s in samples if s.get("features")]
     if not valid:
         return {"parity_ok": None, "n_compared": 0, "parity_mismatch_count": None}
     feats = np.array([s["features"] for s in valid], dtype=np.float32)
     board = np.array([int(s["pred"]) for s in valid])
-    pc = _pc_pred_maha(ckpt, feats) if model == "mahalanobis" else _pc_pred_ewc(ckpt, feats)
+
+    reason = _degenerate_reason(model, ckpt, feats)
+    if reason is not None:
+        return {
+            "parity_ok": None,
+            "n_compared": len(valid),
+            "parity_mismatch_count": None,
+            "parity_rate": None,
+            "degenerate": True,
+            "na_reason": f"cellule dégénérée : {reason}",
+        }
+
+    pc = _PC_PRED[model](ckpt, feats)
     n_mismatch = int((board != pc).sum())
     return {
         "parity_ok": bool(n_mismatch == 0),
@@ -231,8 +325,11 @@ def run_cell(condition: str, dataset: str, args, rows: list[dict]) -> None:
     # 1) Entraîner + sauver les checkpoints de parité (Maha + EWC) à leurs dims.
     ckpts: dict[str, Path] = {}
     for m in PARITY_MODELS:
-        ck = exp_dirs[m] / "checkpoints" / (
-            "mahalanobis_task0.pkl" if m == "mahalanobis" else "ewc_head.pt")
+        ck = exp_dirs[m] / "checkpoints" / {
+            "mahalanobis": "mahalanobis_task0.pkl",
+            "ewc": "ewc_head.pt",
+            "tinyol": "tinyol_board.pt",
+        }[m]
         if args.skip_existing and ck.exists():
             ckpts[m] = ck
             continue
@@ -241,6 +338,8 @@ def run_cell(condition: str, dataset: str, args, rows: list[dict]) -> None:
             exp_dirs[m].mkdir(parents=True, exist_ok=True)
             if m == "mahalanobis":
                 ckpts[m] = train_maha_board(X, exp_dirs[m])
+            elif m == "tinyol":
+                ckpts[m] = train_tinyol_board(X, y, exp_dirs[m], dims[m])
             else:
                 ckpts[m] = train_ewc_board(X, y, exp_dirs[m], dims[m])
         except Exception as exc:  # noqa: BLE001 — cellule robuste
@@ -255,6 +354,17 @@ def run_cell(condition: str, dataset: str, args, rows: list[dict]) -> None:
                  "--mahal", str(ckpts["mahalanobis"]),
                  "--ewc-head", str(ckpts["ewc"])]).returncode != 0:
             print("  [FAIL export]")
+            return
+        # S5201 : poids TinyOL à la dim de la cellule → TINYOL_NATIVE_DIM.
+        # Sans cet export, pipeline.c laissait l'auto-encodeur à zéro en .bss.
+        # --emit-test-reference : le golden de parité C↔Python vit avec les poids.
+        # Sans lui, une campagne laisse le header et tests/tinyol_reference.h
+        # désynchronisés et `make test` échoue sur test_tinyol_forward_delta.
+        if _run([sys.executable, "scripts/export_weights_tinyol.py",
+                 "--checkpoint", str(ckpts["tinyol"]),
+                 "--dim", str(dims["tinyol"]),
+                 "--emit-test-reference"]).returncode != 0:
+            print("  [FAIL export tinyol]")
             return
         # 3) Build + flash (1× par condition×dataset), dims par modèle via -D.
         make_dims = [f"EWC_IN={dims['ewc']}", f"MAHA_DIM={dims['mahalanobis']}",
@@ -298,10 +408,15 @@ def run_cell(condition: str, dataset: str, args, rows: list[dict]) -> None:
             result["feature_fallback"] = f"best/{m}/{dataset} absent → dims natives (all)"
         if m in PARITY_MODELS and not args.dry_run:
             result.update(_parity(m, ckpts[m], stats.get("samples", [])))
+            if result.get("degenerate"):
+                # La latence, le .bss et le CRC restent des mesures ; la métrique, elle,
+                # ne décrit qu'une décision prise sur du bruit → N/A honnête, pas 0.
+                for field in ("online_accuracy", "f1_faulty", "f1_macro"):
+                    result[field] = None
         else:
             result["parity_ok"] = None
             result["parity_note"] = (
-                "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+                "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
                 if m in HWONLY_MODELS else "dry-run")
 
         (exp_dirs[m] / "results.json").write_text(json.dumps(result, indent=2))

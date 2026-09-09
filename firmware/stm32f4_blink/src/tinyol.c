@@ -18,6 +18,13 @@
 #include "model_weights.h"
 #include <string.h>
 
+/* Repli si model_weights.h n'a pas encore été régénéré par export_weights_tinyol.py
+ * (headers historiques, poids à dim 5). Déclaré ici — donc APRÈS model_weights.h —
+ * pour que la valeur générée l'emporte toujours. */
+#ifndef TINYOL_NATIVE_DIM
+#define TINYOL_NATIVE_DIM WEIGHTS_NATIVE_DIM
+#endif
+
 /* ReLU scalaire */
 static inline float relu_f(float v)
 {
@@ -107,7 +114,7 @@ int tinyol_predict(const TinyOLEncoder *enc, const TinyOLDecoder *dec,
  * dec_w1[32][16], dec_b1[32], dec_w2[5][32], dec_b2[5] */
 void tinyol_init(TinyOLEncoder *enc, TinyOLDecoder *dec)
 {
-#if (TINYOL_IN == WEIGHTS_NATIVE_DIM)
+#if (TINYOL_IN == TINYOL_NATIVE_DIM)
     memcpy(enc->w_enc1, TINYOL_W_ENC1, sizeof(enc->w_enc1));
     memcpy(enc->b_enc1, TINYOL_B_ENC1, sizeof(enc->b_enc1));
     memcpy(enc->w_enc2, TINYOL_W_ENC2, sizeof(enc->w_enc2));
@@ -117,8 +124,8 @@ void tinyol_init(TinyOLEncoder *enc, TinyOLDecoder *dec)
     memcpy(dec->w_dec2, TINYOL_W_DEC2, sizeof(dec->w_dec2));
     memcpy(dec->b_dec2, TINYOL_B_DEC2, sizeof(dec->b_dec2));
 #else
-    /* TINYOL_IN ≠ dim native : poids placeholder incopiables → zéro (S3506).
-     * Poids réels par condition regénérés en S3507. */
+    /* TINYOL_IN ≠ TINYOL_NATIVE_DIM : poids exportés à une autre dim, incopiables
+     * → zéro. Régénérer : export_weights_tinyol.py --dataset <ds> --condition <cond>. */
     memset(enc, 0, sizeof(*enc));
     memset(dec, 0, sizeof(*dec));
 #endif

@@ -111,8 +111,10 @@ def compute_avg_forgetting_f1(
 
     Parameters
     ----------
-    task_f1_matrix : list[list[float]]
+    task_f1_matrix : list[list[float | None]]
         task_f1_matrix[epoch][task] = F1-macro sur la tâche `task` après l'époque `epoch`.
+        `None` (ou NaN) pour une tâche pas encore vue à cette époque : ces entrées sont
+        ignorées dans le pic, elles ne valent pas 0.
 
     Returns
     -------
@@ -121,14 +123,24 @@ def compute_avg_forgetting_f1(
     if len(task_f1_matrix) < 2:
         return 0.0
 
-    f1_matrix = np.array(task_f1_matrix)  # shape (n_epochs, n_tasks)
+    # None -> NaN pour que le pic ignore les époques où la tâche n'existait pas encore.
+    f1_matrix = np.array(
+        [[np.nan if v is None else float(v) for v in row] for row in task_f1_matrix]
+    )  # shape (n_epochs, n_tasks)
     n_tasks = f1_matrix.shape[1]
 
     forgettings = []
     for task_idx in range(n_tasks - 1):
         col = f1_matrix[:, task_idx]
-        peak_f1 = col.max()
+        if np.all(np.isnan(col)):
+            continue
+        peak_f1 = np.nanmax(col)
         final_f1 = col[-1]
+        if np.isnan(final_f1):
+            continue
         forgettings.append(peak_f1 - final_f1)
+
+    if not forgettings:
+        return 0.0
 
     return float(np.mean(forgettings))

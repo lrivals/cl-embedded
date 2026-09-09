@@ -1,0 +1,48 @@
+{
+  "model": "ewc",
+  "dataset": "pronostia",
+  "platform": "nucleo_f439zi",
+  "condition": "5feat",
+  "n_features": 5,
+  "feature_names": [
+    "std_acc_horiz",
+    "rms_acc_horiz",
+    "peak_acc_horiz",
+    "rms_acc_vert",
+    "temporal_position"
+  ],
+  "cpu_hz": 180000000,
+  "kernel": "ewc_int8_v2",
+  "date": "2026-07-24T18:28:02",
+  "n_samples": 800,
+  "bss_bytes": 106164,
+  "crc_errors": 0,
+  "segments": {
+    "dequant": {
+      "cycles_p50": 200.0,
+      "cycles_p99": 200.0,
+      "cycles_mean": 200.0,
+      "us_p50": 1.111
+    },
+    "mac": {
+      "cycles_p50": 6729.0,
+      "cycles_p99": 6729.0,
+      "cycles_mean": 6729.0,
+      "us_p50": 37.383
+    },
+    "requant": {
+      "cycles_p50": 3794.5,
+      "cycles_p99": 3824.0,
+      "cycles_mean": 3787.05,
+      "us_p50": 21.081
+    }
+  },
+  "segments_sum_cycles_p50": 10723.5,
+  "total_int8_us_p50": 74.0,
+  "total_int8_us_p99": 74.0,
+  "total_fp32_us_p50": 50.0,
+  "total_fp32_us_p99": 50.0,
+  "int8_minus_fp32_us_p50": 24.0,
+  "gap2_latency_compliant": true,
+  "note": "cycles bruts DWT (180 MHz) ; INT8 \u2265 FP32 sur Cortex-M4 FPU = paradoxe latence S29 (d\u00e9quant/requant ajout\u00e9s, MAC entier \u2248 FPU). Gain INT8 = RAM \u00f74, pas latence."
+}

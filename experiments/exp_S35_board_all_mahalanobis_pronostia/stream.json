@@ -9,7 +9,7 @@
   "latency_mean_us": 16.0,
   "latency_p50_us": 16.0,
   "latency_p99_us": 16.0,
-  "ram_mean_bytes": 13068,
+  "ram_mean_bytes": 13444,
   "throughput_mean_ips": 0,
   "crc_errors": 0,
   "mode": "uart",

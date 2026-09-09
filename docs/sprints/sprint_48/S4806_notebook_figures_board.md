@@ -49,4 +49,12 @@ jupyter nbconvert --to notebook --execute notebooks/cl_eval/quant_depth_board/co
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+**Catalogue** `src/figures/catalogs/quant_depth_board.py` (`@register_catalog("quant_depth_board")`, `OUT_SUBDIR="quant_depth_board"`), enregistré dans `catalogs/__init__.py`. Charge l'unique source `exp_S48_summary.json` via `load_experiment` ; cellules absentes → gris/NaN (jamais 0) ; badges **mesuré board** vs **théorique PC** ; **0 chiffre en dur** (garde AST, seuls des flottants de la liste blanche layout). `build()` skip gracieux si l'agrégat manque. **5 PNG** dans `docs/figures/quant_depth_board/` :
+
+- `bss_packed_vs_unpacked.png` (résultat clé : `.bss` non-packé ≈ INT8 vs packé) ;
+- `board_auroc_vs_bits.png` (AUROC board ∥ émulateur PC) ;
+- `latency_vs_bits.png` (DWT P50/P99 packé, budget Gap 2) ;
+- `parity_board_pc.png` (parité par cellule, 1.000) ;
+- `heatmap_board_bits_dataset.png` (AUROC board, N/A gris).
+
+**Notebook** `notebooks/cl_eval/quant_depth_board/comparison.ipynb` : génère les figures via le catalogue, galerie FR, tableau de synthèse théorie↔matériel rechargé depuis `exp_S48_summary.json` (0 chiffre en dur), lecture (packé < non-packé ; latence ≪ 100 ms ; parité 1.000). **nbconvert sans erreur**.

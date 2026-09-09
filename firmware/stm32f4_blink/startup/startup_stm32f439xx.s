@@ -85,6 +85,17 @@ Default_Handler:
   b Default_Handler
 .size Default_Handler, .-Default_Handler
 
+/*
+ * Idle_Wake_Handler — handler par défaut des IT servant UNIQUEMENT à réveiller le
+ * cœur d'un WFI (S5302). Il RETOURNE, là où Default_Handler boucle indéfiniment :
+ * une IT non gérée n'a pas à figer la carte quand son seul rôle est le réveil.
+ * C'est l'alias faible de USART3_IRQHandler ; le build `-DUART_WFI_IDLE` fournit
+ * une définition forte dans hw_info.c qui désarme la source avant de retourner.
+ */
+Idle_Wake_Handler:
+  bx lr
+.size Idle_Wake_Handler, .-Idle_Wake_Handler
+
 /**
  * Table des vecteurs (STM32F439xx — 97 interruptions + 16 exceptions Cortex-M4)
  */
@@ -108,8 +119,14 @@ g_pfnVectors:
   .word 0
   .word PendSV_Handler
   .word SysTick_Handler
-  /* Interruptions externes (IRQ0–IRQ96) — Default_Handler par défaut */
-  .rept 97
+  /* Interruptions externes (IRQ0–IRQ96) — Default_Handler par défaut.
+   * Seule exception : IRQ39 = USART3, nommée pour permettre le réveil sur
+   * réception UART (S5302). 39 + 1 + 57 = 97 vecteurs, total inchangé. */
+  .rept 39                        /* IRQ0–IRQ38 */
+  .word Default_Handler
+  .endr
+  .word USART3_IRQHandler         /* IRQ39 — USART3 */
+  .rept 57                        /* IRQ40–IRQ96 */
   .word Default_Handler
   .endr
 
@@ -142,3 +159,8 @@ g_pfnVectors:
 
   .weak SysTick_Handler
   .thumb_set SysTick_Handler,Default_Handler
+
+  /* IT de réveil (S5302) : alias faible qui retourne. Le build par défaut n'arme
+   * jamais cette IT — le vecteur est présent, il ne s'exécute pas. */
+  .weak USART3_IRQHandler
+  .thumb_set USART3_IRQHandler,Idle_Wake_Handler

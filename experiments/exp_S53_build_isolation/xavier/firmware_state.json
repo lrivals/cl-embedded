@@ -1,0 +1,24 @@
+{
+  "variant": "xavier_fallback",
+  "purpose": "B3 — témoin à VARIABLE UNIQUE : dimension, RAM, Mahalanobis, trame et séance identiques à la variante « poids_charges » ; seule la tête EWC diffère (repli Xavier au lieu des poids exportés).",
+  "ewc_head_weights": "repli Xavier — l'en-tête fourni déclare EWC_HEAD_NATIVE_DIM=5 alors que le build impose EWC_IN=4 : la garde de pipeline.c:576 refuse le chargement. Aucun en-tête n'a été édité à la main.",
+  "make_dims": "EWC_IN=4 MAHA_DIM=4 TINYOL_IN=4 HDC_N_FEATURES=4",
+  "extra_cflags": "",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "n_features": 4,
+  "text_bytes": 39108,
+  "data_bytes": 460,
+  "bss_bytes": 100152,
+  "elf_sha256": "b6d933b7c1ac9fa44836396a5cd86ad5e744a97b10ece62e635b3020df6086e2",
+  "flashed": "2026-09-07, make flash — Verified OK",
+  "sanity_check_uart": {
+    "n_samples": 39,
+    "accuracy": 0.4359,
+    "f1_faulty": 0.2667,
+    "latency_p50_us": 48.0,
+    "crc_errors": 0,
+    "note": "tête non entraînée, comme attendu du repli Xavier"
+  },
+  "timestamp": "2026-09-07T12:41:59.630265+00:00"
+}

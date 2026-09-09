@@ -1,0 +1,4 @@
+{
+  "threshold": 0.00029296043794602156,
+  "calibration": "P95 \u00d7 1.5 des MSE training"
+}

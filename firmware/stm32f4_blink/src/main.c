@@ -15,11 +15,22 @@
 #include "hw_info.h"
 #include "pipeline.h"
 #include "profiling.h"
+#ifdef ETH_PHY_POWERDOWN
+#include "eth_phy.h"
+#endif
 
 int main(void)
 {
     /* ── 1. Horloge système → 180 MHz ───────────────────────────────── */
     hw_clock_init();
+
+#ifdef ETH_PHY_POWERDOWN
+    /* Banc énergie (S5001) : le PHY Ethernet est alimenté par le rail VDD_MCU
+     * mesuré par le PowerShield alors que le firmware ne l'utilise pas. On le
+     * met en veille APRÈS l'horloge (le diviseur MDC dépend de HCLK) et AVANT
+     * toute mesure. Hors de cette option, le build est strictement inchangé. */
+    eth_phy_power_down();
+#endif
 
     /* ── 2. UART3 @ 115200 (PD8/PD9 = ST-LINK VCP) ─────────────────── */
     hw_uart_init();

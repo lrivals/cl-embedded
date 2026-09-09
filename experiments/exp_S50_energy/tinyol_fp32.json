@@ -1,0 +1,50 @@
+{
+  "model": "tinyol",
+  "encoding": "fp32",
+  "tension_v": 3.263,
+  "n_inference": 1000,
+  "n_update": null,
+  "timestamp": "2026-08-04T12:48:04.579699+00:00",
+  "source": "lpm01a_current",
+  "method": "courant moyen mesuré sous charge d'inférence à cadence imposée (mode statique, préchauffage de session écarté)",
+  "phases_uj": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "phase_durations_s": {
+    "startup": "à mesurer",
+    "acquisition": "à mesurer",
+    "inference": "à mesurer",
+    "idle": "à mesurer"
+  },
+  "phases_na_reason": "LPM01A sans voie de synchronisation + mode dynamique inaccessible (carte à 63 mA > plafond 59 mA) — profil temporel par phase impossible",
+  "total_uj": "à mesurer",
+  "energy_uj_per_inference": "à mesurer",
+  "energy_na_reason": "mesuré, cause établie au Sprint 53 : l'écart « repos plus consommateur que la charge » relevé au Sprint 50 est un ARTEFACT D'ORDRE, pas un effet de charge. Le protocole contre-balancé (repos intercalé entre chaque cellule, session unique, S5301) montre que le repos décroît sur les premières acquisitions puis se stabilise nettement SOUS les cellules : le surcoût de charge redevient positif et ordonné comme les latences. La référence au repos du Sprint 50 était prise en tête de session, donc encore dans la queue d'établissement — l'ordre y était confondu avec la condition. Le MÉCANISME est identifié depuis (S5301b, `experiments/exp_S53_counterbalance/idle_states_power_cycle.json`) : la carte présente deux niveaux de repos stables, et elle bascule du haut vers le bas au PREMIER flux reçu depuis la mise sous tension — ni le temps, ni l'ouverture du port, ni l'impulsion DTR ne l'y font passer, seules de vraies trames. La référence du Sprint 50, prise avant tout flux, était donc mesurée sur le niveau haut tandis que les cellules l'étaient sur le niveau bas. Le courant moyen de cette cellule reste valide (toutes les cellules partagent la même référence et la même cadence) ; seule la soustraction repos↔charge de cette campagne ne l'est pas. Les µJ par inférence sont repris par le protocole delta sur référence établie (S5302) et par régression de cadence (S5304).",
+  "energy_uj_per_update": "à mesurer",
+  "energy_update_na_reason": "campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec --update, et se heurte à la même référence de scrutation active",
+  "by_component": {
+    "mcu": "à mesurer",
+    "periph": "à mesurer",
+    "sensor": "na",
+    "sensor_na_reason": "capteurs simulés par UART (S5001)"
+  },
+  "current_measurement": {
+    "i_mean_a": 0.04660000000000001,
+    "i_std_a": 1.7320508075686066e-05,
+    "i_runs_a": [
+      0.046590000000000006,
+      0.04662,
+      0.046590000000000006
+    ],
+    "n_repeats": 3,
+    "i_idle_a": 0.054783333333333344,
+    "delta_vs_idle_a": -0.008183333333333334,
+    "rate_hz": 100.0,
+    "window_s": 10.0,
+    "warmup_discarded_a": 0.06292
+  },
+  "energy_na_reason_source": "S5301 — counterbalance.json"
+}

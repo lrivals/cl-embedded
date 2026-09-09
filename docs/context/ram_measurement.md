@@ -146,6 +146,75 @@ python ../../scripts/stack_usage_report.py \
 L'inégalité `borne_statique ≥ pic_mesuré` tenant, le pic mesuré n'a pas « raté » de
 chemin plus profond : les deux méthodes se corroborent.
 
+## 3bis. Instants de mesure par phase (idle / inference / update)
+
+Le pic de pile **dépend de la phase d'exécution** : plus le chemin de code creuse la pile, plus le
+high-water mark est haut. On échantillonne donc trois instants alignés sur les phases réelles du
+firmware (ils remplacent les étapes génériques « réseau de neurones ») :
+
+| Phase | Déclencheur | Méthode de mesure | Attendu |
+|---|---|---|---|
+| `idle` | après boot, avant le 1ᵉʳ échantillon | reset → halt → scan (aucun stream) | pile ≈ 0 (référence de peinture) |
+| `inference` | forward seul (protocole gelé) | reset → stream **sans** `--update` → halt → scan | pic bas |
+| `update` | inférence + mise à jour CL (SGD embarqué) | reset → stream `--update` → halt → scan | pic plus élevé (creuse la pile) |
+
+Le high-water mark de pile est **monotone** (le canary n'est jamais repeint hors boot) : pour isoler
+le pic d'une phase, on **reset la carte entre les passes** (re-peinture au boot), on exécute *une
+seule* phase, puis on lit `profiling_stack_peak_bytes()` via OpenOCD. L'**historique** = suite de
+`(phase, stack_peak_bytes)` échantillonnée le long du stream, pour tracer l'évolution du pic.
+
+> **Nuance mesurée (« trame partagée »)** : le compilateur réserve **une seule trame pour
+> `pipeline_run()`** = le max de toutes ses branches (dominée par `hv[HDC_DIM]` = 4 Ko). Le pic de
+> pile est donc **quasi identique entre modèles et entre phases** (~4,3–4,7 Ko) : `inference` et
+> `update` diffèrent surtout par les cadres SGD, marginaux devant la trame HDC. C'est une propriété
+> du firmware entier, non isolable par modèle — à énoncer explicitement dans tout report.
+
+## 3ter. Board (référence) vs PC (proxy) — non fusionnables
+
+Les deux plateformes mesurent des choses **différentes** et ne doivent **jamais** être additionnées
+ni comparées frontalement (CR 16 juillet 2026 §1) :
+
+| | Board NUCLEO-F439ZI (référence) | PC (proxy) |
+|---|---|---|
+| Nature | mesure matérielle réelle | analytique + dynamique |
+| `.data`/`.bss` | lus de l'ELF (`read_symbols`) | **n/a** (`null`) — pas de section statique C |
+| pic de pile | `profiling_stack_peak_bytes()` via OpenOCD (stack painting) | `tracemalloc` peak (`memory_profiler.py`) |
+| `total_ram_bytes` | `.data + .bss + max(pic_inference, pic_update)` | peak `tracemalloc` |
+
+Le board est la **source de vérité Gap 2** (SRAM réellement consommée). Le PC est un proxy de
+l'allocateur Python/PyTorch — utile en tendance, non comparable octet-à-octet au firmware C. Les
+deux vivent dans des JSON séparés (champ `platform`), colonnes distinctes.
+
+## 3quater. Schéma JSON par cellule + historique du pic
+
+Chaque cellule (modèle × dataset × condition × encodage × plateforme) produit un JSON conforme,
+consommé par les agrégateurs/notebooks. `null`/`pending` tant qu'aucun run n'a tourné (règle projet
+« aucun chiffre inventé ») :
+
+```json
+{
+  "model": "ewc", "dataset": "pronostia", "condition": "5feat", "encoding": "fp32",
+  "platform": "board",
+  "data_bytes": null, "bss_bytes": null,
+  "stack_peak_inference_bytes": null, "stack_peak_update_bytes": null,
+  "total_ram_bytes": null,
+  "stack_history": [],
+  "conditions": {"same_groups": true, "update_protocol": "...", "eval_protocol": "..."},
+  "status": "pending"
+}
+```
+
+- `stack_history` : liste de `{"phase": "...", "stack_peak_bytes": ...}` échantillonnée durant le run.
+- `conditions{}` : consigne mêmes groupes de données + protocole MAJ/éval (traçabilité CR §1).
+- `status` ∈ `{"pending", "done", "na"}` ; une cellule non applicable porte `status:"na"` +
+  `na_reason` (ex. modèle sans chemin int8), **jamais** un chiffre fabriqué.
+
+Orchestrateur (source unique) : [`scripts/run_ram_full_sweep.py`](../../scripts/run_ram_full_sweep.py)
+→ `experiments/exp_S49_ram/{model}_{dataset}_{condition}_{encoding}_{platform}.json`. Il **réutilise**
+`measure_stack_watermark.py` (OpenOCD), `sensor_stream.py` (stream), `ram_breakdown.py` (split
+statique/modulaire) et `memory_profiler.py` (tracemalloc PC) — **aucune duplication**, **wire UART
+inchangé** (le pic de pile n'est pas dans le snapshot V3 ; il est lu par OpenOCD après coup).
+
 ## 4. Lien Gap 2
 
 Gap 2 (« < 100 Ko RAM avec chiffres mesurés ») doit s'appuyer sur `ram_peak`

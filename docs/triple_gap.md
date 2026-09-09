@@ -115,6 +115,16 @@ de la latence board (270 µs, chemin d'inférence EWC dominant, paradoxe FPU S29
 fait foi. Agrégat `experiments/exp_S45_summary.json` (`aggregate_sprint45.py`, mesuré-board vs
 proxy-PC), `exp_S45_board_*`, `exp_S45_parity_*`, `docs/sprints/sprint_45/`.
 
+**Correction Sprint 49 — RAM rapportée = `.data + .bss + pic de pile`** : les mesures antérieures ne
+remontaient que `.bss`, ce qui **sous-estimait** la RAM (la pile vit hors `.bss`). Le CR du 16 juillet
+2026 fixe la formule officielle **`RAM totale = .data + .bss + pic de pile`**, généralisée à toutes les
+expériences et mesurée **par phase réelle** (idle / inférence / mise à jour CL) via le stack painting
+existant (`profiling.c`). **32 cellules board+PC** (`experiments/exp_S49_ram/`, agrégat `summary.json`)
+confirment l'invariant `total = .data + .bss + max(pic_inf, pic_upd)` et le fait que **la mise à jour CL
+creuse plus la pile que l'inférence** (`pic_update ≥ pic_inference`, marqué chez EWC — SGD backward).
+Totaux board **40–42 % de 256 Ko ⇒ Gap 2 toujours largement préservé**, même en comptant la pile. Doc
+structurée : `docs/context/ram_report.md` (généré), figures `docs/figures/ram_full/`, `docs/sprints/sprint_49/`.
+
 ### Gap 3 — INT8 pendant l'apprentissage incrémental (mis à jour Sprint 29)
 
 **Critère** : ΔAUROC < 0.02 (métrique préservée) **ET** réduction RAM pendant l'entraînement incrémental INT8.
@@ -190,6 +200,29 @@ complète reste explicitement **« à mesurer »** (règle « aucun chiffre inve
 n'est pas complète, le critère « RAM ÷4 sans perte de métrique sur MCU réel » est donc **confirmé par émulation +
 un point board**, pas encore généralisé — l'axe honnête émulateur reste la formulation de référence.
 
+**Mise à jour Sprint 40 (refonte S4008–S4010) — la récupération INT8 passe d'« émulée » à « mesurée carte »** :
+la campagne board v2 a streamé les **4 cellules `per_channel`** (2 jeux × gelé/en ligne) : F1 **0.9173**
+(Monitoring) et **0.8995** (Pronostia) contre 0.9194 / 0.9164 en FP32, **parité gelée 1.000** contre
+l'émulateur bit-exact, accord INT8↔FP32 0.9996 / 0.9951, **0 erreur CRC**. Le critère Gap 3 « RAM des poids
+÷4 sans perte de métrique sur MCU réel » n'est donc plus adossé à une émulation plus un point isolé : il est
+**mesuré sur les deux jeux**. Les 8 cellules restantes (`q15`, A/B `int8_legacy` sous kernel v2) restent
+« à mesurer » (`S4010_mesures_manquantes.md`).
+
+Trois nuances mesurées accompagnent ce renforcement, et empêchent de sur-vendre l'INT8 :
+
+1. **RAM des poids ÷4 ≠ RAM système.** La RAM totale (`.data` + `.bss` + pic de pile, Sprint 49) est
+   **inchangée** : 105 300 → 105 324 octets sur Monitoring, soit un ratio INT8/FP32 de **1.0002**, à 40 %
+   du budget de 256 Ko. À cette échelle de modèle les poids ne sont pas le poste dominant.
+2. **Paradoxe de latence, chiffré** (Sprint 50) : 74 µs en INT8 contre 48–50 µs en FP32, la
+   **requantification** pesant ≈ 3 777 cycles (un tiers du budget) et le MAC entier n'apportant rien face
+   au FPU. Le ratio théorique de **16** en BOPs (S4008) n'est donc pas restitué par le matériel.
+3. **Paradoxe d'énergie** (Sprint 53) : 67.47 µJ/inférence en INT8 contre 67.65 en FP32, écart de 0.18 µJ
+   pour une incertitude combinée de 2.34 µJ — **aucun effet mesurable**. Le levier énergétique est la
+   fréquence, pas le format.
+
+Conclusion Gap 3 en une phrase : sur cette cible, **l'INT8 se justifie par la mémoire des poids, ni par la
+vitesse ni par l'énergie** — et le gain sub-INT8 n'existe qu'à condition d'un bit-packing réel (Sprint 48).
+
 **Renforcement Sprint 46 — les trois *moments* de quantification comparés frontalement (PC + board réelle)** :
 là où les sprints précédents ont établi le QAT (S28), la PTQ effondrée puis récupérée (S36/S39) et Q15
 (S34) de façon **dispersée**, le Sprint 46 les met côte à côte à modèle/dataset/seed fixés, sur **EWC** puis
@@ -225,14 +258,102 @@ la latence sont hors de portée de l'émulateur et seront mesurées board au Spr
 packing). Configs retenues pour le portage (S4708, traçable aux JSON) : frontière **ternaire**, agressive
 **binaire** (les 2 datasets), référence **int8** per_channel (déjà porté S39). Détail : `docs/sprints/sprint_47/`.
 
+**Renforcement Sprint 48 — portage board sub-INT8 (RAM `.bss` réelle + latence dépacking, ce que l'émulateur ne
+mesure pas)** : les schémas gagnants S47 (INT4/ternaire/binaire × Monitoring/Pronostia) sont **matérialisés sur
+NUCLEO-F439ZI réelle** — kernel sub-INT8 câblé dans `pipeline.c` (route 0x40 gardée `EWC_SUBINT8_WEIGHTS_PROVIDED`,
+`.bss` défaut invariant 105 036 B, 0 régression), packé (dépack→MAC FPU) et non-packé. **12 cellules mesurées, 0
+CRC.** § **Gap 3 (RAM `.bss` réelle)** : le nœud d'honnêteté S47 est **confirmé par la mesure** — le `.bss`
+**non-packé est invariant par mode** (Monitoring k=4 : 105 640 B ; Pronostia k=5 : 106 152 B, identiques INT4 ≡
+ternaire ≡ binaire car conteneur `int8_t`), et **seul le bit-packing matérialise le gain** : Monitoring 336 B (INT4,
+÷2) → 504 B (ternaire, ÷4) → 572 B (binaire, ÷8) ; Pronostia 336/504/604 B (le gain croît quand les bits baissent,
+comme prédit théoriquement). L'écart théorie(÷8/÷16)↔`.bss` réelle = **overhead `.bss` fixe partagé** (le packing ne
+réduit que les matrices de poids), exposé sans conflation. § **Gap 2 (latence dépacking)** : le dépacking ajoute
+**≈ +55 µs** (67→123 µs) mais reste **≪ 100 ms** (P99 board deux ordres de grandeur sous le budget) → Gap 2 préservé
+même à profondeur binaire. **Parité board↔émulateur = 1.000 sur les 12 cellules** (`max_score_err ≤ 1.2e-7`) : le
+schéma de quantification est porté sans perte. **Clôt les deux `TODO(dorra)` S47** (kernel bit-packé + coût du
+dépacking). Détail : `docs/sprints/sprint_48/`.
+
 **Volet énergie (Sprint 33)** : le constat « INT8 réduit la RAM sans accélérer la latence FPU » ouvre une
 question énergie potentiellement originale — l'INT8 réduit-il néanmoins les **µJ** (moins d'accès mémoire) ? La
 chaîne de mesure est livrée et fonctionnelle : marqueurs de phase GPIO firmware (PA8, `ENERGY_MARKERS`, S3304),
 driver PowerShield X-NUCLEO-LPM01A `scripts/energy_capture.py` (segmentation par phase + intégration µJ, S3305),
 métriques de coût `compute_cost.py`/`hw_cost_model.py` (FLOPs/**BOPs**/FLOPS-W ; BOPs rend le gain INT8 quantitatif :
 `BOPs_fp32/BOPs_int8 = (32/8)² = 16`), et autonomie `src/evaluation/autonomy.py` (Capacité/I_moy). **Réponse
-chiffrée différée** : les valeurs énergie/autonomie restent `"à mesurer"` tant que le LPM01A n'a pas été
-physiquement posé/capturé (règle « aucun chiffre inventé »). Synthèse : `notebooks/cl_eval/energy_cost/comparison.ipynb`.
+**réponse mesurée (Sprint 50, S5008, 2026-08-04/05)** : le banc LPM01A a été monté et la grille **8/8 mesurée
+board réelle** — mais en **courant moyen**, pas en µJ/inférence. **L'INT8 ne réduit PAS la consommation** : à
+cadence imposée identique (100 Hz, 3 répétitions, dispersion ≤ 0,05 mA), EWC (−0,003 mA) et Mahalanobis
+(−0,030 mA) sont dans le bruit, TinyOL gagne marginalement (−0,087 mA), et **HDC INT8 consomme 7,1 % de courant
+en PLUS** que son FP32 (51,220 vs 47,843 mA) — cohérent avec sa latence INT8 dégradée. L'ordre des courants suit
+exactement celui des latences (Maha 5 µs → 46,4 mA … HDC INT8 1958 µs → 51,2 mA), ce qui confirme que la part
+imputable au modèle est bien mesurée. **L'INT8 reste donc justifié par la RAM (÷4), pas par l'énergie** — le
+paradoxe latence FPU se double d'un paradoxe énergie.
+
+**Ce qui reste `"à mesurer"`, et c'est un résultat, pas un manque** : les **µJ/inférence**. La référence « au
+repos » du firmware (54,78 ± 0,13 mA) est **plus haute que tous les régimes de flux** (46,40–51,22 mA), y compris
+Mahalanobis dont l'inférence occupe ~0,05 % du temps — écart que le taux d'occupation n'explique pas et dont la
+**cause n'est pas établie** (le firmware attend la trame UART par scrutation active, donc le « repos » n'est pas
+inactif ; d'autres causes de banc ne sont pas exclues). L'énergie marginale par inférence en ressortirait
+**négative** : elle n'a pas de sens face à cette référence. Levier identifié pour un sprint futur : mise en
+sommeil (`WFI`) de l'attente UART, pour disposer d'un vrai repos. **Autonomie chiffrée** malgré tout, depuis le
+courant mesuré : 43,1 h (Maha INT8) à 39,0 h (HDC INT8) sur 2000 mAh — ~10 % d'écart entre le modèle le plus
+sobre et le plus gourmand, l'ordre de grandeur qui sert effectivement à arbitrer. Synthèse :
+`notebooks/cl_eval/energy_cost/comparison.ipynb` · détail `docs/sprints/sprint_50/S5008_handoff_mesures.md` § 6.
+
+**Levée du verrou (Sprint 53, S5301–S5302, board réelle 2026-08-06) — les µJ/inférence existent enfin.**
+Le paragraphe ci-dessus n'est plus la dernière ligne de l'histoire. S5301 a montré que l'écart « repos plus
+consommateur que la charge » était un **artefact d'ordre** (référence prise en tête de session), et S5302 a
+supprimé la cause de fond : l'attente UART dort désormais (`__WFI`, gardé `-DUART_WFI_IDLE`). Le repos tombe de
+**49,767 à 27,370 mA — −45,0 %**, les deux mesurés dans la même session contre-balancée. Il passe alors **sous
+toutes les cellules**, le delta redevient positif, et **8/8 cellules sont chiffrées** (134 à 374 µJ). Ces µJ-là
+portent cependant la **trame UART** en plus du calcul — le témoin Mahalanobis, dont l'inférence dure 5 µs, sort à
+134 µJ. La boucle par lot (`-DINFER_BATCH_N`, `N` jusqu'à 200 avec règle de saturation **mesurée** sur la cadence
+atteinte) sépare enfin les deux : **EWC 5,08 µJ et Mahalanobis 0,437 µJ par inférence, r² = 0,9998**, parité de
+prédiction 1.000 vs `N = 1`. Le coût d'une inférence rapide est donc **~300× plus petit que celui de la
+transaction qui la transporte** — ce qui, rétrospectivement, explique pourquoi la campagne S50 ne pouvait rien
+voir. Conséquence pour l'autonomie : ≈ **73 h à 1 Hz sur 2000 mAh** (contre 43 h en flux continu sans veille) —
+les autonomies publiées avant ce sprint sont **pessimistes**, car mesurées sans sommeil. Le verdict INT8 du
+paragraphe précédent, lui, **n'est pas modifié** : le gain reste en RAM, pas en énergie. Détail :
+`docs/sprints/sprint_53/S5302_wfi_repos_reel.md` · `experiments/exp_S53_wfi/`.
+
+**Volet latence INT8 (Sprint 50, S5004) — paradoxe FPU MESURÉ au cycle près.** Le CR demandait de
+**détailler le coût de latence INT8** (le processeur étant FP32, la quantification ajoute des étapes de
+déquant/requant). Instrumentation DWT **cycle-level** du kernel EWC INT8 v2 (`-DINT8_SEGMENT_PROFILE`, build
+défaut invariant), board réelle NUCLEO-F439ZI, 2 datasets, 0 CRC (`exp_S50_int8_latency/`) : par inférence,
+**MAC entier ≈ 6 785 cyc** (aucun gain vs FPU), **requantification FP32→INT8 ≈ 3 777 cyc (surcoût dominant,
+`lroundf`)**, déquantification int→FP32 ≈ 200 cyc → **total INT8 74 µs vs FP32 48–50 µs, soit +24 à +26 µs
+(~+50 %)**. C'est le **paradoxe latence FPU du Sprint 29, désormais chiffré poste par poste** : sur un
+Cortex-M4 à FPU sans NPU ni SIMD entier, l'INT8 est un **coût net en latence** ; son bénéfice est strictement
+la **RAM des poids ÷4** (Gap 3), pas la latence (Gap 2). Toutes latences ≪ 100 ms → **Gap 2 préservé**. Un vrai
+gain latence exigerait une carte INT8 natif (STM32N6/NPU, indisponible) ou des noyaux SIMD CMSIS-NN.
+`docs/context/int8_latency_breakdown.md` + `docs/context/int8_cost_benefit.md` (analyse coût/bénéfice :
+reproduit-littérature vs contribution propre).
+
+**Volet énergie (Sprint 53) — le verdict énergétique de l'INT8, et la marge de latence convertie.**
+La campagne X-NUCLEO-LPM01A ferme la question laissée ouverte par le paradoxe ci-dessus : *l'INT8, qui
+coûte en latence, rachète-t-il ce coût en énergie ?* **Non.** Par régression `I = I_base + pente · rate`
+sur carte réelle (S5304, 7 cellules, 0 CRC), l'énergie par inférence de l'EWC diffère de **−0,2 µJ entre
+INT8 et FP32 pour une incertitude combinée de ±2,3 µJ** : l'écart n'est pas séparable du bruit du banc.
+**Le bénéfice de l'INT8 reste donc strictement la RAM des poids ÷4 (Gap 3)** — ni la latence (S29/S50),
+ni l'énergie. Deux garde-fous rendent ce chiffre publiable : la pente est ajustée **pondérée par `1/σ²`**,
+et la saturation est détectée sur la **cadence ATTEINTE** — au-delà de ~209 inf/s l'UART sature *en
+silence*, sans perdre de trame ni lever de CRC, et les points saturés **sous-estiment la pente**.
+
+**Gap 2 — la marge de latence est convertible en autonomie (S5303).** Le budget de 100 ms est tenu avec
+plusieurs ordres de grandeur de marge ; le balayage SYSCLK mesure ce que cette marge vaut. De 45 à
+180 MHz, **l'énergie par inférence croît de +26,2 %** (170,1 → 214,6 µJ) et le courant de base de **+54 %**,
+pendant que **Gap 2 reste tenu 12,8×** à 45 MHz (pire cas HDC fp32 2 338 µs). Ralentir le MCU réduit donc
+à la fois le coût par inférence et le courant permanent, sans menacer le critère. La mise en veille de
+l'attente UART (`__WFI()`, S5302) abaisse en outre le repos de **45 %** (49,8 → 27,4 mA) et porte
+l'autonomie duty-cyclée à **≈73 h à 1 Hz sur 2000 mAh** — les autonomies du Sprint 50 étaient
+**pessimistes**, mesurées sur une carte jamais endormie. Réserve : la cellule 90 MHz sort en **N/A**
+(r² 0,783 pondéré), la tendance ne s'appuie donc que sur ses deux extrémités.
+
+**Ce qui reste `"à mesurer"`** : `energy_uj_per_update` (S5306, séance 1/3 — les deux régressions du build
+S38 sont non publiables, r² 0,366 et 0,696), le profil par phase (S5305 — le mode dynamique de la sonde
+ne se rouvre qu'à 45 MHz et la segmentation sur le seul courant est **mesurément insuffisante** ; la voie
+PA8→D7 exige une soudure) et `by_component` (S5308, câblage séparé MCU/périphériques). Aucun de ces champs
+ne porte de valeur inventée : chacun garde la valeur littérale `"à mesurer"` **accompagnée de sa raison
+mesurée**, ce qui les distingue d'un « pas encore fait ».
 
 **Note Sprint 38 — RAM du gate de mise à jour autonome** : le gate de nouveauté embarqué
 (`SlidingWindowDriftDetector`, `-DEWC_AUTO_UPDATE`) coûte **+300 B** de `.bss` (`g_drift` fenêtre

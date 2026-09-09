@@ -1,0 +1,1 @@
+{"nodes": [], "edges": [{"source": "catalogs_energy_real", "target": "catalogs_ram_full", "relation": "semantically_similar_to", "confidence": "INFERRED", "confidence_score": 0.7, "source_file": "src/figures/catalogs/__init__.py", "source_location": null, "weight": 1.0}], "hyperedges": []}

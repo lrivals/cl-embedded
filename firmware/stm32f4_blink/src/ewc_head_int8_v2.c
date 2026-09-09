@@ -24,6 +24,9 @@
 #include "ewc_head_int8_v2.h"
 #include <math.h>    /* lroundf, fabsf */
 #include <string.h>
+#ifdef INT8_SEGMENT_PROFILE
+#include "profiling.h"   /* S5004 — segments DWT déquant/MAC/requant (build-gardé) */
+#endif
 
 /* Saturation générique dans [-qmax, qmax]. */
 static inline int32_t sat_q(int32_t v, int32_t qmax)
@@ -86,41 +89,116 @@ void ewc_int8_v2_from_fp32_calib(EWCHeadInt8V2 *dst, const EWCHead *src,
 
 /* ── Forward inférence (accumulateur int32, déquant par-canal exacte) ────── */
 
+/* ── S5004 — macros de mesure de segment (no-op hors -DINT8_SEGMENT_PROFILE) ──
+ * SEG_MARK() capture le compteur DWT ; SEG_ADD(field) ajoute l'écart au champ
+ * d'accumulateur correspondant de g_profiling. Hors build instrumenté, ce sont
+ * des no-op complets → le kernel par défaut est strictement identique (parité
+ * bit-à-bit, .bss invariant). Cf. docs/context/int8_latency_breakdown.md. */
+#ifdef INT8_SEGMENT_PROFILE
+#define SEG_MARK()        (_seg_t = profiling_dwt_now())
+#define SEG_ADD(field)    (g_profiling.field += profiling_dwt_now() - _seg_t)
+#else
+#define SEG_MARK()        ((void)0)
+#define SEG_ADD(field)    ((void)0)
+#endif
+
 void ewc_int8_v2_forward(const EWCHeadInt8V2 *h, const float *x, float *logits)
 {
     ewc_v2_a_t a_in[EWC_IN];   /* activations d'entrée quantifiées */
     ewc_v2_a_t a_h1[EWC_H1];   /* activations couche 1 quantifiées */
     ewc_v2_a_t a_h2[EWC_H2];   /* activations couche 2 quantifiées */
+#ifdef INT8_SEGMENT_PROFILE
+    uint32_t _seg_t;
+    profiling_seg_reset();     /* remet à zéro les 3 accumulateurs de segment */
+#endif
 
-    /* Quantif entrée (activations calibrées). */
+    /* Quantif entrée (activations calibrées) → segment REQUANT (FP32→INT8). */
+    SEG_MARK();
     for (int i = 0; i < EWC_IN; i++)
         a_in[i] = (ewc_v2_a_t)quant_val(x[i], h->scale_act_in, EWC_V2_A_QMAX);
+    SEG_ADD(seg_requant_cycles);
 
     /* Couche 1 : acc entier large, déquant acc·scale_w[j]·scale_act_in + b, ReLU FP32. */
     for (int j = 0; j < EWC_H1; j++) {
         ewc_v2_acc_t acc = 0;                              /* ← int32 (int8) / int64 (Q15) */
+        SEG_MARK();
         for (int i = 0; i < EWC_IN; i++)
             acc += (ewc_v2_acc_t)h->w1[j][i] * (ewc_v2_acc_t)a_in[i];
+        SEG_ADD(seg_mac_cycles);                           /* MAC entier */
+        SEG_MARK();
         float val = (float)acc * h->scale_w1[j] * h->scale_act_in + h->b1[j];
         float relu = val > 0.0f ? val : 0.0f;              /* ReLU FP32 (pas de clamp Q7) */
+        SEG_ADD(seg_dequant_cycles);                       /* int→FP32 sur FPU */
+        SEG_MARK();
         a_h1[j] = (ewc_v2_a_t)quant_val(relu, h->scale_act_h1, EWC_V2_A_QMAX);
+        SEG_ADD(seg_requant_cycles);                       /* FP32→INT8 */
     }
 
     /* Couche 2. */
     for (int j = 0; j < EWC_H2; j++) {
         ewc_v2_acc_t acc = 0;
+        SEG_MARK();
         for (int i = 0; i < EWC_H1; i++)
             acc += (ewc_v2_acc_t)h->w2[j][i] * (ewc_v2_acc_t)a_h1[i];
+        SEG_ADD(seg_mac_cycles);
+        SEG_MARK();
+        float val = (float)acc * h->scale_w2[j] * h->scale_act_h1 + h->b2[j];
+        float relu = val > 0.0f ? val : 0.0f;
+        SEG_ADD(seg_dequant_cycles);
+        SEG_MARK();
+        a_h2[j] = (ewc_v2_a_t)quant_val(relu, h->scale_act_h2, EWC_V2_A_QMAX);
+        SEG_ADD(seg_requant_cycles);
+    }
+
+    /* Couche 3 : logits FP32 (softmax/argmax en aval) — pas de requant en sortie. */
+    for (int j = 0; j < EWC_OUT; j++) {
+        ewc_v2_acc_t acc = 0;
+        SEG_MARK();
+        for (int i = 0; i < EWC_H2; i++)
+            acc += (ewc_v2_acc_t)h->w3[j][i] * (ewc_v2_acc_t)a_h2[i];
+        SEG_ADD(seg_mac_cycles);
+        SEG_MARK();
+        logits[j] = (float)acc * h->scale_w3[j] * h->scale_act_h2 + h->b3[j];
+        SEG_ADD(seg_dequant_cycles);
+    }
+}
+
+/* ── Sprint 48 — forward packé (dépack chaque poids avant le MAC FPU) ─────────
+ * Identique à ewc_int8_v2_forward, mais les poids sont dépackés via
+ * ewc_v2_unpack_weight (le packing ne change QUE le stockage → parité stricte). */
+#if defined(EWC_INTx_PACKED)
+void ewc_subint8_packed_forward(const EWCHeadSubInt8Packed *h, const float *x, float *logits)
+{
+    ewc_v2_a_t a_in[EWC_IN];
+    ewc_v2_a_t a_h1[EWC_H1];
+    ewc_v2_a_t a_h2[EWC_H2];
+
+    for (int i = 0; i < EWC_IN; i++)
+        a_in[i] = (ewc_v2_a_t)quant_val(x[i], h->scale_act_in, EWC_V2_A_QMAX);
+
+    for (int j = 0; j < EWC_H1; j++) {
+        ewc_v2_acc_t acc = 0;
+        for (int i = 0; i < EWC_IN; i++)
+            acc += (ewc_v2_acc_t)ewc_v2_unpack_weight(h->w1[j], i) * (ewc_v2_acc_t)a_in[i];
+        float val = (float)acc * h->scale_w1[j] * h->scale_act_in + h->b1[j];
+        float relu = val > 0.0f ? val : 0.0f;
+        a_h1[j] = (ewc_v2_a_t)quant_val(relu, h->scale_act_h1, EWC_V2_A_QMAX);
+    }
+
+    for (int j = 0; j < EWC_H2; j++) {
+        ewc_v2_acc_t acc = 0;
+        for (int i = 0; i < EWC_H1; i++)
+            acc += (ewc_v2_acc_t)ewc_v2_unpack_weight(h->w2[j], i) * (ewc_v2_acc_t)a_h1[i];
         float val = (float)acc * h->scale_w2[j] * h->scale_act_h1 + h->b2[j];
         float relu = val > 0.0f ? val : 0.0f;
         a_h2[j] = (ewc_v2_a_t)quant_val(relu, h->scale_act_h2, EWC_V2_A_QMAX);
     }
 
-    /* Couche 3 : logits FP32 (softmax/argmax en aval). */
     for (int j = 0; j < EWC_OUT; j++) {
         ewc_v2_acc_t acc = 0;
         for (int i = 0; i < EWC_H2; i++)
-            acc += (ewc_v2_acc_t)h->w3[j][i] * (ewc_v2_acc_t)a_h2[i];
+            acc += (ewc_v2_acc_t)ewc_v2_unpack_weight(h->w3[j], i) * (ewc_v2_acc_t)a_h2[i];
         logits[j] = (float)acc * h->scale_w3[j] * h->scale_act_h2 + h->b3[j];
     }
 }
+#endif /* EWC_INTx_PACKED */

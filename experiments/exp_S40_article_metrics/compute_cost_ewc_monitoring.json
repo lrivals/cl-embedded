@@ -1,0 +1,8 @@
+{
+  "model": "ewc",
+  "macs_analytical": 672,
+  "macs_torchinfo": 722,
+  "delta_pct": -6.925207756232687,
+  "tool_applicable": true,
+  "justification": "Modèle torch (couches Linear) — comparaison analytique ↔ torchinfo. Écart résiduel attribuable aux termes que les deux comptes traitent différemment : torchinfo inclut les additions de biais (Σ out_features) alors que compute_cost ne compte que les produits in×out ; à l'inverse macs_tinyol_ae ajoute le terme MSE (n_features) que torchinfo ignore."
+}

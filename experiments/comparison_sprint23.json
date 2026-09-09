@@ -1,7 +1,7 @@
 {
   "metadata": {
     "sprint": 23,
-    "date": "2026-06-25",
+    "date": "2026-08-21",
     "datasets": [
       "cwru",
       "monitoring",
@@ -257,9 +257,9 @@
         },
         "nucleo_f439zi": {
           "exp": "exp_S32_board_tinyol_pronostia_thr72",
-          "acc_final": 0.8833,
-          "latency_ms": 0.005,
-          "ram_bytes": 39060.0,
+          "acc_final": 0.7933,
+          "latency_ms": 0.085,
+          "ram_bytes": 39500.0,
           "note": "online_accuracy board, seuil réf. 72 (S32)",
           "gap2_ram_compliant": true,
           "gap2_latency_compliant": true
@@ -274,9 +274,9 @@
         },
         "nucleo_f439zi": {
           "exp": "exp_S32_board_hdc_pronostia_thr72",
-          "acc_final": 0.9417,
+          "acc_final": 0.9267,
           "latency_ms": 0.585,
-          "ram_bytes": 39060.0,
+          "ram_bytes": 39500.0,
           "note": "online_accuracy board, seuil réf. 72 (S32)",
           "gap2_ram_compliant": true,
           "gap2_latency_compliant": true
@@ -297,9 +297,9 @@
         },
         "nucleo_f439zi": {
           "exp": "exp_S32_board_mahalanobis_cmapss_thr30",
-          "acc_final": 0.8,
+          "acc_final": 0.7867,
           "latency_ms": 0.005,
-          "ram_bytes": 39060.0,
+          "ram_bytes": 39500.0,
           "note": "online_accuracy board, seuil réf. 30 (S32)",
           "gap2_ram_compliant": true,
           "gap2_latency_compliant": true
@@ -316,9 +316,9 @@
         },
         "nucleo_f439zi": {
           "exp": "exp_S32_board_ewc_cmapss_thr30",
-          "acc_final": 0.8667,
+          "acc_final": 0.86,
           "latency_ms": 0.05,
-          "ram_bytes": 39060.0,
+          "ram_bytes": 39500.0,
           "note": "online_accuracy board, seuil réf. 30 (S32)",
           "gap2_ram_compliant": true,
           "gap2_latency_compliant": true
@@ -351,9 +351,9 @@
         },
         "nucleo_f439zi": {
           "exp": "exp_S32_board_tinyol_cmapss_thr30",
-          "acc_final": 0.8,
-          "latency_ms": 0.005,
-          "ram_bytes": 39060.0,
+          "acc_final": 0.8267,
+          "latency_ms": 0.085,
+          "ram_bytes": 39500.0,
           "note": "online_accuracy board, seuil réf. 30 (S32)",
           "gap2_ram_compliant": true,
           "gap2_latency_compliant": true
@@ -495,7 +495,7 @@
     "gap2_latency_budget_ms": 100.0,
     "gap2_board_results_count": 20,
     "gap2_compliant_count": 20,
-    "gap2_ram_max_observed_bytes": 39420.0,
+    "gap2_ram_max_observed_bytes": 39500.0,
     "gap2_latency_max_observed_ms": 0.653,
     "gap3_int8_exp": "exp_S23_INT8",
     "gap3_int8_ram_reduction": "2.7x (9728 → 3600 bytes, exp_S22_INT8_01)"
@@ -545,10 +545,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_5feat_tinyol_cwru",
-            "acc_final": 0.16,
-            "f1_faulty": 0.125,
+            "acc_final": 1.0,
+            "f1_faulty": 1.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -564,7 +564,7 @@
             "acc_final": 0.1,
             "f1_faulty": 0.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -611,10 +611,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_5feat_tinyol_monitoring",
-            "acc_final": 0.94,
-            "f1_faulty": 0.7097,
+            "acc_final": 0.98,
+            "f1_faulty": 0.9268,
             "n_features": 4,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -630,7 +630,7 @@
             "acc_final": 0.8667,
             "f1_faulty": 0.0,
             "n_features": 4,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -677,10 +677,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_5feat_tinyol_pronostia",
-            "acc_final": 0.8933,
-            "f1_faulty": 0.2727,
+            "acc_final": 0.98,
+            "f1_faulty": 0.8889,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -696,7 +696,7 @@
             "acc_final": 0.9,
             "f1_faulty": 0.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -743,10 +743,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_5feat_tinyol_cmapss",
-            "acc_final": 0.8533,
-            "f1_faulty": 0.2143,
+            "acc_final": 0.9067,
+            "f1_faulty": 0.3,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -762,7 +762,7 @@
             "acc_final": 0.8867,
             "f1_faulty": 0.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -809,10 +809,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_5feat_tinyol_paderborn",
-            "acc_final": 0.3733,
-            "f1_faulty": 0.1132,
+            "acc_final": 0.3333,
+            "f1_faulty": 0.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -828,7 +828,7 @@
             "acc_final": 0.3333,
             "f1_faulty": 0.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       }
@@ -877,10 +877,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_all_tinyol_cwru",
-            "acc_final": 0.14,
-            "f1_faulty": 0.0851,
+            "acc_final": 1.0,
+            "f1_faulty": 1.0,
             "n_features": 9,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -896,7 +896,7 @@
             "acc_final": 0.1,
             "f1_faulty": 0.0,
             "n_features": 9,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -943,10 +943,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_all_tinyol_monitoring",
-            "acc_final": 0.94,
-            "f1_faulty": 0.7097,
+            "acc_final": 0.98,
+            "f1_faulty": 0.9268,
             "n_features": 4,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -962,7 +962,7 @@
             "acc_final": 0.8667,
             "f1_faulty": 0.0,
             "n_features": 4,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1009,10 +1009,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_all_tinyol_pronostia",
-            "acc_final": 0.8667,
-            "f1_faulty": 0.0909,
+            "acc_final": 0.9333,
+            "f1_faulty": 0.6667,
             "n_features": 13,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1028,7 +1028,7 @@
             "acc_final": 0.9,
             "f1_faulty": 0.0,
             "n_features": 13,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1075,10 +1075,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_all_tinyol_cmapss",
-            "acc_final": 0.8867,
-            "f1_faulty": 0.32,
+            "acc_final": 0.88,
+            "f1_faulty": 0.1,
             "n_features": 21,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1094,7 +1094,7 @@
             "acc_final": 0.8867,
             "f1_faulty": 0.0,
             "n_features": 21,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1141,10 +1141,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_all_tinyol_paderborn",
-            "acc_final": 0.3533,
-            "f1_faulty": 0.0762,
+            "acc_final": 0.3333,
+            "f1_faulty": 0.0,
             "n_features": 7,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1160,7 +1160,7 @@
             "acc_final": 0.3333,
             "f1_faulty": 0.0,
             "n_features": 7,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       }
@@ -1209,10 +1209,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_best_tinyol_cwru",
-            "acc_final": 0.1,
-            "f1_faulty": 0.0,
+            "acc_final": 0.9933,
+            "f1_faulty": 0.9963,
             "n_features": 7,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1228,7 +1228,7 @@
             "acc_final": 0.1,
             "f1_faulty": 0.0,
             "n_features": 4,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1275,10 +1275,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_best_tinyol_monitoring",
-            "acc_final": 0.9067,
-            "f1_faulty": 0.4615,
+            "acc_final": 0.9667,
+            "f1_faulty": 0.8718,
             "n_features": 2,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1294,7 +1294,7 @@
             "acc_final": 0.8667,
             "f1_faulty": 0.0,
             "n_features": 4,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1341,10 +1341,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_best_tinyol_pronostia",
-            "acc_final": 0.8533,
-            "f1_faulty": 0.0833,
+            "acc_final": 0.88,
+            "f1_faulty": 0.3571,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1360,7 +1360,7 @@
             "acc_final": 0.9,
             "f1_faulty": 0.0,
             "n_features": 5,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1407,10 +1407,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_best_tinyol_cmapss",
-            "acc_final": 0.8867,
-            "f1_faulty": 0.0,
+            "acc_final": null,
+            "f1_faulty": null,
             "n_features": 1,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1426,7 +1426,7 @@
             "acc_final": 0.8867,
             "f1_faulty": 0.0,
             "n_features": 18,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       },
@@ -1473,10 +1473,10 @@
           },
           "nucleo_f439zi": {
             "exp": "exp_S35_board_best_tinyol_paderborn",
-            "acc_final": 0.36,
-            "f1_faulty": 0.0943,
+            "acc_final": 0.3333,
+            "f1_faulty": 0.0,
             "n_features": 2,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": ""
           }
         },
         "hdc": {
@@ -1492,7 +1492,7 @@
             "acc_final": 0.3333,
             "f1_faulty": 0.0,
             "n_features": 1,
-            "note": "N/A par construction (HDC projection embarquée / TinyOL init en ligne)"
+            "note": "N/A par construction (HDC : projection embarquée, dim 1000≠1024, init en ligne)"
           }
         }
       }

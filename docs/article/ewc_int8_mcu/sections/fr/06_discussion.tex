@@ -1,23 +1,40 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\paragraph{Paradoxe de la latence INT8.} La quantification INT8 divise par~4 l'empreinte mémoire des poids
-mais \emph{n'accélère pas} l'inférence sur le Cortex-M4 : la latence INT8 est comparable, voire
-légèrement supérieure en mode en ligne (la mise à jour SGD n'est pas accélérée). La raison est structurelle :
-notre kernel déquantifie vers le FP32 et exécute la distance/décision sur le \emph{FPU} matériel, qui est
-déjà efficace en simple précision ; les gains INT8 supposeraient des instructions SIMD entières (SMLAD,
-etc.). Nous assumons ce constat plutôt que de le masquer : le bénéfice INT8 sur cette cible est
-\emph{mémoire}, pas \emph{vitesse}. Une piste directe est le portage sur noyaux SIMD entiers
-(CMSIS-NN), laissée en travaux futurs.
+\paragraph{Paradoxe de la latence INT8, chiffré.} La quantification INT8 divise par~4 l'empreinte mémoire
+des poids mais \emph{n'accélère pas} l'inférence sur le Cortex-M4 --- elle la ralentit. L'instrumentation
+cycle-à-cycle du kernel (Section~\ref{sec:system}) permet de dire où : sur les deux jeux, le MAC entier
+coûte en moyenne \num{6785}~cycles et la requantification \num{3777.25}, la déquantification n'en pesant que
+\num{200}. Le total INT8 s'établit à \SI{74}{\micro\second} contre \SIrange{48}{50}{\micro\second} en FP32.
+Deux causes se cumulent donc : le MAC entier n'a rien à gagner face à un FPU matériel déjà efficace en
+simple précision, et la requantification --- un poste qui n'existe pas dans le chemin flottant --- consomme à
+elle seule un tiers du budget. La piste directe reste le portage sur noyaux SIMD entiers (CMSIS-NN), qui
+attaquerait le premier poste ; le second appelle plutôt une chaîne à échelles en puissance de deux.
+
+\paragraph{Un paradoxe d'énergie s'ajoute au paradoxe de latence.} On pourrait espérer que l'INT8, à défaut
+d'être plus rapide, soit plus sobre. La mesure dit le contraire : \SI{67.47}{\micro\joule} par inférence en
+INT8 contre \SI{67.65}{\micro\joule} en FP32, soit un écart de \SI{0.18}{\micro\joule} pour une incertitude
+combinée de \SI{2.34}{\micro\joule}. Il n'y a donc pas d'effet mesurable. La conséquence pratique est nette :
+sur cette cible, \textbf{l'INT8 se justifie par la mémoire, ni par la vitesse ni par l'énergie}. Le levier
+énergétique se trouve ailleurs --- dans la fréquence, où la marge de latence dont on dispose largement
+s'échange contre de l'autonomie.
 
 \paragraph{Honnêteté « mesuré » vs « émulé ».} Nous séparons rigoureusement deux natures de résultats. Les
-parités FP32, l'effondrement INT8 legacy et les latences/RAM sont \emph{mesurés sur carte réelle}
-(Sprints~36 et~40). Le diagnostic causal et la récupération par kernel calibré sont \emph{émulés
-bit-à-bit sur PC} (Sprint~39) : l'émulateur reproduit exactement l'arithmétique du kernel C, ce qui en
-fait une référence fiable, mais ce n'est pas une mesure carte. La campagne carte v2 (Sprint~40) confirme
-partiellement la récupération (cellule Pronostia per-canal), le reste étant explicitement « à mesurer ».
-Cette discipline évite de sur-vendre une récupération qui, sur carte, n'est pour l'instant démontrée que
-sur un point.
+parités FP32, l'effondrement INT8 legacy, la récupération par kernel v2, les latences, la RAM et l'énergie
+sont \emph{mesurés sur carte réelle} (Sprints~36, 40, 46 à 50 et 53). Le diagnostic causal, l'échelle
+d'ablation et le balayage de profondeur sont \emph{émulés bit-à-bit sur PC} (Sprints~39 et~47) : l'émulateur
+reproduit exactement l'arithmétique du kernel C, ce qui en fait une référence fiable, mais ce n'est pas une
+mesure carte. Depuis la campagne v2, la récupération n'appartient plus à la seconde catégorie : elle est
+établie sur les quatre cellules per-canal, avec une parité gelée de \num{1.000} contre l'émulateur. Ce qui
+reste non mesuré --- le format \texttt{q15} sur carte, l'énergie par mise à jour continue, le profil par
+phase --- est reporté « à mesurer » plutôt qu'estimé.
+
+\paragraph{Limite : l'oubli n'est pas éprouvé sur ces deux jeux.} Nos scénarios continus y sont courts
+(trois tâches) et l'oubli moyen y reste inférieur à \num{0.01} : ces jeux ne mettent pas la régularisation
+EWC à l'épreuve. L'oubli catastrophique a été mesuré ailleurs dans le projet, sur CWRU, où il atteint
+\num{0.8475} pour EWC contre \num{0.8578} en apprentissage naïf. Comme ce jeu ne recouvre pas les deux
+nôtres, nous nous gardons de mélanger les deux constats : la contribution de cet article porte sur le
+\emph{portage} et la \emph{quantification}, pas sur l'efficacité de la régularisation contre l'oubli.
 
 \paragraph{Portée.} Le résultat central --- une PTQ naïve peut détruire une tête de décision binaire, et une
 calibration par-tenseur/par-canal (ou un format Q15) la restaure --- dépasse le cas EWC : il concerne toute

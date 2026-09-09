@@ -383,16 +383,96 @@ Le §4bis concluait que `acqmode dyn` était hors de portée. **Révision mesur�
 | 90 MHz | refusé | 69,6 mA |
 | **45 MHz** | **complet** | 68,6 mA |
 
-> Le seuil n'est **pas** un plafond net sur le pic : 68,6 mA passe, 69,6 mA échoue. Sa nature
-> exacte reste à caractériser — ne pas le présenter comme « 59 mA sur le maximum ».
+> Le seuil n'est **pas** un plafond net sur le pic : 68,6 mA passe, 69,6 mA échoue.
+> **Caractérisé le 2026-09-08 (B6, §9.4) : c'est la MOYENNE qui déclenche l'arrêt, pas le
+> pic** — ne pas le présenter comme « 59 mA sur le maximum ».
+
+### 9.1bis Ce qui déclenche l'arrêt : la moyenne, mesurée (B6)
+
+Matrice d'essais à trois axes — charge (0 à 200 Hz), durée demandée (0,05 à 10 s),
+fréquence d'échantillonnage (10 et 100 kSPS) — passée aux deux fréquences d'horloge qui
+encadrent le phénomène. Verdict **calculé** par `src/evaluation/dyn_threshold.classify` :
+sur les essais réunis, **seul le candidat « moyenne » sépare** les acquisitions abouties
+des acquisitions arrêtées.
+
+| Candidat | Essais aboutis | Essais arrêtés | Sépare ? |
+|---|---|---|---|
+| Pic (`i_max_ma`) | 58,4 – 73,0 mA | 59,6 – 73,0 mA | **non — recouvrement** |
+| **Moyenne (`i_mean_ma`)** | **22,5 – 27,4 mA** | **41,1 – 41,6 mA** | **oui — seuil entre 27,4 et 41,1 mA** |
+| Durée demandée | 1 – 10 s | 1 – 10 s | non — recouvrement total |
+
+Les essais **sans aucune donnée** (acquisitions de 0,05 et 0,2 s, qui ne rendent rien quelle
+que soit la fréquence d'horloge) sont écartés du verdict : ils constatent un plancher de
+l'instrument, pas le franchissement d'un seuil.
+
+Le fait le plus net : une acquisition **aboutie** a atteint **73,0 mA de pic**, tandis
+qu'une acquisition **arrêtée** ne montait qu'à **67,9 mA**. Un pic plus élevé est donc passé
+là où un pic plus faible a échoué : le maximum instantané est écarté par la mesure, pas par
+raisonnement.
+
+Deux observations qui vont dans le même sens, du côté des arrêts :
+
+* le temps réellement acquis avant l'arrêt est **constant à 0,223 s ± 2,5 %** (0,220 à
+  0,226 s sur sept arrêts), quelle que soit la charge (0 à 200 Hz) et quelle que soit la
+  durée demandée — 1 s comme 10 s. Si l'arrêt répondait à une énergie accumulée, ce temps
+  raccourcirait quand la charge monte ;
+* il vaut **0,226 s à 10 kSPS** comme à 100 kSPS : ce n'est donc ni un nombre d'échantillons
+  fixe, ni une limite de débit de décodage.
+
+**Réserve, et elle est importante.** Les deux groupes d'essais diffèrent aussi par la
+fréquence d'horloge (45 MHz pour les succès, 90 MHz pour les arrêts) : SYSCLK est une
+variable cachée qui sépare tout aussi bien. Ce que la matrice établit est donc que, **des
+trois candidats testés, seule la moyenne sépare** — et que la fréquence agit *à travers*
+elle, puisque c'est le courant moyen que ralentir l'horloge fait baisser (39,9 → 24,9 →
+18,2 mA pour 180 → 90 → 45 MHz). Départager complètement demanderait de faire varier la
+moyenne à fréquence fixe sur une plage assez large, ce que la charge UART ne permet pas :
+elle ne déplace le courant moyen que de ~0,5 mA à 90 MHz.
+
+Mesures : `experiments/exp_S53_dyn_threshold/`.
 
 ### 9.2 Un échec de `dyn` ne lève pas d'exception
 
 `lp.capture` ne lève que sur un flux **vide**. Une acquisition interrompue par surintensité
 rend les dizaines de ms décodées avant l'arrêt : le code appelant croit avoir réussi. Le
 signalement est ailleurs — dans le **nombre d'échantillons** face aux attendus, et dans le
-`summary` (`Measurement interrupted`). Tout appelant doit vérifier ces deux points
-(cf. `run_s53_freq_sweep.try_dynamic_mode`, `DYN_COMPLETENESS = 0.95`).
+`summary` (`Measurement interrupted`). Tout appelant doit vérifier ces deux points. La règle
+vit désormais en un seul endroit, `src/evaluation/dyn_threshold.acquisition_outcome`
+(`COMPLETENESS = 0.95`), utilisée par `run_s53_freq_sweep.try_dynamic_mode`,
+`run_s53_phase_profile.capture_under_load` et `run_s53_dyn_threshold`.
+
+### 9.3 Après un arrêt, la sonde refuse toute la suite de la session
+
+**Mesuré 2026-09-08.** Une fois l'acquisition dynamique interrompue en surintensité, la
+sonde ne se contente pas de refuser cette acquisition : elle **refuse toutes les commandes
+suivantes de la même session série** — `output current` répond « Commande refusée ». Une
+matrice de neuf essais lancée d'affilée n'en a donc tenté qu'**un seul** : les huit autres
+ont rendu zéro échantillon et se seraient lus comme huit échecs, alors qu'aucun n'avait été
+soumis à la carte.
+
+### 9.3bis Deux acquisitions dynamiques enchaînées : la seconde ne rend rien
+
+**Mesuré 2026-09-08.** Indépendamment du point précédent, deux acquisitions dynamiques qui
+se suivent sans rien entre elles donnent **zéro échantillon à la seconde**. Le symptôme est
+trompeur : dans une matrice d'essais, les acquisitions abouties et les acquisitions vides
+**alternent**, et l'on croit lire un effet des conditions testées alors qu'on lit
+l'historique de la session — les essais qui aboutissaient étaient exactement ceux qu'un
+préchauffage ou une réouverture précédait.
+
+Remède : intercaler une **acquisition de rebut** avant *chaque* essai, pas seulement après
+un échec. C'est de toute façon la bonne hygiène expérimentale — tous les essais partagent
+alors le même passé immédiat — et cela rejoint la règle du préchauffage du Sprint 50.
+
+Conséquence pour tout pilote qui enchaîne des essais `dyn` : **rouvrir la session**
+(`release()` puis nouvelle `PowerShield` + `take_control()`) après chaque arrêt. Deux
+réserves qui vont avec, et qui sont la raison pour laquelle on ne rouvre qu'après un échec :
+une session neuve rend sa **première acquisition biaisée** d'environ +8 mA (règle du
+préchauffage, Sprint 50), et l'essai qui suit une réouverture doit donc être marqué
+(`after_probe_recovery`) pour que son courant moyen ne soit pas comparé aux autres sans
+réserve.
+
+Cela explique aussi, rétrospectivement, pourquoi `try_dynamic_mode` n'a jamais posé de
+problème : il est appelé **en dernier** dans la cellule de `run_s53_freq_sweep`, après toutes
+les mesures de courant.
 
 ### 9.3 `--acqmode` n'a plus de défaut figé
 

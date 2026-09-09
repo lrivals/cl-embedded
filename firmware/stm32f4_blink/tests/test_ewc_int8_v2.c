@@ -131,8 +131,9 @@ void test_v2_no_overflow(void)
 
 void test_v2_parity_emulator(void)
 {
-#if defined(EWC_INT8_Q15) || defined(EWC_INT8_MIXED)
-    TEST_IGNORE_MESSAGE("parité per_channel_int8 = build int8 par défaut (voir test-v2-q15)");
+#if defined(EWC_INT8_Q15) || defined(EWC_INT8_MIXED) \
+    || defined(EWC_INT4) || defined(EWC_INT2) || defined(EWC_INT1)
+    TEST_IGNORE_MESSAGE("parité per_channel_int8 = build int8 par défaut (sub-INT8 : test_ewc_subint8)");
 #else
     /* Logits C v2 (int8 par-canal) ≈ golden émulateur per_channel_int8, tol 1e-3. */
     EWCHead fp32 = head_from_golden();

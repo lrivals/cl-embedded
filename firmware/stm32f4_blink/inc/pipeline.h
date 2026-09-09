@@ -73,6 +73,29 @@
  * AVANT la chaîne de bits (0xF0 & 0x30 == 0x30 matcherait MULTICLASS sinon). Réponse V3 (23 B). */
 #define PROTO_FLAG_MAHA_Q15         0xF0U  /* Mahalanobis sigma_inv Q15 (réutilise masque 0xF0) */
 
+/* Sprint 53 (S5302) — lot d'inférences par trame.
+ * Le plafond de cadence du banc est l'UART (~209 Hz mesuré), pas le modèle : à cette
+ * cadence les modèles rapides occupent ~1 % du temps et leur coût est noyé. Exécuter
+ * N inférences par trame rend le taux d'occupation réglable indépendamment de l'UART.
+ * Défini ICI (et non dans pipeline.c) pour que les tests hôte voient la même valeur. */
+#ifndef INFER_BATCH_N
+#define INFER_BATCH_N 1          /* build par défaut STRICTEMENT inchangé */
+#endif
+
+/* Branches de `infer_extra` — instrumentation de TEST uniquement (TEST_MODE), pour
+ * verrouiller le contrat de portée du lot : les modes composés ne sont PAS batchés,
+ * multiclasse et RUL ont leurs propres têtes. Aucun code en production. */
+#define BATCH_BRANCH_NONE         0   /* mode composé → aucune passe supplémentaire */
+#define BATCH_BRANCH_MULTICLASS   1
+#define BATCH_BRANCH_RUL          2
+#define BATCH_BRANCH_HDC_INT8     3
+#define BATCH_BRANCH_TINYOL_INT8  4
+#define BATCH_BRANCH_EWC          5
+#define BATCH_BRANCH_EWC_INT8     6
+#define BATCH_BRANCH_HDC          7
+#define BATCH_BRANCH_TINYOL       8
+#define BATCH_BRANCH_MAHA         9
+
 #define PROTO_STATUS_OK          0x00U
 #define PROTO_STATUS_CRC_ERR     0x01U
 #define PROTO_STATUS_OOB         0x02U

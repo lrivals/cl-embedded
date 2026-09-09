@@ -1,0 +1,62 @@
+\section{Two further quantization axes: moment and depth}
+\label{sec:quant-axes}
+
+The previous sections vary the \emph{calibration} of the kernel at a fixed format. Two further degrees of
+freedom drive the outcome: \emph{when} one quantizes, and \emph{how many bits} one keeps.
+
+\subsection{Moment: before, after, or both}
+
+Three placements are possible for the same EWC head. \emph{Before} training (QAT, fake-quant in the loop);
+\emph{after} (PTQ on an already trained FP32 model); and \emph{both}, that is a QAT run whose weights are
+then exported to the calibrated integer kernel --- only this last path is faithful to the actual deployment.
+
+Under emulation, all three moments preserve AUROC on Monitoring (\num{0.974477} before, \num{0.974649}
+after, \num{0.974663} both, against \num{0.97464} in FP32): at this model scale no moment is disqualifying.
+The question is settled \emph{on-board}. The "both" path was flashed and streamed: it yields \num{0.9213}
+F1 on Monitoring and \num{0.9072} on Pronostia, against respectively \num{0.9173} and \num{0.8995} for the
+calibrated PTQ alone (Section~\ref{sec:recovery-board}).
+
+The gap, \num{0.004} and \num{0.0077}, is real but small. The honest reading is therefore that
+\textbf{kernel calibration recovers what matters, and that QAT adds no decisive gain} on this head: when
+the training pipeline cannot be modified, a properly calibrated PTQ suffices. This contradicts the common
+reading whereby a PTQ collapse would necessarily call for retraining.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig6_quant_moment.png}
+\caption{Quantization moment. Left, the three moments \emph{PC-emulated} (hatched); right, the
+\emph{on-board measured} A/B between calibrated PTQ alone and the QAT$\to$PTQ path.}
+\label{fig:moment}
+\end{figure}
+
+\subsection{Depth: how far below 8 bits}
+
+Below 8 bits the question becomes: at which depth does the metric break down, and does the granularity of
+the scale factor move that limit? The emulated sweep answers both.
+
+The limit depends on the dataset. On Monitoring, degradation stays contained down to binary
+($\Delta$AUROC $=-\,\num{0.0117}$). On Pronostia, binary breaks down ($-\,\num{0.0275}$) but ternary holds
+($-\,\num{0.0153}$): the usable frontier is therefore \emph{ternary}, binary being defensible only on the
+easier dataset.
+
+Granularity, in turn, pushes the breakdown back. At 2 bits on Pronostia, moving from a per-tensor to a
+per-channel scale takes $\Delta$AUROC from $-\,\num{0.0464}$ to $-\,\num{0.0086}$. A negative result
+deserves reporting too: the affine \emph{zero-point} buys nothing --- at 2 bits on Monitoring it even
+degrades markedly ($-\,\num{0.0619}$ against $-\,\num{0.0069}$ symmetric).
+
+\paragraph{The RAM gain only exists packed.} The crucial point is that the RAM advertised by these schemes
+is \emph{theoretical} as long as weights stay in an \texttt{int8} container. Measured on-board, the
+\texttt{.bss} of a 4-, 2- or 1-bit \emph{unpacked} model is strictly identical to the INT8 one: the gain
+only appears with genuine bit-packing, where it grows as bits drop (\num{336}, \num{504} then
+\num{572}~bytes saved on Monitoring). Unpacking is paid in latency, about \SI{55}{\micro\second} (from
+\SI{67}{\micro\second} unpacked to \SI{123}{\micro\second} packed on Monitoring) --- without threatening the
+Gap~2 budget. Parity against the emulator stays \num{1.000} across the twelve measured cells: the scheme is
+ported losslessly.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig7_quant_depth_packing.png}
+\caption{Sub-INT8 depth. Left, $\Delta$AUROC by depth and granularity (\emph{PC-emulated}); right, the
+\texttt{.bss} bytes actually saved by bit-packing (\emph{measured on-board}).}
+\label{fig:depth}
+\end{figure}

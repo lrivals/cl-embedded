@@ -399,3 +399,40 @@ def test_refit_ne_touche_pas_aux_points_mesures(tmp_path):
     assert relu["current_points"] == points, "les mesures sont en lecture seule"
     assert relu["slope_ua_per_hz"] != 999.0 and relu["r2"] > 0.9
     assert set(cells) == {"180"}
+
+
+# ── Provenance de la cadence atteinte (règle A7, portée à S5303 pour B1) ─────
+
+def test_option_de_relev_par_cadence_existe_et_est_desactivee_par_defaut():
+    """`--achieved-at-each-rate` : miroir de S5304, hors du chemin par défaut.
+
+    Le relevé par point coûte un flux supplémentaire par cadence ; il n'est donc pas
+    imposé aux cellules déjà mesurées, mais il est disponible pour celles qu'on rejoue
+    justement pour lever un doute sur leur linéarité (B1).
+    """
+    parser = fs.build_parser()
+    args = parser.parse_args(["--sysclk-mhz", "90"])
+    assert args.achieved_at_each_rate is False
+    args = parser.parse_args(["--sysclk-mhz", "90", "--achieved-at-each-rate"])
+    assert args.achieved_at_each_rate is True
+
+
+def test_cellules_mesurees_ne_declarent_pas_la_consigne_comme_atteinte():
+    """Aucune cadence ne porte sa propre consigne sans avoir été re-streamée."""
+    cellules = _cellules_mesurees()
+    if not cellules:
+        pytest.skip("aucune cellule mesurée (carte + sonde requises)")
+    autorisees = {"mesuré", "inféré du plafond mesuré", "non mesuré"}
+    for path in cellules:
+        cell = json.loads(path.read_text(encoding="utf-8"))
+        for point in cell.get("current_points", []):
+            if float(point["rate_hz"]) <= 0:
+                continue
+            source = point.get("achieved_rate_source")
+            assert source in autorisees, f"{path.name} : provenance inconnue {source!r}"
+            atteint = point.get("achieved_rate_hz")
+            if source == "non mesuré":
+                assert atteint is None, f"{path.name} : consigne recopiée en mesure"
+            elif source == "inféré du plafond mesuré":
+                assert atteint is not None and float(atteint) < float(point["rate_hz"]), \
+                    f"{path.name} : une inférence de plafond ne peut égaler la consigne"

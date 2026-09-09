@@ -48,7 +48,19 @@ EXPECTED_FIGS = [
     "fig3_ablation_ladder.png",
     "fig4_int8_recovery_board.png",
     "fig5_pareto_ram_f1_latency.png",
+    # Refonte S4009 : les 5 figures des axes moment/profondeur/système/coût.
+    "fig6_quant_moment.png",
+    "fig7_quant_depth_packing.png",
+    "fig8_ram_total.png",
+    "fig9_energy_estimators.png",
+    "fig10_compute_cost.png",
 ]
+#: Les 4 cellules per-canal du kernel v2 sont mesurées (S4002) — plus de skip toléré.
+MEASURED_V2_CELLS = [("per_channel", ds, proto) for ds in DATASETS for proto in PROTOCOLS]
+#: Figures canoniques du catalogue + miroirs synchronisés (anti-dérive S4009).
+CATALOG_FIGS = Path("docs/figures/article_ewc_int8")
+ARTICLE_FIGS = ARTICLE / "figures"
+AGGREGATE = EXP / "exp_S40_article_metrics" / "summary.json"
 
 
 def _load(path: Path):
@@ -203,17 +215,29 @@ class TestNotebook:
         return nb, "\n".join("".join(c.get("source", "")) for c in nb["cells"]
                              if c["cell_type"] == "code")
 
-    def test_five_figures_referenced(self):
+    def test_figures_referenced_and_delegated(self):
+        """Le notebook référence les figures attendues et DÉLÈGUE leur tracé au catalogue.
+
+        Depuis S4009 il n'y a plus qu'un producteur de figures : le notebook qui retracerait
+        lui-même ré-introduirait la double source de vérité à l'origine de la dérive fig2/4/5.
+        """
         _nb, src = self._nb_src()
         for fig in EXPECTED_FIGS:
             assert fig in src, f"{fig} non référencé dans le notebook"
-        assert "save_figure" in src
+        assert 'registry.get_catalog("article_ewc_int8")' in src, \
+            "le notebook doit appeler le catalogue, pas retracer les figures"
+        assert "plt.subplots" not in src, "le notebook ne doit plus tracer de figure lui-même"
 
     def test_graceful_degradation_guard(self):
+        """Règle « aucun chiffre inventé » : sentinel déclaré, cellules manquantes exposées.
+
+        La garde ne porte plus sur un drapeau `HAS_S40` local : l'agrégat S4008 énumère lui-même
+        les cellules non mesurées, et le notebook doit les afficher plutôt que les combler.
+        """
         _nb, src = self._nb_src()
-        # Garde de dégradation gracieuse + règle « aucun chiffre inventé ».
-        assert "HAS_S40" in src
         assert 'NA = "à mesurer"' in src or "NA=" in src
+        assert 'SUMMARY["missing"]' in src, \
+            "le notebook doit exposer les cellules non mesurées de l'agrégat"
 
     def test_no_hardcoded_metric_in_board_v2(self):
         # Les cellules chargeant S40 ne doivent pas contenir de F1 board v2 en dur : tout passe
@@ -256,15 +280,25 @@ def _tex_sources(lang: str) -> str:
 
 
 def _decimals(text: str) -> set[str]:
-    """Ensemble des littéraux décimaux (grandeurs canoniques) dans le LaTeX."""
+    r"""Ensemble des littéraux décimaux (grandeurs canoniques) dans le LaTeX.
+
+    Les largeurs de mise en page (``width=0.9\linewidth``) sont retirées : ce sont des
+    consignes de typographie, pas des résultats.
+    """
+    text = re.sub(r"width=[\d.]+\\linewidth", "", text)
     return set(re.findall(r"\d+\.\d+", text))
 
 
 def _fmt_variants(v: float) -> set[str]:
-    """Variantes d'affichage d'un flottant telles qu'elles peuvent figurer dans le .tex."""
+    r"""Variantes d'affichage d'un flottant telles qu'elles peuvent figurer dans le .tex.
+
+    La valeur absolue est incluse : un delta négatif s'écrit couramment ``$-\,\num{0.0117}$``,
+    le signe étant porté par le LaTeX et non par le littéral.
+    """
     out: set[str] = set()
-    for s in (f"{v:g}", f"{v:.3f}", f"{v:.4f}"):
-        out.add(s)
+    for x in (v, abs(v)):
+        for s in (f"{x:g}", f"{x:.2f}", f"{x:.3f}", f"{x:.4f}"):
+            out.add(s)
     return out
 
 
@@ -287,9 +321,10 @@ def _json_grounded_values() -> set[str]:
     Sert de vérité terrain pour prouver qu'un chiffre de l'article n'est pas hardcodé mais
     dérive bien d'une exécution mesurée/émulée."""
     vals: set[str] = set()
-    summary = _load(EXP / "exp_S36_summary.json")
-    if summary is not None:
-        _walk_floats(summary, vals)
+    for path in (EXP / "exp_S36_summary.json", AGGREGATE):
+        summary = _load(path)
+        if summary is not None:
+            _walk_floats(summary, vals)
     abl_dir = EXP / "exp_S39_ablation"
     if abl_dir.exists():
         for p in abl_dir.glob("*.json"):
@@ -299,6 +334,68 @@ def _json_grounded_values() -> set[str]:
     return vals
 
 
+    def test_v2_per_channel_cells_are_measured(self):
+        """Les 4 cellules per-canal du kernel v2 SONT mesurées : ce test ne doit plus être skippé.
+
+        Elles portent le résultat central de la refonte (la récupération INT8 n'est plus une
+        prédiction d'émulateur mais une mesure carte) ; les laisser en skip masquerait une
+        régression de campagne.
+        """
+        for scheme, ds, proto in MEASURED_V2_CELLS:
+            r = _load(S40_DIR / f"results_{scheme}_{ds}_{proto}.json")
+            assert r is not None, f"cellule mesurée manquante : {scheme}/{ds}/{proto}"
+            assert isinstance(r.get("f1_faulty"), float)
+            assert r.get("crc_errors") == 0
+            assert r.get("kernel") == "v2"
+
+    def test_provenance_matches_measured_json(self):
+        """Une ligne « à mesurer » ne peut pas coexister avec un JSON qui, lui, porte la valeur.
+
+        C'est le défaut exact corrigé par la refonte : la table annonçait « à mesurer » pour
+        `F1 per_ch board monitoring` alors que le résultat était streamé depuis longtemps.
+        """
+        if not PROVENANCE.exists():
+            pytest.skip("provenance_table.csv absente (exécuter le notebook)")
+        import csv
+        with PROVENANCE.open(encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        stale = []
+        for row in rows:
+            if (row.get("statut") or "").strip() != "à mesurer":
+                continue
+            source = (row.get("source_json") or "").strip()
+            if not source:
+                continue
+            candidate = EXP / source
+            data = _load(candidate)
+            if data is not None and isinstance(data.get("f1_faulty"), float):
+                stale.append((row.get("grandeur"), source))
+        assert not stale, f"lignes « à mesurer » alors que le JSON est mesuré : {stale}"
+
+
+class TestFigureSync:
+    """La dérive de copie (fig2/fig4/fig5 divergeaient) ne doit pas pouvoir revenir."""
+
+    def test_article_figures_identical_to_catalog(self):
+        if not CATALOG_FIGS.exists():
+            pytest.skip("catalogue article_ewc_int8 non généré")
+        import hashlib
+
+        def digest(path: Path) -> str:
+            return hashlib.md5(path.read_bytes()).hexdigest()
+
+        drift = []
+        for src_png in sorted(CATALOG_FIGS.glob("*.png")):
+            for mirror_dir in (ARTICLE_FIGS, FIGS):
+                mirror = mirror_dir / src_png.name
+                if not mirror.exists():
+                    drift.append(f"{mirror} absent")
+                elif digest(mirror) != digest(src_png):
+                    drift.append(f"{mirror} diverge du catalogue")
+        assert not drift, "figures désynchronisées : " + "; ".join(drift)
+
+
+
 class TestArticleCoherence:
     def test_figures_match_json(self):
         """Chaque grandeur canonique affichée dans le .tex dérive d'un JSON (via la table
@@ -306,14 +403,22 @@ class TestArticleCoherence:
         src = _tex_sources("fr")
         grounded = _json_grounded_values()
         # Grandeurs clés qui DOIVENT apparaître dans l'article ET être adossées à un JSON source.
-        canonical = {"0.9164", "0.9194", "0.138", "0.1337", "0.9462", "0.9201", "0.9616"}
+        canonical = {
+            # Parité et effondrement (Sprint 36) + ablation émulée (Sprint 39).
+            "0.9164", "0.9194", "0.138", "0.1337", "0.9462", "0.9201", "0.9616",
+            # Récupération mesurée carte (Sprint 40 v2) — plus « à mesurer ».
+            "0.9173", "0.8995", "0.9016", "0.9212", "0.9996", "0.9951",
+            # Moment (S46), profondeur (S47/S48), système (S49/S50/S53).
+            "0.9213", "0.9072", "0.0117", "0.0275", "0.0153", "0.0464", "0.0086",
+            "1.0002", "3777.25", "67.65", "67.47",
+        }
         present = {c for c in canonical if c in src}
         assert present, "aucune valeur canonique trouvée dans main_fr.tex"
         ungrounded = [c for c in present if c not in grounded]
         assert not ungrounded, f"valeurs non adossées à un JSON (hardcode ?) : {ungrounded}"
 
     def test_notebook_structure(self):
-        """Le notebook de synthèse produit/référence les 5 figures attendues."""
+        """Le notebook de synthèse produit/référence les figures attendues."""
         if not NB.exists():
             pytest.skip("synthesis.ipynb absent")
         nb = json.loads(NB.read_text())

@@ -45,8 +45,10 @@ FW_DIR = Path("firmware/stm32f4_blink")
 EXPERIMENTS = Path("experiments")
 SUMMARY = EXPERIMENTS / "exp_S32_board_sweep_summary.json"
 
-PARITY_MODELS = ["mahalanobis", "ewc"]      # parité board↔PC exacte
-HWONLY_MODELS = ["hdc", "tinyol"]           # latence/.bss seulement (parité N/A)
+# S5201 : TinyOL passe en parité — poids exportés + flag UART 0x80 (avant, la carte
+# exécutait Mahalanobis pour --model tinyol).
+PARITY_MODELS = ["mahalanobis", "ewc", "tinyol"]  # parité board↔PC exacte
+HWONLY_MODELS = ["hdc"]                     # latence/.bss seulement (parité N/A)
 DATASETS = ["cmapss", "pronostia", "battery"]
 
 GAP2_LATENCY_US = 100_000   # 100 ms (Gap 2)
@@ -90,6 +92,35 @@ def _pc_pred_ewc(ckpt: Path, feats: np.ndarray) -> np.ndarray:
         return logits.argmax(dim=1).numpy()
 
 
+def _pc_pred_tinyol(ckpt: Path, feats: np.ndarray) -> np.ndarray:
+    """Réplique PC de la route TinyOL firmware : pred = (MSE de reconstruction > seuil)."""
+    import importlib.util
+
+    import torch
+
+    spec = importlib.util.spec_from_file_location(
+        "export_weights_tinyol", Path(__file__).parent / "export_weights_tinyol.py")
+    ewt = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ewt)
+
+    state = torch.load(ckpt, map_location="cpu")
+    model = ewt.TinyOLBoard(dim=ewt.dim_of_state_dict(state))
+    model.load_state_dict(state)
+    model.eval()
+    thr = float(json.loads(ckpt.with_suffix(".threshold.json").read_text())["threshold"])
+    x = torch.tensor(feats, dtype=torch.float32)
+    with torch.no_grad():
+        _emb, recon = model(x)
+    return (((x - recon) ** 2).mean(dim=1).numpy() > thr).astype(int)
+
+
+_PC_PRED = {
+    "mahalanobis": _pc_pred_maha,
+    "ewc": _pc_pred_ewc,
+    "tinyol": _pc_pred_tinyol,
+}
+
+
 def _parity(model: str, ckpt: Path, samples: list[dict]) -> dict:
     """Compare pred board vs pred PC sur les features réellement envoyées."""
     valid = [s for s in samples if s.get("features")]
@@ -97,7 +128,7 @@ def _parity(model: str, ckpt: Path, samples: list[dict]) -> dict:
         return {"parity_ok": None, "n_compared": 0, "parity_mismatch_count": None}
     feats = np.array([s["features"] for s in valid], dtype=np.float32)
     board = np.array([int(s["pred"]) for s in valid])
-    pc = _pc_pred_maha(ckpt, feats) if model == "mahalanobis" else _pc_pred_ewc(ckpt, feats)
+    pc = _PC_PRED[model](ckpt, feats)
     n_mismatch = int((board != pc).sum())
     return {
         "parity_ok": bool(n_mismatch == 0),
@@ -148,11 +179,15 @@ def run_cell(dataset: str, thr: int, args, rows: list[dict]) -> None:
     field, *_ = (SWEEPS[dataset][1],)
     print(f"\n{'='*70}\n=== BOARD CELL  dataset={dataset}  seuil={thr}  ===\n{'='*70}")
 
-    # 1) Entraîner + exporter les modèles de référence board (Maha + EWC).
+    # 1) Entraîner + exporter les modèles de référence board (Maha + EWC + TinyOL).
     ckpts: dict[str, Path] = {}
     for model in PARITY_MODELS:
         exp_dir = EXPERIMENTS / f"exp_S32_board_{model}_{dataset}_thr{thr}"
-        ck = exp_dir / "checkpoints" / ("mahalanobis_task0.pkl" if model == "mahalanobis" else "ewc_head.pt")
+        ck = exp_dir / "checkpoints" / {
+            "mahalanobis": "mahalanobis_task0.pkl",
+            "ewc": "ewc_head.pt",
+            "tinyol": "tinyol_board.pt",
+        }[model]
         if not (args.skip_existing and ck.exists()):
             proc = _run([sys.executable, "scripts/train_board_reference.py",
                          "--model", model, "--dataset", dataset, "--threshold", str(thr),
@@ -168,6 +203,13 @@ def run_cell(dataset: str, thr: int, args, rows: list[dict]) -> None:
                       "--ewc-head", str(ckpts["ewc"])]
         if _run(export_cmd).returncode != 0:
             print("  [FAIL export]"); return
+        # S5201 : poids TinyOL (dim 5 board) — sans eux la route TinyOL tourne à zéro.
+        # --emit-test-reference : garde le golden de parité C↔Python aligné sur les
+        # poids exportés (sinon `make test` échoue après une campagne).
+        if _run([sys.executable, "scripts/export_weights_tinyol.py",
+                 "--checkpoint", str(ckpts["tinyol"]), "--dim", "5",
+                 "--emit-test-reference"]).returncode != 0:
+            print("  [FAIL export tinyol]"); return
         # 2) Recompile + flash (1 fois pour la cellule).
         subprocess.run(["make", "-C", str(FW_DIR), "clean"], capture_output=True)
         if _run(["make", "-C", str(FW_DIR), "all"]).returncode != 0:

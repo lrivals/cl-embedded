@@ -433,6 +433,237 @@ def export_ewc_int8_v2_test_vectors_h(model_path: Path, out_path: Path,
     print(f"[export] test_vectors_v2.h écrit → {header_path}  (n={n}, k={k})")
 
 
+# ── Export sub-INT8 (Sprint 48 / S4803) ────────────────────────────────────
+
+# Correspondance mode → (build flag, bits de packing) pour la doc du header généré.
+_SUBINT8_SCHEMES = {
+    "int4":    {"mode": "linear",  "bits": 4, "flag": "EWC_INT4", "pack_bits": 4},
+    "ternary": {"mode": "ternary", "bits": 2, "flag": "EWC_INT2", "pack_bits": 2},
+    "binary":  {"mode": "binary",  "bits": 1, "flag": "EWC_INT1", "pack_bits": 1},
+}
+
+
+def _pack_weights(q: np.ndarray, pack_bits: int) -> np.ndarray:
+    """Empaquette une matrice d'entiers signés [n_out, n_in] en octets (LSB-first).
+
+    Miroir exact de ``ewc_v2_pack_row`` / ``ewc_v2_unpack_weight`` (firmware) :
+      - ``pack_bits ∈ {4, 2}`` : complément à deux sur ``pack_bits`` bits ;
+      - ``pack_bits == 1`` : binaire ``{−1,+1}`` → bit ``{0,1}`` (``q > 0 → 1``).
+    Retourne un ``uint8`` [n_out, ceil(n_in·pack_bits/8)].
+    """
+    n_out, n_in = q.shape
+    per = 8 // pack_bits
+    stride = (n_in * pack_bits + 7) // 8
+    packed = np.zeros((n_out, stride), dtype=np.uint8)
+    mask = (1 << pack_bits) - 1
+    for j in range(n_out):
+        for i in range(n_in):
+            if pack_bits == 1:
+                field = 1 if int(q[j, i]) > 0 else 0
+            else:
+                field = int(q[j, i]) & mask
+            packed[j, i // per] |= np.uint8(field << ((i % per) * pack_bits))
+    return packed
+
+
+def _ewc_subint8_quantize(model_path: Path, mode: str, bits: int, granularity: str,
+                          calib_X: np.ndarray | None):
+    """Quantifie une tête EWC en sub-INT8 avec les primitives EXACTES de l'émulateur S47.
+
+    Réutilise ``_quant_weight_mode`` (dispatch linéaire/ternaire/binaire) et
+    ``calibrate_activations`` → parité board↔PC par construction. Retourne poids
+    quantifiés (entiers), scales par-canal, bornes d'activation calibrées.
+    """
+    import torch  # noqa: PLC0415
+
+    from src.utils.int8_c_emulation import (  # noqa: PLC0415
+        EWCHeadWeights,
+        _quant_weight_mode,
+        calibrate_activations,
+    )
+
+    checkpoint = torch.load(model_path, map_location="cpu")
+    sd = checkpoint.get("model_state_dict", checkpoint)
+    w = EWCHeadWeights.from_state_dict(sd)
+    k = int(w.w1.shape[1])
+
+    if calib_X is None:
+        rng = np.random.default_rng(48)
+        calib_X = rng.standard_normal((256, k)).astype(np.float32)
+    act = calibrate_activations(w, np.asarray(calib_X, dtype=np.float32))
+
+    qw, scales = {}, {}
+    for name in ("w1", "w2", "w3"):
+        q, s = _quant_weight_mode(getattr(w, name), mode, granularity, bits)
+        qw[name] = q.astype(np.int32)
+        scales[name] = s.astype(np.float32)
+    qmax_a = 127.0  # activations int8 calibrées (q7_calib)
+    return {
+        "k": k, "w": w, "qw": qw, "scales": scales,
+        "act_max": {"in": act["in"], "h1": act["h1"], "h2": act["h2"]},
+        "scale_act": {"in": act["in"] / qmax_a, "h1": act["h1"] / qmax_a,
+                      "h2": act["h2"] / qmax_a},
+    }
+
+
+def _emit_subint8_matrix(name: str, q: np.ndarray, packed: bool, pack_bits: int) -> str:
+    """Émet une matrice de poids sub-INT8 : packée (uint8) ou conteneur int8."""
+    if packed:
+        return _array2d_int_to_c(name, _pack_weights(q, pack_bits), "uint8_t")
+    return _array2d_int_to_c(name, q.astype(np.int32), "int8_t")
+
+
+def export_ewc_subint8_to_c(model_path: Path, out_path: Path, mode: str, bits: int,
+                            granularity: str, symmetry: str, packed: bool,
+                            calib_X: np.ndarray | None = None) -> dict:
+    """Génère inc/ewc_head_subint8_weights.h (poids sub-INT8 pré-quantifiés).
+
+    Header vide par défaut ⇒ ce flag l'active (``EWC_SUBINT8_WEIGHTS_PROVIDED 1``).
+    NE PAS ÉDITER À LA MAIN (règle CLAUDE.md). Parité émulateur subint8 par construction.
+    """
+    q = _ewc_subint8_quantize(model_path, mode, bits, granularity, calib_X)
+    k = q["k"]
+    w = q["w"]
+    sa = q["scale_act"]
+    # Bits « effectifs » de stockage : ternaire = 2, binaire = 1 (indépendants de --weight-bits).
+    eff_bits = {"linear": bits, "ternary": 2, "binary": 1}[mode]
+    pack_bits = eff_bits
+    flag = {"linear": ("EWC_INT4" if bits == 4 else "EWC_INT2"),
+            "ternary": "EWC_INT2", "binary": "EWC_INT1"}[mode]
+    bits = eff_bits
+
+    lines = [
+        "/* ewc_head_subint8_weights.h — GÉNÉRÉ par export_weights_c.py --ewc-subint8 (S4803).",
+        f" * Schéma : mode={mode} bits={bits} granularité={granularity} symétrie={symmetry}"
+        f" packé={int(packed)}.",
+        f" * Build firmware associé : -D{flag}" + (" -DEWC_INTx_PACKED" if packed else "") + ".",
+        " * Poids pré-quantifiés (parité émulateur subint8). NE PAS ÉDITER À LA MAIN. */",
+        "#ifndef EWC_HEAD_SUBINT8_WEIGHTS_H",
+        "#define EWC_HEAD_SUBINT8_WEIGHTS_H",
+        "#include <stdint.h>",
+        "",
+        "#define EWC_SUBINT8_WEIGHTS_PROVIDED 1",
+        f"#define EWC_SUBINT8_NATIVE_DIM {k}",
+        f"#define EWC_SUBINT8_PACK_BITS {pack_bits}",
+        f"#define EWC_SUBINT8_PACKED {int(packed)}",
+        "",
+        _emit_subint8_matrix("EWC_SUB_W1", q["qw"]["w1"], packed, pack_bits),
+        _array1d_to_c("EWC_SUB_SCALE_W1", q["scales"]["w1"].astype(np.float32)),
+        _array1d_to_c("EWC_SUB_B1", w.b1.astype(np.float32)),
+        "",
+        _emit_subint8_matrix("EWC_SUB_W2", q["qw"]["w2"], packed, pack_bits),
+        _array1d_to_c("EWC_SUB_SCALE_W2", q["scales"]["w2"].astype(np.float32)),
+        _array1d_to_c("EWC_SUB_B2", w.b2.astype(np.float32)),
+        "",
+        _emit_subint8_matrix("EWC_SUB_W3", q["qw"]["w3"], packed, pack_bits),
+        _array1d_to_c("EWC_SUB_SCALE_W3", q["scales"]["w3"].astype(np.float32)),
+        _array1d_to_c("EWC_SUB_B3", w.b3.astype(np.float32)),
+        "",
+        f"static const float EWC_SUB_SCALE_ACT_IN = {_fmt_float(sa['in'])};",
+        f"static const float EWC_SUB_SCALE_ACT_H1 = {_fmt_float(sa['h1'])};",
+        f"static const float EWC_SUB_SCALE_ACT_H2 = {_fmt_float(sa['h2'])};",
+        "",
+        _array1d_to_c("EWC_SUB_ACT_MAX",
+                      np.array([q["act_max"]["in"], q["act_max"]["h1"],
+                                q["act_max"]["h2"]], dtype=np.float32)),
+        "",
+        "#endif /* EWC_HEAD_SUBINT8_WEIGHTS_H */",
+    ]
+    header_path = out_path / "ewc_head_subint8_weights.h"
+    header_path.write_text("\n".join(lines) + "\n")
+    print(f"[export] ewc_head_subint8_weights.h écrit → {header_path}  "
+          f"(k={k}, mode={mode}, bits={bits}, packé={int(packed)})")
+    return q
+
+
+def export_ewc_subint8_test_vectors_h(model_path: Path, out_path: Path,
+                                      calib_X: np.ndarray | None = None,
+                                      n_vectors: int = 8) -> None:
+    """Génère tests/test_vectors_subint8.h : golden auto-suffisant TOUS schémas (S4803).
+
+    Émet, pour test_ewc_subint8.c (S4802) :
+      - poids FP32 (TV_SUB_W*) + act_max + entrées (voie linéaire INT4 on-board) ;
+      - poids quantifiés + scales par-canal INT4 / ternaire / binaire (voies que le
+        firmware ne peut PAS reproduire on-board → chargés depuis le golden) ;
+      - logits golden ``forward_quant(subint8(...))`` par schéma.
+    Parité par construction (mêmes primitives émulateur). NE PAS ÉDITER À LA MAIN.
+    """
+    import torch  # noqa: PLC0415
+
+    from src.utils.int8_c_emulation import (  # noqa: PLC0415
+        EWCHeadWeights,
+        QuantConfig,
+        _quant_weight_mode,
+        calibrate_activations,
+        forward_fp32,
+        forward_quant,
+    )
+
+    checkpoint = torch.load(model_path, map_location="cpu")
+    sd = checkpoint.get("model_state_dict", checkpoint)
+    w = EWCHeadWeights.from_state_dict(sd)
+    k = int(w.w1.shape[1])
+
+    if calib_X is None:
+        rng = np.random.default_rng(480)
+        X = rng.standard_normal((n_vectors, k)).astype(np.float32)
+    else:
+        X = np.asarray(calib_X, dtype=np.float32)[:n_vectors]
+
+    act_max = calibrate_activations(w, X)
+    act_max_vec = np.array([act_max["in"], act_max["h1"], act_max["h2"]], dtype=np.float32)
+
+    def _mat(name: str, arr: np.ndarray) -> str:
+        rows, cols = arr.shape
+        inner = ",\n    ".join(
+            "{" + ", ".join(_fmt_float(float(v)) for v in row) + "}" for row in arr
+        )
+        return f"static const float {name}[{rows}][{cols}] = {{\n    {inner}\n}};"
+
+    n = X.shape[0]
+    lines = [
+        "#pragma once",
+        "/* test_vectors_subint8.h — GÉNÉRÉ par export_weights_c.py --ewc-subint8-test-vectors",
+        " * (S4803). Golden auto-suffisant TOUS schémas (INT4 linéaire / ternaire / binaire)",
+        " * pour la parité C sub-INT8 ↔ émulateur Python. NE PAS ÉDITER À LA MAIN. */",
+        f"#define TV_SUB_N {n}",
+        f"#define TV_SUB_DIM {k}",
+        f"#define TV_SUB_OUT {forward_fp32(w, X).shape[1]}",
+        f"#define TV_SUB_H1 {w.w1.shape[0]}",
+        f"#define TV_SUB_H2 {w.w2.shape[0]}",
+        "",
+        "/* Poids FP32 de référence (voie linéaire INT4 on-board, convention [out][in]). */",
+        _mat("TV_SUB_W1", w.w1.astype(np.float32)),
+        _array1d_to_c("TV_SUB_B1", w.b1.astype(np.float32)),
+        _mat("TV_SUB_W2", w.w2.astype(np.float32)),
+        _array1d_to_c("TV_SUB_B2", w.b2.astype(np.float32)),
+        _mat("TV_SUB_W3", w.w3.astype(np.float32)),
+        _array1d_to_c("TV_SUB_B3", w.b3.astype(np.float32)),
+        "",
+        _array1d_to_c("TV_SUB_ACT_MAX", act_max_vec),
+        _mat("TV_SUB_INPUT", X),
+        "",
+    ]
+
+    # Un bloc par schéma : poids quantifiés + scales par-canal + logits golden.
+    for tag, spec in _SUBINT8_SCHEMES.items():
+        mode, bits = spec["mode"], spec["bits"]
+        TAG = tag.upper()
+        cfg = QuantConfig.subint8(bits, "per_channel", "symmetric", mode)
+        logits = forward_quant(w, X, cfg, act_max=act_max)
+        lines.append(f"/* ── Schéma {tag} (mode={mode}, bits={bits}) ── */")
+        for wn, WN in (("w1", "W1"), ("w2", "W2"), ("w3", "W3")):
+            q, s = _quant_weight_mode(getattr(w, wn), mode, "per_channel", bits)
+            lines.append(_array2d_int_to_c(f"TV_SUB_Q{WN}_{TAG}", q.astype(np.int32), "int8_t"))
+            lines.append(_array1d_to_c(f"TV_SUB_SCALE_{WN}_{TAG}", s.astype(np.float32)))
+        lines.append(_mat(f"TV_SUB_LOGITS_{TAG}", logits.astype(np.float32)))
+        lines.append("")
+
+    header_path = out_path / "test_vectors_subint8.h"
+    header_path.write_text("\n".join(lines) + "\n")
+    print(f"[export] test_vectors_subint8.h écrit → {header_path}  (n={n}, k={k})")
+
+
 # ── Export seuils du gate de dérive (Sprint 38 / S3803) ────────────────────
 
 def export_drift_thresholds_to_c(thresholds_json: Path, out_path: Path) -> dict:
@@ -1121,6 +1352,41 @@ def _parse_args() -> argparse.Namespace:
              "per_channel_int8 / q15) pour la parité C v2 ↔ Python (S3908/S3909). "
              "Nécessite --int8-v2 (ou --ewc-head) pour fournir le checkpoint.",
     )
+    # Sprint 48 — profondeur sub-INT8 (4/2 bits, linéaire/ternaire/binaire) + packing.
+    p.add_argument(
+        "--ewc-subint8", nargs="?", default=None, const=_AUTO,
+        help="Checkpoint EWCMlpMulticlass → inc/ewc_head_subint8_weights.h (poids sub-INT8 "
+             "pré-quantifiés, parité émulateur subint8, S4803). Profondeur via --weight-bits/"
+             "--weight-mode ; --packed pour le stockage bit-packé.",
+    )
+    p.add_argument(
+        "--weight-bits", type=int, default=4, choices=[4, 2],
+        help="Profondeur des poids sub-INT8 (linéaire) : 4 (QMAX 7) ou 2 (QMAX 1). "
+             "Ignoré pour --weight-mode ternary/binary (grille fixe). Défaut 4.",
+    )
+    p.add_argument(
+        "--weight-mode", choices=["linear", "ternary", "binary"], default="linear",
+        help="Schéma de quantification des poids (S47) : linear, ternary {−1,0,+1} (TWN) "
+             "ou binary {−1,+1} (BWN). Défaut linear.",
+    )
+    p.add_argument(
+        "--granularity", choices=["per_channel", "per_tensor"], default="per_channel",
+        help="Granularité des scales de poids sub-INT8 (défaut per_channel).",
+    )
+    p.add_argument(
+        "--symmetry", choices=["symmetric", "affine"], default="symmetric",
+        help="Symétrie de quantification sub-INT8 (défaut symmetric).",
+    )
+    p.add_argument(
+        "--packed", action="store_true",
+        help="Empaquette les poids sub-INT8 (2/octet INT4, 4/octet INT2/ternaire, "
+             "8/octet binaire) — cohérent avec ewc_v2_unpack_weight (-DEWC_INTx_PACKED).",
+    )
+    p.add_argument(
+        "--ewc-subint8-test-vectors", action="store_true",
+        help="Génère tests/test_vectors_subint8.h (golden émulateur INT4/ternaire/binaire) "
+             "pour test_ewc_subint8.c (S4802). Nécessite --ewc-subint8 (ou --ewc-head).",
+    )
     return p.parse_args()
 
 
@@ -1240,6 +1506,28 @@ def main() -> None:
             )
         export_ewc_int8_v2_test_vectors_h(int8_v2_ckpt, test_vectors_dir,
                                           _load_calib_arrays(args))
+
+    # Sprint 48 — sub-INT8 : header de poids pré-quantifiés (linéaire/ternaire/binaire).
+    subint8_ckpt: Path | None = None
+    if args.ewc_subint8 is not None:
+        subint8_ckpt = _resolve(args.ewc_subint8, "ewc")
+        export_ewc_subint8_to_c(
+            subint8_ckpt, out_path, args.weight_mode, args.weight_bits,
+            args.granularity, args.symmetry, args.packed, _load_calib_arrays(args),
+        )
+    else:
+        print("[export] --ewc-subint8 non fourni : ewc_head_subint8_weights.h inchangé")
+
+    if args.ewc_subint8_test_vectors:
+        test_vectors_dir = Path("firmware/stm32f4_blink/tests")
+        test_vectors_dir.mkdir(parents=True, exist_ok=True)
+        tv_ckpt = subint8_ckpt if subint8_ckpt is not None else (
+            _resolve(args.ewc_head, "ewc") if args.ewc_head is not None else None)
+        if tv_ckpt is None:
+            raise SystemExit(
+                "--ewc-subint8-test-vectors nécessite --ewc-subint8 (ou --ewc-head)."
+            )
+        export_ewc_subint8_test_vectors_h(tv_ckpt, test_vectors_dir, _load_calib_arrays(args))
 
     if args.dump_test_vectors:
         test_vectors_dir = Path("firmware/stm32f4_blink/tests")

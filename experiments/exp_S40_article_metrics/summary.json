@@ -1,0 +1,3244 @@
+{
+  "_meta": {
+    "generated_by": "scripts/aggregate_article_ewc.py",
+    "generated_at": "2026-09-08T22:58:18",
+    "sprint": 40,
+    "task": "S4008",
+    "model": "ewc",
+    "condition": "5feat",
+    "platforms": [
+      "mesuré board",
+      "émulé PC",
+      "mesuré PC",
+      "théorique"
+    ],
+    "note": "Lecture seule : aucune mesure recalculée, aucun JSON source réécrit. Chaque cellule porte value/source_json/platform/na_reason ; une mesure absente vaut null ou « à mesurer », jamais 0.",
+    "energy_note": "Les trois estimateurs d'énergie (régression de cadence, delta/WFI, lot INFER_BATCH_N) ne sont JAMAIS fusionnés : leur comparaison est elle-même un résultat."
+  },
+  "monitoring": {
+    "performance": {
+      "pc_acc_final": {
+        "value": 0.9791258969341161,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_aa": {
+        "value": 0.9791258969341161,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_af": {
+        "value": 0.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_bwt": {
+        "value": 0.000978473581213335,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_f1_faulty": {
+        "value": 0.9193989071038251,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_f1_macro": {
+        "value": 0.9554487330908175,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_roc_auc": {
+        "value": 0.9879202475012439,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_inference_latency_ms": {
+        "value": 0.03464293999996926,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "board_frozen_f1_faulty": {
+        "value": 0.9194,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_accuracy": {
+        "value": 0.9846,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_latency_us_p50": {
+        "value": 48.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_bss_bytes": {
+        "value": 100152,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_parity_rate": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_parity_rate": {
+        "value": 0.988660062565172,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_latency_us_p50": {
+        "value": 239.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_update_overhead_us_p50": {
+        "value": 191.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_int8_legacy_f1_faulty": {
+        "value": 0.1337,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_int8_legacy_agreement": {
+        "value": 0.59548950593143,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_int8_legacy_f1_faulty": {
+        "value": 0.06782768102658111,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_int8_ram_ratio": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "ablation_int8": {
+      "f1_fp32_reference": {
+        "value": 0.9194,
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "dominant_factor": {
+        "value": "scale calibré par-tenseur (vs 1/128)",
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_legacy_c_f1": {
+        "value": 0.1178,
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_fix_acc32_f1": {
+        "value": 0.0419,
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_per_tensor_calib_f1": {
+        "value": 0.9201,
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_per_channel_int8_f1": {
+        "value": 0.9187,
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_q15_f1": {
+        "value": 0.9194,
+        "source_json": "experiments/exp_S39_ablation/monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_fp32_metric": {
+        "value": 0.9158,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_fp32_ram_weights_bytes": {
+        "value": 2888,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_fp32_bops_proxy": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_int8_legacy_metric": {
+        "value": 0.0267,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_legacy_ram_weights_bytes": {
+        "value": 722,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_legacy_bops_proxy": {
+        "value": 0.0625,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_int8_perchannel_metric": {
+        "value": 0.915,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_perchannel_ram_weights_bytes": {
+        "value": 722,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_perchannel_bops_proxy": {
+        "value": 0.0625,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_q15_metric": {
+        "value": 0.9158,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_q15_ram_weights_bytes": {
+        "value": 1444,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_q15_bops_proxy": {
+        "value": 0.25,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_mixed_metric": {
+        "value": 0.9158,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_mixed_ram_weights_bytes": {
+        "value": 722,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_mixed_bops_proxy": {
+        "value": 0.0625,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      }
+    },
+    "recovery_board": {
+      "per_channel_frozen_f1_faulty": {
+        "value": 0.9173,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_f1_macro": {
+        "value": 0.9543,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_latency_us_p50": {
+        "value": 65.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_bss_bytes": {
+        "value": 101236,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_parity_rate": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_agreement_int8_vs_fp32": {
+        "value": 0.9996089166992569,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_ram_ratio_fp32_over_quant": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_ram_weights_fp32_bytes": {
+        "value": 2688,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_ram_weights_quant_bytes": {
+        "value": 672,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_f1_faulty": {
+        "value": 0.9016393442622951,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_f1_macro": {
+        "value": 0.9456323522464214,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_latency_us_p50": {
+        "value": 577.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_bss_bytes": {
+        "value": 101236,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_parity_rate": {
+        "value": 0.9885297184567258,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_agreement_int8_vs_fp32": {
+        "value": 0.8336592360839525,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_ram_ratio_fp32_over_quant": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_ram_weights_fp32_bytes": {
+        "value": 2688,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_ram_weights_quant_bytes": {
+        "value": 672,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "q15_frozen_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_q15_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      },
+      "q15_online_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_q15_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      },
+      "int8_legacy_frozen_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_int8_legacy_monitoring_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      },
+      "int8_legacy_online_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_int8_legacy_monitoring_online.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      }
+    },
+    "moment": {
+      "fp32_auroc": {
+        "value": 0.97464,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "fp32_ram_weights_bytes": {
+        "value": 2820,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "before_auroc": {
+        "value": 0.974477,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "before_ram_weights_bytes": {
+        "value": 705,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "after_auroc": {
+        "value": 0.974649,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "after_ram_weights_bytes": {
+        "value": 705,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "both_auroc": {
+        "value": 0.974663,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "both_ram_weights_bytes": {
+        "value": 705,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "delta_before_vs_fp32": {
+        "value": -0.000163,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "delta_after_vs_fp32": {
+        "value": 9e-06,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "delta_both_vs_fp32": {
+        "value": 2.3e-05,
+        "source_json": "experiments/exp_S46_ewc/monitoring_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "board_both_f1_faulty": {
+        "value": 0.9213,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_f1_macro": {
+        "value": 0.9565,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_latency_dwt_us_p50": {
+        "value": 65.0,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_bss_bytes": {
+        "value": 101236,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_parity_board_pc": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_ab_vs_after": {
+        "value": 0.004,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_f1_after_board": {
+        "value": 0.9173,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_agreement_int8_vs_fp32": {
+        "value": 0.9994785555990092,
+        "source_json": "experiments/exp_S46_board/monitoring_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "depth_pc": {
+      "int8_per_tensor_auroc_quant": {
+        "value": 0.974649,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_tensor_delta_auroc": {
+        "value": 9e-06,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_tensor_weight_bits": {
+        "value": 8,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int8_per_channel_auroc_quant": {
+        "value": 0.974878,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_channel_delta_auroc": {
+        "value": 0.000238,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_channel_weight_bits": {
+        "value": 8,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int8_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int6_per_tensor_auroc_quant": {
+        "value": 0.974619,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_tensor_delta_auroc": {
+        "value": -2.1e-05,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_tensor_weight_bits": {
+        "value": 6,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 5.3333,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int6_per_channel_auroc_quant": {
+        "value": 0.974954,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_channel_delta_auroc": {
+        "value": 0.000314,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_channel_weight_bits": {
+        "value": 6,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 5.3333,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int6_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int4_per_tensor_auroc_quant": {
+        "value": 0.97571,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_tensor_delta_auroc": {
+        "value": 0.00107,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_tensor_weight_bits": {
+        "value": 4,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 8.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int4_per_channel_auroc_quant": {
+        "value": 0.974112,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_channel_delta_auroc": {
+        "value": -0.000528,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_channel_weight_bits": {
+        "value": 4,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 8.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int4_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int3_per_tensor_auroc_quant": {
+        "value": 0.977197,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_tensor_delta_auroc": {
+        "value": 0.002557,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_tensor_weight_bits": {
+        "value": 3,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 10.6667,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int3_per_channel_auroc_quant": {
+        "value": 0.972065,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_channel_delta_auroc": {
+        "value": -0.002575,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_channel_weight_bits": {
+        "value": 3,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 10.6667,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int3_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int2_per_tensor_auroc_quant": {
+        "value": 0.971798,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_tensor_delta_auroc": {
+        "value": -0.002842,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_tensor_weight_bits": {
+        "value": 2,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 16.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int2_per_channel_auroc_quant": {
+        "value": 0.967757,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_channel_delta_auroc": {
+        "value": -0.006883,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_channel_weight_bits": {
+        "value": 2,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 16.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_int2_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_auroc_quant": {
+        "value": 0.972498,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_delta_auroc": {
+        "value": -0.002142,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_weight_bits": {
+        "value": "ternaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 20.2532,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "ternaire_per_channel_auroc_quant": {
+        "value": 0.972498,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_channel_delta_auroc": {
+        "value": -0.002142,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_channel_weight_bits": {
+        "value": "ternaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 20.2532,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_ternaire_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "binaire_per_tensor_auroc_quant": {
+        "value": 0.962937,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_tensor_delta_auroc": {
+        "value": -0.011703,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_tensor_weight_bits": {
+        "value": "binaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 32.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "binaire_per_channel_auroc_quant": {
+        "value": 0.962937,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_channel_delta_auroc": {
+        "value": -0.011703,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_channel_weight_bits": {
+        "value": "binaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 32.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_monitoring_binaire_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "symmetry_int2_affine_auroc_quant": {
+        "value": 0.912761,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int2_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int2_affine_delta_auroc": {
+        "value": -0.061879,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int2_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int2_symmetric_auroc_quant": {
+        "value": 0.967757,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int2_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int2_symmetric_delta_auroc": {
+        "value": -0.006883,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int2_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_affine_auroc_quant": {
+        "value": 0.915527,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int3_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_affine_delta_auroc": {
+        "value": -0.059113,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int3_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_symmetric_auroc_quant": {
+        "value": 0.972065,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int3_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_symmetric_delta_auroc": {
+        "value": -0.002575,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int3_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_affine_auroc_quant": {
+        "value": 0.919238,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int4_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_affine_delta_auroc": {
+        "value": -0.055402,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int4_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_symmetric_auroc_quant": {
+        "value": 0.974112,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int4_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_symmetric_delta_auroc": {
+        "value": -0.000528,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_monitoring_int4_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      }
+    },
+    "depth_board": {
+      "bits4_per_channel_nonpacked_auroc_board": {
+        "value": 0.9878710979104757,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_f1_faulty": {
+        "value": 0.921,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_latency_dwt_p50_us": {
+        "value": 67.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_bss_bytes": {
+        "value": 105640,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_auroc_board": {
+        "value": 0.9878710979104757,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_f1_faulty": {
+        "value": 0.921,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_latency_dwt_p50_us": {
+        "value": 123.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_bss_bytes": {
+        "value": 105304,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_bss_saved_by_packing": {
+        "value": 336,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_auroc_board": {
+        "value": 0.9840948731041921,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_f1_faulty": {
+        "value": 0.9042,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_latency_dwt_p50_us": {
+        "value": 67.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_bss_bytes": {
+        "value": 105640,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_auroc_board": {
+        "value": 0.9840948731041921,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_f1_faulty": {
+        "value": 0.9042,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_latency_dwt_p50_us": {
+        "value": 123.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_bss_bytes": {
+        "value": 105136,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_bss_saved_by_packing": {
+        "value": 504,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_auroc_board": {
+        "value": 0.9678391567875925,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_f1_faulty": {
+        "value": 0.6878,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_latency_dwt_p50_us": {
+        "value": 67.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_bss_bytes": {
+        "value": 105640,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_auroc_board": {
+        "value": 0.9678391567875925,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_f1_faulty": {
+        "value": 0.6878,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_latency_dwt_p50_us": {
+        "value": 125.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_bss_bytes": {
+        "value": 105068,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_bss_saved_by_packing": {
+        "value": 572,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "ram": {
+      "fp32_board_data": {
+        "value": 460,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_bss": {
+        "value": 100152,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_stack_peak_inference": {
+        "value": 4416,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_stack_peak_update": {
+        "value": 4688,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_total": {
+        "value": 105300,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_total_pct_budget": {
+        "value": 40.17,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_pc_data": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "valeur absente de experiments/exp_S49_ram/summary.json"
+      },
+      "fp32_pc_bss": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "valeur absente de experiments/exp_S49_ram/summary.json"
+      },
+      "fp32_pc_stack_peak_inference": {
+        "value": 1992,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "fp32_pc_stack_peak_update": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "valeur absente de experiments/exp_S49_ram/summary.json"
+      },
+      "fp32_pc_total": {
+        "value": 1992,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "int8_board_data": {
+        "value": 460,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_bss": {
+        "value": 100152,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_stack_peak_inference": {
+        "value": 4328,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_stack_peak_update": {
+        "value": 4712,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_total": {
+        "value": 105324,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_total_pct_budget": {
+        "value": 40.18,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_pc_data": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_bss": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_stack_peak_inference": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_stack_peak_update": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_total": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_board_ratio_int8_vs_fp32": {
+        "value": 1.0002,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "ram_budget_bytes": {
+        "value": 262144,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "théorique",
+        "na_reason": null
+      }
+    },
+    "latency": {
+      "segment_dequant_cycles_p50": {
+        "value": 200.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_dequant_cycles_p50_mean": {
+        "value": 200.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_mac_cycles_p50": {
+        "value": 6841.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_mac_cycles_p50_mean": {
+        "value": 6785.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_requant_cycles_p50": {
+        "value": 3760.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_requant_cycles_p50_mean": {
+        "value": 3777.25,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "total_int8_us_p50": {
+        "value": 74.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "total_fp32_us_p50": {
+        "value": 48.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_minus_fp32_us": {
+        "value": 26.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "cpu_hz": {
+        "value": 180000000,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "compute_cost": {
+      "macs": {
+        "value": 672,
+        "source_json": "experiments/exp_S40_article_metrics/compute_cost_ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "flops": {
+        "value": 1344,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "bops_fp32": {
+        "value": 1376256,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "bops_int8": {
+        "value": 86016,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "bops_ratio_fp32_over_int8": {
+        "value": 16,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "n_params": {
+        "value": 722,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "n_features": {
+        "value": 4,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "n_params_s39_reference": {
+        "value": 722,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "n_params_matches_s39": {
+        "value": true,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "macs_torchinfo": {
+        "value": 722,
+        "source_json": "experiments/exp_S40_article_metrics/compute_cost_ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "macs_analytical_vs_torchinfo_delta_pct": {
+        "value": -6.925207756232687,
+        "source_json": "experiments/exp_S40_article_metrics/compute_cost_ewc_monitoring.json",
+        "platform": "théorique",
+        "na_reason": null
+      }
+    }
+  },
+  "pronostia": {
+    "performance": {
+      "pc_acc_final": {
+        "value": 0.9887118193891102,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_aa": {
+        "value": 0.9887118193891102,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_af": {
+        "value": 0.009960159362549792,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_bwt": {
+        "value": -0.0009960159362549792,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_f1_faulty": {
+        "value": 0.9164086687306502,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_f1_macro": {
+        "value": 0.9531868661426238,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_roc_auc": {
+        "value": 0.9954850591274513,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "pc_inference_latency_ms": {
+        "value": 0.03375087000009103,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "board_frozen_f1_faulty": {
+        "value": 0.9164,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_accuracy": {
+        "value": 0.9821,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_latency_us_p50": {
+        "value": 50.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_bss_bytes": {
+        "value": 105036,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_parity_rate": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_parity_rate": {
+        "value": 0.9754446509158482,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_latency_us_p50": {
+        "value": 251.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_update_overhead_us_p50": {
+        "value": 201.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_int8_legacy_f1_faulty": {
+        "value": 0.138,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_int8_legacy_agreement": {
+        "value": 0.7363600159299084,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_online_int8_legacy_f1_faulty": {
+        "value": 0.08455882352941177,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_frozen_int8_ram_ratio": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S36_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "ablation_int8": {
+      "f1_fp32_reference": {
+        "value": 0.9616,
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "dominant_factor": {
+        "value": "scale calibré par-tenseur (vs 1/128)",
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_legacy_c_f1": {
+        "value": 0.0663,
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_fix_acc32_f1": {
+        "value": 0.0667,
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_per_tensor_calib_f1": {
+        "value": 0.9462,
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_per_channel_int8_f1": {
+        "value": 0.9426,
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ladder_q15_f1": {
+        "value": 0.9616,
+        "source_json": "experiments/exp_S39_ablation/pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_fp32_metric": {
+        "value": 0.9666,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_fp32_ram_weights_bytes": {
+        "value": 3016,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_fp32_bops_proxy": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_int8_legacy_metric": {
+        "value": 0.0447,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_legacy_ram_weights_bytes": {
+        "value": 754,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_legacy_bops_proxy": {
+        "value": 0.0625,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_int8_perchannel_metric": {
+        "value": 0.9437,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_perchannel_ram_weights_bytes": {
+        "value": 754,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_int8_perchannel_bops_proxy": {
+        "value": 0.0625,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_q15_metric": {
+        "value": 0.9666,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_q15_ram_weights_bytes": {
+        "value": 1508,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_q15_bops_proxy": {
+        "value": 0.25,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "scheme_mixed_metric": {
+        "value": 0.9666,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_mixed_ram_weights_bytes": {
+        "value": 754,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "scheme_mixed_bops_proxy": {
+        "value": 0.0625,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      }
+    },
+    "recovery_board": {
+      "per_channel_frozen_f1_faulty": {
+        "value": 0.8995,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_f1_macro": {
+        "value": 0.9437,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_latency_us_p50": {
+        "value": 68.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_bss_bytes": {
+        "value": 106152,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_parity_rate": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_agreement_int8_vs_fp32": {
+        "value": 0.9950882782424001,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_ram_ratio_fp32_over_quant": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_ram_weights_fp32_bytes": {
+        "value": 2816,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_frozen_ram_weights_quant_bytes": {
+        "value": 704,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_f1_faulty": {
+        "value": 0.9211563731931669,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_f1_macro": {
+        "value": 0.9561488347584024,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_latency_us_p50": {
+        "value": 606.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_bss_bytes": {
+        "value": 106152,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_parity_rate": {
+        "value": 0.9735864082824529,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_agreement_int8_vs_fp32": {
+        "value": 0.8100358422939068,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_ram_ratio_fp32_over_quant": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_ram_weights_fp32_bytes": {
+        "value": 2816,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "per_channel_online_ram_weights_quant_bytes": {
+        "value": 704,
+        "source_json": "experiments/exp_S40_board_v2/results_per_channel_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "q15_frozen_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_q15_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      },
+      "q15_online_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_q15_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      },
+      "int8_legacy_frozen_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_int8_legacy_pronostia_frozen.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      },
+      "int8_legacy_online_f1_faulty": {
+        "value": "à mesurer",
+        "source_json": "experiments/exp_S40_board_v2/results_int8_legacy_pronostia_online.json",
+        "platform": "mesuré board",
+        "na_reason": "cellule de la grille S4002 non streamée (carte requise)"
+      }
+    },
+    "moment": {
+      "fp32_auroc": {
+        "value": 0.998703,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "fp32_ram_weights_bytes": {
+        "value": 3972,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "before_auroc": {
+        "value": 0.997811,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "before_ram_weights_bytes": {
+        "value": 993,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "after_auroc": {
+        "value": 0.997767,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "after_ram_weights_bytes": {
+        "value": 993,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "both_auroc": {
+        "value": 0.997787,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "both_ram_weights_bytes": {
+        "value": 993,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "delta_before_vs_fp32": {
+        "value": -0.000892,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "delta_after_vs_fp32": {
+        "value": -0.000936,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "delta_both_vs_fp32": {
+        "value": -0.000916,
+        "source_json": "experiments/exp_S46_ewc/pronostia_all.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "board_both_f1_faulty": {
+        "value": 0.9072,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_f1_macro": {
+        "value": 0.948,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_latency_dwt_us_p50": {
+        "value": 68.0,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_bss_bytes": {
+        "value": 106152,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_parity_board_pc": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_ab_vs_after": {
+        "value": 0.0077,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_f1_after_board": {
+        "value": 0.8995,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "board_both_agreement_int8_vs_fp32": {
+        "value": 0.9942917828222487,
+        "source_json": "experiments/exp_S46_board/pronostia_both.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "depth_pc": {
+      "int8_per_tensor_auroc_quant": {
+        "value": 0.997767,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_tensor_delta_auroc": {
+        "value": -0.000936,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_tensor_weight_bits": {
+        "value": 8,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int8_per_channel_auroc_quant": {
+        "value": 0.997787,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_channel_delta_auroc": {
+        "value": -0.000916,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_channel_weight_bits": {
+        "value": 8,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int8_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 4.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int8_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int6_per_tensor_auroc_quant": {
+        "value": 0.998177,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_tensor_delta_auroc": {
+        "value": -0.000526,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_tensor_weight_bits": {
+        "value": 6,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 5.3333,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int6_per_channel_auroc_quant": {
+        "value": 0.998021,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_channel_delta_auroc": {
+        "value": -0.000682,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_channel_weight_bits": {
+        "value": 6,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int6_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 5.3333,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int6_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int4_per_tensor_auroc_quant": {
+        "value": 0.997517,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_tensor_delta_auroc": {
+        "value": -0.001186,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_tensor_weight_bits": {
+        "value": 4,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 8.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int4_per_channel_auroc_quant": {
+        "value": 0.997122,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_channel_delta_auroc": {
+        "value": -0.001581,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_channel_weight_bits": {
+        "value": 4,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int4_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 8.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int4_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int3_per_tensor_auroc_quant": {
+        "value": 0.996555,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_tensor_delta_auroc": {
+        "value": -0.002148,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_tensor_weight_bits": {
+        "value": 3,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 10.6667,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int3_per_channel_auroc_quant": {
+        "value": 0.99663,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_channel_delta_auroc": {
+        "value": -0.002073,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_channel_weight_bits": {
+        "value": 3,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int3_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 10.6667,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int3_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int2_per_tensor_auroc_quant": {
+        "value": 0.952336,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_tensor_delta_auroc": {
+        "value": -0.046367,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_tensor_weight_bits": {
+        "value": 2,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 16.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "int2_per_channel_auroc_quant": {
+        "value": 0.990133,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_channel_delta_auroc": {
+        "value": -0.00857,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_channel_weight_bits": {
+        "value": 2,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "int2_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 16.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_int2_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_auroc_quant": {
+        "value": 0.983371,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_delta_auroc": {
+        "value": -0.015332,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_weight_bits": {
+        "value": "ternaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 20.2532,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "ternaire_per_channel_auroc_quant": {
+        "value": 0.983371,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_channel_delta_auroc": {
+        "value": -0.015332,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_channel_weight_bits": {
+        "value": "ternaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "ternaire_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 20.2532,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_ternaire_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "binaire_per_tensor_auroc_quant": {
+        "value": 0.971203,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_tensor_delta_auroc": {
+        "value": -0.0275,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_tensor_weight_bits": {
+        "value": "binaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_tensor.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_tensor_ram_ratio_vs_fp32_theoretical": {
+        "value": 32.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_tensor.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "binaire_per_channel_auroc_quant": {
+        "value": 0.971203,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_channel_delta_auroc": {
+        "value": -0.0275,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_channel_weight_bits": {
+        "value": "binaire",
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_channel.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "binaire_per_channel_ram_ratio_vs_fp32_theoretical": {
+        "value": 32.0,
+        "source_json": "experiments/exp_S47_depth/exp_S47_ewc_pronostia_binaire_per_channel.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "symmetry_int2_affine_auroc_quant": {
+        "value": 0.986179,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int2_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int2_affine_delta_auroc": {
+        "value": -0.012524,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int2_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int2_symmetric_auroc_quant": {
+        "value": 0.990133,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int2_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int2_symmetric_delta_auroc": {
+        "value": -0.00857,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int2_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_affine_auroc_quant": {
+        "value": 0.995919,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int3_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_affine_delta_auroc": {
+        "value": -0.002784,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int3_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_symmetric_auroc_quant": {
+        "value": 0.99663,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int3_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int3_symmetric_delta_auroc": {
+        "value": -0.002073,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int3_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_affine_auroc_quant": {
+        "value": 0.996849,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int4_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_affine_delta_auroc": {
+        "value": -0.001854,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int4_affine.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_symmetric_auroc_quant": {
+        "value": 0.997122,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int4_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "symmetry_int4_symmetric_delta_auroc": {
+        "value": -0.001581,
+        "source_json": "experiments/exp_S47_symmetry/exp_S47_ewc_pronostia_int4_symmetric.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      }
+    },
+    "depth_board": {
+      "bits4_per_channel_nonpacked_auroc_board": {
+        "value": 0.9999511641834807,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_f1_faulty": {
+        "value": 0.9887,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_latency_dwt_p50_us": {
+        "value": 70.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_bss_bytes": {
+        "value": 106152,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_nonpacked_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_auroc_board": {
+        "value": 0.9999511641834807,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_f1_faulty": {
+        "value": 0.9887,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_latency_dwt_p50_us": {
+        "value": 127.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_bss_bytes": {
+        "value": 105816,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_packed_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits4_per_channel_bss_saved_by_packing": {
+        "value": 336,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_auroc_board": {
+        "value": 0.9990701699525406,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_f1_faulty": {
+        "value": 0.379,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_latency_dwt_p50_us": {
+        "value": 70.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_bss_bytes": {
+        "value": 106152,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_nonpacked_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_auroc_board": {
+        "value": 0.9990701699525406,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_f1_faulty": {
+        "value": 0.379,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_latency_dwt_p50_us": {
+        "value": 127.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_bss_bytes": {
+        "value": 105648,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_packed_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits2_per_channel_bss_saved_by_packing": {
+        "value": 504,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_auroc_board": {
+        "value": 0.9661639924264519,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_f1_faulty": {
+        "value": 0.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_latency_dwt_p50_us": {
+        "value": 70.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_bss_bytes": {
+        "value": 106152,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_nonpacked_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_auroc_board": {
+        "value": 0.9661639924264519,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_f1_faulty": {
+        "value": 0.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_latency_dwt_p50_us": {
+        "value": 130.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_bss_bytes": {
+        "value": 105548,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_parity_pred": {
+        "value": 1.0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_packed_crc_errors": {
+        "value": 0,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "bits1_per_channel_bss_saved_by_packing": {
+        "value": 604,
+        "source_json": "experiments/exp_S48_summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "ram": {
+      "fp32_board_data": {
+        "value": 460,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_bss": {
+        "value": 105036,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_stack_peak_inference": {
+        "value": 4424,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_stack_peak_update": {
+        "value": 4696,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_total": {
+        "value": 110192,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_board_total_pct_budget": {
+        "value": 42.03,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "fp32_pc_data": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "valeur absente de experiments/exp_S49_ram/summary.json"
+      },
+      "fp32_pc_bss": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "valeur absente de experiments/exp_S49_ram/summary.json"
+      },
+      "fp32_pc_stack_peak_inference": {
+        "value": 1992,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "fp32_pc_stack_peak_update": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "valeur absente de experiments/exp_S49_ram/summary.json"
+      },
+      "fp32_pc_total": {
+        "value": 1992,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "int8_board_data": {
+        "value": 460,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_bss": {
+        "value": 105036,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_stack_peak_inference": {
+        "value": 4336,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_stack_peak_update": {
+        "value": 4720,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_total": {
+        "value": 110216,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_board_total_pct_budget": {
+        "value": 42.04,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_pc_data": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_bss": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_stack_peak_inference": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_stack_peak_update": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_pc_total": {
+        "value": null,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré PC",
+        "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+      },
+      "int8_board_ratio_int8_vs_fp32": {
+        "value": 1.0002,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "ram_budget_bytes": {
+        "value": 262144,
+        "source_json": "experiments/exp_S49_ram/summary.json",
+        "platform": "théorique",
+        "na_reason": null
+      }
+    },
+    "latency": {
+      "segment_dequant_cycles_p50": {
+        "value": 200.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_dequant_cycles_p50_mean": {
+        "value": 200.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_mac_cycles_p50": {
+        "value": 6729.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_mac_cycles_p50_mean": {
+        "value": 6785.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_requant_cycles_p50": {
+        "value": 3794.5,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "segment_requant_cycles_p50_mean": {
+        "value": 3777.25,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "total_int8_us_p50": {
+        "value": 74.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "total_fp32_us_p50": {
+        "value": 50.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "int8_minus_fp32_us": {
+        "value": 24.0,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      },
+      "cpu_hz": {
+        "value": 180000000,
+        "source_json": "experiments/exp_S50_int8_latency/ewc.json",
+        "platform": "mesuré board",
+        "na_reason": null
+      }
+    },
+    "compute_cost": {
+      "macs": {
+        "value": 704,
+        "source_json": "experiments/exp_S40_article_metrics/compute_cost_ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "flops": {
+        "value": 1408,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "bops_fp32": {
+        "value": 1441792,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "bops_int8": {
+        "value": 90112,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "bops_ratio_fp32_over_int8": {
+        "value": 16,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "n_params": {
+        "value": 754,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "n_features": {
+        "value": 5,
+        "source_json": "src/evaluation/compute_cost.py",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "n_params_s39_reference": {
+        "value": 754,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "émulé PC",
+        "na_reason": null
+      },
+      "n_params_matches_s39": {
+        "value": true,
+        "source_json": "experiments/exp_S39_quant_sweep/ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "macs_torchinfo": {
+        "value": 754,
+        "source_json": "experiments/exp_S40_article_metrics/compute_cost_ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      },
+      "macs_analytical_vs_torchinfo_delta_pct": {
+        "value": -6.63129973474801,
+        "source_json": "experiments/exp_S40_article_metrics/compute_cost_ewc_pronostia.json",
+        "platform": "théorique",
+        "na_reason": null
+      }
+    }
+  },
+  "energy": {
+    "_note": "Les trois estimateurs d'énergie (régression de cadence, delta/WFI, lot INFER_BATCH_N) ne sont JAMAIS fusionnés : leur comparaison est elle-même un résultat.",
+    "estimators": {
+      "regression": {
+        "method": "régression I(rate)",
+        "method_note": "estimateur PAR RÉGRESSION — à ne jamais fusionner avec l'estimateur par delta (S5302) ni avec l'intégration du profil par phase (S5305) : leur comparaison est elle-même un résultat.",
+        "gap3_energy_verdict": {
+          "verdict": "non_significatif",
+          "rationale": "l'énergie par inférence de ewc INT8 (67.5 µJ) et FP32 (67.7 µJ) diffèrent de -0.2 µJ pour une incertitude combinée de ±2.3 µJ (< 2 σ) : l'INT8 ne change pas mesurablement l'énergie par inférence. Le gain INT8 reste la RAM.",
+          "model": "ewc",
+          "energy_uj_int8": 67.46832026332879,
+          "energy_uj_fp32": 67.65168547398007,
+          "delta_uj": -0.18336521065127442,
+          "delta_sigma_uj": 2.3411981103174884,
+          "significant": false,
+          "latency_us_int8": 53.0,
+          "latency_us_fp32": 50.0
+        },
+        "cells": {
+          "ewc_fp32_energy_uj_per_inference": {
+            "value": 67.65168547398007,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_energy_uncertainty_uj": {
+            "value": 0.6983058931060796,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_r2": {
+            "value": 0.9995740004750834,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_slope_ua_per_hz": {
+            "value": 20.732971337413442,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_intercept_ma": {
+            "value": 39.78247202694389,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_dwt_latency_us_p50": {
+            "value": 50.0,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_energy_uj_per_inference": {
+            "value": 67.46832026332879,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_energy_uncertainty_uj": {
+            "value": 2.234631394974907,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_r2": {
+            "value": 0.9956311166516034,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_slope_ua_per_hz": {
+            "value": 20.676776053732393,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_intercept_ma": {
+            "value": 39.81483132584867,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_dwt_latency_us_p50": {
+            "value": 53.0,
+            "source_json": "experiments/exp_S53_rate_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          }
+        }
+      },
+      "delta_wfi": {
+        "method": "delta charge − repos WFI",
+        "method_note": "courant moyen mesuré sous charge d'inférence à cadence imposée (mode statique, préchauffage de session écarté)",
+        "scope_mesure": "sonde alimentant VDD_MCU (JP5 retiré) : le domaine mesuré est le STM32, hors ST-LINK et périphériques de la carte",
+        "cells": {
+          "ewc_fp32_energy_uj_per_inference": {
+            "value": 146.77119999999988,
+            "source_json": "experiments/exp_S53_wfi/ewc_fp32.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_energy_uj_per_update": {
+            "value": "à mesurer",
+            "source_json": "experiments/exp_S53_wfi/ewc_fp32.json",
+            "platform": "mesuré board",
+            "na_reason": "campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec --update, et se heurte à la même référence de scrutation active"
+          },
+          "ewc_int8_energy_uj_per_inference": {
+            "value": 145.03040000000001,
+            "source_json": "experiments/exp_S53_wfi/ewc_int8.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_int8_energy_uj_per_update": {
+            "value": "à mesurer",
+            "source_json": "experiments/exp_S53_wfi/ewc_int8.json",
+            "platform": "mesuré board",
+            "na_reason": "campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec --update, et se heurte à la même référence de scrutation active"
+          },
+          "i_idle_ma_wfi": {
+            "value": 27.369999999999997,
+            "source_json": "experiments/exp_S53_wfi/autonomy_delta.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "autonomy_h_2000mah_period_1s": {
+            "value": 72.95281511633127,
+            "source_json": "experiments/exp_S53_wfi/autonomy_delta.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          }
+        }
+      },
+      "batch": {
+        "method": "lot d'inférences par trame (INFER_BATCH_N)",
+        "method_note": "régression I(N) à cadence fixe, N imposé par -DINFER_BATCH_N",
+        "cells": {
+          "ewc_fp32_energy_uj_per_inference": {
+            "value": 5.076485528046073,
+            "source_json": "experiments/exp_S53_wfi/batch_sweep.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_r2": {
+            "value": 0.999825687921351,
+            "source_json": "experiments/exp_S53_wfi/batch_sweep.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_slope_a_per_inference_per_frame": {
+            "value": 0.0001555772457262051,
+            "source_json": "experiments/exp_S53_wfi/batch_sweep.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_intercept_a": {
+            "value": 0.03198038974289212,
+            "source_json": "experiments/exp_S53_wfi/batch_sweep.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "ewc_fp32_n_points_excluded_saturation": {
+            "value": 1,
+            "source_json": "experiments/exp_S53_wfi/batch_sweep.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          }
+        }
+      },
+      "freq_sweep": {
+        "method": "régression I(rate) répétée par fréquence SYSCLK",
+        "method_note": "l'énergie par inférence croît de +26.2 % de 45 à 180 MHz : ralentir le MCU réduit le coût par inférence — la marge du Gap 2 est convertible en autonomie.",
+        "tendance": "croissante_avec_f",
+        "cells": {
+          "45MHz_energy_uj_per_inference": {
+            "value": 170.05441263559308,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "45MHz_i_idle_ma": {
+            "value": 18.245000000000005,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "45MHz_ewc_latency_us_p50": {
+            "value": 198.0,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "45MHz_gap2_ok": {
+            "value": true,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "90MHz_energy_uj_per_inference": {
+            "value": 192.64412015432623,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "90MHz_i_idle_ma": {
+            "value": 24.943333333333335,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "90MHz_ewc_latency_us_p50": {
+            "value": 98.0,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "90MHz_gap2_ok": {
+            "value": true,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "180MHz_energy_uj_per_inference": {
+            "value": 214.6117084427564,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "180MHz_i_idle_ma": {
+            "value": 39.87500000000001,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "180MHz_ewc_latency_us_p50": {
+            "value": 50.0,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          },
+          "180MHz_gap2_ok": {
+            "value": true,
+            "source_json": "experiments/exp_S53_freq_sweep/summary.json",
+            "platform": "mesuré board",
+            "na_reason": null
+          }
+        }
+      },
+      "policy_update": {
+        "method": "différence de pentes I(rate) entre politiques",
+        "method_note": "estimateur PAR DIFFÉRENCE DE PENTES de régression (S5304) — à ne jamais fusionner avec l'estimateur par delta (S5302) ni avec l'intégration du profil par phase (S5305) : leur comparaison est elle-même un résultat.",
+        "cells": {
+          "monitoring_energy_uj_per_update": {
+            "value": "à mesurer",
+            "source_json": "experiments/exp_S53_policy_energy/economy_energy.json",
+            "platform": "mesuré board",
+            "na_reason": "différence non calculable : la régression de always, frozen n'est pas publiable (always : régression non significative : r²=0.696 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.; frozen : régression non significative : r²=0.366 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.)."
+          },
+          "pronostia_energy_uj_per_update": {
+            "value": "à mesurer",
+            "source_json": "experiments/exp_S53_policy_energy/economy_energy.json",
+            "platform": "mesuré board",
+            "na_reason": "différence non calculable : la régression de always, frozen n'est pas publiable (always : cellule absente; frozen : cellule absente)."
+          }
+        }
+      }
+    }
+  },
+  "context": {
+    "forgetting": {
+      "ewc_avg_forgetting_f1": {
+        "value": 0.8475134860110433,
+        "source_json": "experiments/exp_S54_forgetting_ewc/results.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "ewc_dataset": {
+        "value": "cwru",
+        "source_json": "experiments/exp_S54_forgetting_ewc/results.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "naive_avg_forgetting_f1": {
+        "value": 0.8577614876507236,
+        "source_json": "experiments/exp_S54_forgetting_naive/results.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "naive_dataset": {
+        "value": "cwru",
+        "source_json": "experiments/exp_S54_forgetting_naive/results.json",
+        "platform": "mesuré PC",
+        "na_reason": null
+      },
+      "_note": "Mesuré sur CWRU (class-incremental, 3 tâches), hors des deux jeux de l'article : reporté comme contexte, jamais mélangé aux lignes Pronostia/Monitoring. Sur Pronostia/Monitoring, exp_S36 donne AF ≤ 0.01 sur un scénario CL court."
+    }
+  },
+  "missing": [
+    "energy.estimators.delta_wfi.cells.ewc_fp32_energy_uj_per_update",
+    "energy.estimators.delta_wfi.cells.ewc_int8_energy_uj_per_update",
+    "energy.estimators.policy_update.cells.monitoring_energy_uj_per_update",
+    "energy.estimators.policy_update.cells.pronostia_energy_uj_per_update",
+    "monitoring.ram.fp32_pc_bss",
+    "monitoring.ram.fp32_pc_data",
+    "monitoring.ram.fp32_pc_stack_peak_update",
+    "monitoring.ram.int8_pc_bss",
+    "monitoring.ram.int8_pc_data",
+    "monitoring.ram.int8_pc_stack_peak_inference",
+    "monitoring.ram.int8_pc_stack_peak_update",
+    "monitoring.ram.int8_pc_total",
+    "monitoring.recovery_board.int8_legacy_frozen_f1_faulty",
+    "monitoring.recovery_board.int8_legacy_online_f1_faulty",
+    "monitoring.recovery_board.q15_frozen_f1_faulty",
+    "monitoring.recovery_board.q15_online_f1_faulty",
+    "pronostia.ram.fp32_pc_bss",
+    "pronostia.ram.fp32_pc_data",
+    "pronostia.ram.fp32_pc_stack_peak_update",
+    "pronostia.ram.int8_pc_bss",
+    "pronostia.ram.int8_pc_data",
+    "pronostia.ram.int8_pc_stack_peak_inference",
+    "pronostia.ram.int8_pc_stack_peak_update",
+    "pronostia.ram.int8_pc_total",
+    "pronostia.recovery_board.int8_legacy_frozen_f1_faulty",
+    "pronostia.recovery_board.int8_legacy_online_f1_faulty",
+    "pronostia.recovery_board.q15_frozen_f1_faulty",
+    "pronostia.recovery_board.q15_online_f1_faulty"
+  ]
+}

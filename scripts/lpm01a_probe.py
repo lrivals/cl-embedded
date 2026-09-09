@@ -473,6 +473,14 @@ def capture(
 
 
 #: Durée de l'acquisition de préchauffage jetée en début de session (s).
+#: Borne de temps d'une commande hôte exécutée pendant un maintien (`hold_run`).
+#: Constat de banc 2026-09-08 : si la sortie de la sonde ne s'établit pas, la cible reste
+#: hors tension, `sensor_stream.py` attend des réponses qui ne viendront jamais et la
+#: séance entière se fige — sans message, sans fin. Un flux de banc légitime dure au plus
+#: quelques dizaines de secondes (300 échantillons à 10 Hz = 30 s) ; cette borne est donc
+#: très large, et n'existe que pour transformer un blocage infini en échec DIT.
+HOLD_RUN_TIMEOUT_S = 300.0
+
 WARMUP_DURATION_S = 10.0
 
 
@@ -601,7 +609,9 @@ def power_on(probe: PowerShield, voltage_mv: int, hold_s: float, acqmode: str = 
     return f"{read_v:.3f} V"
 
 
-def hold_run(probe: PowerShield, voltage_mv: int, command: str, acqmode: str = "stat") -> int:
+def hold_run(probe: PowerShield, voltage_mv: int, command: str,
+             acqmode: str = "stat",
+             timeout_s: float | None = HOLD_RUN_TIMEOUT_S) -> int:
     """Exécute une commande hôte pendant que la sonde alimente la cible.
 
     **Nécessaire, pas un confort** (constat banc 2026-08-04) : hors acquisition,
@@ -642,8 +652,18 @@ def hold_run(probe: PowerShield, voltage_mv: int, command: str, acqmode: str = "
     # Laisse la cible démarrer proprement avant de lancer la commande hôte.
     time.sleep(2.0)
     try:
-        completed = subprocess.run(command, shell=True)
+        completed = subprocess.run(command, shell=True, timeout=timeout_s)
         return completed.returncode
+    except subprocess.TimeoutExpired as exc:
+        # La commande hôte n'a pas rendu la main : la cause la plus fréquente au banc est
+        # une cible NON ALIMENTÉE (la sortie ne s'est pas établie), auquel cas le flux
+        # attend indéfiniment des réponses UART. On le DIT au lieu de figer la séance.
+        raise LPM01AError(
+            f"commande hôte interrompue après {timeout_s:.0f} s pendant le maintien : "
+            f"« {command} ». Cause la plus probable : la cible n'est pas alimentée par la "
+            f"sonde (flux UART sans réponse). Vérifier le cavalier JP5 et l'établissement "
+            f"de la sortie avant de remesurer."
+        ) from exc
     finally:
         probe.command("stop", wait_s=0.5)
 
@@ -676,6 +696,13 @@ def main(argv: list[str] | None = None) -> int:
         metavar="SECONDES",
         default=None,
         help="maintient la sortie sous tension (repérage de VOUT sur CN14 au multimètre)",
+    )
+    parser.add_argument(
+        "--hold-timeout", type=float, default=HOLD_RUN_TIMEOUT_S,
+        help="borne de temps de la commande maintenue, en secondes (au-delà, la commande "
+             "est interrompue et l'échec DIT : la cause la plus fréquente est une cible "
+             "non alimentée). À élargir pour une préparation longue — entraînement, "
+             "export, compilation et flash dépassent la borne par défaut.",
     )
     parser.add_argument(
         "--hold-run",
@@ -728,7 +755,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.calibrate:
             print(probe.command("calib", wait_s=5.0).strip())
         if args.hold_run:
-            rc = hold_run(probe, voltage_mv, args.hold_run, acqmode_hold)
+            rc = hold_run(probe, voltage_mv, args.hold_run, acqmode_hold,
+                          timeout_s=args.hold_timeout)
             if rc != 0:
                 print(f"[lpm01a] commande terminée avec le code {rc}", file=sys.stderr)
                 return rc

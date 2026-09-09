@@ -26,6 +26,26 @@
 #include "ewc_head_int8_v2.h"
 #include "ewc_head_int8_v2_weights.h"  /* généré (vide par défaut) — S3908 */
 #endif
+#if defined(EWC_SUBINT8_WEIGHTS_PROVIDED)
+/* Sprint 48 (S4804) — tête sub-INT8 (INT4/ternaire/binaire) chargée depuis le header
+ * généré (export_weights_c.py --ewc-subint8). Réutilise le kernel v2 (EWCHeadInt8V2 en
+ * non-packé, EWCHeadSubInt8Packed sous -DEWC_INTx_PACKED). Le header est vide par défaut
+ * → ce bloc n'existe que lorsqu'on flashe volontairement une variante sub-INT8. */
+#include "ewc_head_int8_v2.h"
+#include "ewc_head_subint8_weights.h"  /* généré (vide par défaut) — S4803 */
+/* Garde : le packing du header généré DOIT correspondre au flag de build, sinon les
+ * memcpy d'init débordent (int8 non-packé 160 B → conteneur packé 64 B). L'export
+ * (--packed) et le build (-DEWC_INTx_PACKED) doivent être cohérents (driver S4804). */
+#if defined(EWC_INTx_PACKED)
+#if !EWC_SUBINT8_PACKED
+#error "Build -DEWC_INTx_PACKED mais header sub-INT8 non-packé : regénérer export_weights_c.py --packed"
+#endif
+#else
+#if EWC_SUBINT8_PACKED
+#error "Header sub-INT8 packé mais build sans -DEWC_INTx_PACKED : ajouter -DEWC_INTx_PACKED"
+#endif
+#endif
+#endif
 #include "hdc.h"
 #include "meta_head.h"
 #include "mahalanobis_q15.h"
@@ -83,6 +103,13 @@
 #ifndef EWC_HEAD_NATIVE_DIM
 #define EWC_HEAD_NATIVE_DIM WEIGHTS_NATIVE_DIM
 #endif
+/* S5201 : idem pour TinyOL — TINYOL_NATIVE_DIM est écrit par
+ * export_weights_tinyol.py dans model_weights.h. Sans lui, les poids TinyOL
+ * n'étaient copiés qu'à TINYOL_IN == 5, laissant l'auto-encodeur à zéro sur
+ * toute condition k≠5 (Monitoring 4 feats, all, best). */
+#ifndef TINYOL_NATIVE_DIM
+#define TINYOL_NATIVE_DIM WEIGHTS_NATIVE_DIM
+#endif
 
 /* ── Globals statiques des 3 modèles (S2006 — profiling RAM Gap 2) ─────── */
 /* MEM: 128 B @ FP32 en .bss                                               */
@@ -110,6 +137,19 @@ EWCHeadInt8V2 g_ewc_int8_v2;
 /* act_max de calibration mémorisé à l'init (header EWC_V2_ACT_MAX ou neutre) → réutilisé
  * pour la requantification par échantillon en mode online (S4002). Figé = parité miroir PC. */
 static float g_v2_act_max[3] = {1.0f, 1.0f, 1.0f};
+#endif
+
+#if defined(EWC_SUBINT8_WEIGHTS_PROVIDED)
+/* Sprint 48 (S4804) — tête sub-INT8 : poids PRÉ-QUANTIFIÉS PC (linéaire INT4 / ternaire /
+ * binaire) copiés du header généré. Deux stockages selon le build :
+ *   - non-packé (conteneur int8) : .bss ≈ INT8 (nœud d'honnêteté S4800) ;
+ *   - packé (-DEWC_INTx_PACKED)  : .bss ÷2/÷4/÷8, dépack au forward (latence DWT S4804).
+ * Frozen uniquement (S48 isole le schéma de quantification, pas l'apprentissage online). */
+#if defined(EWC_INTx_PACKED)
+static EWCHeadSubInt8Packed g_ewc_subint8_packed;
+#else
+static EWCHeadInt8V2        g_ewc_subint8;
+#endif
 #endif
 
 /* MEM: HDCClassifier ~27.7 Ko @ FP32 en .bss
@@ -198,8 +238,31 @@ static uint8_t  g_recv_flags;
 #ifndef TEST_MODE
 static uint8_t uart_getbyte(void)
 {
+#ifdef UART_WFI_IDLE
+    /* S5302 — attente UART en SOMMEIL au lieu de la scrutation active.
+     *
+     * Pourquoi : sans cela le cœur tourne à 180 MHz 100 % du temps, y compris entre
+     * deux trames, et il n'existe aucune référence « au repos » exploitable — c'est
+     * ce qui empêchait le protocole delta de produire des µJ par inférence (S5008).
+     *
+     * Mécanique : RXNEIE est armé JUSTE avant de s'endormir et désarmé par le
+     * handler (hw_info.c). L'IT ne sert qu'au réveil ; c'est la condition du `while`
+     * qui reste la source de vérité, et `DR` n'est lu qu'ici. Le va-et-vient sur
+     * RXNEIE est indispensable : si l'IT restait armée avec RXNE actif, le cœur
+     * ferait du tail-chaining sans jamais revenir en mode thread lire l'octet.
+     * `dsb` garantit que l'écriture du registre a pris effet avant le `wfi`. */
+    while (!(USART3->SR & USART_SR_RXNE)) {
+        USART3->CR1 |= USART_CR1_RXNEIE;
+        __asm volatile ("dsb");
+        __asm volatile ("wfi");
+    }
+    USART3->CR1 &= ~USART_CR1_RXNEIE;
+    NVIC_ICPR1 = (1UL << (USART3_IRQn - 32U));   /* purge l'IT déjà servie */
+    return (uint8_t)USART3->DR;
+#else
     while (!(USART3->SR & (1U << 5))) {}   /* attendre RXNE */
     return (uint8_t)USART3->DR;
+#endif
 }
 
 static void uart_send_byte(uint8_t b)
@@ -574,6 +637,39 @@ void pipeline_init(void)
 #endif
     ewc_int8_v2_from_fp32_calib(&g_ewc_int8_v2, &g_ewc_head, g_v2_act_max);
 #endif
+#if defined(EWC_SUBINT8_WEIGHTS_PROVIDED)
+    /* Sprint 48 (S4804) — charge la tête sub-INT8 pré-quantifiée depuis le header généré.
+     * Les poids sont figés côté PC (ternaire/binaire non reproductibles on-board) → copie
+     * directe (parité par construction avec l'émulateur subint8). Les scales d'activation
+     * calibrés (EWC_SUB_SCALE_ACT_*) alimentent scale_act_* du kernel v2. */
+#if defined(EWC_INTx_PACKED)
+    memcpy(g_ewc_subint8_packed.w1, EWC_SUB_W1, sizeof(EWC_SUB_W1));
+    memcpy(g_ewc_subint8_packed.w2, EWC_SUB_W2, sizeof(EWC_SUB_W2));
+    memcpy(g_ewc_subint8_packed.w3, EWC_SUB_W3, sizeof(EWC_SUB_W3));
+    memcpy(g_ewc_subint8_packed.scale_w1, EWC_SUB_SCALE_W1, sizeof(EWC_SUB_SCALE_W1));
+    memcpy(g_ewc_subint8_packed.scale_w2, EWC_SUB_SCALE_W2, sizeof(EWC_SUB_SCALE_W2));
+    memcpy(g_ewc_subint8_packed.scale_w3, EWC_SUB_SCALE_W3, sizeof(EWC_SUB_SCALE_W3));
+    memcpy(g_ewc_subint8_packed.b1, EWC_SUB_B1, sizeof(EWC_SUB_B1));
+    memcpy(g_ewc_subint8_packed.b2, EWC_SUB_B2, sizeof(EWC_SUB_B2));
+    memcpy(g_ewc_subint8_packed.b3, EWC_SUB_B3, sizeof(EWC_SUB_B3));
+    g_ewc_subint8_packed.scale_act_in = EWC_SUB_SCALE_ACT_IN;
+    g_ewc_subint8_packed.scale_act_h1 = EWC_SUB_SCALE_ACT_H1;
+    g_ewc_subint8_packed.scale_act_h2 = EWC_SUB_SCALE_ACT_H2;
+#else
+    memcpy(g_ewc_subint8.w1, EWC_SUB_W1, sizeof(EWC_SUB_W1));
+    memcpy(g_ewc_subint8.w2, EWC_SUB_W2, sizeof(EWC_SUB_W2));
+    memcpy(g_ewc_subint8.w3, EWC_SUB_W3, sizeof(EWC_SUB_W3));
+    memcpy(g_ewc_subint8.scale_w1, EWC_SUB_SCALE_W1, sizeof(EWC_SUB_SCALE_W1));
+    memcpy(g_ewc_subint8.scale_w2, EWC_SUB_SCALE_W2, sizeof(EWC_SUB_SCALE_W2));
+    memcpy(g_ewc_subint8.scale_w3, EWC_SUB_SCALE_W3, sizeof(EWC_SUB_SCALE_W3));
+    memcpy(g_ewc_subint8.b1, EWC_SUB_B1, sizeof(EWC_SUB_B1));
+    memcpy(g_ewc_subint8.b2, EWC_SUB_B2, sizeof(EWC_SUB_B2));
+    memcpy(g_ewc_subint8.b3, EWC_SUB_B3, sizeof(EWC_SUB_B3));
+    g_ewc_subint8.scale_act_in = EWC_SUB_SCALE_ACT_IN;
+    g_ewc_subint8.scale_act_h1 = EWC_SUB_SCALE_ACT_H1;
+    g_ewc_subint8.scale_act_h2 = EWC_SUB_SCALE_ACT_H2;
+#endif
+#endif
     hdc_init(&g_hdc);
 #ifdef EWC_AUTO_UPDATE
     /* S3803 — gate de mise à jour autonome : seuils depuis inc/drift_thresholds.h
@@ -663,8 +759,9 @@ void pipeline_init(void)
 #endif
 #endif
 
-#if (TINYOL_IN == WEIGHTS_NATIVE_DIM)
-    /* Init TinyOL depuis Flash (poids placeholder — remplacer via export_weights_c.py) */
+#if (TINYOL_IN == TINYOL_NATIVE_DIM)
+    /* Init TinyOL depuis Flash — poids générés par scripts/export_weights_tinyol.py
+     * à la dim de la condition (TINYOL_NATIVE_DIM). */
     memcpy(g_tinyol_enc.w_enc1, TINYOL_W_ENC1, sizeof(g_tinyol_enc.w_enc1));
     memcpy(g_tinyol_enc.b_enc1, TINYOL_B_ENC1, sizeof(g_tinyol_enc.b_enc1));
     memcpy(g_tinyol_enc.w_enc2, TINYOL_W_ENC2, sizeof(g_tinyol_enc.w_enc2));
@@ -674,8 +771,9 @@ void pipeline_init(void)
     memcpy(g_tinyol_dec.w_dec2, TINYOL_W_DEC2, sizeof(g_tinyol_dec.w_dec2));
     memcpy(g_tinyol_dec.b_dec2, TINYOL_B_DEC2, sizeof(g_tinyol_dec.b_dec2));
 #else
-    /* TINYOL_IN ≠ dim native : encodeur/décodeur restent à zéro (.bss).
-     * Poids réels regénérés par condition en S3507. */
+    /* TINYOL_IN ≠ TINYOL_NATIVE_DIM : encodeur/décodeur restent à zéro (.bss).
+     * Régénérer les poids à la bonne dim :
+     *   python scripts/export_weights_tinyol.py --dataset <ds> --condition <cond> */
 #endif
 
 #ifndef TEST_MODE
@@ -725,6 +823,135 @@ void test_pipeline_send_response_pair(uint8_t pred_maha, float score_maha,
 }
 #endif
 
+/* ── Boucle par lot (S5302, extension) ─────────────────────────────────── */
+/* INFER_BATCH_N est défini dans pipeline.h (valeur par défaut 1) afin que les tests
+ * hôte compilent contre la même valeur que l'unité de traduction. */
+
+#if INFER_BATCH_N > 1
+#ifdef TEST_MODE
+/* Branche empruntée par le dernier appel à `infer_extra` — TEST uniquement.
+ * Elle rend le contrat de portée du lot vérifiable : c'est un défaut d'ATTRIBUTION
+ * (le mauvais noyau consomme les µJ), pas un défaut d'état, donc aucune assertion
+ * sur les poids ne pourrait le détecter. */
+int g_infer_extra_branch = -1;
+#define BATCH_BRANCH(x) do { g_infer_extra_branch = (x); } while (0)
+#else
+#define BATCH_BRANCH(x) do { } while (0)
+#endif
+/*
+ * infer_extra — exécute une inférence SUPPLÉMENTAIRE, sans effet de bord.
+ *
+ * POURQUOI : le plafond de cadence du banc est l'UART (55 B par transaction à
+ * 115200 bauds ⇒ ~209 Hz), pas le modèle. À cette cadence, EWC occupe ~1 % du temps
+ * et Mahalanobis ~0,1 % : leur coût est noyé sous le bruit, et aucun balayage de
+ * cadence ne peut l'en sortir (mesuré, S5304 : le témoin Mahalanobis rend 60,6 µJ,
+ * qui est le coût d'une trame, pas celui du calcul). Exécuter N inférences par trame
+ * rend le taux d'occupation réglable INDÉPENDAMMENT de l'UART, et le µJ par inférence
+ * s'obtient alors par régression sur N à cadence fixe.
+ *
+ * CE QU'ELLE NE FAIT PAS, et c'est essentiel : ni mise à jour CL, ni métrique, ni
+ * réponse. La passe qui produit la prédiction reste la chaîne existante, inchangée,
+ * exécutée en dernier ⇒ prédiction identique à N=1 et UNE SEULE mise à jour CL sous
+ * `--update` (sinon la sémantique du continual learning changerait avec N).
+ *
+ * L'entrée est recopiée : plusieurs chemins normalisent `raw` en place, et une
+ * modification ici décalerait la passe finale.
+ *
+ * PORTÉE — les 8 cellules de la campagne énergie (EWC, HDC, TinyOL, Mahalanobis ×
+ * FP32/INT8), c'est-à-dire exactement les couples de `STREAM_MODEL`
+ * (scripts/run_s50_board_current.py). Les modes composés (PAIR 0x90/0xA0/0xB0,
+ * TRIPLE 0xD0/0xE0, DUAL 0x70, Q15 0xF0) ne sont PAS mis en lot : ils sortent sans
+ * aucune passe supplémentaire.
+ *
+ * C'est un CONTRAT, pas une coïncidence — et il doit être écrit ici parce que la
+ * boucle de lot s'exécute AVANT les sorties anticipées de ces modes dans
+ * `pipeline_run` : sans exclusion explicite, une trame composée exécuterait N−1
+ * passes d'un AUTRE modèle que celui qu'elle mesure (la prédiction resterait juste
+ * — la passe finale est la vraie chaîne — mais les µJ seraient attribués au mauvais
+ * noyau). Même piège de dispatch que dans `pipeline_run` : le nibble de mode se
+ * teste en ÉGALITÉ, pas par masque de sous-ensemble (0xF0 & 0x60 == 0x60 sinon).
+ */
+static void infer_extra(const float *raw_in)
+{
+    float raw[PROTO_MAX_N];   /* MEM: 64 B @ FP32 (stack) — copie de travail */
+    for (int i = 0; i < (int)PROTO_MAX_N; i++) raw[i] = raw_in[i];
+
+    /* (1) Modes composés → hors périmètre du lot, aucune passe supplémentaire. */
+    uint8_t mode = (uint8_t)(g_recv_flags & PROTO_PAIR_MODE_MASK);
+    if (mode == PROTO_FLAG_MAHA_Q15         ||
+        mode == PROTO_FLAG_TRIPLE_MAHA_EWC  || mode == PROTO_FLAG_TRIPLE_MAHA_HDC  ||
+        mode == PROTO_FLAG_PAIR_MAHA_EWC    || mode == PROTO_FLAG_PAIR_MAHA_HDC    ||
+        mode == PROTO_FLAG_PAIR_MAHA_TINYOL || mode == PROTO_FLAG_DUAL_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_NONE);
+        return;
+    }
+
+    /* (2) Nibbles à égalité stricte, dans l'ordre de `pipeline_run` : multiclasse
+     *     (0x30) et RUL (0x50) ont leurs propres têtes — les router sur `ewc_forward`
+     *     mesurerait un troisième modèle. */
+    if (mode == PROTO_FLAG_MULTICLASS_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_MULTICLASS);
+        float logits[EWC_MC_N_CLASSES];   /* MEM: N×4 B (stack) */
+        ewc_mc_forward(&g_ewc_mc, raw, logits);
+        (void)logits;
+    } else if (mode == PROTO_FLAG_RUL_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_RUL);
+        (void)ewc_reg_predict(&g_ewc_reg, raw);
+    } else if ((g_recv_flags & PROTO_FLAG_HDC_INT8) == PROTO_FLAG_HDC_INT8) {
+        BATCH_BRANCH(BATCH_BRANCH_HDC_INT8);
+        hdc_int8_encode(&g_hdc_int8, raw, g_hv_int8);
+        (void)hdc_int8_predict(&g_hdc_int8, g_hv_int8);
+    } else if ((g_recv_flags & PROTO_FLAG_TINYOL_INT8) == PROTO_FLAG_TINYOL_INT8) {
+        BATCH_BRANCH(BATCH_BRANCH_TINYOL_INT8);
+        uint8_t emb_u8[TINYOL_EMB];
+        tinyol_int8_encode(&g_tinyol_int8, raw, emb_u8);
+        (void)oto_int8_predict(&g_oto_int8, emb_u8);
+    } else if (g_recv_flags & PROTO_FLAG_EWC_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_EWC);
+        float logits[EWC_OUT];
+        ewc_forward(&g_ewc_head, raw, logits);
+        (void)logits;
+    } else if (g_recv_flags & PROTO_FLAG_INT8_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_EWC_INT8);
+        float logits[EWC_OUT];
+#if defined(EWC_SUBINT8_WEIGHTS_PROVIDED)
+#if defined(EWC_INTx_PACKED)
+        ewc_subint8_packed_forward(&g_ewc_subint8_packed, raw, logits);
+#else
+        ewc_int8_v2_forward(&g_ewc_subint8, raw, logits);
+#endif
+#elif defined(EWC_INT8_V2)
+        ewc_int8_v2_forward(&g_ewc_int8_v2, raw, logits);
+#else
+        int8_t x_q7[EWC_IN];
+        for (int i = 0; i < EWC_IN; i++) x_q7[i] = float_to_q7(raw[i]);
+        ewc_int8_forward(&g_ewc_int8, x_q7, logits);
+#endif
+        (void)logits;
+    } else if (g_recv_flags & PROTO_FLAG_HDC_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_HDC);
+        float hv[HDC_DIM];   /* MEM: 4 Ko @ FP32 (stack) */
+        hdc_encode(&g_hdc, raw, hv);
+        (void)hdc_predict(&g_hdc, hv);
+    } else if (g_recv_flags & PROTO_FLAG_TINYOL_MODE) {
+        BATCH_BRANCH(BATCH_BRANCH_TINYOL);
+        float emb[TINYOL_EMB];
+        float recon[TINYOL_OUT];
+        tinyol_encode(&g_tinyol_enc, raw, emb);
+        tinyol_decode(&g_tinyol_dec, emb, recon);
+        (void)tinyol_reconstruction_error(raw, recon, (int)TINYOL_OUT);
+    } else {
+        BATCH_BRANCH(BATCH_BRANCH_MAHA);
+        normalize_zscore(raw, MAHA_DIM);
+#ifdef MAHA_INT8
+        (void)maha_int8_score(&g_maha_int8, raw);
+#else
+        (void)maha_score(&g_detector, raw);
+#endif
+    }
+}
+#endif /* INFER_BATCH_N > 1 */
+
 /* ── Boucle principale ─────────────────────────────────────────────────── */
 
 void pipeline_run(void)
@@ -756,6 +983,16 @@ void pipeline_run(void)
 
     energy_marker_phase(PHASE_INFERENCE);   /* S3304 — corrélé au DWT (profiling_start adjacent) */
     profiling_start();   /* Démarre le chrono DWT */
+
+#if INFER_BATCH_N > 1
+    /* S5302 — N−1 inférences supplémentaires DANS la fenêtre chronométrée : la latence
+     * DWT rapportée couvre donc le lot entier, ce qui donne le contrôle de cohérence
+     * (latence ≈ N × latence unitaire) face à la régression de courant sur N. Le pilote
+     * reporte N dans la cellule JSON — jamais supposé côté hôte. */
+    for (int b = 0; b < INFER_BATCH_N - 1; b++) {
+        infer_extra(raw);
+    }
+#endif
 
     int   pred;
     float confidence;
@@ -1133,7 +1370,24 @@ void pipeline_run(void)
         }
         auroc_update(&g_auroc, confidence, (int)g_recv_label);
     } else if (g_recv_flags & PROTO_FLAG_INT8_MODE) {
-#ifdef EWC_INT8_V2
+#if defined(EWC_SUBINT8_WEIGHTS_PROVIDED)
+        /* ── Chemin EWC sub-INT8 (S4804) : forward inférence frozen ────────────────
+         * Sélectionné par -DEWC_INT4/EWC_INT2/EWC_INT1 (+EWC_SUBINT8_WEIGHTS_PROVIDED),
+         * prioritaire sur le v2 (le nibble 0x40 route vers sub-INT8). Poids figés PC ⇒
+         * pas d'update online (S48 isole le schéma de quantification). Déquant→FP32 sur
+         * FPU = parité bit-à-bit avec l'émulateur subint8. */
+        float logits[EWC_OUT];   /* MEM: 8 B @ FP32 (stack) */
+#if defined(EWC_INTx_PACKED)
+        ewc_subint8_packed_forward(&g_ewc_subint8_packed, raw, logits);
+#else
+        ewc_int8_v2_forward(&g_ewc_subint8, raw, logits);
+#endif
+        pred = (logits[1] > logits[0]) ? 1 : 0;
+        float e0 = expf(logits[0]);
+        float e1 = expf(logits[1]);
+        confidence = e1 / (e0 + e1);
+        auroc_update(&g_auroc, confidence, (int)g_recv_label);
+#elif defined(EWC_INT8_V2)
         /* ── Chemin EWC INT8 v2 (S3915) : forward inférence, déquant→FP32 ──────────
          * Sélectionné par -DEWC_INT8_V2 (le nibble 0x40 route vers le v2 au lieu du v1).
          * Le kernel v2 quantifie les activations à bord (scales calibrés) ⇒ on lui passe
@@ -1207,12 +1461,15 @@ void pipeline_run(void)
         auroc_update(&g_auroc, confidence, (int)g_recv_label);
     } else if (g_recv_flags & PROTO_FLAG_TINYOL_MODE) {
         /* ── Chemin TinyOL autoencoder (anomaly via reconstruction) ─────────── */
-        /* MEM: emb[16] = 64 B + recon[5] = 20 B (stack) */
-        float emb[16];
-        float recon[EWC_IN];
+        /* MEM: emb[16] = 64 B + recon[TINYOL_IN] = 4·k B (stack) */
+        /* S5201 : dimensionné sur TINYOL_IN (et non EWC_IN) — en condition
+         * best/all les dims diffèrent par modèle ; tinyol_decode écrit
+         * TINYOL_OUT floats, un recon[EWC_IN] plus court débordait la pile. */
+        float emb[TINYOL_EMB];
+        float recon[TINYOL_OUT];
         tinyol_encode(&g_tinyol_enc, raw, emb);
         tinyol_decode(&g_tinyol_dec, emb, recon);
-        float mse = tinyol_reconstruction_error(raw, recon, EWC_IN);
+        float mse = tinyol_reconstruction_error(raw, recon, (int)TINYOL_OUT);
         /* Seuil : depuis model_weights.h (calibré P95×1.5 via export_weights_tinyol.py) */
         pred       = (mse > TINYOL_THRESHOLD) ? 1 : 0;
         confidence = 1.0f / (1.0f + mse);
@@ -1298,6 +1555,19 @@ void pipeline_run(void)
     if (g_recv_flags & PROTO_FLAG_EWC_MODE) {
         snap.auroc      = (float)g_drift_method_verdict;
         snap.forgetting = (float)g_drift_method_alarms;
+    }
+#endif
+
+#ifdef INT8_SEGMENT_PROFILE
+    /* S5004 — remontée du breakdown latence INT8 SOUS -DINT8_SEGMENT_PROFILE
+     * UNIQUEMENT (wire format V3 23 B inchangé : sensor_stream lit toujours
+     * [acc][auroc][forgetting], que le driver S50 réinterprète en cycles DWT).
+     * Les 3 accumulateurs sont remplis par ewc_int8_v2_forward pour le chemin
+     * INT8 (0x40). Build par défaut strictement inchangé (.bss invariant). */
+    if (g_recv_flags & PROTO_FLAG_INT8_MODE) {
+        snap.accuracy   = (float)g_profiling.seg_dequant_cycles;
+        snap.auroc      = (float)g_profiling.seg_mac_cycles;
+        snap.forgetting = (float)g_profiling.seg_requant_cycles;
     }
 #endif
 

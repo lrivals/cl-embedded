@@ -1,0 +1,47 @@
+{
+  "model": "ewc",
+  "platform": "nucleo_f439zi",
+  "kernel": "ewc_int8_v2",
+  "cpu_hz": 180000000,
+  "condition": "5feat",
+  "date": "2026-07-24T18:28:02",
+  "datasets_measured": [
+    "monitoring",
+    "pronostia"
+  ],
+  "segments": {
+    "dequant": {
+      "cycles_p50_mean_over_datasets": 200.0,
+      "us_p50_mean_over_datasets": 1.111,
+      "by_dataset_cycles_p50": {
+        "monitoring": 200.0,
+        "pronostia": 200.0
+      }
+    },
+    "mac": {
+      "cycles_p50_mean_over_datasets": 6785.0,
+      "us_p50_mean_over_datasets": 37.694,
+      "by_dataset_cycles_p50": {
+        "monitoring": 6841.0,
+        "pronostia": 6729.0
+      }
+    },
+    "requant": {
+      "cycles_p50_mean_over_datasets": 3777.25,
+      "us_p50_mean_over_datasets": 20.985,
+      "by_dataset_cycles_p50": {
+        "monitoring": 3760.0,
+        "pronostia": 3794.5
+      }
+    }
+  },
+  "total_int8_us_p50_by_dataset": {
+    "monitoring": 74.0,
+    "pronostia": 74.0
+  },
+  "total_fp32_us_p50_by_dataset": {
+    "monitoring": 48.0,
+    "pronostia": 50.0
+  },
+  "note": "Maha INT8 = N/A par construction (kernel d\u00e9quant\u2192distance, sans MAC/requant par couche). Voir docs/context/int8_latency_breakdown.md."
+}

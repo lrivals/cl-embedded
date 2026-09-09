@@ -1,0 +1,87 @@
+\section{System budget: memory, latency, energy, compute}
+\label{sec:system}
+
+A quantization gain cannot be judged on weights alone. This section gathers the four budgets of one and the
+same deployed EWC head, all measured on the same board.
+
+\subsection{Weight RAM is not system RAM}
+
+INT8 does divide \emph{weight} RAM by 4 (\num{2688} to \num{672}~bytes on Monitoring, \num{2816} to
+\num{704} on Pronostia). But the RAM actually consumed by the system is
+$\texttt{.data} + \texttt{.bss} + \text{stack peak}$, and that sum barely moves: it goes from \num{105300}
+to \num{105324}~bytes on Monitoring, an INT8/FP32 ratio of \num{1.0002}. Both configurations occupy
+\num{40.17}\,\% and \num{40.18}\,\% of the \SI{256}{\kilo\byte} budget (\num{42.03}\,\% and
+\num{42.04}\,\% on Pronostia).
+
+The explanation is simple and worth stating plainly: at this model scale, weights are not the dominant
+item --- streaming buffers, the stack and the rest of the firmware are. Advertising a "$\div 4$ RAM" without
+saying \emph{which} RAM would therefore be misleading. The $\div 4$ is real and useful, but it applies to a
+minority item of \emph{this} system; it would become decisive on a model where weights dominate.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\linewidth]{fig8_ram_total.png}
+\caption{Total RAM \emph{measured on-board}: \texttt{.data} $+$ \texttt{.bss} $+$ stack peak, against the
+SRAM budget. The INT8 total equals the FP32 total, even though weights are divided by 4.}
+\label{fig:ram}
+\end{figure}
+
+\subsection{Where INT8 latency goes}
+
+Cycle-level instrumentation of the INT8 kernel quantifies the announced paradox. On Monitoring, the integer
+MAC costs \num{6841}~cycles, requantization \num{3760} and dequantization \num{200} (respectively
+\num{6729}, \num{3794.5} and \num{200} on Pronostia). The total reaches \SI{74}{\micro\second} against
+\SI{48}{\micro\second} in FP32 on Monitoring and \SI{50}{\micro\second} on Pronostia.
+
+The decisive item is therefore not multiplication: it is \emph{requantization}, a third of the budget, and
+it simply does not exist in the FP32 path. The integer MAC, for its part, brings no gain against the
+Cortex-M4 hardware FPU. The INT8 overhead is not an implementation anomaly but the arithmetic consequence of
+an integer format executed on a target that natively computes in floating point.
+
+\subsection{Energy: three estimators, never merged}
+
+Energy was measured with the X-NUCLEO-LPM01A probe by three independent methods, which we report
+\emph{side by side} without ever averaging them --- their disagreement is itself a result. Regressing current
+against rate gives \SI{67.65}{\micro\joule} per inference in FP32 and \SI{67.47}{\micro\joule} in INT8; the
+delta against a \texttt{WFI} idle gives \SI{146.77}{\micro\joule} and \SI{145.03}{\micro\joule}; the batch of
+inferences per frame, which isolates compute from the UART frame cost, gives \SI{5.08}{\micro\joule}. The
+order of magnitude shared by the first two, and the factor-of-ten gap with the third, delimit exactly what
+each one measures: the first two include the communication cost, the last does not.
+
+On the question at hand the three agree: \textbf{INT8 does not reduce consumption}. The measured gap is
+\SI{0.18}{\micro\joule} for a combined uncertainty of \SI{2.34}{\micro\joule}, far below the significance
+threshold. The latency paradox is thus compounded by an energy paradox, and the case for INT8 reduces to
+memory.
+
+The frequency sweep, in contrast, opens a real lever: energy per inference grows from
+\SI{170.05}{\micro\joule} at \SI{45}{\mega\hertz} to \SI{214.61}{\micro\joule} at \SI{180}{\mega\hertz},
+while latency stays far below the Gap~2 budget (\SI{198}{\micro\second} at \SI{45}{\mega\hertz}). In other
+words, \emph{latency headroom is convertible into battery life}. Two cells remain "to be measured": energy
+per continual update, whose regressions are not publishable as they stand, and the per-phase profile.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig9_energy_estimators.png}
+\caption{Energy \emph{measured on-board}. Left, the three estimators side by side; right, the frequency
+trade-off, where latency headroom is exchanged for energy.}
+\label{fig:energy}
+\end{figure}
+
+\subsection{Compute cost}
+
+Analytically, the head has \num{722} parameters on Monitoring (\num{754} on Pronostia), for \num{672} MACs
+and \num{1344} FLOPs per inference (\num{704} and \num{1408}). Counting \emph{binary operations} gives the
+expected theoretical ratio: \num{1376256} BOPs in FP32 against \num{86016} in INT8, a factor of 16 --- that
+is, $(32/8)^2$.
+
+This factor of 16 is precisely what the board does \emph{not} deliver. Contrasting the two columns of
+Figure~\ref{fig:cost} is the most direct way to see why an analytical cost metric cannot replace a
+measurement: a BOP counts operand bits, not cycles of an existing floating-point unit.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.9\linewidth]{fig10_compute_cost.png}
+\caption{\emph{Theoretical} compute cost (left, hatched) against \emph{on-board measured} latency (right).
+The \num{16}$\times$ BOP gain translates into no time gain at all.}
+\label{fig:cost}
+\end{figure}

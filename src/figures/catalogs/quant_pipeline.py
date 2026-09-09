@@ -25,7 +25,7 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 
 from src.figures.registry import register_catalog
-from src.figures.schematic import arrow, box, footnote
+from src.figures.schematic import base_fig, footnote, stage_row
 from src.figures.style import STRATEGY_COLORS, STRATEGY_LABELS_FR, savefig_png
 
 CATALOG = "quantization/pipeline"
@@ -80,26 +80,11 @@ LABELS: dict[str, str] = {
 
 
 # ── Helpers de disposition ───────────────────────────────────────────────────
+# `stage_row` et `base_fig` vivent dans src/figures/schematic.py : ils servent
+# aussi au catalogue `soutenance`. Alias conservés pour les appelants d'ici.
+_stage_row = stage_row
+_base_fig = base_fig
 
-def _stage_row(
-    ax: plt.Axes,
-    y: float,
-    stages: list[str],
-    colors: list[str],
-    x0: float = 0.06,
-    x1: float = 0.94,
-    box_h: float = 0.11,
-    fontsize: int = 9,
-) -> list[float]:
-    """Trace une rangée horizontale de boîtes reliées ; retourne les x des centres."""
-    n = len(stages)
-    xs = [x0 + (x1 - x0) * i / (n - 1) for i in range(n)]
-    bw = min(0.135, (x1 - x0) / n * 0.92)
-    for i, (cx, txt, col) in enumerate(zip(xs, stages, colors)):
-        box(ax, cx, y, txt, col, w=bw, h=box_h, fontsize=fontsize)
-        if i:
-            arrow(ax, xs[i - 1] + bw / 2 + 0.004, y, cx - bw / 2 - 0.004, y, color="#777777")
-    return xs
 
 
 def _spark(ax: plt.Axes, x: float, y: float, color: str, text: str) -> None:
@@ -125,14 +110,6 @@ def _callout(ax: plt.Axes, cx: float, cy: float, title: str, body: str,
             color=color, fontweight="bold", transform=ax.transAxes)
     ax.text(cx, cy - 0.025, body, ha="center", va="center", fontsize=9.5,
             color="#333333", transform=ax.transAxes)
-
-
-def _base_fig() -> tuple[plt.Figure, plt.Axes]:
-    fig, ax = plt.subplots()
-    ax.axis("off")
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    return fig, ax
 
 
 # ── F1 — chaîne FP32 de référence ────────────────────────────────────────────

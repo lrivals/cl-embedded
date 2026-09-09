@@ -104,18 +104,51 @@ $\to$\texttt{q15}. \emph{Émulé PC bit-exact} (\texttt{exp\_S39\_ablation}).}
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{fig4_int8_recovery_board.png}
-\caption{INT8 vs FP32 : effondrement \emph{legacy} puis récupération par kernel calibré. Effondrement
-\emph{mesuré sur carte} (Sprint~36) ; récupération \emph{émulée PC} (Sprint~39). La confirmation
-\emph{sur carte v2} (Sprint~40) reste « à mesurer » hors la cellule Pronostia per-canal déjà streamée.}
+\caption{INT8 vs FP32 : effondrement \emph{legacy} puis récupération. Effondrement et récupération sont
+tous deux \emph{mesurés sur carte} (Sprints~36 et~40) ; la colonne per-canal \emph{émulée PC} (Sprint~39)
+est rappelée en hachuré. Le format \texttt{q15} sur carte reste « à mesurer ».}
 \label{fig:recovery}
 \end{figure}
+
+\subsection{Récupération mesurée sur carte (kernel v2 calibré)}
+\label{sec:recovery-board}
+
+La récupération n'est plus une prédiction d'émulateur : le kernel v2 à échelle calibrée a été flashé sur
+la NUCLEO-F439ZI et streamé sur les quatre cellules per-canal (deux jeux $\times$ deux protocoles). Le F1
+revient au niveau FP32 --- \num{0.9173} contre \num{0.9194} en FP32 sur Monitoring, \num{0.8995} contre
+\num{0.9164} sur Pronostia --- alors que la RAM des poids reste divisée par~4. La parité vis-à-vis de
+l'émulateur bit-exact est \emph{exacte} en mode gelé (\num{1.000}), ce qui valide le portage sans perte, et
+aucune erreur CRC n'a été observée (Tableau~\ref{tab:recovery}).
+
+\begin{table}[t]
+\centering
+\caption{Récupération INT8 \emph{mesurée sur carte} (kernel v2 per-canal, \texttt{exp\_S40\_board\_v2}).
+Parité = accord avec l'émulateur bit-exact ; accord = INT8 contre FP32 sur les mêmes échantillons.}
+\label{tab:recovery}
+\begin{tabular}{llccccc}
+\toprule
+Jeu & Protocole & F1 & Parité & Accord & Latence (\micro s) & \texttt{.bss} (B) \\
+\midrule
+Monitoring & gelé     & \num{0.9173} & \num{1.000}  & \num{0.9996} & 65  & 101236 \\
+Monitoring & en ligne & \num{0.9016} & \num{0.9885} & \num{0.8337} & 577 & 101236 \\
+Pronostia  & gelé     & \num{0.8995} & \num{1.000}  & \num{0.9951} & 68  & 106152 \\
+Pronostia  & en ligne & \num{0.9212} & \num{0.9736} & \num{0.8100} & 606 & 106152 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Deux nuances méritent d'être dites. D'une part l'accord INT8$\leftrightarrow$FP32 chute en mode en ligne
+(\num{0.8337} et \num{0.8100} contre $>\,\num{0.99}$ en gelé) : la mise à jour continue fait diverger les
+deux trajectoires de poids, sans que la métrique finale en souffre. D'autre part le format \texttt{q15} et
+la reprise A/B du schéma \texttt{int8\_legacy} sous le kernel v2 n'ont pas été streamés : ces cellules
+restent « à mesurer », conformément à la règle « aucun chiffre inventé ».
 
 \subsection{Compromis RAM $\times$ F1 $\times$ latence}
 
 La Figure~\ref{fig:pareto} synthétise le compromis : le kernel calibré ramène la métrique au niveau FP32
-tout en conservant le gain RAM (INT8 $\div 4$, Q15 $\div 2$), sans coût de latence prohibitif. La
-récupération \emph{sur carte réelle} (Sprint~40, kernel v2) est reportée « à mesurer » pour toutes les
-cellules non encore streamées, conformément à la règle « aucun chiffre inventé ».
+tout en conservant le gain RAM (INT8 $\div 4$, Q15 $\div 2$), sans coût de latence prohibitif. L'étoile
+marque le point réellement flashé (kernel v2 per-canal) ; les autres points sont émulés. Le gain de latence
+espéré, lui, n'a pas lieu --- nous y revenons en Section~\ref{sec:discussion}.
 
 \begin{figure}[t]
 \centering

@@ -182,7 +182,9 @@ def main(args: argparse.Namespace) -> None:
             for prev_task in tasks[: task_idx + 1]:
                 metrics = evaluate_task(model, prev_task["val_loader"], n_classes)
                 row.append(float(metrics["f1_macro"]))
-            task_f1_per_epoch.append(row + [0.0] * (n_tasks - len(row)))
+            # Tâches pas encore vues : None, jamais 0.0 — un zéro serait lu comme un
+            # F1 nul mesuré et fausserait toute figure d'oubli construite sur la matrice.
+            task_f1_per_epoch.append(row + [None] * (n_tasks - len(row)))
 
             if (epoch + 1) % 5 == 0:
                 print(
@@ -208,6 +210,13 @@ def main(args: argparse.Namespace) -> None:
         "n_classes": n_classes,
         "per_task_metrics": task_results,
         "avg_forgetting_f1": af_f1,
+        # Matrice d'oubli rétrospective : task_f1_per_epoch[epoch][task] = F1-macro sur la
+        # tâche `task` après cette époque (None tant que la tâche n'a pas été vue).
+        # Persistée pour les figures de trajectoire d'oubli ; elle n'était que consommée
+        # par compute_avg_forgetting_f1 puis jetée.
+        "task_f1_per_epoch": task_f1_per_epoch,
+        "n_epochs_per_task": n_epochs,
+        "ewc_lambda": cfg.get("EWC_LAMBDA", 400.0),
         "training_time_s": elapsed,
         "n_params": sum(p.numel() for p in model.parameters()),
         "config": str(args.config),

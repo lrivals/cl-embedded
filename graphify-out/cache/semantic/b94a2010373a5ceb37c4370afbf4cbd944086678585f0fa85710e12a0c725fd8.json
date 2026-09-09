@@ -1,0 +1,1 @@
+{"nodes": [{"id": "firmware_pipeline_c", "label": "firmware pipeline.c \u2014 chemin d'inf\u00e9rence, gardes de dimension EWC", "file_type": "code", "source_file": "firmware/stm32f4_blink/src/pipeline.c", "source_location": "l.576", "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

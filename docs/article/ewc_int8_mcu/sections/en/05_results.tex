@@ -103,18 +103,51 @@ $\to$\texttt{q15}. \emph{Bit-exact PC emulation} (\texttt{exp\_S39\_ablation}).}
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{fig4_int8_recovery_board.png}
-\caption{INT8 vs FP32: \emph{legacy} collapse then recovery through a calibrated kernel. Collapse
-\emph{measured on-board} (Sprint~36); recovery \emph{PC-emulated} (Sprint~39). The \emph{board-v2}
-confirmation (Sprint~40) remains "to be measured" apart from the Pronostia per-channel cell already streamed.}
+\caption{INT8 vs FP32: \emph{legacy} collapse then recovery. Collapse and recovery are both
+\emph{measured on-board} (Sprints~36 and~40); the \emph{PC-emulated} per-channel column (Sprint~39) is
+recalled with hatching. The \texttt{q15} format on-board remains "to be measured".}
 \label{fig:recovery}
 \end{figure}
+
+\subsection{Recovery measured on-board (calibrated v2 kernel)}
+\label{sec:recovery-board}
+
+Recovery is no longer an emulator prediction: the calibrated-scale v2 kernel was flashed onto the
+NUCLEO-F439ZI and streamed over the four per-channel cells (two datasets $\times$ two protocols). F1 returns
+to the FP32 level --- \num{0.9173} against \num{0.9194} in FP32 on Monitoring, \num{0.8995} against
+\num{0.9164} on Pronostia --- while weight RAM stays divided by 4. Parity against the bit-exact emulator is
+\emph{exact} in the frozen protocol (\num{1.000}), which validates a lossless port, and no CRC error was
+observed (Table~\ref{tab:recovery}).
+
+\begin{table}[t]
+\centering
+\caption{INT8 recovery \emph{measured on-board} (per-channel v2 kernel, \texttt{exp\_S40\_board\_v2}).
+Parity = agreement with the bit-exact emulator; agreement = INT8 against FP32 on the same samples.}
+\label{tab:recovery}
+\begin{tabular}{llccccc}
+\toprule
+Dataset & Protocol & F1 & Parity & Agreement & Latency (\micro s) & \texttt{.bss} (B) \\
+\midrule
+Monitoring & frozen & \num{0.9173} & \num{1.000}  & \num{0.9996} & 65  & 101236 \\
+Monitoring & online & \num{0.9016} & \num{0.9885} & \num{0.8337} & 577 & 101236 \\
+Pronostia  & frozen & \num{0.8995} & \num{1.000}  & \num{0.9951} & 68  & 106152 \\
+Pronostia  & online & \num{0.9212} & \num{0.9736} & \num{0.8100} & 606 & 106152 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two caveats deserve to be stated. First, the INT8$\leftrightarrow$FP32 agreement drops online
+(\num{0.8337} and \num{0.8100} against $>\,\num{0.99}$ frozen): the continual update makes the two weight
+trajectories diverge, without the final metric suffering from it. Second, the \texttt{q15} format and the
+A/B rerun of the \texttt{int8\_legacy} scheme under the v2 kernel were not streamed: those cells remain
+"to be measured", in line with the "no invented number" rule.
 
 \subsection{RAM $\times$ F1 $\times$ latency trade-off}
 
 Figure~\ref{fig:pareto} synthesizes the trade-off: the calibrated kernel brings the metric back to FP32 level
-while keeping the RAM gain (INT8 $\div 4$, Q15 $\div 2$), with no prohibitive latency cost. The \emph{on real
-hardware} recovery (Sprint~40, v2 kernel) is reported as "to be measured" for every cell not yet streamed, in
-line with the "no invented number" rule.
+while keeping the RAM gain (INT8 $\div 4$, Q15 $\div 2$), with no prohibitive latency cost. The star marks the
+point actually flashed (per-channel v2 kernel); the other points are emulated. The expected latency gain,
+however, does not materialize --- we return to this in Section~\ref{sec:discussion}.
 
 \begin{figure}[t]
 \centering

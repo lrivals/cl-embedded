@@ -39,8 +39,33 @@
 
 AF/FM, BWT, F1 (existant), AUROC (à créer), RUL (existant).
 
-## Points ouverts
+## Points ouverts — **résolus en S4110 (30 juillet 2026)**
 
-- Choisir : heatmap 4×5 complète au corps (force du Gap 1 : ampleur) vs focus 3 datasets
-  (décision utilisateur = focus, grille complète en annexe) → au corps, tableau 4 modèles × 3 datasets.
-- Cohérence des versions de chiffres : si S39/S40 régénèrent des cellules, S4110 revalide.
+- ~~Choisir : heatmap 4×5 complète au corps vs focus 3 datasets~~ → **arbitré** : tableau
+  4 modèles × 3 datasets au corps (`\label{tab:gap1-grille}`), grille complète 4×5 en annexe.
+- ~~Cohérence des versions de chiffres~~ → **revalidé** : S39/S40 ne touchent pas la grille S35
+  (ils portent sur le noyau INT8, ch. 7). Chiffres relus dans les JSON.
+
+## Chiffres consolidés au corps (S4110)
+
+**Tableau 4×3 — F1 de la classe « fautif », condition `5feat`, PC | carte**
+(source : `experiments/exp_S35_{PC,board}_5feat_{model}_{ds}/results.json`,
+champs `f1_faulty`) :
+
+| Modèle | Monitoring (D2) | CMAPSS (D5) | Pronostia (D4) |
+|---|---|---|---|
+| EWC | 0,893 \| 0,947 | 0,456 \| 0,381 | 0,930 \| 0,968 |
+| HDC | 0,565 \| 0,000 | 0,000 \| 0,000 | 0,425 \| 0,000 |
+| TinyOL | 0,754 \| 0,710 | 0,197 \| 0,214 | 0,285 \| 0,273 |
+| Mahalanobis | 0,698 \| 0,710 | 0,269 \| 0,214 | 0,305 \| 0,273 |
+
+- **Message ajouté** : HDC F1 = 0 sur carte pour une accuracy de 0,867–0,900 → il prédit la classe
+  majoritaire. C'est une **seconde illustration**, indépendante de Maha×CMAPSS, du message
+  « accuracy trompeuse → F1 ».
+- **Oubli catastrophique complété** (`exp_S26_02/results.json`) : `f1_macro_pc_per_task_mean`
+  0,981 (trompeur) vs `f1_macro_pc_final_all_tasks` **0,2402** et `avg_forgetting_f1_pc` **0,8475** ;
+  carte `f1_macro_board_inference` **0,2431**, `f1_macro_board_online` **0,5072** → parité exacte,
+  donc oubli et non bug de portage (`FIXME(gap1)` clos).
+- **TODO Paderborn résolu** : EWC F1 = 0,800 PC **et** carte ; HDC 0,565 → 0,000 ;
+  TinyOL 0,703 → 0,113 ; Mahalanobis 0,071 → 0,113.
+- **Vérifié inchangé** : Maha×CMAPSS acc 0,7446 / F1 0,2694 (arrondis 0,745 / 0,269 corrects).

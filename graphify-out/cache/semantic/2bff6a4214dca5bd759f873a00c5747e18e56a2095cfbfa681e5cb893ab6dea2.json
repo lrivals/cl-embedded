@@ -1,1 +1,1 @@
-{"nodes": [{"id": "figures_registry_register_catalog", "label": "register_catalog", "file_type": "code", "source_file": "src/figures/registry.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
+{"nodes": [{"id": "figures_registry", "label": "src/figures/registry.py", "file_type": "code", "source_file": "src/figures/registry.py", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

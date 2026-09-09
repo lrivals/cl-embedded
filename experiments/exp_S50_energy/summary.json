@@ -1,0 +1,85 @@
+{
+  "description": "Campagne énergie S50 — µJ/inférence par modèle × encodage (LPM01A réel).",
+  "phases": [
+    "startup",
+    "acquisition",
+    "inference",
+    "idle"
+  ],
+  "per_model": {
+    "ewc": {
+      "fp32": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 46.55000000000001,
+        "i_std_ma": 0.029999999999998778
+      },
+      "int8": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 46.546666666666674,
+        "i_std_ma": 0.03511884584284268
+      },
+      "delta_int8_vs_fp32_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer",
+      "delta_int8_vs_fp32_ma": -0.003333333333337407,
+      "ratio_i_int8_fp32": 0.9999283924095953
+    },
+    "hdc": {
+      "fp32": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 47.84333333333333,
+        "i_std_ma": 0.025166114784236648
+      },
+      "int8": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 51.220000000000006,
+        "i_std_ma": 0.019999999999999185
+      },
+      "delta_int8_vs_fp32_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer",
+      "delta_int8_vs_fp32_ma": 3.3766666666666794,
+      "ratio_i_int8_fp32": 1.0705775796000838
+    },
+    "tinyol": {
+      "fp32": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 46.60000000000001,
+        "i_std_ma": 0.017320508075686067
+      },
+      "int8": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 46.51333333333333,
+        "i_std_ma": 0.04725815626252612
+      },
+      "delta_int8_vs_fp32_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer",
+      "delta_int8_vs_fp32_ma": -0.08666666666668021,
+      "ratio_i_int8_fp32": 0.9981402002861227
+    },
+    "maha": {
+      "fp32": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 46.40333333333333,
+        "i_std_ma": 0.025166114784236648
+      },
+      "int8": {
+        "total_uj": "à mesurer",
+        "energy_uj_per_inference": "à mesurer",
+        "i_mean_ma": 46.37333333333334,
+        "i_std_ma": 0.005773502691898025
+      },
+      "delta_int8_vs_fp32_uj": "à mesurer",
+      "ratio_int8_fp32": "à mesurer",
+      "delta_int8_vs_fp32_ma": -0.029999999999986926,
+      "ratio_i_int8_fp32": 0.9993534947202072
+    }
+  },
+  "gap3_note": "Gap 3 : l'INT8 divise la RAM par ~4 (S28/S49) sans accélérer la latence (FPU Cortex-M4, pas de NPU — paradoxe S29). Question : réduit-il malgré tout la consommation ? Réponse mesurée (S5008) par le COURANT MOYEN à cadence imposée — `delta_int8_vs_fp32_ma` — et non par les µJ/inférence, qui restent inaccessibles sur ce firmware (référence de scrutation active, cf. `energy_na_reason` des cellules).",
+  "timestamp": "2026-08-05T08:37:30.994813+00:00"
+}

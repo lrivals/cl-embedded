@@ -69,12 +69,32 @@ def measure_macs_torchinfo(model, input_shape: tuple) -> int:
 
 
 def _build_ewc(cfg: dict):
-    """Instancie EWCMlpClassifier depuis la config board (n_in, n_h1, n_h2)."""
-    from src.models.ewc.ewc_mlp import EWCMlpClassifier
+    """Instancie la tête EWC depuis la config board (n_in, n_h1, n_h2, head).
 
+    Deux têtes coexistent dans le dépôt et n'ont PAS le même coût :
+      - ``binary`` (défaut, historique) : ``EWCMlpClassifier``, fc3 → 1 (sigmoïde) ;
+      - ``multiclass`` : ``EWCMlpMulticlass``, fc3 → ``n_out`` — c'est la tête réellement
+        portée sur la carte (``ewc_forward``, ``k→32→16→2``), donc celle à mesurer pour
+        toute comparaison avec des chiffres board.
+    """
     n_in = int(cfg.get("n_in", cfg.get("EWC_IN", 5)))
     n_h1 = int(cfg.get("n_h1", cfg.get("EWC_H1", 32)))
     n_h2 = int(cfg.get("n_h2", cfg.get("EWC_H2", 16)))
+    head = str(cfg.get("head", "binary"))
+
+    if head == "multiclass":
+        from src.models.ewc.ewc_mlp_multiclass import EWCMlpMulticlass
+
+        n_out = int(cfg.get("n_out", cfg.get("EWC_OUT", 2)))
+        model = EWCMlpMulticlass(input_dim=n_in, n_classes=n_out, hidden_dims=[n_h1, n_h2])
+        model.eval()
+        macs_analytical = compute_macs(
+            "EWC", n_features=n_in, hidden_dims=[n_h1, n_h2], n_classes=n_out
+        )
+        return model, (1, n_in), macs_analytical
+
+    from src.models.ewc.ewc_mlp import EWCMlpClassifier
+
     model = EWCMlpClassifier(input_dim=n_in, hidden_dims=[n_h1, n_h2])
     model.eval()
     # Sortie réelle du classifieur = 1 (sigmoïde binaire, fc3 → 1).
@@ -191,9 +211,22 @@ def _non_torch_analytical(model_name: str, cfg: dict) -> int:
     raise KeyError(f"Modèle non-torch inconnu : {model_name!r}")
 
 
-def run(model_name: str, config_path: str) -> dict:
-    """Charge la config, construit le modèle et retourne le dict de comparaison."""
+def run(model_name: str, config_path: str, n_in: int | None = None,
+        head: str | None = None) -> dict:
+    """Charge la config, construit le modèle et retourne le dict de comparaison.
+
+    ``n_in`` surcharge la dimension d'entrée lue dans la config (utile pour les
+    balayages par condition de features, cf. Sprint 35). ``None`` = valeur de la
+    config, comportement historique inchangé. ``head`` sélectionne la tête EWC
+    (``binary`` par défaut, ``multiclass`` = tête portée sur la carte).
+    """
     cfg = load_config(config_path)
+    if n_in is not None:
+        # Les builders lisent indifféremment les clés snake_case et UPPER_SNAKE.
+        cfg = {**cfg, "n_in": n_in, "EWC_IN": n_in, "TINYOL_IN": n_in,
+               "HDC_N_FEATURES": n_in, "MAHA_DIM": n_in}
+    if head is not None:
+        cfg = {**cfg, "head": head}
 
     if model_name in _TORCH_BUILDERS:
         try:
@@ -239,11 +272,38 @@ def main() -> None:
         required=True,
         help="Config YAML board fournissant les dimensions (ex. configs/board_ewc.yaml).",
     )
+    parser.add_argument(
+        "--n-in",
+        type=int,
+        default=None,
+        help="Surcharge la dimension d'entrée de la config (défaut : valeur du YAML).",
+    )
+    parser.add_argument(
+        "--head",
+        choices=["binary", "multiclass"],
+        default=None,
+        help=("Tête EWC : `binary` (défaut historique, fc3→1) ou `multiclass` "
+              "(fc3→EWC_OUT, tête réellement portée sur la carte)."),
+    )
+    parser.add_argument(
+        "--out",
+        type=str,
+        default=None,
+        help="Écrit le résultat JSON dans ce fichier (défaut : stdout seul).",
+    )
     args = parser.parse_args()
 
-    result = run(args.model, args.config)
+    result = run(args.model, args.config, n_in=args.n_in, head=args.head)
 
     print(json.dumps(result, indent=2, ensure_ascii=False))
+
+    if args.out:
+        out_path = Path(args.out)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(
+            json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+        print(f"[measure_macs] écrit → {out_path}", file=sys.stderr)
 
 
 if __name__ == "__main__":

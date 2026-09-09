@@ -35,6 +35,7 @@
 \providecommand{\byte}{B}
 \providecommand{\mega}{M}
 \providecommand{\hertz}{Hz}
+\providecommand{\joule}{J}
 
 \title{Apprentissage incrémental EWC sur microcontrôleur :\\
 parité FP32 mesurée, effondrement de la quantification naïve\\
@@ -58,11 +59,15 @@ s'effondre sur la carte : le F1 chute de $\approx\!\num{0.92}$ à \numrange{0.05
 ablation bit-exacte émulée sur PC isole la cause (accumulateur \texttt{int8}, échelle par-tenseur
 non calibrée) et démontre la \emph{récupération} par un kernel calibré : le schéma
 \texttt{per\_tensor\_calib} restaure $+\!\num{0.88}$ de F1 (Pronostia \num{0.9462}, Monitoring \num{0.9201}),
-et le schéma \texttt{q15} égale le FP32. La RAM des poids est divisée par~4 (INT8) sans accélération de la
-latence sur le FPU du Cortex-M4 --- un \emph{paradoxe} que nous assumons et rattachons à une piste SIMD
-(CMSIS-NN). Nous distinguons systématiquement les mesures \emph{sur carte} des émulations \emph{PC
-bit-exactes}, et laissons explicitement « à mesurer » les cellules de la campagne carte v2 non encore
-streamées.
+et le schéma \texttt{q15} égale le FP32. \textbf{(4)} Cette récupération est désormais \emph{mesurée sur
+carte} sur quatre cellules per-canal (F1 \num{0.9173} Monitoring, \num{0.8995} Pronostia ; parité gelée
+\num{1.000} contre l'émulateur ; aucune erreur CRC). Nous étendons enfin l'étude au \emph{moment} de la
+quantification, à la \emph{profondeur} sub-INT8 et au budget système complet : la RAM des poids est divisée
+par~4, mais la RAM totale est inchangée ; la latence \emph{augmente} (\SI{74}{\micro\second} contre
+\SIrange{48}{50}{\micro\second}, la requantification pesant un tiers du budget) et l'énergie ne bouge pas
+(\SI{67.47}{\micro\joule} contre \SI{67.65}{\micro\joule}). Nous distinguons systématiquement les mesures
+\emph{sur carte} des émulations \emph{PC bit-exactes}, et laissons explicitement « à mesurer » les cellules
+non encore streamées.
 \end{abstract}
 
 \noindent\textbf{Mots-clés} : apprentissage continu ; EWC ; quantification INT8 ; PTQ ; microcontrôleur ;
@@ -73,6 +78,8 @@ maintenance prédictive ; TinyML.
 \input{sections/fr/03_method}
 \input{sections/fr/04_setup}
 \input{sections/fr/05_results}
+\input{sections/fr/05b_quant_axes}
+\input{sections/fr/05c_system}
 \input{sections/fr/06_discussion}
 \input{sections/fr/07_conclusion}
 

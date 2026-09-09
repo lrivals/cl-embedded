@@ -1,0 +1,394 @@
+% =============================================================
+%  references_soutenance.bib — Soutenance M2
+%  « Apprentissage Incrémental pour Capteurs Intelligents
+%    à Ressources Limitées » — Léonard RIVALS, ISAE-SUPAERO, 2026
+%
+%  Portée : toutes les références citées dans le dossier de
+%  soutenance (S00–S03), plus les entrées manquantes du dépôt
+%  (CWRU, Paderborn, CMSIS-NN, détecteurs de dérive, crédits
+%  d'images).
+%
+%  Convention de clés = celle du manuscrit
+%  (docs/rapport_de_stage/manuscrit_overleaf/references.bib),
+%  désignée comme référence par l'audit S4103. Les entrées de la
+%  section [REPRISES] sont copiées à l'identique de ce fichier :
+%  ne pas les éditer ici, éditer la source et recopier.
+%
+%  Toute valeur non vérifiable hors ligne porte un commentaire
+%  « % à vérifier » placé JUSTE AVANT l'entrée concernée. Aucun DOI,
+%  volume ou URL n'est inventé.
+%
+%  Ne jamais placer de commentaire % À L'INTÉRIEUR d'une entrée :
+%  bibtex ne les traite pas comme des commentaires et saute l'entrée.
+%
+%  Organisation :
+%    [A] État de l'art embarqué — les 4 travaux de la slide 5
+%    [B] Apprentissage continu — fondements et méthodes citées
+%    [C] TinyML / embarqué
+%    [D] Quantification
+%    [E] Maintenance prédictive / séries temporelles
+%    [F] Jeux de données
+%    [G] Détection de dérive (slide de secours B10, hors manuscrit)
+%    [H] Crédits d'images
+% =============================================================
+
+
+% ═══ [A] ÉTAT DE L'ART EMBARQUÉ — slide 5 ════════════════════
+% [REPRISES du .bib du manuscrit]
+
+@misc{Ren2021,
+  author       = {Haoyu Ren and Darko Anicic and Thomas A. Runkler},
+  title        = {{TinyOL}: {TinyML} with Online-Learning on Microcontrollers},
+  howpublished = {arXiv:2103.08295},
+  year         = {2021},
+}
+
+@article{Ravaglia2021,
+  author  = {Leonardo Ravaglia and Manuele Rusci and Davide Nadalini and
+             Alessandro Capotondi and Francesco Conti and Luca Benini},
+  title   = {A {TinyML} Platform for On-Device Continual Learning with Quantized Latent Replays},
+  journal = {IEEE Journal on Emerging and Selected Topics in Circuits and Systems},
+  volume  = {11},
+  number  = {4},
+  pages   = {789--802},
+  year    = {2021},
+  doi     = {10.1109/JETCAS.2021.3121554},
+}
+
+@article{Benatti2019,
+  author  = {Simone Benatti and Fabio Montagna and Victor Kartsch and
+             Abbas Rahimi and Davide Rossi and Luca Benini},
+  title   = {Online Learning and Classification of {EMG}-Based Gestures on a Parallel
+             Ultra-Low Power Platform Using Hyperdimensional Computing},
+  journal = {IEEE Transactions on Biomedical Circuits and Systems},
+  year    = {2019},
+}
+
+@inproceedings{Kwon2023,
+  author    = {Young D. Kwon and Jagmohan Chauhan and Hong Jia and
+               Stylianos I. Venieris and Cecilia Mascolo},
+  title     = {{LifeLearner}: Hardware-Aware Meta Continual Learning System for Embedded Computing Platforms},
+  booktitle = {ACM Conference on Embedded Networked Sensor Systems (SenSys)},
+  year      = {2023},
+}
+
+
+% ═══ [B] APPRENTISSAGE CONTINU ═══════════════════════════════
+% [REPRISES du .bib du manuscrit]
+
+@article{Kirkpatrick2017,
+  author  = {James Kirkpatrick and Razvan Pascanu and Neil Rabinowitz and
+             Joel Veness and Guillaume Desjardins and Andrei A. Rusu and
+             Kieran Milan and John Quan and Tiago Ramalho and
+             Agnieszka Grabska-Barwinska and Demis Hassabis and
+             Claudia Clopath and Dharshan Kumaran and Raia Hadsell},
+  title   = {Overcoming Catastrophic Forgetting in Neural Networks},
+  journal = {Proceedings of the National Academy of Sciences},
+  year    = {2017},
+}
+
+@inproceedings{Zenke2017,
+  author    = {Friedemann Zenke and Ben Poole and Surya Ganguli},
+  title     = {Continual Learning Through Synaptic Intelligence},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  year      = {2017},
+}
+
+@inproceedings{Aljundi2018MAS,
+  author    = {Rahaf Aljundi and Francesca Babiloni and
+               Mohamed Elhoseiny and Marcus Rohrbach and
+               Tinne Tuytelaars},
+  title     = {Memory Aware Synapses: Learning What (not) to Forget},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  year      = {2018},
+  eprint    = {1711.09601},
+  eprinttype = {arXiv},
+}
+
+@article{Li2018LwF,
+  author  = {Zhizhong Li and Derek Hoiem},
+  title   = {Learning Without Forgetting},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2018},
+}
+
+@article{DeLange2021,
+  author  = {Matthias De Lange and Rahaf Aljundi and Marc Masana and
+             Sarah Parisot and Xu Jia and Ale{\v{s}} Leonardis and
+             Gregory Slabaugh and Tinne Tuytelaars},
+  title   = {A Continual Learning Survey: Defying Forgetting in Classification Tasks},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  year    = {2021},
+}
+
+@inproceedings{Rebuffi2017,
+  author    = {Sylvestre-Alvise Rebuffi and Alexander Kolesnikov and
+               Georg Sperl and Christoph H. Lampert},
+  title     = {{iCaRL}: Incremental Classifier and Representation Learning},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2017},
+}
+
+@inproceedings{LopezPaz2017,
+  author    = {David Lopez-Paz and Marc'Aurelio Ranzato},
+  title     = {Gradient Episodic Memory for Continual Learning},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2017},
+}
+
+
+% ═══ [C] TinyML / EMBARQUÉ ═══════════════════════════════════
+% [REPRISES du .bib du manuscrit]
+
+@article{Lin2023,
+  author  = {Ji Lin and Ligeng Zhu and Wei-Ming Chen and Wei-Chen Wang and Song Han},
+  title   = {Tiny Machine Learning: Progress and Futures},
+  journal = {IEEE Circuits and Systems Magazine},
+  volume  = {23},
+  number  = {3},
+  pages   = {8--34},
+  year    = {2023},
+  doi     = {10.1109/MCAS.2023.3302182},
+}
+
+@article{Capogrosso2023,
+  author  = {Luigi Capogrosso and Federico Cunico and Dong Seon Cheng and
+             Federico Fummi and Marco Cristani},
+  title   = {A Machine Learning-Oriented Survey on Tiny Machine Learning},
+  journal = {IEEE Access},
+  year    = {2023},
+}
+
+@inproceedings{Pellegrini2021,
+  author    = {Lorenzo Pellegrini and Vincenzo Lomonaco and
+               Gabriele Graffieti and Davide Maltoni},
+  title     = {Continual Learning at the Edge: Real-Time Training on Smartphone Devices},
+  booktitle = {29th European Symposium on Artificial Neural Networks (ESANN)},
+  year      = {2021},
+}
+
+
+% ═══ [D] QUANTIFICATION ══════════════════════════════════════
+% [REPRISES du .bib du manuscrit]
+
+@inproceedings{Jacob2018,
+  author    = {Benoit Jacob and Skirmantas Kligys and Bo Chen and
+               Menglong Zhu and Matthew Tang and Andrew Howard and
+               Hartwig Adam and Dmitry Kalenichenko},
+  title     = {Quantization and Training of Neural Networks for
+               Efficient Integer-Arithmetic-Only Inference},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2018},
+}
+
+@misc{Krishnamoorthi2018,
+  author       = {Raghuraman Krishnamoorthi},
+  title        = {Quantizing Deep Convolutional Networks for Efficient Inference: A Whitepaper},
+  howpublished = {arXiv:1806.08342},
+  year         = {2018},
+}
+
+
+% ═══ [E] MAINTENANCE PRÉDICTIVE / SÉRIES TEMPORELLES ═════════
+% [REPRISES du .bib du manuscrit]
+
+@article{Hurtado2023,
+  author  = {Jhair Hurtado and Alain Salvati and Andrea Cossu and
+             Antonio Carta and Davide Bacciu},
+  title   = {Continual Learning for Predictive Maintenance: Overview and Challenges},
+  journal = {Intelligent Systems with Applications},
+  year    = {2023},
+}
+
+@misc{BesnardRagot2024,
+  author       = {Quentin Besnard and Nicolas Ragot},
+  title        = {Continual Learning for Time Series Forecasting: A First Survey},
+  howpublished = {arXiv preprint},
+  year         = {2024},
+}
+
+@article{BerghoutBenbouzid2022,
+  author  = {Tarek Berghout and Mohamed Benbouzid},
+  title   = {A Systematic Guide for Predicting Remaining Useful Life with Machine Learning},
+  journal = {Electronics},
+  year    = {2022},
+}
+
+
+% ═══ [F] JEUX DE DONNÉES ═════════════════════════════════════
+% [REPRISES du .bib du manuscrit]
+
+@inproceedings{Nectoux2012,
+  author    = {Patrick Nectoux and Rafael Gouriveau and Kamal Medjaher and
+               Emmanuel Ramasso and Bechir Chebel-Morello and
+               Noureddine Zerhouni and Christophe Varnier},
+  title     = {{PRONOSTIA}: An Experimental Platform for Bearings Accelerated Degradation Tests},
+  booktitle = {IEEE International Conference on Prognostics and Health Management (PHM)},
+  year      = {2012},
+}
+
+@inproceedings{Saxena2008,
+  author    = {Abhinav Saxena and Kai Goebel and Don Simon and Neil Eklund},
+  title     = {Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation},
+  booktitle = {International Conference on Prognostics and Health Management (PHM)},
+  year      = {2008},
+}
+
+@article{Mahalanobis1936,
+  author  = {Prasanta Chandra Mahalanobis},
+  title   = {On the Generalised Distance in Statistics},
+  journal = {Proceedings of the National Institute of Sciences of India},
+  year    = {1936},
+}
+
+
+% ═══════════════════════════════════════════════════════════════
+%  AJOUTS SOUTENANCE — entrées absentes du .bib du manuscrit
+% ═══════════════════════════════════════════════════════════════
+
+% ── [F bis] Jeux de données sans entrée dans le dépôt ─────────
+% Repris de docs/sprints/sprint_41/S4103_audit_biblio.md (§4).
+
+@article{Lessmeier2016,
+  author  = {Christian Lessmeier and James Kuria Kimotho and Detmar Zimmer and Walter Sextro},
+  title   = {Condition Monitoring of Bearing Damage in Electromechanical Drive Systems by Using
+             Motor Current Signals of Electric Motors: A Benchmark Data Set for Data-Driven Classification},
+  journal = {Proceedings of the European Conference of the PHM Society},
+  year    = {2016},
+}
+
+@article{SmithRandall2015,
+  author  = {Wade A. Smith and Robert B. Randall},
+  title   = {Rolling Element Bearing Diagnostics Using the {Case Western Reserve University} Data:
+             A Benchmark Study},
+  journal = {Mechanical Systems and Signal Processing},
+  volume  = {64--65},
+  pages   = {100--131},
+  year    = {2015},
+}
+
+% à vérifier : année de mise en ligne et URL courante du Data Center
+@misc{CWRU_DataCenter,
+  author       = {{Case Western Reserve University}},
+  title        = {{Bearing Data Center} Seeded Fault Test Data},
+  howpublished = {Case Western Reserve University Bearing Data Center},
+  note         = {Source des données brutes de D3 ; l'analyse de référence est {SmithRandall2015}.
+                  URL non consignée dans le dépôt},
+  year         = {2000},
+}
+
+% Jeux Kaggle D1 (Pump Maintenance) et D2 (Equipment Monitoring) :
+% AUCUN slug ni URL n'est consigné dans le dépôt — cf. le TODO(arnaud) de
+% docs/context/datasets.md:9 et :376. Aucune entrée n'est créée ici : une URL
+% inventée serait pire que l'absence. À citer en note de bas de page avec URL
+% et date d'accès une fois le slug renseigné.
+
+
+% ── [C bis] Noyaux embarqués ─────────────────────────────────
+
+@misc{Lai2018CMSISNN,
+  author       = {Liangzhen Lai and Naveen Suda and Vikas Chandra},
+  title        = {{CMSIS-NN}: Efficient Neural Network Kernels for {Arm Cortex-M} {CPUs}},
+  howpublished = {arXiv:1801.06601},
+  year         = {2018},
+}
+
+
+% ── [G] DÉTECTION DE DÉRIVE — slide de secours B10 ────────────
+% HORS MANUSCRIT : ces travaux fondent la famille de détecteurs des
+% sprints 43–45, absente du manuscrit et gardée en réserve (S00:48-51).
+
+@inproceedings{Gama2004DDM,
+  author    = {Jo{\~a}o Gama and Pedro Medas and Gladys Castillo and Pedro Rodrigues},
+  title     = {Learning with Drift Detection},
+  booktitle = {Advances in Artificial Intelligence (SBIA), LNCS 3171},
+  pages     = {286--295},
+  year      = {2004},
+}
+
+% à vérifier : pages
+@inproceedings{BaenaGarcia2006EDDM,
+  author    = {Manuel Baena-Garc{\'i}a and Jos{\'e} del Campo-{\'A}vila and
+               Ra{\'u}l Fidalgo and Albert Bifet and Ricard Gavald{\`a} and
+               Rafael Morales-Bueno},
+  title     = {Early Drift Detection Method},
+  booktitle = {4th ECML PKDD International Workshop on Knowledge Discovery from Data Streams},
+  year      = {2006},
+}
+
+@article{Page1954,
+  author  = {E. S. Page},
+  title   = {Continuous Inspection Schemes},
+  journal = {Biometrika},
+  volume  = {41},
+  number  = {1/2},
+  pages   = {100--115},
+  year    = {1954},
+}
+
+@inproceedings{Bifet2007ADWIN,
+  author    = {Albert Bifet and Ricard Gavald{\`a}},
+  title     = {Learning from Time-Changing Data with Adaptive Windowing},
+  booktitle = {SIAM International Conference on Data Mining (SDM)},
+  year      = {2007},
+}
+
+% à vérifier : pages
+@article{Raab2020KSWIN,
+  author  = {Christoph Raab and Moritz Heusinger and Frank-Michael Schleif},
+  title   = {Reactive Soft Prototype Computing for Concept Drift Streams},
+  journal = {Neurocomputing},
+  volume  = {416},
+  year    = {2020},
+}
+
+@article{Massey1951KS,
+  author  = {Frank J. Massey},
+  title   = {The {Kolmogorov-Smirnov} Test for Goodness of Fit},
+  journal = {Journal of the American Statistical Association},
+  volume  = {46},
+  number  = {253},
+  pages   = {68--78},
+  year    = {1951},
+}
+
+@article{Gretton2012MMD,
+  author  = {Arthur Gretton and Karsten M. Borgwardt and Malte J. Rasch and
+             Bernhard Sch{\"o}lkopf and Alexander Smola},
+  title   = {A Kernel Two-Sample Test},
+  journal = {Journal of Machine Learning Research},
+  volume  = {13},
+  pages   = {723--773},
+  year    = {2012},
+}
+
+% PSI (Population Stability Index) : indicateur issu de la pratique du
+% credit scoring, SANS article fondateur canonique. Aucune entrée n'est créée.
+% Le décrire comme « indicateur de stabilité de population, pratique
+% industrielle » plutôt que de lui attribuer une paternité incertaine.
+
+
+% ── [B bis] Baselines non supervisées évoquées en questions ───
+
+@inproceedings{Liu2008IsolationForest,
+  author    = {Fei Tony Liu and Kai Ming Ting and Zhi-Hua Zhou},
+  title     = {Isolation Forest},
+  booktitle = {IEEE International Conference on Data Mining (ICDM)},
+  year      = {2008},
+}
+
+
+% ── [H] CRÉDITS D'IMAGES ─────────────────────────────────────
+
+@misc{BlueDocker_PdM,
+  author       = {{Blue Docker}},
+  title        = {La maintenance pr{\'e}dictive, un enjeu pour l'industrie},
+  howpublished = {\url{https://bluedocker.com/maintenance-predictive-enjeu-industrie/}},
+  note         = {Consult{\'e} le 22 ao{\^u}t 2026. Source de l'illustration
+                  d'introduction {\`a} la maintenance pr{\'e}dictive, slide 2
+                  (MaintenancePredictive\_Intro.png)},
+  year         = {2026},
+}
+
+% Les trois captures KirkArticle_*.png (slides 4, 5, 9) sont des extraits de
+% l'article {Kirkpatrick2017} ci-dessus — pas d'entrée séparée, on cite l'article.

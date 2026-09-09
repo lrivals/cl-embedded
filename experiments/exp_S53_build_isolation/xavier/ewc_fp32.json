@@ -1,0 +1,226 @@
+{
+  "model": "ewc",
+  "encoding": "fp32",
+  "dataset": "monitoring",
+  "points": [
+    {
+      "rate_hz": 0.0,
+      "i_mean_a": 0.040475000000000004,
+      "i_std_a": 7.071067811862734e-06,
+      "n_repeats": 2,
+      "session_index": [
+        11,
+        12
+      ]
+    },
+    {
+      "rate_hz": 10.0,
+      "i_mean_a": 0.040545,
+      "i_std_a": 3.535533905932839e-05,
+      "n_repeats": 2,
+      "session_index": [
+        7,
+        9
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 25.0,
+      "i_mean_a": 0.040535,
+      "i_std_a": 7.071067811867641e-06,
+      "n_repeats": 2,
+      "session_index": [
+        6,
+        10
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 50.0,
+      "i_mean_a": 0.040585,
+      "i_std_a": 4.949747468305876e-05,
+      "n_repeats": 2,
+      "session_index": [
+        2,
+        3
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 100.0,
+      "i_mean_a": 0.040530000000000004,
+      "i_std_a": 0.00014142135623731355,
+      "n_repeats": 2,
+      "session_index": [
+        0,
+        8
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 150.0,
+      "i_mean_a": 0.040295000000000004,
+      "i_std_a": 0.00012020815280171555,
+      "n_repeats": 2,
+      "session_index": [
+        5,
+        13
+      ],
+      "achieved_rate_hz": null,
+      "achieved_rate_source": "non mesuré"
+    },
+    {
+      "rate_hz": 200.0,
+      "i_mean_a": 0.040440000000000004,
+      "i_std_a": 5.6568542494921494e-05,
+      "n_repeats": 2,
+      "session_index": [
+        1,
+        4
+      ],
+      "achieved_rate_hz": 167.601,
+      "achieved_rate_source": "mesuré"
+    }
+  ],
+  "protocol_check": {
+    "model_flag": "ewc",
+    "n_samples_expected": 300,
+    "n_samples_received": 300,
+    "samples_lost": 0,
+    "crc_errors": 0,
+    "latency_p50_us": 49.0,
+    "latency_p99_us": 49.0,
+    "achieved_rate_hz": 98.355,
+    "check_rate_hz": 100.0
+  },
+  "window_s": 10.0,
+  "settle_s": 2.0,
+  "timestamp": "2026-09-07T12:47:49.644070+00:00",
+  "source": "lpm01a_current",
+  "method": "régression I(rate)",
+  "slope_ua_per_hz": 1.6727019124849654,
+  "slope_std_ua_per_hz": 0.7498546933937424,
+  "intercept_ma": 40.484233461822555,
+  "r2": 0.5543686275291018,
+  "n_points_fitted": 6,
+  "weighted_by_inverse_variance": true,
+  "energy_uj_per_inference": "à mesurer",
+  "energy_uncertainty_uj": 2.4475257192371753,
+  "saturation_rate_hz": 200.0,
+  "duty_cycle_at_max_rate": 0.00735,
+  "max_rate_fitted_hz": 150.0,
+  "tension_v": 3.2640000000000002,
+  "dwt_latency_us_p50": 49.0,
+  "energy_na_reason": "régression non significative : r²=0.554 < 0.9 — le courant ne suit pas une droite en cadence sur ce balayage, la pente ne mesure donc pas un coût marginal par inférence.",
+  "session": {
+    "sequence": [
+      {
+        "session_index": 0,
+        "cell": "ewc_fp32",
+        "rate_hz": 100.0,
+        "repeat": 0,
+        "i_a": 0.040630000000000006
+      },
+      {
+        "session_index": 1,
+        "cell": "ewc_fp32",
+        "rate_hz": 200.0,
+        "repeat": 0,
+        "i_a": 0.04048
+      },
+      {
+        "session_index": 2,
+        "cell": "ewc_fp32",
+        "rate_hz": 50.0,
+        "repeat": 1,
+        "i_a": 0.04062
+      },
+      {
+        "session_index": 3,
+        "cell": "ewc_fp32",
+        "rate_hz": 50.0,
+        "repeat": 0,
+        "i_a": 0.04055
+      },
+      {
+        "session_index": 4,
+        "cell": "ewc_fp32",
+        "rate_hz": 200.0,
+        "repeat": 1,
+        "i_a": 0.040400000000000005
+      },
+      {
+        "session_index": 5,
+        "cell": "ewc_fp32",
+        "rate_hz": 150.0,
+        "repeat": 1,
+        "i_a": 0.040380000000000006
+      },
+      {
+        "session_index": 6,
+        "cell": "ewc_fp32",
+        "rate_hz": 25.0,
+        "repeat": 1,
+        "i_a": 0.04054000000000001
+      },
+      {
+        "session_index": 7,
+        "cell": "ewc_fp32",
+        "rate_hz": 10.0,
+        "repeat": 0,
+        "i_a": 0.04052
+      },
+      {
+        "session_index": 8,
+        "cell": "ewc_fp32",
+        "rate_hz": 100.0,
+        "repeat": 1,
+        "i_a": 0.04043
+      },
+      {
+        "session_index": 9,
+        "cell": "ewc_fp32",
+        "rate_hz": 10.0,
+        "repeat": 1,
+        "i_a": 0.04057
+      },
+      {
+        "session_index": 10,
+        "cell": "ewc_fp32",
+        "rate_hz": 25.0,
+        "repeat": 0,
+        "i_a": 0.040530000000000004
+      },
+      {
+        "session_index": 11,
+        "cell": "ewc_fp32",
+        "rate_hz": 0.0,
+        "repeat": 0,
+        "i_a": 0.04048
+      },
+      {
+        "session_index": 12,
+        "cell": "ewc_fp32",
+        "rate_hz": 0.0,
+        "repeat": 1,
+        "i_a": 0.040470000000000006
+      },
+      {
+        "session_index": 13,
+        "cell": "ewc_fp32",
+        "rate_hz": 150.0,
+        "repeat": 0,
+        "i_a": 0.04021
+      }
+    ],
+    "shuffled": true,
+    "seed": 42,
+    "warmup_discarded_a": [
+      0.059300000000000005
+    ]
+  }
+}

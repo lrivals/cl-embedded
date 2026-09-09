@@ -218,20 +218,20 @@ Le `.bss` reste un indicateur utile, mais le chiffre **à présenter** quand on 
 
 Le notebook [`notebooks/cl_eval/ram_measurement/ram_explained.ipynb`](../notebooks/cl_eval/ram_measurement/ram_explained.ipynb)
 détaille, pour chaque modèle, la part **statique** (poids figés, Flash → copie RAM) vs
-**modulable** (état de *continual learning* mis à jour à bord, `.bss` in-place), plus la
+**mémoire non constante** (état de *continual learning* mis à jour à bord, `.bss` in-place), plus la
 **pile**. Les tailles `.bss` sont lues réellement de l'ELF ; le split est calculé et
 vérifié par [`scripts/ram_breakdown.py`](../scripts/ram_breakdown.py).
 
 Sur Monitoring (5-feat), split validé au niveau octet contre `nm` :
 
-| Modèle | statique (poids) | modulable (état CL) | `.bss` total | pile inf. | pile entr. |
+| Modèle | statique (poids) | mémoire non constante (état CL) | `.bss` total | pile inf. | pile entr. |
 |---|---:|---:|---:|---:|---:|
 | EWC | 3 016 B | 5 636 B (Fisher + θ*) | 8 652 B | 200 B | 400 B |
 | HDC | 20 000 B (proj) | 8 332 B (mémoire assoc.) | 28 332 B | 4 000 B | 4 300 B |
 | Mahalanobis | 108 B (Σ⁻¹) | 20 B (moyenne EMA) | 128 B | 40 B | 40 B |
 | TinyOL | 5 716 B (auto-enc. gelé) | 96 B (tête OtO) | 5 812 B | 212 B | 212 B |
 
-**Idée maîtresse** : statique et modulable vivent dans la **même struct pré-allouée en
+**Idée maîtresse** : statique et mémoire non constante vivent dans la **même struct pré-allouée en
 `.bss`** ; l'entraînement en ligne (Fisher, θ*, mémoire associative, EMA, tête OtO)
 réécrit des tableaux **déjà comptés** — il n'ajoute **aucune RAM permanente**, seulement de
 la pile transitoire. Donc `.bss` inférence == `.bss` entraînement.
@@ -240,6 +240,16 @@ Schémas générés (`docs/figures/ram_measurement/`) :
 `fig_memory_map.png`, `fig_stack_painting.png`, `fig_model_maps.png`,
 `fig_monitoring_stacked.png`, `fig_infer_vs_train.png`, `fig_shared_frame.png`
 (effet « trame partagée `pipeline_run` »).
+
+**Figures RAM complète (Sprint 49, `docs/figures/ram_full/`)** — régénérées par
+`python scripts/generate_figures.py --catalog ram_full` depuis
+[`experiments/exp_S49_ram/summary.json`](../experiments/exp_S49_ram/summary.json)
+(agrégé par `scripts/aggregate_ram.py`) : `ram_totale_empilee.png` (RAM totale
+`.data`/`.bss`/pic par modèle × encodage), `historique_pic_pile.png`, `ratio_int8_fp32.png`,
+`board_vs_pc.png`. **Correctifs CR appliqués** : les étiquettes d'étapes sont les **phases
+réelles des modèles** — `idle` / `inférence` / `mise à jour CL` — et **non** des étapes de
+couches neuronales (HDC/Mahalanobis n'en sont pas) ; le **pic de pile est mesuré après chaque
+phase**, tracé chronologiquement (la mise à jour CL creuse plus la pile que l'inférence).
 
 ---
 
@@ -251,7 +261,7 @@ Schémas générés (`docs/figures/ram_measurement/`) :
 | `firmware/.../inc/profiling.h`, `src/profiling.c` | `STACK_PAINT_SENTINEL`, getters de pic |
 | `firmware/.../tests/test_profiling.c` | 3 tests du scan (PASS) |
 | `scripts/measure_stack_watermark.py` | Driver OpenOCD : pic de pile + RAM totale (`--json`) |
-| `scripts/ram_breakdown.py` | Split statique/modulable par modèle (vérifié vs nm) |
+| `scripts/ram_breakdown.py` | Split statique/mémoire non constante par modèle (vérifié vs nm) |
 | `scripts/run_ram_board.py` | Driver carte optionnel : pic réel par modèle Monitoring |
 | `notebooks/cl_eval/ram_measurement/ram_explained.ipynb` | Notebook pédagogique + 5 schémas |
 | `docs/context/ram_measurement.md` | Référence technique détaillée |

@@ -58,4 +58,6 @@ python -c "import json; d=json.load(open('experiments/exp_S48_summary.json')); a
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+**`board_pc_parity48.py`** : par cellule, rejoue l'émulateur `subint8` (`emulator_predict`, importé du driver — mêmes primitives `EWCHeadWeights.from_state_dict`/`QuantConfig.subint8`/`forward_quant` que l'export, calibration seed-48 identique) sur la séquence board (`board_samples.json`) → `exp_S48_parity_<cell>.json` (table par échantillon + `parity_pred`, `mismatches`, `max_score_err`). **12/12 cellules : parité exacte 1.000, 0 mismatch, `max_score_err ≤ 1.2e-7`** (float32 board vs float64 émulateur, sans impact sur le verdict).
+
+**`aggregate_sprint48.py`** (lecture seule) → `exp_S48_summary.json` indexé `[dataset][weight_bits][granularity][platform]` : sous-blocs `board` (non-packé + packé + `bss_saved_by_packing` = octets réels économisés, **jamais conflaté** avec `bss_bytes` brut) et `pc` (S47 : `auroc_quant`, `ram_ratio_theoretical_vs_fp32`) + `deltas` (`auroc_board_packed − pc_quant`, `bss_saved_by_packing_bytes`). `null`/`na_reason` propagés. Gain de packing mesuré : **336 B (INT4) < 504 B (ternaire) < 572–604 B (binaire)** — croissant quand les bits baissent (l'écart théorie÷8/÷16 ↔ `.bss` réel = overhead fixe partagé, exposé honnêtement).

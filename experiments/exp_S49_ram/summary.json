@@ -1,0 +1,657 @@
+{
+  "_meta": {
+    "generated_by": "scripts/aggregate_ram.py",
+    "generated_at": "2026-07-24T16:51:58",
+    "formula": "RAM totale = .data + .bss + pic de pile",
+    "source_dir": "experiments/exp_S49_ram/",
+    "condition": "5feat",
+    "ram_budget_bytes": 262144,
+    "note": "Lecture seule ; deltas/ratios calculés, aucune valeur saisie à la main."
+  },
+  "ewc": {
+    "monitoring": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4416,
+            "stack_peak_update": 4688,
+            "total": 105300,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4416
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4688
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 1992,
+            "stack_peak_update": null,
+            "total": 1992,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 1992
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4328,
+            "stack_peak_update": 4712,
+            "total": 105324,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4328
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4712
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": 1.0002
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    },
+    "pronostia": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4424,
+            "stack_peak_update": 4696,
+            "total": 110192,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4424
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4696
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 1992,
+            "stack_peak_update": null,
+            "total": 1992,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 1992
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4336,
+            "stack_peak_update": 4720,
+            "total": 110216,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4336
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4720
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": 1.0002
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    }
+  },
+  "hdc": {
+    "monitoring": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4328,
+            "stack_peak_update": 4328,
+            "total": 104940,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4328
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4328
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 15136,
+            "stack_peak_update": null,
+            "total": 15136,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 15136
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4328,
+            "stack_peak_update": 4328,
+            "total": 104940,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4328
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4328
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": 1.0
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    },
+    "pronostia": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4336,
+            "stack_peak_update": 4336,
+            "total": 109832,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4336
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4336
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 15136,
+            "stack_peak_update": null,
+            "total": 15136,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 15136
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4336,
+            "stack_peak_update": 4336,
+            "total": 109832,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4336
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4336
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": 1.0
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    }
+  },
+  "tinyol": {
+    "monitoring": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4328,
+            "stack_peak_update": 4328,
+            "total": 104940,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4328
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4328
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 2280,
+            "stack_peak_update": null,
+            "total": 2280,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 2280
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4368,
+            "stack_peak_update": 4368,
+            "total": 104980,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4368
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4368
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": 1.0004
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    },
+    "pronostia": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4336,
+            "stack_peak_update": 4336,
+            "total": 109832,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4336
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4336
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 2536,
+            "stack_peak_update": null,
+            "total": 2536,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 2536
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4376,
+            "stack_peak_update": 4376,
+            "total": 109872,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4376
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4376
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": 1.0004
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    }
+  },
+  "mahalanobis": {
+    "monitoring": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 100152,
+            "stack_peak_inference": 4328,
+            "stack_peak_update": 4328,
+            "total": 104940,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4236
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4328
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4328
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 4540,
+            "stack_peak_update": null,
+            "total": 4540,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4540
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "Maha INT8 = build compilation dédié -DMAHA_INT8 + export ; hors périmètre mesure RAM S49 (gain = poids ÷4, cf. Sprint 29).",
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    },
+    "pronostia": {
+      "5feat": {
+        "fp32": {
+          "board": {
+            "data": 460,
+            "bss": 105036,
+            "stack_peak_inference": 4336,
+            "stack_peak_update": 4336,
+            "total": 109832,
+            "stack_history": [
+              {
+                "phase": "idle",
+                "stack_peak_bytes": 4244
+              },
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 4336
+              },
+              {
+                "phase": "update",
+                "stack_peak_bytes": 4336
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": 5308,
+            "stack_peak_update": null,
+            "total": 5308,
+            "stack_history": [
+              {
+                "phase": "inference",
+                "stack_peak_bytes": 5308
+              }
+            ],
+            "status": "done",
+            "na_reason": null,
+            "ratio_int8_vs_fp32": null
+          }
+        },
+        "int8": {
+          "board": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "Maha INT8 = build compilation dédié -DMAHA_INT8 + export ; hors périmètre mesure RAM S49 (gain = poids ÷4, cf. Sprint 29).",
+            "ratio_int8_vs_fp32": null
+          },
+          "pc": {
+            "data": null,
+            "bss": null,
+            "stack_peak_inference": null,
+            "stack_peak_update": null,
+            "total": null,
+            "stack_history": [],
+            "status": "na",
+            "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board.",
+            "ratio_int8_vs_fp32": null
+          }
+        }
+      }
+    }
+  }
+}

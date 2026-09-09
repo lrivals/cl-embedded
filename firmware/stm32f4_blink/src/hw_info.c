@@ -29,6 +29,8 @@
 
 /* PWR_CR bits */
 #define PWR_CR_VOS_SCALE1   (3UL << 14)   /* Voltage scaling output 1 (max perf) */
+#define PWR_CR_VOS_SCALE2   (2UL << 14)   /* Voltage scaling output 2 (≤ 168 MHz) */
+#define PWR_CR_VOS_SCALE3   (1UL << 14)   /* Voltage scaling output 3 (≤ 120 MHz) */
 #define PWR_CR_ODEN         (1UL << 16)   /* Over-drive enable */
 #define PWR_CR_ODSWEN       (1UL << 17)   /* Over-drive switching enable */
 
@@ -37,10 +39,57 @@
 #define PWR_CSR_ODSWRDY     (1UL << 17)   /* Over-drive switching ready */
 
 /* FLASH_ACR bits */
+#define FLASH_ACR_LATENCY_1WS  1UL
+#define FLASH_ACR_LATENCY_2WS  2UL
 #define FLASH_ACR_LATENCY_5WS  5UL
 #define FLASH_ACR_PRFTEN    (1UL << 8)
 #define FLASH_ACR_ICEN      (1UL << 9)
 #define FLASH_ACR_DCEN      (1UL << 10)
+
+/* ── Fréquence système sélectionnable à la compilation (S5303) ──────────────
+ *
+ * POURQUOI : le Gap 2 dispose de trois ordres de grandeur de marge (pire latence
+ * mesurée 2095 µs contre 100 ms de budget). Cette marge n'a jamais été convertie en
+ * argument de déploiement : faut-il RALENTIR le MCU pour tenir l'autonomie ? Et,
+ * accessoirement, la carte à 180 MHz dépasse le plafond de 59 mA du mode dynamique
+ * de la sonde — baisser la fréquence est la seule voie de contournement restante
+ * après l'échec mesuré de la veille du PHY.
+ *
+ * CONTRAINTE CENTRALE : `USART3->BRR = 0x0187` est figé en dur et calculé pour
+ * PCLK1 = 45 MHz. Changer PCLK1 casserait l'UART, donc tout le protocole. PLLP et
+ * PPRE1 varient donc CONJOINTEMENT pour garder PCLK1 à 45 MHz — le BRR n'a jamais
+ * à changer, et les 300 échantillons sans perte le vérifient.
+ *
+ * PLLM=8 / PLLN=180 / source HSI restent inchangés : le VCO reste à 360 MHz.
+ */
+#ifndef SYSCLK_MHZ
+#define SYSCLK_MHZ 180        /* build par défaut STRICTEMENT inchangé */
+#endif
+
+#if   SYSCLK_MHZ == 180
+#define HWCLK_PLLP_BITS   0UL          /* PLLP = /2  → 180 MHz */
+#define HWCLK_PPRE1_BITS  0x5UL        /* APB1 = /4  → PCLK1 45 MHz */
+#define HWCLK_PPRE2_BITS  0x4UL        /* APB2 = /2  → PCLK2 90 MHz */
+#define HWCLK_FLASH_WS    FLASH_ACR_LATENCY_5WS
+#define HWCLK_VOS         PWR_CR_VOS_SCALE1
+#define HWCLK_OVERDRIVE   1            /* requis > 168 MHz sur STM32F42x/43x */
+#elif SYSCLK_MHZ == 90
+#define HWCLK_PLLP_BITS   1UL          /* PLLP = /4  → 90 MHz */
+#define HWCLK_PPRE1_BITS  0x4UL        /* APB1 = /2  → PCLK1 45 MHz */
+#define HWCLK_PPRE2_BITS  0x0UL        /* APB2 = /1  → PCLK2 90 MHz */
+#define HWCLK_FLASH_WS    FLASH_ACR_LATENCY_2WS
+#define HWCLK_VOS         PWR_CR_VOS_SCALE2
+#define HWCLK_OVERDRIVE   0
+#elif SYSCLK_MHZ == 45
+#define HWCLK_PLLP_BITS   3UL          /* PLLP = /8  → 45 MHz */
+#define HWCLK_PPRE1_BITS  0x0UL        /* APB1 = /1  → PCLK1 45 MHz */
+#define HWCLK_PPRE2_BITS  0x0UL        /* APB2 = /1  → PCLK2 45 MHz */
+#define HWCLK_FLASH_WS    FLASH_ACR_LATENCY_1WS
+#define HWCLK_VOS         PWR_CR_VOS_SCALE3
+#define HWCLK_OVERDRIVE   0
+#else
+#error "SYSCLK_MHZ non supporté : 180, 90 ou 45 (PCLK1 doit rester à 45 MHz pour le BRR UART)"
+#endif
 
 /* ── Linker symbols (définis dans STM32F439ZITx_FLASH.ld) ───────────────── */
 extern uint32_t _sdata, _edata, _sbss, _ebss, _estack;
@@ -93,6 +142,8 @@ static void uart_put_ko(uint32_t bytes)
 /* ── hw_clock_init — PLL HSI 16 MHz → SYSCLK 180 MHz ───────────────────── */
 /*
  * Source : HSI interne (16 MHz) — pas de cristal externe requis.
+ * Fréquence sélectionnable à la compilation par -DSYSCLK_MHZ={180,90,45} (S5303) ;
+ * la configuration par défaut, décrite ci-dessous, est celle de 180 MHz.
  * Config : PLLM=8, PLLN=180, PLLP=2, SRC=HSI
  *   VCO input  = 16 / 8       = 2 MHz
  *   VCO output = 2 × 180      = 360 MHz
@@ -112,28 +163,33 @@ void hw_clock_init(void)
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
     (void)RCC->APB1ENR;    /* barrière : garantit que l'horloge PWR est active */
 
-    /* 3. Voltage scaling 1 (requis > 168 MHz) */
-    PWR_CR = (PWR_CR & ~(3UL << 14)) | PWR_CR_VOS_SCALE1;
+    /* 3. Voltage scaling — échelle 1 à 180 MHz, abaissée aux fréquences réduites
+     *    (S5303 : c'est une part du gain énergétique attendu, pas une cosmétique). */
+    PWR_CR = (PWR_CR & ~(3UL << 14)) | HWCLK_VOS;
 
-    /* 4. Overdrive (requis > 168 MHz sur STM32F42x/43x) */
+#if HWCLK_OVERDRIVE
+    /* 4. Overdrive (requis > 168 MHz sur STM32F42x/43x) — DÉSACTIVÉ sous 168 MHz. */
     PWR_CR |= PWR_CR_ODEN;
     while (!(PWR_CSR & PWR_CSR_ODRDY)) {}
     PWR_CR |= PWR_CR_ODSWEN;
     while (!(PWR_CSR & PWR_CSR_ODSWRDY)) {}
+#endif
 
-    /* 5. Flash : 5 wait states + prefetch + instruction/data cache */
-    FLASH_ACR = FLASH_ACR_LATENCY_5WS | FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN;
+    /* 5. Flash : wait states adaptés à la fréquence (les réduire AVEC la fréquence,
+     *    sinon on paye des cycles d'attente pour rien) + prefetch + caches I/D */
+    FLASH_ACR = HWCLK_FLASH_WS | FLASH_ACR_PRFTEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN;
 
-    /* 6. Prescalers : AHB=/1 (0000), APB1=/4 (101), APB2=/2 (100) */
+    /* 6. Prescalers : AHB=/1 (0000), APB1/APB2 selon la fréquence retenue.
+     *    PCLK1 vaut 45 MHz aux trois fréquences → BRR UART inchangé. */
     RCC->CFGR = (RCC->CFGR & ~(0xFFCUL << 4))
-              | (0x0UL  <<  4)   /* HPRE  : /1 */
-              | (0x5UL  << 10)   /* PPRE1 : /4 */
-              | (0x4UL  << 13);  /* PPRE2 : /2 */
+              | (0x0UL             <<  4)   /* HPRE  : /1 */
+              | (HWCLK_PPRE1_BITS  << 10)   /* PPRE1 */
+              | (HWCLK_PPRE2_BITS  << 13);  /* PPRE2 */
 
-    /* 7. Configure PLL : PLLM=8, PLLN=180, PLLP=2, SRC=HSI (bit22=0) */
+    /* 7. Configure PLL : PLLM=8, PLLN=180, PLLP variable, SRC=HSI (bit22=0) */
     RCC->PLLCFGR = (8UL   <<  0)   /* PLLM : HSI/8 = 2 MHz VCO_in */
                  | (180UL <<  6)   /* PLLN : 2×180 = 360 MHz VCO_out */
-                 | (0UL   << 16)   /* PLLP : 00 = /2 → SYSCLK 180 MHz */
+                 | (HWCLK_PLLP_BITS << 16)  /* PLLP : /2, /4 ou /8 */
                  | (0UL   << 22);  /* PLLSRC : HSI (0) */
 
     /* 8. Active PLL et attend prêt */
@@ -174,7 +230,31 @@ void hw_uart_init(void)
     /* USART3 config : 115200 baud, 8N1, TX+RX */
     USART3->BRR = 0x0187UL;               /* 45 MHz / (16 × 115200) = 24.414 → 0x0187 */
     USART3->CR1 = USART_CR1_UE | USART_CR1_TE | USART_CR1_RE;
+
+#ifdef UART_WFI_IDLE
+    /* S5302 — arme l'IT RXNE côté NVIC pour que le WFI de `uart_getbyte` puisse être
+     * réveillé par l'arrivée d'un octet. RXNEIE (côté périphérique) N'EST PAS armé
+     * ici : c'est la boucle d'attente qui l'arme juste avant de s'endormir, et le
+     * handler qui le désarme. Sans ce va-et-vient, RXNE resterait actif après le
+     * réveil et l'IT se re-déclencherait en boucle (tail-chaining) : le mode thread
+     * ne reprendrait jamais la main et la carte se figerait sans planter. */
+    NVIC_ISER1 = (1UL << (USART3_IRQn - 32U));
+#endif
 }
+
+#ifdef UART_WFI_IDLE
+/*
+ * USART3_IRQHandler — réveil seul (S5302).
+ *
+ * Il ne consomme PAS `DR` : la boucle de `uart_getbyte` reste la source de vérité
+ * du protocole. Son unique travail est de désarmer RXNEIE pour que l'IT cesse d'être
+ * demandée, sinon le cœur ne redescendrait jamais en mode thread pour lire l'octet.
+ */
+void USART3_IRQHandler(void)
+{
+    USART3->CR1 &= ~USART_CR1_RXNEIE;
+}
+#endif
 
 /* ── DWT cycle counter ──────────────────────────────────────────────────── */
 

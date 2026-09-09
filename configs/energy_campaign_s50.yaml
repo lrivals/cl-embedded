@@ -1,0 +1,45 @@
+# energy_campaign_s50.yaml — Manifeste de campagne énergie S50 (LPM01A).
+#
+# GABARIT À REMPLIR quand les traces LPM01A réelles existent. Tant que `csv:` vaut
+# `null`, `scripts/run_s50_energy.py` écrit des placeholders honnêtes « à mesurer »
+# (règle CLAUDE.md « aucun chiffre inventé ») — AUCUN µJ n'est fabriqué.
+#
+# Utilisation :
+#   1. Lancer la campagne LPM01A (STM32CubeMonitor-Power), protocole S5001 :
+#      idle → inférence ×N → MAJ CL ×N → idle, marqueur PA8 sur la colonne sync.
+#   2. Exporter un CSV par cellule (colonnes : time, current, [voltage], sync/pa8).
+#   3. Renseigner `csv:` (chemin), `n_inference:`, `n_update:` ci-dessous.
+#   4. `python scripts/run_s50_energy.py --manifest configs/energy_campaign_s50.yaml`
+#      → remplit experiments/exp_S50_energy/*.json + autonomy.json avec les mesures.
+#
+# La tension et la calibration de sonde viennent de configs/hw_profile_f439zi.yaml
+# (section energy_calibration, S5001) — ne pas dupliquer ici.
+
+# Cycle représentatif pour l'autonomie (S5003) : période entre deux inférences.
+# Sert à pondérer idle vs actif (sensibilité au duty cycle). Ajustable au profil
+# d'usage industriel réel (TODO(fred)).
+duty_cycle:
+  inference_period_s: 1.0     # une inférence par seconde (hypothèse documentée)
+
+# Décomposition par composant (S5001). Chaque composant = un CSV séparé (delta de
+# captures). `null` → non isolé → by_component[...] = "na" honnête.
+# Le composant "sensor" est structurellement non isolable sur ce banc (capteurs
+# simulés par UART) → laissé "na" (cf. S5001 §2).
+components:
+  mcu: null                   # CSV « MCU seul » (périphériques coupés)
+  periph: null                # CSV « périphériques actifs » (delta vs mcu)
+  sensor: na                  # non isolable (capteurs simulés UART)
+
+# Une cellule par (modèle, encodage) de la grille S3306.
+# csv         : chemin de la trace LPM01A (null = non capturé → « à mesurer »)
+# n_inference : nombre d'inférences dans la fenêtre inference (pour µJ/inférence)
+# n_update    : nombre de MAJ CL dans la fenêtre MAJ (pour µJ/MAJ) ; 0 si N/A
+cells:
+  ewc_fp32:    {csv: null, n_inference: null, n_update: null}
+  ewc_int8:    {csv: null, n_inference: null, n_update: null}
+  hdc_fp32:    {csv: null, n_inference: null, n_update: null}
+  hdc_int8:    {csv: null, n_inference: null, n_update: null}
+  tinyol_fp32: {csv: null, n_inference: null, n_update: null}
+  tinyol_int8: {csv: null, n_inference: null, n_update: null}
+  maha_fp32:   {csv: null, n_inference: null, n_update: null}
+  maha_int8:   {csv: null, n_inference: null, n_update: null}

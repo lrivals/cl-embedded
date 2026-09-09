@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | Sprint 40 |
 | **Semaine** | 5 – 11 juillet 2026 |
-| **Statut** | 📝 Doc — spec complète ; implémentation à venir (Bloc A/B board différés si carte indisponible) |
+| **Statut** | ✅ Implémenté — S4001, S4004–S4007 ✅ · S4002 🟡 4 cellules per-canal mesurées carte sur 12 · **refonte S4008–S4010 ✅** (agrégat de métriques, catalogue de figures, article étendu) |
 | **Priorité globale** | 🔴 Critique — livrable manuscrit/publication (deadline manuscrit préliminaire 15 avril, contribution triple gap) |
 | **Durée estimée totale** | ~45h (Bloc A ~12h · Bloc B ~10h board · Bloc B/C notebook+rédaction ~23h) |
 | **Dépendances** | Sprint 36 ✅ (PC↔board EWC apparié) · Sprint 39 🟡 (émulateur + ablation ✅ ; kernel v2 + board différés) · carte NUCLEO-F439ZI + `references.bib` projet |
@@ -125,5 +125,22 @@ exp_S36 ✅ · exp_S39 ✅ ────────────┴→ S4003 (not
 
 | Tâche | Statut | Temps réel | Notes |
 |-------|:------:|:----------:|-------|
-| S4000 | 📝 Doc | — | Overview + cadrage article |
-| S4001–S4007 | 📝 Doc | — | Documentés ; implémentation à venir (Bloc B board différée si carte indisponible) |
+| S4000 | ✅ | — | Overview + cadrage article |
+| S4001 | ✅ | — | Kernel v2 + export `--int8-v2` + tests Unity host |
+| S4002 | 🟡 | — | **4 cellules per-canal mesurées carte** (F1 0.9173 / 0.8995, parité gelée 1.000, 0 CRC) ; `q15` et A/B `int8_legacy` v2 = banc, cf. S4010 |
+| S4003–S4007 | ✅ | — | Notebook, article FR+EN compilable, tests |
+| S4008 | ✅ | — | Coût de calcul EWC + **agrégat unique** `exp_S40_article_metrics/summary.json` (238 cellules/jeu, 5 estimateurs d'énergie séparés) |
+| S4009 | ✅ | — | Catalogue `article_ewc_int8` (10 figures) + **synchronisation automatique** vers l'article (fin de la dérive fig2/fig4/fig5) |
+| S4010 | ✅ | — | Registre des mesures manquantes, chaque entrée tracée vers son JSON et sa raison |
+
+## Refonte S4008–S4010 (reprise du sprint)
+
+Trois constats mesurés ont motivé la reprise :
+
+1. la récupération INT8 **était devenue une mesure carte** (`exp_S40_board_v2/`, 4 cellules) alors que
+   l'article et `provenance_table.csv` la présentaient encore comme émulée — l'article était donc
+   *en-deçà de ses propres résultats* ;
+2. `md5sum` montrait que `fig2`, `fig4` et `fig5` **divergeaient** entre `docs/figures/sprint40_article/`
+   et `docs/article/ewc_int8_mcu/figures/` : les PDF compilaient sur des copies périmées ;
+3. cinq axes mesurés depuis (moment S46, profondeur S47/S48, RAM totale S49, latence S50, énergie S53)
+   n'étaient pas couverts, et **aucun coût de calcul absolu** n'était stocké.

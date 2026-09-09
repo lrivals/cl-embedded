@@ -11,6 +11,7 @@
 #include "ewc_head.h"
 #include <string.h>
 #include <stdint.h>
+#include <math.h>
 
 /* ── Mock uart_send_byte ─────────────────────────────────────────────────── */
 
@@ -444,3 +445,140 @@ void test_pipeline_pair_mode_dispatch(void)
     TEST_ASSERT_EQUAL_INT_MESSAGE(22, uart_tx_count,
         "PAIR_MAHA_HDC (0xA0) doit produire 22 B (early return)");
 }
+
+/* ── Sprint 53 (S5302) — lot d'inférences par trame (-DINFER_BATCH_N) ─────
+ *
+ * Ces tests ne sont compilés QUE dans le runner de lot (`make test-batch`) : le
+ * runner par défaut doit rester à l'identique, y compris en nombre de tests.
+ *
+ * Ils verrouillent les trois invariants de la spec S5302 :
+ *   1. la prédiction à N > 1 est celle de N = 1 (les passes supplémentaires
+ *      n'altèrent pas le modèle et la passe finale reste la vraie chaîne) ;
+ *   2. `--update` ne produit QU'UNE mise à jour CL, quel que soit N (sinon la
+ *      sémantique du continual learning changerait avec le réglage du banc) ;
+ *   3. le lot ne s'applique pas aux modes composés, et multiclasse/RUL sont
+ *      routés vers LEUR tête — c'est un défaut d'attribution énergétique, donc
+ *      seule l'instrumentation de branche peut le détecter.
+ */
+#if INFER_BATCH_N > 1
+
+extern int g_infer_extra_branch;   /* défini dans pipeline.c sous TEST_MODE */
+
+/* Rejoue une trame avec `flags` et rend la branche empruntée par le lot. */
+static int batch_branch_for(uint8_t flags)
+{
+    pipeline_init();
+    g_infer_extra_branch = -1;
+    build_frame_with_flags(0U, flags);
+    uart_tx_reset();
+    pipeline_run();
+    return g_infer_extra_branch;
+}
+
+/* T-S5302-1 — la prédiction et la confiance à N > 1 sont celles du modèle FRAIS.
+ * L'oracle est recalculé ici (jamais figé en dur) : si une passe supplémentaire
+ * modifiait `g_ewc_head`, la réponse s'en écarterait. */
+void test_pipeline_batch_prediction_identique(void)
+{
+    pipeline_init();
+
+    /* Oracle : forward direct sur la tête fraîchement initialisée, entrée nulle
+     * (build_frame_with_flags émet MAHA_DIM features à 0.0f). */
+    float x[EWC_IN];
+    for (int i = 0; i < EWC_IN; i++) x[i] = 0.0f;
+    float logits[EWC_OUT];
+    ewc_forward(&g_ewc_head, x, logits);
+    uint8_t exp_pred = (logits[1] > logits[0]) ? 1U : 0U;
+    float   e0 = expf(logits[0]), e1 = expf(logits[1]);
+    float   exp_conf = e1 / (e0 + e1);
+
+    build_frame_with_flags(0U, PROTO_FLAG_EWC_MODE);
+    uart_tx_reset();
+    pipeline_run();
+
+    TEST_ASSERT_TRUE_MESSAGE(uart_tx_count >= 23,
+        "le lot ne doit pas changer le format de reponse (V3, 23 B)");
+    TEST_ASSERT_EQUAL_UINT8_MESSAGE(exp_pred, uart_tx_buf[0],
+        "prediction a N>1 differente de la prediction du modele frais (N=1)");
+
+    float decoded_conf;
+    memcpy(&decoded_conf, &uart_tx_buf[1], 4);
+    TEST_ASSERT_FLOAT_WITHIN_MESSAGE(1e-6f, exp_conf, decoded_conf,
+        "confiance a N>1 differente de celle du modele frais (N=1)");
+}
+
+/* T-S5302-2 — UNE seule mise à jour CL par trame, quel que soit N.
+ * Référence : un unique `ewc_sgd_step` appliqué à la main sur une tête fraîche.
+ * Si le lot mettait à jour N fois, b3[0] divergerait. */
+void test_pipeline_batch_une_seule_maj_cl(void)
+{
+    float x[EWC_IN];
+    for (int i = 0; i < EWC_IN; i++) x[i] = 0.0f;
+
+    /* (a) via le pipeline, avec le lot actif */
+    pipeline_init();
+    build_frame_with_flags(0U, (uint8_t)(PROTO_FLAG_EWC_MODE | PROTO_FLAG_UPDATE));
+    uart_tx_reset();
+    pipeline_run();
+    float b3_pipeline = g_ewc_head.b3[0];
+
+    /* (b) référence : exactement une étape SGD, même label (0) */
+    pipeline_init();
+    ewc_sgd_step(&g_ewc_head, x, 0);
+    float b3_reference = g_ewc_head.b3[0];
+
+    TEST_ASSERT_FLOAT_WITHIN_MESSAGE(1e-9f, b3_reference, b3_pipeline,
+        "le lot doit produire UNE seule mise a jour CL, pas N");
+}
+
+/* T-S5302-3 — portée du lot : modes composés exclus, multiclasse/RUL sur LEUR tête.
+ * La boucle de lot s'exécute avant les sorties anticipées des modes composés :
+ * sans exclusion explicite, une trame 0xF0/0xE0/0x70 executerait des passes d'un
+ * autre modele et lui imputerait les µJ. */
+void test_pipeline_batch_composite_non_batche(void)
+{
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_NONE,
+        batch_branch_for(PROTO_FLAG_MAHA_Q15),
+        "MAHA_Q15 (0xF0) ne doit pas etre mis en lot");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_NONE,
+        batch_branch_for(PROTO_FLAG_TRIPLE_MAHA_HDC),
+        "TRIPLE_MAHA_HDC (0xE0) ne doit pas etre mis en lot");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_NONE,
+        batch_branch_for(PROTO_FLAG_TRIPLE_MAHA_EWC),
+        "TRIPLE_MAHA_EWC (0xD0) ne doit pas etre mis en lot");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_NONE,
+        batch_branch_for(PROTO_FLAG_DUAL_MODE),
+        "DUAL (0x70) ne doit pas etre mis en lot");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_NONE,
+        batch_branch_for(PROTO_FLAG_PAIR_MAHA_EWC),
+        "PAIR_MAHA_EWC (0x90) ne doit pas etre mis en lot");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_NONE,
+        batch_branch_for(PROTO_FLAG_PAIR_MAHA_TINYOL),
+        "PAIR_MAHA_TINYOL (0xB0) ne doit pas etre mis en lot");
+
+    /* Tetes propres : router 0x30/0x50 sur ewc_forward mesurerait un 3e modele. */
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_MULTICLASS,
+        batch_branch_for(PROTO_FLAG_MULTICLASS_MODE),
+        "MULTICLASS (0x30) doit passer par ewc_mc_forward");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_RUL,
+        batch_branch_for(PROTO_FLAG_RUL_MODE),
+        "RUL (0x50) doit passer par ewc_reg_predict");
+
+    /* Les 8 cellules de la campagne energie, chacune sur son propre noyau. */
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_EWC,
+        batch_branch_for(PROTO_FLAG_EWC_MODE), "EWC (0x10)");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_EWC_INT8,
+        batch_branch_for(PROTO_FLAG_INT8_MODE), "EWC INT8 (0x40)");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_HDC,
+        batch_branch_for(PROTO_FLAG_HDC_MODE), "HDC (0x20)");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_HDC_INT8,
+        batch_branch_for(PROTO_FLAG_HDC_INT8), "HDC INT8 (0x60)");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_TINYOL,
+        batch_branch_for(PROTO_FLAG_TINYOL_MODE), "TinyOL (0x80)");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_TINYOL_INT8,
+        batch_branch_for(PROTO_FLAG_TINYOL_INT8), "TinyOL INT8 (0xC0)");
+    TEST_ASSERT_EQUAL_INT_MESSAGE(BATCH_BRANCH_MAHA,
+        batch_branch_for(0x00U), "Mahalanobis (flags=0)");
+}
+
+#endif /* INFER_BATCH_N > 1 */

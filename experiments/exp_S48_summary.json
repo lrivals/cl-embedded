@@ -1,0 +1,309 @@
+{
+  "sprint": 48,
+  "task": "S4805",
+  "generated": "2026-07-24T12:52:56",
+  "gap2_latency_us_threshold": 100000,
+  "ram_budget_bytes": 262144,
+  "bss_default_invariant": 105036,
+  "note": "board = mesur\u00e9 NUCLEO-F439ZI (S4804) ; pc = th\u00e9orique \u00e9mulateur S47. bss_saved_by_packing = octets r\u00e9els gagn\u00e9s par le bit-packing (matrices de poids).",
+  "results_by_condition": {
+    "monitoring": {
+      "4": {
+        "per_channel": {
+          "mode": "int4",
+          "board": {
+            "nonpacked": {
+              "measured": true,
+              "auroc_board": 0.9878710979104757,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 67.0,
+              "latency_dwt_p99_us": 67.0,
+              "bss_bytes": 105640,
+              "crc_errors": 0,
+              "f1_faulty": 0.921,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "packed": {
+              "measured": true,
+              "auroc_board": 0.9878710979104757,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 123.0,
+              "latency_dwt_p99_us": 123.0,
+              "bss_bytes": 105304,
+              "crc_errors": 0,
+              "f1_faulty": 0.921,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "bss_saved_by_packing": 336,
+            "na_reason": null
+          },
+          "pc": {
+            "auroc_quant": 0.974112,
+            "auroc_fp32": 0.97464,
+            "delta_auroc_vs_fp32": -0.000528,
+            "ram_ratio_theoretical_vs_fp32": 8.0,
+            "ram_weight_bytes_theoretical": 720,
+            "ram_note": "th\u00e9orique (bit-pack\u00e9e) ; RAM .bss r\u00e9elle = Sprint 48",
+            "na_reason": null
+          },
+          "deltas": {
+            "auroc_board_packed_minus_pc_quant": 0.013759,
+            "ram_ratio_theoretical_vs_fp32": 8.0,
+            "bss_saved_by_packing_bytes": 336
+          }
+        }
+      },
+      "2": {
+        "per_channel": {
+          "mode": "ternary",
+          "board": {
+            "nonpacked": {
+              "measured": true,
+              "auroc_board": 0.9840948731041921,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 67.0,
+              "latency_dwt_p99_us": 67.0,
+              "bss_bytes": 105640,
+              "crc_errors": 0,
+              "f1_faulty": 0.9042,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "packed": {
+              "measured": true,
+              "auroc_board": 0.9840948731041921,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 123.0,
+              "latency_dwt_p99_us": 124.0,
+              "bss_bytes": 105136,
+              "crc_errors": 0,
+              "f1_faulty": 0.9042,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "bss_saved_by_packing": 504,
+            "na_reason": null
+          },
+          "pc": {
+            "auroc_quant": 0.972498,
+            "auroc_fp32": 0.97464,
+            "delta_auroc_vs_fp32": -0.002142,
+            "ram_ratio_theoretical_vs_fp32": 20.2532,
+            "ram_weight_bytes_theoretical": 556,
+            "ram_note": "th\u00e9orique (bit-pack\u00e9e) ; RAM .bss r\u00e9elle = Sprint 48",
+            "na_reason": null
+          },
+          "deltas": {
+            "auroc_board_packed_minus_pc_quant": 0.011597,
+            "ram_ratio_theoretical_vs_fp32": 20.2532,
+            "bss_saved_by_packing_bytes": 504
+          }
+        }
+      },
+      "1": {
+        "per_channel": {
+          "mode": "binary",
+          "board": {
+            "nonpacked": {
+              "measured": true,
+              "auroc_board": 0.9678391567875925,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 67.0,
+              "latency_dwt_p99_us": 67.0,
+              "bss_bytes": 105640,
+              "crc_errors": 0,
+              "f1_faulty": 0.6878,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "packed": {
+              "measured": true,
+              "auroc_board": 0.9678391567875925,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 125.0,
+              "latency_dwt_p99_us": 125.0,
+              "bss_bytes": 105068,
+              "crc_errors": 0,
+              "f1_faulty": 0.6878,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "bss_saved_by_packing": 572,
+            "na_reason": null
+          },
+          "pc": {
+            "auroc_quant": 0.962937,
+            "auroc_fp32": 0.97464,
+            "delta_auroc_vs_fp32": -0.011703,
+            "ram_ratio_theoretical_vs_fp32": 32.0,
+            "ram_weight_bytes_theoretical": 474,
+            "ram_note": "th\u00e9orique (bit-pack\u00e9e) ; RAM .bss r\u00e9elle = Sprint 48",
+            "na_reason": null
+          },
+          "deltas": {
+            "auroc_board_packed_minus_pc_quant": 0.004902,
+            "ram_ratio_theoretical_vs_fp32": 32.0,
+            "bss_saved_by_packing_bytes": 572
+          }
+        }
+      }
+    },
+    "pronostia": {
+      "4": {
+        "per_channel": {
+          "mode": "int4",
+          "board": {
+            "nonpacked": {
+              "measured": true,
+              "auroc_board": 0.9999511641834807,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 70.0,
+              "latency_dwt_p99_us": 70.0,
+              "bss_bytes": 106152,
+              "crc_errors": 0,
+              "f1_faulty": 0.9887,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "packed": {
+              "measured": true,
+              "auroc_board": 0.9999511641834807,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 127.0,
+              "latency_dwt_p99_us": 127.0,
+              "bss_bytes": 105816,
+              "crc_errors": 0,
+              "f1_faulty": 0.9887,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "bss_saved_by_packing": 336,
+            "na_reason": null
+          },
+          "pc": {
+            "auroc_quant": 0.997122,
+            "auroc_fp32": 0.998703,
+            "delta_auroc_vs_fp32": -0.001581,
+            "ram_ratio_theoretical_vs_fp32": 8.0,
+            "ram_weight_bytes_theoretical": 864,
+            "ram_note": "th\u00e9orique (bit-pack\u00e9e) ; RAM .bss r\u00e9elle = Sprint 48",
+            "na_reason": null
+          },
+          "deltas": {
+            "auroc_board_packed_minus_pc_quant": 0.002829,
+            "ram_ratio_theoretical_vs_fp32": 8.0,
+            "bss_saved_by_packing_bytes": 336
+          }
+        }
+      },
+      "2": {
+        "per_channel": {
+          "mode": "ternary",
+          "board": {
+            "nonpacked": {
+              "measured": true,
+              "auroc_board": 0.9990701699525406,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 70.0,
+              "latency_dwt_p99_us": 70.0,
+              "bss_bytes": 106152,
+              "crc_errors": 0,
+              "f1_faulty": 0.379,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "packed": {
+              "measured": true,
+              "auroc_board": 0.9990701699525406,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 127.0,
+              "latency_dwt_p99_us": 127.0,
+              "bss_bytes": 105648,
+              "crc_errors": 0,
+              "f1_faulty": 0.379,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "bss_saved_by_packing": 504,
+            "na_reason": null
+          },
+          "pc": {
+            "auroc_quant": 0.983371,
+            "auroc_fp32": 0.998703,
+            "delta_auroc_vs_fp32": -0.015332,
+            "ram_ratio_theoretical_vs_fp32": 20.2532,
+            "ram_weight_bytes_theoretical": 628,
+            "ram_note": "th\u00e9orique (bit-pack\u00e9e) ; RAM .bss r\u00e9elle = Sprint 48",
+            "na_reason": null
+          },
+          "deltas": {
+            "auroc_board_packed_minus_pc_quant": 0.015699,
+            "ram_ratio_theoretical_vs_fp32": 20.2532,
+            "bss_saved_by_packing_bytes": 504
+          }
+        }
+      },
+      "1": {
+        "per_channel": {
+          "mode": "binary",
+          "board": {
+            "nonpacked": {
+              "measured": true,
+              "auroc_board": 0.9661639924264519,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 70.0,
+              "latency_dwt_p99_us": 70.0,
+              "bss_bytes": 106152,
+              "crc_errors": 0,
+              "f1_faulty": 0.0,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "packed": {
+              "measured": true,
+              "auroc_board": 0.9661639924264519,
+              "parity_pred": 1.0,
+              "latency_dwt_p50_us": 130.0,
+              "latency_dwt_p99_us": 131.0,
+              "bss_bytes": 105548,
+              "crc_errors": 0,
+              "f1_faulty": 0.0,
+              "gap2_ok": true,
+              "gap3_ram_ok": true,
+              "na_reason": null
+            },
+            "bss_saved_by_packing": 604,
+            "na_reason": null
+          },
+          "pc": {
+            "auroc_quant": 0.971203,
+            "auroc_fp32": 0.998703,
+            "delta_auroc_vs_fp32": -0.0275,
+            "ram_ratio_theoretical_vs_fp32": 32.0,
+            "ram_weight_bytes_theoretical": 510,
+            "ram_note": "th\u00e9orique (bit-pack\u00e9e) ; RAM .bss r\u00e9elle = Sprint 48",
+            "na_reason": null
+          },
+          "deltas": {
+            "auroc_board_packed_minus_pc_quant": -0.005039,
+            "ram_ratio_theoretical_vs_fp32": 32.0,
+            "bss_saved_by_packing_bytes": 604
+          }
+        }
+      }
+    }
+  }
+}

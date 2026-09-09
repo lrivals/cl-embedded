@@ -1,0 +1,20 @@
+{
+  "model": "ewc",
+  "dataset": "pronostia",
+  "condition": "5feat",
+  "encoding": "int8",
+  "platform": "pc",
+  "data_bytes": null,
+  "bss_bytes": null,
+  "stack_peak_inference_bytes": null,
+  "stack_peak_update_bytes": null,
+  "total_ram_bytes": null,
+  "stack_history": [],
+  "conditions": {
+    "same_groups": true,
+    "update_protocol": "SGD embarqué 1 échantillon (sensor_stream --update, protocole V3)",
+    "eval_protocol": "stream chronologique par tâche CL, seed 42, condition figée"
+  },
+  "status": "na",
+  "na_reason": "PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la RAM INT8 mesurée est côté board."
+}

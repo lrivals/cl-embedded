@@ -16,8 +16,12 @@
 #define AHB1PERIPH_BASE     (PERIPH_BASE + 0x00020000UL)
 
 #define GPIOA_BASE          (AHB1PERIPH_BASE + 0x0000UL)
+#define GPIOC_BASE          (AHB1PERIPH_BASE + 0x0800UL)
 #define GPIOD_BASE          (AHB1PERIPH_BASE + 0x0C00UL)
 #define RCC_BASE            (AHB1PERIPH_BASE + 0x3800UL)
+/* Ethernet MAC — seul le bloc SMI (MACMIIAR/MACMIIDR) est utilisé, pour mettre
+ * le PHY en veille pendant les mesures d'énergie (cf. inc/eth_phy.h). */
+#define ETH_MAC_BASE        (AHB1PERIPH_BASE + 0x8000UL)
 
 #define USART3_BASE         (APB1PERIPH_BASE + 0x4800UL)
 
@@ -35,7 +39,20 @@ typedef struct {
 } GPIO_TypeDef;
 
 #define GPIOA   ((GPIO_TypeDef *) GPIOA_BASE)
+#define GPIOC   ((GPIO_TypeDef *) GPIOC_BASE)
 #define GPIOD   ((GPIO_TypeDef *) GPIOD_BASE)
+
+/* ── Ethernet MAC — bloc SMI seulement ─────────────────────────────────── */
+typedef struct {
+    volatile uint32_t MACCR;      /*!< 0x00 — MAC configuration */
+    volatile uint32_t MACFFR;     /*!< 0x04 — MAC frame filter */
+    volatile uint32_t MACHTHR;    /*!< 0x08 */
+    volatile uint32_t MACHTLR;    /*!< 0x0C */
+    volatile uint32_t MACMIIAR;   /*!< 0x10 — MII address (accès SMI) */
+    volatile uint32_t MACMIIDR;   /*!< 0x14 — MII data */
+} ETH_MAC_TypeDef;
+
+#define ETH_MAC ((ETH_MAC_TypeDef *) ETH_MAC_BASE)
 
 /* ── RCC ───────────────────────────────────────────────────────────────── */
 typedef struct {
@@ -75,6 +92,7 @@ typedef struct {
 #define RCC_AHB1ENR_GPIODEN (1UL << 3)
 #define RCC_AHB1ENR_DMA1EN  (1UL << 21)
 #define RCC_AHB1ENR_DMA2EN  (1UL << 22)
+#define RCC_AHB1ENR_ETHMACEN (1UL << 25)
 
 /* RCC APB1ENR bits */
 #define RCC_APB1ENR_TIM2EN  (1UL <<  0)
@@ -112,11 +130,26 @@ typedef struct {
 /* USART SR bits */
 #define USART_SR_TXE    (1UL << 7)   /* TX data register empty */
 #define USART_SR_TC     (1UL << 6)   /* Transmission complete */
+#define USART_SR_RXNE   (1UL << 5)   /* RX data register not empty */
 
 /* USART CR1 bits */
 #define USART_CR1_UE    (1UL << 13)  /* USART enable */
+#define USART_CR1_RXNEIE (1UL << 5)  /* RXNE interrupt enable (S5302, UART_WFI_IDLE) */
 #define USART_CR1_TE    (1UL <<  3)  /* Transmitter enable */
 #define USART_CR1_RE    (1UL <<  2)  /* Receiver enable */
+
+/* ── NVIC (S5302) ───────────────────────────────────────────────────────── */
+/*
+ * Strict minimum pour réveiller le cœur d'un WFI sur réception UART : le projet
+ * n'utilisait AUCUNE interruption jusqu'ici (tout est en scrutation). On ne déclare
+ * donc que ce qui sert, et rien n'est armé par défaut — ces définitions sont inertes
+ * tant que `-DUART_WFI_IDLE` n'est pas passé au compilateur.
+ *
+ * USART3 = IRQ39 (RM0090, table des vecteurs) → registre ISER[1], bit 39-32 = 7.
+ */
+#define USART3_IRQn     39U
+#define NVIC_ISER1      (*(volatile uint32_t *)0xE000E104UL)  /* IRQ32..63 : set-enable */
+#define NVIC_ICPR1      (*(volatile uint32_t *)0xE000E284UL)  /* IRQ32..63 : clear-pending */
 
 /* ── Instruction NOP ───────────────────────────────────────────────────── */
 #define __NOP()  __asm volatile ("nop")

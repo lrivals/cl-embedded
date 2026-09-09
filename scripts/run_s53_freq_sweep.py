@@ -130,18 +130,32 @@ def read_reported_sysclk(board_port: str, baud: int = 115200,
     """
     import serial   # dépendance déjà requise par sensor_stream.py
 
-    subprocess.run(
-        ["openocd", "-f", "interface/stlink.cfg", "-f", "target/stm32f4x.cfg",
-         "-c", "init; reset; exit"],
-        capture_output=True, timeout=20,
-    )
+    # Le port est ouvert et VIDÉ *avant* le reset, et la bannière retenue est la DERNIÈRE
+    # lue, pas la première. Sans ces deux précautions, le contrôle peut porter sur une
+    # bannière PÉRIMÉE : la carte en émet une à chaque démarrage — donc au « Resetting
+    # Target » de `make flash` et à chaque mise sous tension par la sonde — et ces octets
+    # attendent dans le tampon du système. Mesuré 2026-09-08 : après un flash
+    # `-DSYSCLK_MHZ=90` vérifié OK, le pilote a lu « 180 MHz » (la bannière du binaire
+    # précédent, encore en tampon) et refusé d'écrire la cellule, alors que la carte
+    # tournait bien à 90 MHz — vérifié par relecture directe et par la constante PLLCFGR
+    # du binaire (PLLP=4). Le refus était la bonne réaction ; c'est la lecture qui était
+    # fausse. Même classe de défaut que `lpm01a_probe.voltage_v` (S5305).
     with serial.Serial(board_port, baud, timeout=1.0) as ser:
+        ser.reset_input_buffer()
+        subprocess.run(
+            ["openocd", "-f", "interface/stlink.cfg", "-f", "target/stm32f4x.cfg",
+             "-c", "init; reset; exit"],
+            capture_output=True, timeout=20,
+        )
         deadline = time.time() + timeout_s
         banner = ""
         while time.time() < deadline:
             banner += ser.read(512).decode("ascii", errors="replace")
-            found = BANNER_RE.search(banner)
-            if found:
+            trouvees = list(BANNER_RE.finditer(banner))
+            # Une bannière complète est suivie de la ligne « RAM total » : attendre cette
+            # suite évite de trancher sur un fragment coupé en plein vol.
+            if trouvees and "RAM total" in banner[trouvees[-1].end():]:
+                found = trouvees[-1]
                 return int(found.group(1)), int(found.group(2)), banner.strip()[-400:]
     raise RuntimeError(
         "bannière `hw_info_print` illisible sur "
@@ -347,12 +361,31 @@ def measure_cell(args) -> dict:
         #    mesure que l'horloge ralentit (la latence double puis quadruple), donc il
         #    fabriquerait une fausse décroissance de l'énergie avec la fréquence — soit
         #    l'inverse de la conclusion cherchée.
+        #
+        #    `--achieved-at-each-rate` (port de S5304) relève la cadence atteinte à CHAQUE
+        #    point au lieu de la seule borne haute : l'inférence ci-dessous ne sert alors
+        #    plus qu'aux cadences non re-streamées, au prix d'un flux supplémentaire par
+        #    point. À utiliser quand la cellule est rejouée pour lever un doute sur sa
+        #    linéarité (B1) — c'est précisément le cas où l'abscisse doit être mesurée.
         rate_max = max(args.rates)
+        mesurees = ([r for r in args.rates if r > 0] if args.achieved_at_each_rate
+                    else ([rate_max] if rate_max > 0 else []))
+        atteints: dict[float, float | None] = {}
+        for rate in mesurees:
+            res_rate = stream_once(probe, voltage_mv,
+                                   rc.STREAM_MODEL[(args.model, args.encoding)],
+                                   args.dataset, args.board_port, args.n_check, rate)
+            atteints[float(rate)] = res_rate.get("achieved_rate_hz")
+            if args.achieved_at_each_rate:
+                print(f"[freq {args.sysclk_mhz}] cadence atteinte : consigne {rate:.0f} Hz "
+                      f"→ atteint {res_rate.get('achieved_rate_hz')} Hz")
+        for p in points:
+            valeur = atteints.get(p["rate_hz"])
+            if p["rate_hz"] > 0 and valeur is not None:
+                p["achieved_rate_hz"] = float(valeur)
+                p["achieved_rate_source"] = "mesuré"
         if rate_max > 0:
-            res_max = stream_once(probe, voltage_mv,
-                                  rc.STREAM_MODEL[(args.model, args.encoding)],
-                                  args.dataset, args.board_port, args.n_check, rate_max)
-            atteint = res_max.get("achieved_rate_hz")
+            atteint = atteints.get(float(rate_max))
             # Le plafond est une propriété de la CELLULE (calcul + transport), pas du seul
             # point où on l'a mesuré : toute cadence commandée au-dessus est irréalisable.
             # On le propage donc aux cadences supérieures, sinon `saturation_rate_hz` — qui
@@ -367,10 +400,12 @@ def measure_cell(args) -> dict:
             # ÉCARTER des points, jamais à corriger une abscisse : aucune donnée fabriquée.
             if atteint is not None:
                 for p in points:
-                    if p["rate_hz"] == rate_max:
-                        p["achieved_rate_hz"] = float(atteint)
-                        p["achieved_rate_source"] = "mesuré"
-                    elif p["rate_hz"] > 0 and p["rate_hz"] > float(atteint):
+                    # Les cadences RE-STREAMÉES portent déjà leur mesure (boucle ci-dessus)
+                    # et ne sont jamais écrasées par l'inférence : celle-ci ne comble que
+                    # les points laissés « non mesuré ».
+                    if (p["rate_hz"] > 0
+                            and p.get("achieved_rate_source") == "non mesuré"
+                            and p["rate_hz"] > float(atteint)):
                         p["achieved_rate_hz"] = float(atteint)
                         p["achieved_rate_source"] = "inféré du plafond mesuré"
             print(f"[freq {args.sysclk_mhz}] plafond {args.model}_{args.encoding} : "
@@ -594,7 +629,8 @@ def build_summary(out_dir: Path) -> dict:
     }
 
 
-def main(argv: list[str] | None = None) -> int:
+def build_parser() -> argparse.ArgumentParser:
+    """Options du pilote, isolées de `main` pour être vérifiables sans banc."""
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     parser.add_argument("--sysclk-mhz", type=int, choices=sorted(PLL_BY_MHZ),
                         help="fréquence RÉELLEMENT flashée (build -DSYSCLK_MHZ)")
@@ -621,6 +657,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="cadence des flux de vérification protocole")
     parser.add_argument("--n-check", type=int, default=300,
                         help="échantillons du contrôle d'intégrité par modèle")
+    parser.add_argument("--achieved-at-each-rate", action="store_true",
+                        help="relever la cadence ATTEINTE à chaque point et non à la seule "
+                             "borne haute (règle A7 : un flux de plus par cadence, "
+                             "l'inférence du plafond ne comble alors que les trous)")
     parser.add_argument("--window", type=float, default=10.0)
     parser.add_argument("--settle", type=float, default=2.0)
     parser.add_argument("--repeats", type=int, default=2)
@@ -629,6 +669,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--hw-profile", type=Path,
                         default=ROOT / "configs" / "hw_profile_f439zi.yaml")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
     args = parser.parse_args(argv)
 
     args.out.mkdir(parents=True, exist_ok=True)

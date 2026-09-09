@@ -14,7 +14,23 @@
 #endif
 #include <string.h>
 
+/* Fréquence servant à convertir les cycles DWT en µs et en inférences/s.
+ *
+ * Elle DOIT suivre `-DSYSCLK_MHZ` (balayage S5303, hw_info.c) : le compteur DWT compte
+ * des cycles, donc à horloge réduite le nombre de cycles d'une inférence est inchangé
+ * alors que le temps réel s'allonge. Figée à 180, la conversion sous-estimait la latence
+ * d'un facteur égal au rapport de fréquence — mesuré 2026-09-01 : HDC INT8 rapportait
+ * 1958 µs à 90 MHz comme à 180 MHz, alors que la carte confirmait bien 90 MHz par sa
+ * bannière (SYSCLK recalculé depuis PLLCFGR). Gap 2 en paraissait d'autant meilleur, et
+ * le critère « latences en 1/f » de S5303 devenait invérifiable.
+ *
+ * Sans `-DSYSCLK_MHZ`, la valeur reste 180 MHz : le build par défaut est inchangé.
+ */
+#ifdef SYSCLK_MHZ
+#define SYSCLK_HZ    ((uint32_t)(SYSCLK_MHZ) * 1000000U)
+#else
 #define SYSCLK_HZ    180000000U
+#endif
 
 #ifndef TEST_HOST
 #define DWT_CTRL        (*(volatile uint32_t *)0xE0001000UL)

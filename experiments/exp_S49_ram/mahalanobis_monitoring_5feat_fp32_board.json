@@ -1,0 +1,38 @@
+{
+  "model": "mahalanobis",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "encoding": "fp32",
+  "platform": "board",
+  "data_bytes": 460,
+  "bss_bytes": 100152,
+  "stack_peak_inference_bytes": 4328,
+  "stack_peak_update_bytes": 4328,
+  "total_ram_bytes": 104940,
+  "stack_history": [
+    {
+      "phase": "idle",
+      "stack_peak_bytes": 4236
+    },
+    {
+      "phase": "inference",
+      "stack_peak_bytes": 4328
+    },
+    {
+      "phase": "update",
+      "stack_peak_bytes": 4328
+    }
+  ],
+  "conditions": {
+    "same_groups": true,
+    "update_protocol": "SGD embarqué 1 échantillon (sensor_stream --update, protocole V3)",
+    "eval_protocol": "stream chronologique par tâche CL, seed 42, condition figée"
+  },
+  "status": "done",
+  "bss_model_bytes": null,
+  "n_features": 4,
+  "stream_flag": "mahalanobis",
+  "gap2_total_pct_256ko": 40.03,
+  "shared_frame_note": "pic de pile ~identique entre modèles : trame unique pipeline_run() (max des branches, hv[HDC_DIM]=4Ko)",
+  "weights_note": "poids par défaut (RAM/pile invariantes aux valeurs de poids)"
+}

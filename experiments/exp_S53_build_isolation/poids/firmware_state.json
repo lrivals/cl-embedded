@@ -1,0 +1,23 @@
+{
+  "variant": "poids_charges",
+  "purpose": "B3 — isolation à VARIABLE UNIQUE de l'anomalie « repos > charge » du build S38 : dimension tenue à k=4, seuls les poids de la tête EWC changent (exportés ici, repli Xavier dans la variante témoin).",
+  "ewc_head_weights": "exportés (EWC_HEAD_WEIGHTS_PROVIDED, NATIVE_DIM=4 == EWC_IN)",
+  "make_dims": "EWC_IN=4 MAHA_DIM=4 TINYOL_IN=4 HDC_N_FEATURES=4",
+  "extra_cflags": "",
+  "dataset": "monitoring",
+  "condition": "5feat",
+  "n_features": 4,
+  "text_bytes": 42180,
+  "data_bytes": 460,
+  "bss_bytes": 100152,
+  "elf_sha256": "040826456cf0f990ec23cdbb8de40862f704fc16d62ac467237b6b459466a6bd",
+  "flashed": "2026-09-07, make flash — Verified OK",
+  "sanity_check_uart": {
+    "n_samples": 40,
+    "accuracy": 0.9744,
+    "f1_faulty": 0.8571,
+    "latency_p50_us": 48.0,
+    "crc_errors": 0
+  },
+  "timestamp": "2026-09-07T12:23:55.988446+00:00"
+}

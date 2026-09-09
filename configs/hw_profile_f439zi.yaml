@@ -33,9 +33,82 @@ hardware:
 
   # Puissance — à croiser avec les mesures LPM01A (S3305/S3306).
   puissance_watts:
-    actif_mA: null      # <à_mesurer> — courant actif moyen (mA)
-    veille_uA: null     # <à_mesurer> — courant veille (µA)
+    actif_mA: 32.891   # mesuré — courant actif moyen (mA)
+    veille_uA: 27370.0      # mesuré — courant au repos (µA)
     tension_v: 3.3      # tension d'alimentation NUCLEO (V)
+    mesure_source: "experiments/exp_S53_wfi/ (UART_WFI_IDLE, 2026-08-06) — repos établi contre-balancé ; actif = moyenne des 8 cellules à 100 Hz / fenêtre 10 s"
+
+# Calibration de la sonde X-NUCLEO-LPM01A (S5001, résout TODO(dorra) ouvert S33).
+# Paramètres de PILOTAGE de la sonde (fréquence, plage, correction offset/gain),
+# consommés par scripts/energy_capture.py / scripts/run_s50_energy.py — PAS des
+# mesures d'énergie (règle CLAUDE.md « aucun chiffre inventé » : les µJ restent
+# « à mesurer » tant que la campagne LPM01A réelle n'a pas tourné).
+#
+# État 2026-08-04 : le X-NUCLEO-LPM01A est **branché et opérationnel** sur le poste
+# (pilote headless `scripts/lpm01a_probe.py`, STM32CubeMonitor-Power non requis).
+# Les valeurs `probe:` ci-dessous sont RELEVÉES sur la sonde ; les µJ restent
+# « à mesurer » tant que la carte cible n'est pas alimentée à travers la sonde.
+energy_calibration:
+  # Interface de la sonde relevée sur le banc (énumération USB CDC
+  # « PowerShield (Virtual ComPort in FS Mode) », VID:PID 0483:5740).
+  probe:
+    model: X-NUCLEO-LPM01A
+    firmware: "1.0.1"             # relevé — commande `version`
+    port: /dev/ttyACM0            # relevé — cf. /dev/serial/by-id/…PowerShield…
+    baudrate: 921600              # débit validé pour le dialogue et le flux 100 kSPS
+    driver: scripts/lpm01a_probe.py
+    # Format de données : ASCII décimal lisible jusqu'à 10 kHz, binaire hexadécimal
+    # obligatoire au-delà (contrainte firmware, UM2243). Le pilote choisit seul.
+    ascii_max_hz: 10000
+    acqmode: dyn                  # plage 100 nA–10 mA (dynamique attendue du MCU)
+    funcmode: optim               # priorité résolution courant, 100 kSPS max
+  # Fréquence d'échantillonnage de la sonde (Hz). Règle de cadrage : ≥ 10× le taux
+  # d'évènements à résoudre. La latence d'inférence board mesurée (DWT) va de ~5 µs
+  # (Mahalanobis) à ~2 ms (HDC) → pour résoudre une inférence de ~50–100 µs il faut
+  # une période ≤ ~5–10 µs, soit ≳ 100 kHz. Le LPM01A échantillonne jusqu'à 100 kSPS
+  # en mode « high sampling » ; on vise donc 100000 Hz. À confirmer/mesurer sur banc.
+  sampling_rate_hz: 100000        # consigne de cadrage (100 kSPS, mode high-sampling)
+  # Relevé 2026-08-04 : consigne `freq 100k` honorée sans perte d'échantillon —
+  # 100 000 échantillons décodés pour 100 000 annoncés par la sonde sur 1 s
+  # (contrôle croisé avec le résumé de fin d'acquisition, I_max décodé 9,093 µA
+  # ↔ 9,0 µA annoncés). La base de temps du CSV est donc le pas nominal 1/fs.
+  sampling_rate_measured_hz: 100000
+  # Plage de courant attendue : veille en µA, inférence/MAJ en mA. Le LPM01A doit
+  # couvrir cette dynamique (auto-range) pour ne pas écraser la veille.
+  current_range:
+    min_ua: 1.0                   # borne basse attendue (veille), consigne
+    max_ma: 200.0                 # borne haute attendue (actif), consigne
+    autorange: true               # laisser la sonde auto-ranger (µA↔mA)
+  # Correction de la sonde (appliquée aux échantillons de courant) : I_corr = gain·I + offset.
+  # `null` = non calibrée → aucune correction appliquée (offset 0 / gain 1 par défaut).
+  # La sonde se calibre elle-même (commande `calib`, rejouée à chaque changement de
+  # tension et au démarrage) : aucune correction logicielle externe n'est appliquée,
+  # ces champs restent donc volontairement `null` — jamais un facteur inventé.
+  offset_ua: null                 # non applicable — auto-calibration matérielle
+  gain: null                      # non applicable — auto-calibration matérielle
+  # Tension d'alimentation vue par la sonde (V). Le LPM01A l'impose au target.
+  # Consigne 3300 mV ; le pilote RELIT la valeur appliquée (`volt get`) et l'écrit
+  # dans la colonne `voltage` du CSV, plutôt que de supposer la consigne atteinte.
+  supply_voltage_v: 3.3
+  # Marqueur de synchronisation firmware → colonne de sync du CSV (S3304).
+  sync_gpio: PA8                  # ENERGY_MARKERS, niveau haut = phase active
+  # LIMITE MATÉRIELLE MESURÉE (2026-08-04) : le flux du LPM01A ne transporte QUE le
+  # courant — la sonde n'échantillonne aucune voie numérique. La colonne `sync`
+  # attendue par `derive_phase_windows` ne peut donc pas venir de la sonde, et
+  # `segment_by_phase` refuse (à raison) de segmenter sans elle. Deux voies, toutes
+  # deux sans fabrication de données (cf. docs/context/lpm01a_setup.md) :
+  #   - trigsrc d7 : PA8 câblé sur Arduino D7 (pont à souder) DÉMARRE l'acquisition
+  #     → t=0 aligné sur le début de phase, fenêtres déduites du protocole et de N ;
+  #   - protocole delta : captures séparées (idle seul / idle+inférence) → µJ par
+  #     inférence obtenu par différence de deux mesures réelles.
+  sync_channel_available: false
+  phase_alignment: [trigsrc_d7, delta_capture]
+  notes: >-
+    Sonde LPM01A branchée et validée sur le poste le 2026-08-04 (dialogue série,
+    autotest, acquisitions 1 kSPS ASCII et 100 kSPS binaire, décodage contrôlé
+    contre le résumé de la sonde). Aucun µJ mesuré tant que la NUCLEO-F439ZI n'est
+    pas alimentée à travers la sonde : les campagnes S5002/S5003 restent
+    « à mesurer ».
 
 # Capacités de batterie typiques pour le calcul d'autonomie (S3307).
 # Règle CLAUDE.md : lues depuis cette config, jamais en dur dans autonomy.py.

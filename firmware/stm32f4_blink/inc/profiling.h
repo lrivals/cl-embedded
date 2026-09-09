@@ -19,6 +19,17 @@ typedef struct {
     uint16_t throughput_ips;    /* Inférences par seconde (glissant) */
     uint32_t inference_count;   /* Compteur total d'inférences */
     uint32_t total_cycles;      /* Cycles accumulés sur la session */
+#ifdef INT8_SEGMENT_PROFILE
+    /* ── S5004 — breakdown latence INT8 (cycles DWT BRUTS, pas de µs) ──────────
+     * Accumulateurs par type d'opération du kernel EWC INT8 v2, remis à zéro à
+     * chaque forward. On reporte des CYCLES bruts (et non des µs) : la conversion
+     * µs de profiling_stop() divise par 180 et tronque → un segment de quelques
+     * dizaines de cycles arrondirait à 0 µs. Compilé UNIQUEMENT sous
+     * -DINT8_SEGMENT_PROFILE ; le build par défaut est strictement inchangé. */
+    uint32_t seg_dequant_cycles;   /* int→FP32 : (float)acc·scale·scale + b (+ReLU) */
+    uint32_t seg_mac_cycles;       /* produit scalaire entier (int32/int64 acc) */
+    uint32_t seg_requant_cycles;   /* FP32→INT8 : quantif entrée + requant activations */
+#endif
 } ProfilingState;
 
 /* Symboles fournis par le linker script (calculés au link time) */
@@ -68,6 +79,30 @@ uint32_t profiling_ram_peak_bytes(void);
 /* Encode [latency_us:u32][ram_used_b:u16][throughput:u16] = 8 B dans buf */
 void profiling_encode(uint8_t *buf);
 #define PROFILING_ENCODED_SIZE 8U
+
+#ifdef INT8_SEGMENT_PROFILE
+/* ── S5004 — lecture DWT brute pour les segments INT8 (inline, 0 appel) ──────
+ * Lit directement DWT_CYCCNT (0xE0001004). Le compteur est déjà armé par
+ * profiling_init() (TRCENA + CYCCNTENA). Sur host (TEST_HOST) retourne 0 :
+ * l'instrumentation n'est de toute façon pas activée dans les tests Unity. */
+static inline uint32_t profiling_dwt_now(void)
+{
+#ifndef TEST_HOST
+    return *(volatile uint32_t *)0xE0001004UL;   /* DWT_CYCCNT */
+#else
+    return 0U;
+#endif
+}
+
+/* Remet à zéro les 3 accumulateurs de segment (appelé en tête de chaque forward). */
+static inline void profiling_seg_reset(void)
+{
+    extern ProfilingState g_profiling;
+    g_profiling.seg_dequant_cycles = 0U;
+    g_profiling.seg_mac_cycles     = 0U;
+    g_profiling.seg_requant_cycles = 0U;
+}
+#endif /* INT8_SEGMENT_PROFILE */
 
 /* ── Marqueurs de phase énergie (S3304) ──────────────────────────────────
  *

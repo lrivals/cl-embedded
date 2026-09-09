@@ -35,6 +35,7 @@ C_SOURCES   = src/main.c \
               src/drift/psi.c \
               src/pipeline.c \
               src/profiling.c \
+              src/eth_phy.c \
               src/syscalls.c
 ASM_SOURCES = startup/startup_stm32f439xx.s
 
@@ -168,6 +169,7 @@ TEST_CC  = gcc
 TEST_SRC = tests/test_mahalanobis.c tests/test_mahalanobis_q15.c tests/test_mahalanobis_int8.c tests/test_ewc_head.c \
            tests/test_ewc_int8.c \
            tests/test_ewc_int8_v2.c \
+           tests/test_ewc_subint8.c \
            tests/test_profiling.c tests/test_pipeline.c tests/test_tinyol.c \
            tests/test_hdc.c \
            tests/test_ring_buffer.c \
@@ -179,6 +181,7 @@ TEST_SRC = tests/test_mahalanobis.c tests/test_mahalanobis_q15.c tests/test_maha
            tests/test_meta_head.c \
            tests/test_drift_detector.c \
            tests/test_drift_methods.c \
+           tests/test_eth_phy.c \
            tests/test_runner.c \
            tests/unity/unity.c \
            src/mahalanobis.c src/mahalanobis_q15.c src/mahalanobis_int8.c src/ewc_head.c src/ewc_head_int8.c src/ewc_head_int8_v2.c src/ewc_head_regression.c \
@@ -202,6 +205,72 @@ test-v2-q15: $(BUILD_DIR)
 	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT8_Q15 -lm -o $(BUILD_DIR)/test_runner_q15
 	./$(BUILD_DIR)/test_runner_q15
 
+# Variantes sub-INT8 (Sprint 48, S4802) : recompile le runner par profondeur de build.
+# Non-packé (conteneur int8) puis packé (2/4/8 poids par octet). Parité vs émulateur.
+test-sub-int4: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT4 -lm -o $(BUILD_DIR)/test_runner_int4
+	./$(BUILD_DIR)/test_runner_int4
+
+test-sub-int4-packed: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT4 -DEWC_INTx_PACKED -lm -o $(BUILD_DIR)/test_runner_int4p
+	./$(BUILD_DIR)/test_runner_int4p
+
+test-sub-int2: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT2 -lm -o $(BUILD_DIR)/test_runner_int2
+	./$(BUILD_DIR)/test_runner_int2
+
+test-sub-int2-packed: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT2 -DEWC_INTx_PACKED -lm -o $(BUILD_DIR)/test_runner_int2p
+	./$(BUILD_DIR)/test_runner_int2p
+
+test-sub-binary: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT1 -lm -o $(BUILD_DIR)/test_runner_bin
+	./$(BUILD_DIR)/test_runner_bin
+
+test-sub-binary-packed: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DEWC_INT1 -DEWC_INTx_PACKED -lm -o $(BUILD_DIR)/test_runner_binp
+	./$(BUILD_DIR)/test_runner_binp
+
+# Agrège toutes les variantes sub-INT8 (packé + non-packé).
+test-sub-all: test-sub-int4 test-sub-int4-packed test-sub-int2 test-sub-int2-packed test-sub-binary test-sub-binary-packed
+
+# Variante « lot d'inférences » (Sprint 53, S5302) : recompile le runner avec
+# -DINFER_BATCH_N=N pour exercer les 3 invariants du lot (prédiction identique à
+# N=1, UNE seule mise à jour CL, portée du lot). Le runner par défaut reste
+# strictement inchangé — ces tests sont gardés sur INFER_BATCH_N > 1.
+# N surchargeable : make test-batch BATCH_N=16
+BATCH_N ?= 4
+test-batch: $(BUILD_DIR)
+	$(TEST_CC) $(TEST_SRC) $(TEST_INC) -DTEST_HOST -DTEST_MODE=1 -DDEBUG_PRINTF=1 -DINFER_BATCH_N=$(BATCH_N) -lm -o $(BUILD_DIR)/test_runner_batch
+	./$(BUILD_DIR)/test_runner_batch
+
+# Build de banc « repos réel » (Sprint 53, S5302) : endort l'attente UART.
+# Vérifiable SANS carte — compile et rend la taille. Le `.bss` attendu est celui du
+# build par défaut (le WFI n'ajoute pas d'état), l'écart éventuel doit être expliqué.
+check-wfi:
+	$(MAKE) clean
+	$(MAKE) all EXTRA_CFLAGS="-DUART_WFI_IDLE"
+	$(SIZE) $(BUILD_DIR)/$(TARGET).elf
+
+# Balayage de fréquence système (Sprint 53, S5303) : les trois builds -DSYSCLK_MHZ.
+# Vérifiable SANS carte — ce qui se prouve ici, c'est que les trois binaires COMPILENT et
+# quelle taille ils occupent ; la fréquence réellement atteinte, elle, ne se constate qu'à
+# bord (bannière `hw_info_print`, recalculée depuis PLLCFGR — cf. run_s53_freq_sweep.py).
+# Le build par défaut est reconstruit en fin de cible : la cible ne laisse JAMAIS un
+# binaire 45 MHz dans build/ prêt à être flashé par mégarde.
+SYSCLK_LIST ?= 180 90 45
+check-sysclk:
+	@for f in $(SYSCLK_LIST); do \
+	    echo "── SYSCLK $$f MHz ──"; \
+	    $(MAKE) --no-print-directory clean >/dev/null; \
+	    $(MAKE) --no-print-directory all EXTRA_CFLAGS="-DSYSCLK_MHZ=$$f" >/dev/null || exit 1; \
+	    $(SIZE) $(BUILD_DIR)/$(TARGET).elf; \
+	done
+	@echo "── retour au build par défaut (180 MHz, sans -DSYSCLK_MHZ) ──"
+	@$(MAKE) --no-print-directory clean >/dev/null
+	@$(MAKE) --no-print-directory all >/dev/null
+	@$(SIZE) $(BUILD_DIR)/$(TARGET).elf
+
 TEST_MODELS_SRC = tests/test_models.c \
                   tests/unity/unity.c \
                   src/mahalanobis.c src/ewc_head.c src/tinyol.c src/metrics.c
@@ -211,4 +280,7 @@ test-models: $(BUILD_DIR)
 	           -DTEST_HOST -lm -o $(BUILD_DIR)/test_models_runner
 	./$(BUILD_DIR)/test_models_runner
 
-.PHONY: all flash debug clean test test-v2-q15 test-models size
+.PHONY: all flash debug clean test test-v2-q15 test-models size \
+        test-sub-int4 test-sub-int4-packed test-sub-int2 test-sub-int2-packed \
+        test-sub-binary test-sub-binary-packed test-sub-all \
+        test-batch check-wfi check-sysclk

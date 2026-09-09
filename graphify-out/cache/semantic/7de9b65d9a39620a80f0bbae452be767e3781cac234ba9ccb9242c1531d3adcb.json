@@ -1,0 +1,1 @@
+{"nodes": [{"id": "exp_s53_rate_sweep_hdc_fp32", "label": "Cellule hdc_fp32 (112,6 \u00b5J/inf, latence 585 \u00b5s)", "file_type": "document", "source_file": "experiments/exp_S53_rate_sweep/hdc_fp32.json", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

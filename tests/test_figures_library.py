@@ -43,11 +43,55 @@ LAYOUT_WHITELIST: set[float] = {
     1.5, 2.0, 4.5, 5.0, 8.0, 8.5, 9.0, 11.0,
 }
 
+# Constantes de layout propres à un seul catalogue. Elles restent **locales** : les
+# inscrire dans LAYOUT_WHITELIST globale affaiblirait la garde des autres fichiers,
+# car des valeurs comme 0.93 ou 0.97 y seraient des AUROC parfaitement plausibles.
+EXTRA_LAYOUT_WHITELIST: dict[str, set[float]] = {
+    # manuscrit_final.py : figsizes, largeurs de barres, bornes d'axes, marges de
+    # tight_layout/bbox_to_anchor, facteurs de headroom, epsilon d'échelle.
+    "manuscrit_final.py": {
+        0.001, 0.015, 0.09, 0.1, 0.27, 0.38, 0.88, 0.93, 0.97, 0.99,
+        1.01, 1.1, 1.12, 1.15, 1.3, 1.45, 3.4, 3.6, 3.8, 4.0, 4.2, 7.2, 7.6, 9.6,
+    },
+    # soutenance.py : coordonnées de schéma, décalages d'étiquettes, alphas de mise en
+    # retrait, bornes d'axes et facteurs de headroom. Aucune n'est un résultat — toutes
+    # les valeurs tracées passent par src.figures.sources.
+    # article_ewc.py : positions de barres, largeurs, bornes d'axes, figsizes et facteur de
+    # conversion Hz→MHz. Toutes les valeurs tracées viennent de l'agrégat S4008.
+    "article_ewc.py": {
+        0.27, 0.85, 1.01, 4.2, 4.4, 4.6, 7.5, 10.0, 11.0, 1000000.0,
+    },
+    # seminaire_s44_s53.py : coordonnées des trois schémas de cadrage (frise, carte
+    # axes×gaps, carte de quantification), hauteurs/largeurs de boîtes, pas de rangée,
+    # marges et wspace. Aucune n'est un résultat — toutes les valeurs tracées passent
+    # par load_experiment sur experiments/.
+    "seminaire_s44_s53.py": {
+        0.04, 0.09, 0.115, 0.125, 0.13, 0.14, 0.155, 0.185, 0.22, 0.24, 0.245, 0.26,
+        0.32, 0.45, 0.62, 0.7, 0.74, 0.84, 0.95, 1.12,
+    },
+    "soutenance.py": {
+        2e-05, 0.001, 0.0015, 0.0025, 0.015, 0.032, 0.055, 0.065, 0.08, 0.09, 0.1, 0.13, 0.14, 0.16,
+        0.17, 0.18, 0.21, 0.22, 0.235, 0.24, 0.243, 0.26, 0.27, 0.275, 0.28, 0.31, 0.32,
+        0.34, 0.36, 0.37, 0.38, 0.41, 0.42, 0.44, 0.45, 0.46, 0.47, 0.49, 0.51, 0.52, 0.53,
+        0.565, 0.57, 0.575, 0.58, 0.62, 0.63, 0.66, 0.665, 0.68, 0.69, 0.7, 0.75, 0.76,
+        0.77, 0.775, 0.795, 0.83, 0.84, 0.85, 0.87, 0.88, 0.93, 0.97, 1.02, 1.06, 1.08,
+        1.1, 1.12, 1.15, 1.18, 1.42, 1.6, 1.7, 1.75, 1.8, 2.4, 2.5, 3.9, 4.4, 5.1, 5.3,
+        5.6,
+    },
+}
+
 # Modules de catalogue soumis à la garde AST « 0 chiffre en dur ».
 HARDCODE_GUARDED_SRCS: list[Path] = [
     IMPACT_SRC,
     _CATALOGS_DIR / "quant_moment.py",
     _CATALOGS_DIR / "quant_depth.py",
+    _CATALOGS_DIR / "quant_depth_board.py",
+    _CATALOGS_DIR / "ram_full.py",
+    _CATALOGS_DIR / "energy_real.py",
+    _CATALOGS_DIR / "manuscrit_final.py",
+    _CATALOGS_DIR / "soutenance.py",
+    _CATALOGS_DIR / "article_ewc.py",
+    _CATALOGS_DIR / "seminaire_s44_s53.py",
 ]
 
 
@@ -73,12 +117,13 @@ def test_registry_lists_catalogs() -> None:
 def test_no_hardcoded_results(src: Path) -> None:
     """Scan AST des catalogues gardés : aucun flottant hors liste blanche de layout."""
     tree = ast.parse(src.read_text(encoding="utf-8"))
+    allowed = LAYOUT_WHITELIST | EXTRA_LAYOUT_WHITELIST.get(src.name, set())
     offending = {
         node.value
         for node in ast.walk(tree)
         if isinstance(node, ast.Constant)
         and isinstance(node.value, float)
-        and node.value not in LAYOUT_WHITELIST
+        and node.value not in allowed
     }
     assert not offending, (
         f"Littéraux flottants suspects dans {src.name} : {sorted(offending)} — "

@@ -1,0 +1,27 @@
+{
+  "model": "mahalanobis",
+  "dataset": "pronostia",
+  "condition": "5feat",
+  "encoding": "fp32",
+  "platform": "pc",
+  "data_bytes": null,
+  "bss_bytes": null,
+  "stack_peak_inference_bytes": 5308,
+  "stack_peak_update_bytes": null,
+  "total_ram_bytes": 5308,
+  "stack_history": [
+    {
+      "phase": "inference",
+      "stack_peak_bytes": 5308
+    }
+  ],
+  "conditions": {
+    "same_groups": true,
+    "update_protocol": "SGD embarqué 1 échantillon (sensor_stream --update, protocole V3)",
+    "eval_protocol": "stream chronologique par tâche CL, seed 42, condition figée",
+    "pc_method": "tracemalloc peak d'un forward (feature_conditions)"
+  },
+  "status": "done",
+  "n_params": 30,
+  "model_build_peak_bytes": 127723
+}

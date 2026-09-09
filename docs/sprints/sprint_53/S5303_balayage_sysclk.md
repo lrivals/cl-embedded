@@ -186,13 +186,13 @@ Contrôles d'intégrité 300/300, 0 CRC sur les 9 flux.
 | | 180 MHz | 90 MHz | 45 MHz |
 |---|---|---|---|
 | Latences Maha / EWC / HDC fp32 | 5 / 50 / 585 µs | 9 / 99 / 1169 µs | 18 / 198 / 2338 µs |
-| Plafond de transport HDC INT8 | 124,8 Hz | 99,9 Hz | 71,3 Hz |
-| **Courant de base** | 40,13 mA | 25,64 mA | **18,29 mA** |
-| **Énergie/inférence** | 214,6 µJ | **N/A** | **170,1 µJ** |
-| Pente (µA/Hz) | +65,8 ± 0,38 | +41,6 ± 12,63 | +52,1 ± 0,03 |
-| r² (ajustement pondéré) | 1,000 | **0,783** | 1,000 |
-| Points ajustés / mesurés | 5/6 | 5/6 | 4/6 |
-| `acqmode dyn` | refusé (75,7 mA) | refusé (69,6 mA) | **OK — 100 000/100 000** |
+| Plafond de transport HDC INT8 | 124,8 Hz | 99,9 Hz (78,7 Hz atteints à 80 Hz, B1) | 71,3 Hz |
+| **Courant de base** | 40,13 mA | 24,94 mA (B1) | **18,29 mA** |
+| **Énergie/inférence** | 214,6 µJ | **192,6 µJ** (B1) | **170,1 µJ** |
+| Pente (µA/Hz) | +65,8 ± 0,38 | **+59,0 ± 0,78** (B1) | +52,1 ± 0,03 |
+| r² (ajustement pondéré) | 1,000 | **0,999** (B1) | 1,000 |
+| Points ajustés / mesurés | 5/6 | **8/8** (B1) | 4/6 |
+| `acqmode dyn` | refusé (75,7 mA) | refusé (69,6 puis 69,8 mA, B1) | **OK — 100 000/100 000** |
 
 ### Tendance mesurée — `croissante_avec_f`
 
@@ -202,8 +202,10 @@ MCU réduit donc à la fois le coût par inférence **et** le courant permanent 
 HDC fp32 2338 µs contre 100 ms). C'est l'argument système visé : *la marge de latence est
 convertible en autonomie*.
 
-La tendance ne s'appuie que sur ses deux extrémités (45 et 180 MHz), toutes deux publiables :
-elle survit donc au passage de **90 MHz en N/A** (ci-dessous), mais son point milieu manque.
+**Depuis B1 (2026-09-08), la tendance a ses trois points** et ils sont monotones :
+170,1 → 192,6 → 214,6 µJ pour 45 → 90 → 180 MHz, et le courant de base suit le même ordre
+(18,25 → 24,94 → 39,88 mA). Le point milieu n'est donc plus une lacune : il confirme le sens
+de la tendance au lieu de le laisser reposer sur ses deux extrémités.
 
 ### Correction A4 du 2026-09-07 — l'ajustement était double, et 90 MHz n'est pas publiable
 
@@ -222,10 +224,61 @@ recalculées **sans remesure** (`--refit`, les points mesurés ne sont pas touch
 | 90 MHz | 57,7 µA/Hz · r²=0,919 → 188,2 µJ | 41,56 ± 12,63 µA/Hz · **r²=0,783 → N/A** |
 | 180 MHz | 61,2 µA/Hz · r²=0,986 → 199,7 µJ | 65,75 ± 0,38 µA/Hz · r²=1,000 → **214,6 µJ** |
 
-Le point 90 MHz — déjà le plus faible en r² avant correction — n'est pas séparable du bruit
-une fois les répétitions prises en compte : sa cellule porte `"à mesurer"` et sa raison
-chiffrée. **Il reste à rejouer avec le pilote final** (B1, 1 flash, ~15 min) ; c'est la seule
-des trois cellules produite par une version antérieure du pilote de sonde.
+Le point 90 MHz — déjà le plus faible en r² avant correction — n'était pas séparable du bruit
+une fois les répétitions prises en compte : sa cellule portait `"à mesurer"` et sa raison
+chiffrée, en attendant d'être rejouée avec le pilote final. **C'est ce qu'a fait B1**
+(ci-dessous).
+
+### B1 — reprise de la cellule 90 MHz (2026-09-08)
+
+Deux causes possibles au r² de 0,783 : le bruit de mesure (2 répétitions seulement) ou une
+non-linéarité réelle du courant en cadence. Elles se distinguent en mesurant mieux, pas en
+choisissant. La reprise change donc trois choses, arrêtées **avant** la mesure :
+
+* **grille plafonnée à 80 Hz** au lieu de 200 — le plafond de transport de `hdc_int8` à
+  90 MHz vaut ~100 Hz, les points au-delà étaient saturés et tassaient l'abscisse ;
+* **3 répétitions** au lieu de 2, pour que les écarts-types qui pondèrent l'ajustement
+  reposent sur plus d'un intervalle ;
+* **`--achieved-at-each-rate`** (option A7 portée de S5304 à ce pilote pour l'occasion) : les
+  sept cadences non nulles sont re-streamées et **mesurées une par une**, aucune n'est
+  inférée.
+
+| | avant (2026-09-01, recalculé A3) | après (B1, 2026-09-08) |
+|---|---|---|
+| pente | 41,56 ± 12,63 µA/Hz | **59,02 ± 0,78 µA/Hz** |
+| r² pondéré | 0,783 | **0,9990** |
+| points ajustés | 5 sur 6 | **8 sur 8, aucun saturé** |
+| cadence atteinte | 1 mesurée sur 5 | **7 mesurées sur 7** |
+| énergie | *à mesurer* | **192,6 ± 2,5 µJ/inférence** |
+
+**Ce que la mesure tranche, et qui n'était pas acquis.** Le « motif en escalier » relevé en
+réserve se reproduit — les résidus alternent de ±0,2 mA autour de la droite — mais il n'est
+**pas** dans la cadence : les sept cadences atteintes valent 9,98 / 19,91 / 29,79 / 39,66 /
+49,43 / 64,05 / 78,73 Hz, soit au plus 1,6 % sous leur consigne, très en deçà de la tolérance
+de saturation. L'escalier est donc dans le COURANT, pas dans l'axe des abscisses ; il reste
+inexpliqué, mais il est désormais borné : il ne remet pas en cause la linéarité (r² 0,999) et
+il est petit devant la pente.
+
+**Ce qui avait faussé la pente n'était ni l'escalier ni la saturation** — le point 200 Hz
+était déjà écarté par la règle de saturation, l'ajustement portait sur 0–100 Hz. C'était la
+**pondération sur deux répétitions**. Un écart-type empirique tiré de n = 2 est une grandeur
+très instable ; sur l'ancienne cellule il valait 7,1 µA à 25 et 50 Hz contre 134 µA à 10 Hz,
+soit des poids `1/σ²` dans un rapport de **1 à 350** sans qu'aucune raison physique ne le
+justifie. Les deux points quasi confondus en courant (28,235 et 28,325 mA) écrasaient donc
+l'ajustement et le couchaient. Recalculé **sans pondération**, l'ancien nuage donnait déjà
+**57,7 µA/Hz** — à 2 % de la valeur mesurée aujourd'hui (59,02) : la mesure de 2026-09-01
+n'était pas fausse, c'est son ajustement qui l'était.
+
+Avec trois répétitions, les écarts-types deviennent à la fois plus grands et plus homogènes
+(40 à 580 µA sur les huit points) : aucun point ne domine plus, et l'ajustement pondéré
+retrouve la pente non pondérée. **Recommandation pour la campagne** : la pondération `1/σ²`
+n'est fiable qu'à partir de trois répétitions — en deçà, elle amplifie le hasard de deux
+tirages au lieu de corriger le bruit. C'est ce qui plaçait 90 MHz *sous* 45 MHz et brisait la
+monotonie de la tendance.
+
+L'essai `acqmode dyn` échoue de nouveau à 90 MHz, et de façon très reproductible : 21 878
+échantillons décodés sur 100 000 contre 21 894 sept jours plus tôt, I_max 69,82 mA contre
+69,58. Cette reproductibilité est ce qui rend la caractérisation du plafond (B6) exploitable.
 
 ### Loi en 1/f vérifiée
 

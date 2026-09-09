@@ -57,4 +57,8 @@ grep -c "Sprint 48" docs/roadmap_phase2.md docs/triple_gap.md
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+**`tests/test_sprint48_board.py`** (6 tests, skip honnête sans board) : `test_summary_structure` (indexé `[dataset][weight_bits][granularity]`, board/pc/deltas), `test_gap2_latency` (< 100 000 µs, chemin packé inclus), `test_gap3_ram_packed` (`.bss` packé < non-packé), `test_parity_exact` (`parity_pred == 1.000`), `test_na_honesty` (mesuré | `na_reason` | `"à mesurer"`), `test_no_hardcoded_numbers` (garde AST `quant_depth_board.py`). **6/6 PASS** avec les 12 cellules réelles ; garde AST ajoutée à `HARDCODE_GUARDED_SRCS` (`tests/test_figures_library.py`) → **`test_figures_library.py` 10 PASS** (0 régression). Total **16 PASS**.
+
+**Firmware** : `make test` **141 (2 TinyOL préexistants hors périmètre, 0 régression)** ; **`.bss` défaut invariant 105 036 B** après câblage `pipeline.c` (route sub-INT8 gardée `EWC_SUBINT8_WEIGHTS_PROVIDED`) ; builds sub-INT8 (INT4/INT2/INT1 ± packé) verts.
+
+**Docs** : `S4804`–`S4807` § Résolution, `roadmap_phase2.md` (Sprint 48 → ✅ + bilan), `triple_gap.md` (§ Gap 2 latence dépacking, § Gap 3 `.bss` packé réelle), `CLAUDE.md` (ligne de statut). `graphify_sprint_update` invoqué.

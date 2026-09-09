@@ -4,7 +4,7 @@
 |-------|--------|
 | **Sprint** | Sprint 48 |
 | **Semaine** | 30 juillet – 5 août 2026 |
-| **Statut** | 📝 Doc — spec complète ; implémentation à venir |
+| **Statut** | ✅ Implémenté (S4801–S4807) — 12 cellules board réelle NUCLEO-F439ZI, parité 1.000, 0 CRC, Gap 2/Gap 3 ✅ |
 | **Priorité globale** | 🔴 Critique — **matérialise sur NUCLEO-F439ZI** les schémas gagnants du Sprint 47 : mesure la **RAM `.bss` réelle** (bit-packée, ÷8/÷16 attendus) et la **latence DWT** que l'émulateur ne mesure pas, et **valide la parité board↔PC**. Répond aux deux `TODO(dorra)` du Sprint 47 (kernel bit-packé, coût du dépacking). |
 | **Durée estimée totale** | ~28h (sélection/cadrage ~2h · kernels sub-INT8 firmware ~9h · export+test vectors ~5h · driver board+mesures ~6h · parité+agrégation ~3h · notebook+figures ~2h · tests+docs ~1h) |
 | **Dépendances** | **Sprint 47** ✅ (configs gagnantes, émulateur = source unique du schéma) · Sprint 39 ✅ (kernel `ewc_head_int8_v2.c` + variantes de build + export `--int8-v2`) · Sprint 29/36 ✅ (pipeline board, parité, DWT) |
@@ -55,14 +55,14 @@ L'écart entre les deux est **le résultat scientifique** du sprint (théorie �
 
 | ID | Tâche | Prio | Fichier cible | Statut |
 |----|-------|:---:|---------------|:------:|
-| S4801 | **Sélection des configs gagnantes** (frontière/agressive/référence × datasets, issues S4708) + cadrage build `-DEWC_INT4`/`-DEWC_INT2`/`-DEWC_INTx_PACKED` | 🔴 | `docs/sprints/sprint_48/S4801_selection_cadrage.md` | 📝 Doc |
+| S4801 | **Sélection des configs gagnantes** (frontière/agressive/référence × datasets, issues S4708) + cadrage build `-DEWC_INT4`/`-DEWC_INT2`/`-DEWC_INT1`/`-DEWC_INTx_PACKED` | 🔴 | `docs/sprints/sprint_48/S4801_selection_cadrage.md` | ✅ |
 
 ### Bloc B — Firmware & export
 
 | ID | Tâche | Prio | Fichier cible | Statut |
 |----|-------|:---:|---------------|:------:|
-| S4802 | **Kernels sub-INT8 firmware** : variantes de build sur `ewc_head_int8_v2.c` (QMAX 7/3), chemin **bit-packing** (dépack → MAC FPU), test Unity parité C↔Python | 🔴 | `firmware/stm32f4_blink/{src,inc}/ewc_head_int8_v2.*`, `firmware/stm32f4_blink/tests/test_ewc_subint8.c` | 📝 Doc |
-| S4803 | **Export** : `export_weights_c.py --ewc-subint8 --weight-bits N [--packed]` (réutilise primitives émulateur S47 = parité) → header généré + `--ewc-subint8-test-vectors` golden | 🔴 | `scripts/export_weights_c.py`, `firmware/stm32f4_blink/inc/ewc_head_subint8_weights.h` (généré) | 📝 Doc |
+| S4802 | **Kernels sub-INT8 firmware** : variantes de build sur `ewc_head_int8_v2.c` (QMAX 7/1, `-DEWC_INT1` binaire), chemin **bit-packing** (dépack → MAC FPU), test Unity parité C↔Python | 🔴 | `firmware/stm32f4_blink/{src,inc}/ewc_head_int8_v2.*`, `firmware/stm32f4_blink/tests/test_ewc_subint8.c` | ✅ |
+| S4803 | **Export** : `export_weights_c.py --ewc-subint8 --weight-mode {linear,ternary,binary} [--packed]` (réutilise primitives émulateur S47 = parité) → header généré + `--ewc-subint8-test-vectors` golden | 🔴 | `scripts/export_weights_c.py`, `firmware/stm32f4_blink/inc/ewc_head_subint8_weights.h` (généré) | ✅ |
 
 ### Bloc C — Mesures board
 
@@ -129,4 +129,10 @@ S4802 (kernels sub-INT8 + packing + Unity)  ──►  S4803 (export --ewc-subin
 | Tâche | Statut | Temps réel | Notes |
 |-------|:------:|:----------:|-------|
 | S4800 | 📝 Doc | — | Overview + cadrage board |
-| S4801–S4807 | 📝 Doc | — | Documentés ; implémentation à venir (board supposée disponible) |
+| S4801 | ✅ | — | Matrice figée (ternaire/binaire = gagnants S4708) + flags `-DEWC_INT4/INT2/INT1` (+correctif QMAX 3→1, ajout INT1) |
+| S4802 | ✅ | — | Kernels sub-INT8 + packing (`ewc_head_int8_v2.*`) + Unity parité/packing (host, tous PASS, `.bss` défaut invariant 105 036 B, 0 régression) |
+| S4803 | ✅ | — | Export `--ewc-subint8` (+golden tous schémas) réutilisant primitives émulateur ; `test_ewc_subint8_export.py` 7 PASS |
+| S4804 | ✅ | — | Câblage `pipeline.c` (route sub-INT8 gardée, `.bss` défaut invariant) + driver → **12 cellules board réelle** : parité 1.000, 0 CRC, `.bss` non-packé invariant/mode (105 640/106 152) vs packé (÷2/÷4/÷8), lat dépacking +55 µs ≪ 100 ms |
+| S4805 | ✅ | — | `board_pc_parity48.py` (12/12 parité 1.000, `max_score_err ≤ 1.2e-7`) + `aggregate_sprint48.py` → `exp_S48_summary.json` (gain packing 336→604 B, théorie↔matériel) |
+| S4806 | ✅ | — | Catalogue `quant_depth_board` (5 PNG, 0 chiffre en dur) + notebook nbconvert OK |
+| S4807 | ✅ | — | `test_sprint48_board.py` 6/6 + garde AST ; `make test` 141 (2 TinyOL préexistants, 0 régression) ; docs/roadmap/triple_gap |

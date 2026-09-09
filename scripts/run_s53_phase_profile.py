@@ -75,6 +75,7 @@ lp = _load("lpm01a_probe", ROOT / "scripts" / "lpm01a_probe.py")
 #: ils ne sont pas réécrits ici. `BUILD_SPECIFIC` protège du bug du drapeau TinyOL (S52).
 rc = _load("run_s50_board_current", ROOT / "scripts" / "run_s50_board_current.py")
 fs = _load("run_s53_freq_sweep", ROOT / "scripts" / "run_s53_freq_sweep.py")
+from src.evaluation import dyn_threshold as dt   # noqa: E402
 
 A_MESURER = ec.A_MESURER
 DEFAULT_OUT = ROOT / "experiments" / "exp_S53_phase_profile"
@@ -154,16 +155,24 @@ def capture_under_load(probe, voltage_mv: int, args, model_flag: str) -> dict:
         }
     finally:
         stop_stream(proc)
-    return {
-        "succeeded": True,
+    # `lp.capture` ne lève que sur un flux VIDE : une acquisition INTERROMPUE en
+    # surintensité rend les quelques dizaines de millisecondes décodées avant l'arrêt et
+    # passerait ici pour un succès. La règle qui distingue les deux est celle de toute la
+    # campagne (`dyn_threshold.acquisition_outcome`, issue de
+    # `run_s53_freq_sweep.try_dynamic_mode`) : une seule définition de « acquisition
+    # aboutie », testée hors banc. Sans elle, une trace tronquée était refusée plus loin
+    # par le compte de créneaux — donc avec une raison qui désignait la mauvaise cause.
+    n_expected = int(lp.parse_freq_hz(DYN_FREQ) * args.duration)
+    bloc = {
         "acqmode": "dyn",
         "samples_a": samples,
         "voltage_v": float(voltage_v),
         "i_mean_ma": float(np.mean(samples)) * MA,
         "i_max_ma": float(np.max(samples)) * MA,
-        "n_samples": int(samples.size),
         "summary": summary.strip()[-400:],
     }
+    bloc.update(dt.acquisition_outcome(int(samples.size), n_expected, summary))
+    return bloc
 
 
 def trace_from_samples(samples_a: np.ndarray, voltage_v: float,

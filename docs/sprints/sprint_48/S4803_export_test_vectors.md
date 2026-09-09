@@ -65,4 +65,15 @@ cd firmware/stm32f4_blink && make test CFLAGS_EXTRA="-DEWC_INT4 -DEWC_SUBINT8_WE
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+**`scripts/export_weights_c.py`** — options `--ewc-subint8` (+ `--weight-bits {4,2}`, `--weight-mode {linear,ternary,binary}`, `--granularity`, `--symmetry`, `--packed`) et `--ewc-subint8-test-vectors`.
+
+- `_ewc_subint8_quantize` : `EWCHeadWeights.from_state_dict` → **`_quant_weight_mode`** (émulateur S47, dispatch linéaire/ternaire/binaire) → poids quantifiés + scales par-canal ; `calibrate_activations` → scales d'activation. **Parité par construction** (mêmes primitives).
+- `_pack_weights(q, pack_bits)` : empaquette les entiers signés en `uint8_t[]` (LSB-first, complément à deux 4/2 bits, binaire `q>0→1`), **miroir exact** de `ewc_v2_pack_row`/`ewc_v2_unpack_weight` (firmware).
+- `export_ewc_subint8_to_c` → `inc/ewc_head_subint8_weights.h` : poids packés (`uint8_t`) ou conteneurs `int8_t`, `EWC_SUB_SCALE_W*`, biais FP32, scales activation, gardes `EWC_SUBINT8_WEIGHTS_PROVIDED`/`EWC_SUBINT8_PACK_BITS`/`EWC_SUBINT8_PACKED`, bannière « GÉNÉRÉ — ne pas éditer ». Vide par défaut → fallback → 0 régression.
+- `export_ewc_subint8_test_vectors_h` → `tests/test_vectors_subint8.h` : golden **auto-suffisant tous schémas** (poids FP32 + act_max + entrées + poids quantifiés/scales INT4/ternaire/binaire + logits `forward_quant(subint8(...))`).
+
+**Header généré, jamais édité à la main** (règle CLAUDE.md), patron `--int8-v2` (S3908/S3909).
+
+**Tests `tests/test_ewc_subint8_export.py`** (PC-only) : **7 PASS** — round-trip `_pack_weights`↔dépack C (4/2/1 bits), parité export ↔ `_quant_weight_mode` (linéaire/ternaire/binaire), garde du header généré. Aucun chiffre golden en dur (tout dérive de l'émulateur).
+
+**Vérifié bout-en-bout** avec `experiments/exp_S39_matched/checkpoints/ewc_pronostia_5feat.pt` (k=5) : header packé binaire → `uint8_t EWC_SUB_W1[32][1]` (8 poids/octet), et les golden alimentent `test_ewc_subint8.c` (S4802, tous PASS).

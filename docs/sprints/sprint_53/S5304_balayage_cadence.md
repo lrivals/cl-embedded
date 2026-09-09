@@ -233,14 +233,19 @@ ordre randomisé (seed 42), fenêtre 10 s, `maha_int8` exclue (build `-DMAHA_INT
 |---|---|---|---|---|
 | `ewc_fp32` | 50 µs | **67,7 ± 0,7** | 1,000 | 168,5 Hz |
 | `ewc_int8` | 53 µs | **67,5 ± 2,2** | 0,996 | 167,8 Hz |
-| `hdc_fp32` | 585 µs | *à mesurer* | 0,885 | 164,0 Hz |
+| `hdc_fp32` | 585 µs | **112,6 ± 1,0** (B2) | 0,999 | 147,3 Hz à 150 Hz |
 | `hdc_int8` | 1958 µs | **191,6 ± 16,0** | 0,973 | 126,3 Hz |
 | `tinyol_fp32` | 85 µs | **70,5 ± 0,7** | 1,000 | 166,6 Hz |
 | `tinyol_int8` | 65 µs | **71,2 ± 1,3** | 0,999 | 167,2 Hz |
 | `maha_fp32` | 5 µs | **57,4 ± 7,5** | 0,935 | 169,3 Hz |
 
-Régression de second niveau (`slope_vs_latency.json`) :
-**0,0656 ± 0,0022 µJ/µs de calcul** et **63,41 µJ par trame UART**, r² = 0,996.
+Régression de second niveau (`slope_vs_latency.json`), **7 cellules depuis B2** :
+**0,0662 ± 0,0032 µJ/µs de calcul** et **64,70 µJ par trame UART**, r² = 0,989.
+(Avant B2, sur 6 cellules : 0,0656 ± 0,0022 µJ/µs et 63,41 µJ/trame, r² 0,996. La cellule
+ajoutée **déplace peu** les deux coefficients — +0,9 % sur le coût de calcul, +2,0 % sur le
+coût de trame, tous deux dans l'incertitude — mais elle **élargit** la barre d'erreur de la
+pente et abaisse le r² : `hdc_fp32` est le point qui s'écarte le plus de la droite. Le
+second niveau reste un modèle grossier de la campagne, pas une loi ajustée.)
 
 ### Verdict Gap 3 énergie — `non_significatif`
 
@@ -255,9 +260,39 @@ soustrait d'une référence de repos, seule la pente porte le coût marginal.
   série, pas le modèle. Seule la part de calcul (latence × 0,0656 µJ/µs) est imputable au
   modèle — c'est la raison d'être de la régression de second niveau. Artefact de banc
   assumé : le capteur est simulé par UART.
-- `hdc_fp32` sort en **N/A honnête** (r² = 0,885 < 0,9) : le courant ne suit pas une droite
-  en cadence sur ce balayage.
+- `hdc_fp32` **est sortie** de son N/A à la reprise B2 (2026-09-08) — voir ci-dessous.
 - Le `coherence_check` sort à `false` (prédit +0,2 µJ, mesuré −0,2 µJ) : il oppose deux
   quantités toutes deux très en dessous de l'incertitude. Il ne contredit pas le verdict.
 - Cohérence interne : 63,41 + 1958 × 0,0656 = 191,8 µJ prédits pour `hdc_int8`, contre
   191,6 mesurés.
+
+### B2 — reprise de `hdc_fp32` (2026-09-08) : la grille passe à 7/7
+
+La cellule du 1er septembre sortait en N/A (r² 0,885, pente 29,0 ± 5,2 µA/Hz). Sa grille
+montait à 200 Hz alors que le plafond de transport de `hdc_fp32` vaut ~164 Hz : le point
+haut était **saturé**, et un point saturé tasse l'abscisse et SOUS-ESTIME la pente — le
+biais documenté en §5 et mesuré à 180 MHz en S5303. Une seule cadence était re-streamée,
+les six autres restaient `"non mesuré"`.
+
+Reprise à grille arrêtée **avant** la mesure — 0/10/25/50/75/100/125/150 Hz, plafonnée sous
+la cadence atteinte connue, 3 répétitions, et `--achieved-at-each-rate` : **les huit
+cadences sont mesurées une par une**, aucune n'est inférée. Résultat :
+
+| | avant (2026-09-01) | après (B2, 2026-09-08) |
+|---|---|---|
+| pente | 29,02 ± 5,23 µA/Hz | **34,50 ± 0,31 µA/Hz** |
+| r² | 0,885 | **0,9995** |
+| points ajustés | 6 (dont un saturé écarté) | **8, aucun saturé** |
+| cadence atteinte | 1 mesurée / 6 non mesurées | **7 mesurées sur 7 cadences non nulles** |
+| énergie | *à mesurer* | **112,6 ± 1,0 µJ/inférence** |
+
+Le binaire est le MÊME que celui des six autres cellules — vérifié par sa taille de code
+(`.text` = 51 976 B, identique au build stock du 1er septembre) après restitution des
+en-têtes de poids que les séances d'isolation avaient régénérés. Sans cette vérification, la
+cellule aurait été comparable en apparence seulement : B3 a montré le même jour qu'un
+changement de binaire peut à lui seul faire disparaître la pente.
+
+Contrôle de cohérence, non ajusté : le modèle de second niveau prédit
+0,0662 × 585 + 64,70 = 103,4 µJ pour une latence de 585 µs ; la mesure indépendante en donne
+112,6. L'écart de 8 %, la cellule étant la plus lente des trois FP32, reste dans la
+dispersion des points du second niveau (r² 0,989).

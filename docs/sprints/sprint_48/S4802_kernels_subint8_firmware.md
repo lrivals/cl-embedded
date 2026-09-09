@@ -81,4 +81,16 @@ make size CFLAGS_EXTRA="-DEWC_INT4 -DEWC_INTx_PACKED"   # .bss réduit vs INT8
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation._
+**Header `inc/ewc_head_int8_v2.h`** — bloc typedef étendu (`-DEWC_INT4` QMAX 7 / `-DEWC_INT2` QMAX **1** [correctif du 3 du gabarit] / `-DEWC_INT1` binaire), chacun définissant `EWC_V2_PACK_BITS` (4/2/1). Ajout des primitives de packing gardées `#if defined(EWC_V2_PACK_BITS)` : `EWC_V2_PACK_STRIDE(n)`, `ewc_v2_unpack_weight(row,i)` (LSB-first ; complément à deux + extension de signe pour 4/2 bits ; code dédié binaire `{−1,+1}↔{0,1}`) et `ewc_v2_pack_row(dst,q,n)` (miroir exact). Struct packée `EWCHeadSubInt8Packed` (poids `uint8_t` de stride bit-packé) + décl. `ewc_subint8_packed_forward`, gardées `#if defined(EWC_INTx_PACKED)`.
+
+**Kernel `src/ewc_head_int8_v2.c`** — ajout de `ewc_subint8_packed_forward` (gardé), identique à `ewc_int8_v2_forward` mais dépacke chaque poids via `ewc_v2_unpack_weight` avant le MAC FPU (le packing ne change **que** le stockage). **`ewc_int8_v2_forward` / `ewc_int8_v2_from_fp32_calib` inchangés** → le forward non-packé (linéaire on-board, ou ternaire/binaire chargé depuis golden) réutilise le v2 tel quel.
+
+**Choix d'architecture** : les sub-INT8 chargent des **poids pré-quantifiés PC** (le firmware ne reproduit pas TWN/BWN on-board) ; le non-packé prouve le nœud d'honnêteté (`.bss` ≈ int8, conteneur identique), le packé matérialise ÷2/÷4/÷8.
+
+**Tests Unity `tests/test_ewc_subint8.c`** (enregistrés `test_runner.c`, ajoutés à `TEST_SRC`, cibles Makefile `test-sub-int4/-int2/-binary` ± `-packed`, `test-sub-all`) :
+- `test_int4_quant_parity` (linéaire on-board QMAX 7 == golden), `test_ternary_parity`, `test_binary_parity` (poids quantifiés chargés == golden) ;
+- `test_int4_packed_parity`, `test_int2_packed_parity` (packé == golden) ;
+- `test_packed_storage_smaller` (sizeof packé < int8 == stride théorique — matérialise le gain, host) ;
+- `test_unpack_sign_extension` (round-trip pack/unpack par profondeur).
+
+**Résultats** (host, aucune carte) : **tous PASS** sur chaque build ; `make test` par défaut **141 tests, 2 échecs TinyOL préexistants hors périmètre, 0 régression** ; **`.bss` défaut invariant 105 036 B** ; builds ARM `-DEWC_INT2 -DEWC_INTx_PACKED` compilent sans erreur. Le `test_v2_parity_emulator` (S39) a vu sa garde étendue (TEST_IGNORE sous sub-INT8, comme Q15). `TODO(dorra)` coût latence dépacking → mesure DWT S4804.

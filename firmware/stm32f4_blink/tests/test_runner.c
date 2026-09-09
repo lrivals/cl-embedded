@@ -57,6 +57,15 @@ void test_v2_q15_parity(void);
 void test_v2_recovers_f1(void);
 void test_v1_unchanged(void);
 
+/* ── Déclarations — test_ewc_subint8.c (Sprint 48, S4802) ───────────────── */
+void test_int4_quant_parity(void);
+void test_ternary_parity(void);
+void test_binary_parity(void);
+void test_int4_packed_parity(void);
+void test_int2_packed_parity(void);
+void test_packed_storage_smaller(void);
+void test_unpack_sign_extension(void);
+
 /* ── Déclarations — test_profiling.c ───────────────────────────────────── */
 void test_profiling_latency_positive(void);
 void test_profiling_latency_zero_cycles(void);
@@ -122,6 +131,12 @@ void test_ddm_reset_restores_init(void);
 void test_psi_drift_on_collapsed_block(void);
 void test_psi_reset_clears_block(void);
 
+/* ── Déclarations — test_eth_phy.c (S5001, banc énergie) ────────────────── */
+void test_eth_phy_miiar_fields(void);
+void test_eth_phy_miiar_busy_always_set(void);
+void test_eth_phy_miiar_write_bit(void);
+void test_eth_phy_powerdown_target(void);
+
 /* ── Déclarations — test_tinyol.c ───────────────────────────────────────── */
 void test_tinyol_encode_zero_weights(void);
 void test_tinyol_decode_zero_emb(void);
@@ -166,6 +181,16 @@ void test_pipeline_dual_mode_update(void);
 void test_pipeline_response_pair_22bytes(void);
 void test_pipeline_pair_response_fields(void);
 void test_pipeline_pair_mode_dispatch(void);
+
+/* ── Déclarations — test_pipeline.c Sprint 53 (S5302) lot d'inférences ──────
+ * Compilés uniquement dans le runner de lot (`make test-batch`, -DINFER_BATCH_N=N).
+ * `INFER_BATCH_N` vient de la ligne de commande : le runner par défaut reste
+ * strictement identique, nombre de tests compris. */
+#if defined(INFER_BATCH_N) && INFER_BATCH_N > 1
+void test_pipeline_batch_prediction_identique(void);
+void test_pipeline_batch_une_seule_maj_cl(void);
+void test_pipeline_batch_composite_non_batche(void);
+#endif
 
 /* ── Déclarations — test_hdc_int8.c (S2906) ─────────────────────────────── */
 void test_hdc_int8_init_zeros_am(void);
@@ -265,6 +290,15 @@ int main(void)
     RUN_TEST(test_v2_recovers_f1);
     RUN_TEST(test_v1_unchanged);
 
+    /* EWC sub-INT8 — Sprint 48, S4802 (ignorés hors builds -DEWC_INT4/INT2/INT1) */
+    RUN_TEST(test_int4_quant_parity);
+    RUN_TEST(test_ternary_parity);
+    RUN_TEST(test_binary_parity);
+    RUN_TEST(test_int4_packed_parity);
+    RUN_TEST(test_int2_packed_parity);
+    RUN_TEST(test_packed_storage_smaller);
+    RUN_TEST(test_unpack_sign_extension);
+
     /* HDC */
     RUN_TEST(test_hdc_encode_norm);
     RUN_TEST(test_hdc_predict_label);
@@ -294,6 +328,11 @@ int main(void)
     RUN_TEST(test_drift_triggers_on_ratio);
     RUN_TEST(test_drift_reset_clears_window);
     RUN_TEST(test_drift_sequence_parity_python);
+
+    RUN_TEST(test_eth_phy_miiar_fields);
+    RUN_TEST(test_eth_phy_miiar_busy_always_set);
+    RUN_TEST(test_eth_phy_miiar_write_bit);
+    RUN_TEST(test_eth_phy_powerdown_target);
 
     RUN_TEST(test_ph_drift_on_mean_shift);
     RUN_TEST(test_ph_reset_clears_state);
@@ -346,6 +385,13 @@ int main(void)
     RUN_TEST(test_pipeline_response_pair_22bytes);
     RUN_TEST(test_pipeline_pair_response_fields);
     RUN_TEST(test_pipeline_pair_mode_dispatch);
+
+    /* Sprint 53 (S5302) — lot d'inférences par trame */
+#if defined(INFER_BATCH_N) && INFER_BATCH_N > 1
+    RUN_TEST(test_pipeline_batch_prediction_identique);
+    RUN_TEST(test_pipeline_batch_une_seule_maj_cl);
+    RUN_TEST(test_pipeline_batch_composite_non_batche);
+#endif
 
     /* HDC INT8 — S2906 */
     RUN_TEST(test_hdc_int8_init_zeros_am);

@@ -16,7 +16,9 @@ fr: main_fr.pdf
 en: main_en.pdf
 
 # Règle générique : $* ∈ {main_fr, main_en}. references.bib partagé.
-main_%.pdf: main_%.tex references.bib $(wildcard sections/**/*.tex)
+# Les figures sont générées par le catalogue `article_ewc_int8` puis synchronisées ici :
+# les déclarer en prérequis évite qu'un PDF reste compilé sur des figures périmées.
+main_%.pdf: main_%.tex references.bib $(wildcard sections/**/*.tex) $(wildcard figures/*.png)
 	$(LATEX) $(LFLAGS) main_$*
 	-$(BIBTEX) main_$*
 	$(LATEX) $(LFLAGS) main_$*

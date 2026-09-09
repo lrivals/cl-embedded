@@ -16,6 +16,7 @@ from src.evaluation.autonomy import (
     A_MESURER,
     autonomy_hours,
     average_current_ma,
+    average_current_ma_from_delta,
     load_battery_capacities,
     sweep_capacities,
 )
@@ -69,6 +70,31 @@ def test_sweep_capacities_monotonic():
     vals = list(sweep.values())
     assert vals == sorted(vals)  # autonomie croît avec la capacité
     assert sweep[3000.0] == pytest.approx(300.0)
+
+
+def test_average_current_from_delta_manual_calc():
+    """I_moy = (I_repos + Q_inf/T) × 1000, vérifié à la main (S5008).
+
+    Q_inf = (40 µJ / 1e6) / 3.3 V = 1.2121e-5 C ; sur T = 1 s cela ajoute
+    12.12 µA au repos de 50 mA → 50.0121 mA.
+    """
+    i_moy = average_current_ma_from_delta(
+        i_idle_a=0.05, energy_uj_per_inference=40.0,
+        inference_period_s=1.0, tension_v=3.3,
+    )
+    assert i_moy == pytest.approx(50.0 + (40.0 / 1e6 / 3.3) * 1e3, rel=1e-9)
+
+
+def test_average_current_from_delta_shorter_period_costs_more():
+    """Inférer plus souvent augmente le courant moyen (monotonie attendue)."""
+    lent = average_current_ma_from_delta(0.05, 40.0, 10.0)
+    rapide = average_current_ma_from_delta(0.05, 40.0, 0.1)
+    assert rapide > lent > 50.0
+
+
+def test_average_current_from_delta_rejects_invalid_period():
+    with pytest.raises(ValueError):
+        average_current_ma_from_delta(0.05, 40.0, 0.0)
 
 
 def test_load_battery_capacities_from_config():

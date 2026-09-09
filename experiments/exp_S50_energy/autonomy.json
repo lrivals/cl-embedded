@@ -1,0 +1,144 @@
+{
+  "description": "Autonomie estimée S50 — I_moy + balayage capacités (depuis µJ réels).",
+  "capacites_mah": [
+    220.0,
+    1200.0,
+    2000.0,
+    3000.0,
+    10000.0
+  ],
+  "duty_cycle": {
+    "inference_period_s": 1.0
+  },
+  "per_model": {
+    "ewc_fp32": {
+      "i_moy_ma": 46.55000000000001,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.726100966702469,
+        "1200.0": 25.77873254564983,
+        "2000.0": 42.96455424274972,
+        "3000.0": 64.44683136412458,
+        "10000.0": 214.8227712137486
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "ewc_int8": {
+      "i_moy_ma": 46.546666666666674,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.7264394156402165,
+        "1200.0": 25.78057863076482,
+        "2000.0": 42.9676310512747,
+        "3000.0": 64.45144657691205,
+        "10000.0": 214.8381552563735
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "hdc_fp32": {
+      "i_moy_ma": 47.84333333333333,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.598341810074549,
+        "1200.0": 25.081864418588452,
+        "2000.0": 41.80310736431409,
+        "3000.0": 62.70466104647113,
+        "10000.0": 209.01553682157044
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "hdc_int8": {
+      "i_moy_ma": 51.220000000000006,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.295197188598204,
+        "1200.0": 23.428348301444746,
+        "2000.0": 39.04724716907457,
+        "3000.0": 58.570870753611864,
+        "10000.0": 195.23623584537287
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "tinyol_fp32": {
+      "i_moy_ma": 46.60000000000001,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.721030042918454,
+        "1200.0": 25.751072961373385,
+        "2000.0": 42.91845493562231,
+        "3000.0": 64.37768240343347,
+        "10000.0": 214.59227467811155
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "tinyol_int8": {
+      "i_moy_ma": 46.51333333333333,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.729826573025656,
+        "1200.0": 25.799054034685398,
+        "2000.0": 42.99842339114233,
+        "3000.0": 64.4976350867135,
+        "10000.0": 214.99211695571165
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "maha_fp32": {
+      "i_moy_ma": 46.40333333333333,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.741038718482868,
+        "1200.0": 25.860211191724733,
+        "2000.0": 43.10035198620789,
+        "3000.0": 64.65052797931183,
+        "10000.0": 215.50175993103946
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    },
+    "maha_int8": {
+      "i_moy_ma": 46.37333333333334,
+      "methode": "courant moyen mesuré sous charge (100.0 Hz)",
+      "autonomy_h_by_mah": {
+        "220.0": 4.744105807935594,
+        "1200.0": 25.876940770557788,
+        "2000.0": 43.12823461759631,
+        "3000.0": 64.69235192639447,
+        "10000.0": 215.64117308798157
+      },
+      "duty_cycle": null,
+      "regime_mesure": {
+        "rate_hz": 100.0,
+        "note": "autonomie du régime RÉELLEMENT mesuré (flux continu à cette cadence, carte jamais endormie) — ce n'est PAS l'autonomie d'un déploiement duty-cyclé, qui exige une mise en sommeil du firmware"
+      }
+    }
+  },
+  "timestamp": "2026-08-05T08:37:30.998633+00:00"
+}

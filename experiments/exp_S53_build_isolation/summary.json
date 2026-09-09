@@ -1,0 +1,158 @@
+{
+  "question": "La disparition de la dépendance à la cadence sur le build aux dimensions du Sprint 38 suit-elle la DIMENSION compilée, une fois les poids écartés (B3) ?",
+  "method": "régression I(rate)",
+  "method_note": "la différence de pentes est ici un DIAGNOSTIC de dimension, jamais une énergie : la règle A4 réserve la conversion en µJ aux paires dont chaque régression est linéaire, et une cellule plate est le phénomène cherché.",
+  "reference_stock_build": {
+    "source": "exp_S53_rate_sweep/ewc_fp32.json (S5304, build stock)",
+    "slope_ua_per_hz": 20.732971337413442,
+    "slope_std_ua_per_hz": 0.21400732243520673,
+    "r2": 0.9995740004750834,
+    "presence": {
+      "slope_ua_per_hz": 20.732971337413442,
+      "slope_std_ua_per_hz": 0.21400732243520673,
+      "r2": 0.9995740004750834,
+      "state": "présente",
+      "sub_state": null,
+      "rationale": "pente +20.733 ± 0.214 µA/Hz à r²=1.000 : la consommation suit la cadence et le coût marginal est chiffré (67.7 µJ)."
+    }
+  },
+  "variants": {
+    "poids": {
+      "ewc_in": 4,
+      "extra_cflags": "",
+      "weights_state": "exportés",
+      "measured_by": "B3",
+      "paire": "B3",
+      "description": "k=4, tête EWC chargée depuis les poids exportés",
+      "measured": true,
+      "text_bytes": 42180,
+      "bss_bytes": 100152,
+      "elf_sha256": "040826456cf0f990ec23cdbb8de40862f704fc16d62ac467237b6b459466a6bd",
+      "slope_ua_per_hz": -1.070746634026871,
+      "slope_std_ua_per_hz": 0.4062361360230167,
+      "r2": 0.6346132489476353,
+      "energy_uj_per_inference": "à mesurer",
+      "latency_p50_us": 48.0,
+      "crc_errors": 0
+    },
+    "xavier": {
+      "ewc_in": 4,
+      "extra_cflags": "",
+      "weights_state": "repli Xavier",
+      "measured_by": "B3",
+      "paire": "B3",
+      "description": "k=4, tête EWC non chargée (garde de dimension refusée)",
+      "measured": true,
+      "text_bytes": 39108,
+      "bss_bytes": 100152,
+      "elf_sha256": "b6d933b7c1ac9fa44836396a5cd86ad5e744a97b10ece62e635b3020df6086e2",
+      "slope_ua_per_hz": 1.6727019124849654,
+      "slope_std_ua_per_hz": 0.7498546933937424,
+      "r2": 0.5543686275291018,
+      "energy_uj_per_inference": "à mesurer",
+      "latency_p50_us": 49.0,
+      "crc_errors": 0
+    },
+    "paire2_k4": {
+      "ewc_in": 4,
+      "extra_cflags": "",
+      "weights_state": "repli Xavier",
+      "measured_by": "B8",
+      "paire": "B8",
+      "description": "k=4, tête EWC non chargée — arm de référence de la paire (ii)",
+      "measured": false,
+      "text_bytes": null,
+      "bss_bytes": null,
+      "elf_sha256": null,
+      "slope_ua_per_hz": null,
+      "slope_std_ua_per_hz": null,
+      "r2": null,
+      "energy_uj_per_inference": null,
+      "latency_p50_us": null,
+      "crc_errors": null
+    },
+    "paire2_k6": {
+      "ewc_in": 6,
+      "extra_cflags": "",
+      "weights_state": "repli Xavier",
+      "measured_by": "B8",
+      "paire": "B8",
+      "description": "k=6, tête EWC non chargée — seule la dimension change",
+      "measured": false,
+      "text_bytes": null,
+      "bss_bytes": null,
+      "elf_sha256": null,
+      "slope_ua_per_hz": null,
+      "slope_std_ua_per_hz": null,
+      "r2": null,
+      "energy_uj_per_inference": null,
+      "latency_p50_us": null,
+      "crc_errors": null
+    }
+  },
+  "pairs": {
+    "B3": {
+      "pair": [
+        "poids",
+        "xavier"
+      ],
+      "varied": "les poids de la tête EWC",
+      "presence": {
+        "poids": {
+          "slope_ua_per_hz": -1.070746634026871,
+          "slope_std_ua_per_hz": 0.4062361360230167,
+          "r2": 0.6346132489476353,
+          "state": "absente",
+          "sub_state": "pente négative",
+          "rationale": "pente -1.071 ± 0.406 µA/Hz, r²=0.635 (pente négative) : aucun coût marginal ne se lit dans cette cellule."
+        },
+        "xavier": {
+          "slope_ua_per_hz": 1.6727019124849654,
+          "slope_std_ua_per_hz": 0.7498546933937424,
+          "r2": 0.5543686275291018,
+          "state": "absente",
+          "sub_state": "nuage non linéaire",
+          "rationale": "pente +1.673 ± 0.750 µA/Hz, r²=0.554 (nuage non linéaire) : aucun coût marginal ne se lit dans cette cellule."
+        }
+      },
+      "method": "régression I(rate)",
+      "same_session": null,
+      "delta_slope_ua_per_hz": -2.7434485465118366,
+      "delta_slope_std_ua_per_hz": 0.8528246357930418,
+      "delta_sigma": 3.2168964537014144,
+      "delta_publishable_as_energy": false,
+      "delta_na_reason": "diagnostic de dimension, pas une énergie : la différence de pentes n'est convertible en µJ que si chaque régression est linéaire (règle A4), or poids : r²=0.635 < 0.9 — la pente ne décrit pas un coût marginal, sa différence non plus; xavier : r²=0.554 < 0.9 — la pente ne décrit pas un coût marginal, sa différence non plus.",
+      "delta_uj_equivalent": "à mesurer",
+      "verdict": "l'effet ne suit pas les poids de la tête EWC",
+      "rationale": "les deux variantes sont dans le même état (absente) alors que les poids de la tête EWC les sépare : elle n'explique pas l'anomalie. poids — pente -1.071 ± 0.406 µA/Hz, r²=0.635 (pente négative) : aucun coût marginal ne se lit dans cette cellule. xavier — pente +1.673 ± 0.750 µA/Hz, r²=0.554 (nuage non linéaire) : aucun coût marginal ne se lit dans cette cellule.",
+      "held_constant": "dimension k=4, .bss au bit près, trame UART, grille, graine et ordre",
+      "not_held": "les deux cellules sont deux SÉANCES distinctes : seules les pentes, qui absorbent un offset constant, se comparent",
+      "identical_weight_headers": null
+    },
+    "B8": {
+      "pair": [
+        "paire2_k6",
+        "paire2_k4"
+      ],
+      "varied": "la dimension compilée",
+      "presence": {
+        "paire2_k6": {
+          "state": "indéterminée",
+          "rationale": "cellule absente"
+        },
+        "paire2_k4": {
+          "state": "indéterminée",
+          "rationale": "cellule absente"
+        }
+      },
+      "method": "régression I(rate)",
+      "same_session": null,
+      "verdict": "indéterminé",
+      "rationale": "au moins une des deux cellules ne tranche pas. paire2_k6 — cellule absente paire2_k4 — cellule absente",
+      "held_constant": "poids non chargés des deux côtés (mêmes en-têtes, empreintes vérifiées), même trame de 4 features, même séance, même grille, même graine, même ordre",
+      "not_held": "la RAM statique suit la dimension et ne peut pas être tenue (.bss croît avec k : les matrices Mahalanobis sont en k²) — c'est une CONSÉQUENCE de la variable comparée, pas une seconde variable, mais elle interdit d'attribuer un écart à la seule arithmétique du calcul",
+      "identical_weight_headers": null
+    }
+  },
+  "timestamp": "2026-09-08T16:23:16.070567+00:00"
+}

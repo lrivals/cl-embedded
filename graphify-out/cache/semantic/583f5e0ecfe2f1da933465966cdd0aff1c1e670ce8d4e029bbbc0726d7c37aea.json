@@ -1,0 +1,1 @@
+{"nodes": [{"id": "exp_s53_rate_sweep_tinyol_fp32", "label": "Cellule tinyol_fp32 (70,5 \u00b5J/inf, latence 85 \u00b5s)", "file_type": "document", "source_file": "experiments/exp_S53_rate_sweep/tinyol_fp32.json", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

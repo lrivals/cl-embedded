@@ -14,6 +14,10 @@ loader CMAPSS board), avec le label ``faulty`` ré-étiqueté au seuil balayé.
   normalisées en streaming).
 - **EWC** → ``checkpoints/ewc_head.pt`` (EWCMlpMulticlass 5→32→16→2, parité exacte
   avec ``ewc_forward`` ; export via ``export_weights_c.py --ewc-head``).
+- **TinyOL** → ``checkpoints/tinyol_board.pt`` + ``tinyol_board.threshold.json``
+  (auto-encodeur 5→32→16→5 entraîné sur la classe normale ; export via
+  ``export_weights_tinyol.py --checkpoint``). Ajouté en S5201 : sans poids exportés,
+  la route TinyOL du firmware tournait à poids nuls.
 
 La parité est garantie par construction : board et PC consomment les mêmes nombres.
 
@@ -25,6 +29,7 @@ Usage :
 from __future__ import annotations
 
 import argparse
+import json
 import pickle
 import sys
 from pathlib import Path
@@ -40,6 +45,7 @@ N_TASKS_DEFAULT = 3
 EWC_EPOCHS_PER_TASK = 15
 EWC_LR = 0.01
 EWC_LAMBDA = 400.0
+TINYOL_EPOCHS = 150
 
 
 # ── Extraction des features board (alignée sur sensor_stream) ───────────────
@@ -188,9 +194,41 @@ def train_ewc_board(X: np.ndarray, y: np.ndarray, exp_dir: Path, n_tasks: int) -
     return ckpt
 
 
+# ── Entraînement TinyOL board (auto-encodeur k→32→16→k) ─────────────────────
+
+def train_tinyol_board_ref(X: np.ndarray, y: np.ndarray, exp_dir: Path) -> Path:
+    """Référence TinyOL board : auto-encodeur entraîné sur la classe normale (S5201).
+
+    Réutilise ``fit_tinyol_board`` de scripts/export_weights_tinyol.py — même
+    architecture que ``tinyol.h`` — puis sauve le state_dict et le seuil calibré
+    (sidecar ``.threshold.json`` relu par ``export_weights_tinyol.py --checkpoint``).
+    """
+    import importlib.util
+
+    import torch
+
+    spec = importlib.util.spec_from_file_location(
+        "export_weights_tinyol", Path(__file__).parent / "export_weights_tinyol.py")
+    ewt = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ewt)
+
+    X_norm = X[y == 0]
+    model = ewt.fit_tinyol_board(X_norm, epochs=TINYOL_EPOCHS)
+
+    ckpt_dir = exp_dir / "checkpoints"
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+    ckpt = ckpt_dir / "tinyol_board.pt"
+    torch.save(model.state_dict(), ckpt)
+    thr = float(model._calibrated_threshold)
+    ckpt.with_suffix(".threshold.json").write_text(
+        json.dumps({"threshold": thr, "calibration": "P95 × 1.5 des MSE training"}, indent=2))
+    print(f"  [tinyol] k={model.dim} n_normal={len(X_norm)} seuil={thr:.8f} → {ckpt}")
+    return ckpt
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Entraînement modèle de référence board 5-feat (S3205)")
-    parser.add_argument("--model", required=True, choices=["mahalanobis", "ewc"])
+    parser.add_argument("--model", required=True, choices=["mahalanobis", "ewc", "tinyol"])
     parser.add_argument("--dataset", required=True, choices=["cmapss", "battery", "pronostia"])
     parser.add_argument("--threshold", required=True, type=float)
     parser.add_argument("--exp_dir", required=True, type=Path)
@@ -206,6 +244,8 @@ def main() -> None:
     args.exp_dir.mkdir(parents=True, exist_ok=True)
     if args.model == "mahalanobis":
         train_maha_board(X, y, args.exp_dir)
+    elif args.model == "tinyol":
+        train_tinyol_board_ref(X, y, args.exp_dir)
     else:
         train_ewc_board(X, y, args.exp_dir, args.n_tasks)
     print(f"✅ board-ref {args.model}/{args.dataset}/thr{args.threshold} → {args.exp_dir}")

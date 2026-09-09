@@ -4,14 +4,24 @@
 
 1. **Narratif RAM cohérent (point de vigilance n°2 du sprint)** : trois niveaux de claim à
    distinguer explicitement —
-   - noyau minimal Sprint 20 : `.bss` ≈ 1 000 B (démonstration « <100 Ko possible ») ;
-   - build multi-modèle par défaut : `.bss` = 105 036 B (41 % de 256 Ko) `[à confirmer — build S39/S40]` ;
-   - pire cas mesuré (condition `all`, S35) : 183 936 B (70,2 %) — toujours dans le budget.
+   - noyau minimal Sprint 20 : `.bss` ≈ 1 000 B (démonstration « <100 Ko possible ») —
+     **confirmé S4110** (`docs/sprints/sprint_20/S2010_presentation_summary_plots.md:37`) ;
+   - build multi-modèle par défaut : `.bss` = 105 036 B (40,1 % de 256 Ko) — **confirmé S4110**
+     (`exp_S48_summary.json:bss_default_invariant`, invariant vérifié sur S39/S40/S45/S48) ;
+   - pire cas mesuré (condition `all`, S35) : 183 936 B (70,2 %) — toujours dans le budget
+     (**confirmé** `exp_S35_board_sweep_summary.json`).
    Le claim Gap 2 = *tout le système multi-modèle tient dans 256 Ko, mesuré à l'octet près,
    méthodologie vérifiable* (protocole ch. 4).
-2. **Latences mesurées DWT** : toutes ≪ 100 ms — inférence de 5 µs (Maha) à ~2 ms (HDC pire cas) ;
+2. **4ᵉ niveau ajouté en S4110 — RAM totale (Sprint 49, postérieur au cadrage).** Correction du
+   CR du 16/07/2026 : `.bss` **exclut la pile** → les mesures antérieures étaient sous-estimées.
+   Formule officielle **`RAM totale = .data + .bss + pic de pile`**, pic obtenu par *stack painting*
+   (`scripts/measure_stack_watermark.py`). Mesuré carte (`exp_S49_ram/summary.json`, 32 cellules) :
+   EWC×Monitoring `460 + 100 152 + 4 688 = 105 300 B` (40,2 %) ; EWC×Pronostia `110 192 B` (42,0 %).
+   Nuance à porter : **la MAJ CL creuse plus la pile que l'inférence** (4 688 vs 4 416 B) — le coût
+   mémoire de l'adaptation en ligne est ainsi mesuré, et borné.
+3. **Latences mesurées DWT** : toutes ≪ 100 ms — inférence de 5 µs (Maha) à ~2 ms (HDC pire cas) ;
    séparation inférence vs inférence+MAJ CL (EWC : 48–65 µs gelé vs 239–340 µs online, S36).
-3. **S36 — comparaison appariée PC↔board (étude avancée retenue)** :
+4. **S36 — comparaison appariée PC↔board (étude avancée retenue)** :
    - gelé : **parité exacte 1.000** sur 4 cellules (7534–7672 échantillons) ;
    - online : parité approchée 0.963–0.989 (float32 board vs float64 PC), mismatches concentrés
      aux frontières de décision ; Δacc_final PC↔board ≤ 0.007.
@@ -21,12 +31,13 @@
 
 | Donnée | Source |
 |---|---|
-| `.bss` par build + contiguïté | `docs/context/ram_measurement.md` (tableau 4 sources) `[à confirmer]` |
+| `.bss` par build + contiguïté | `docs/context/ram_measurement.md` (tableau 4 sources concordantes : `size`, `objdump`, `_ebss-_sbss`, `.map`) — **confirmé S4110** |
+| **RAM totale = `.data`+`.bss`+pic de pile** (Sprint 49) | `experiments/exp_S49_ram/summary.json` (32 cellules) + `docs/context/ram_report.md` (généré) |
 | RAM/latences S36 frozen/online | `experiments/exp_S36_board_{frozen,online}_{5feat,all}_ewc_{monitoring,pronostia}/` |
 | Parité par échantillon | `experiments/exp_S36_parity_{5feat,all}_{frozen,online}_{monitoring,pronostia}.json` (8 fichiers) |
 | Synthèse indexée | `experiments/exp_S36_summary.json` |
 | Latences autres modèles (Maha 5–6 µs, HDC ~585–2095 µs, TinyOL ~5–71 µs) | `experiments/exp_S29_board_int8/`, `exp_S32_board_sweep_summary.json`, exps S35 board |
-| Pile (watermark) | `scripts/measure_stack_watermark.py` + mesures S39 (`experiments/exp_S39_ram/`) `[à confirmer]` |
+| Pile (watermark) | `scripts/measure_stack_watermark.py` — **confirmé S4110**, mesures consolidées en Sprint 49 (`exp_S49_ram/`) qui remplace `exp_S39_ram/` |
 
 ## Figures prévues (S4109)
 
@@ -43,9 +54,20 @@
 
 DWT, `.bss`, watermark, parité, P50/P99 (à créer S4104).
 
-## Points ouverts
+## Points ouverts — **résolus en S4110 (30 juillet 2026)**
 
-- **Dépendance S39/S40** : les mesures RAM en cours (`experiments/exp_S39_ram/`,
-  `docs/figures/ram_measurement/` en évolution) peuvent affiner les chiffres → placeholders,
-  résolution S4110.
-- Confirmer le chiffre « 1 000 B Sprint 20 » et sa formulation exacte (noyau EWC seul) avant usage.
+- ~~**Dépendance S39/S40**~~ → **levée**. S39/S40 sont terminés et n'ont pas modifié les chiffres RAM
+  du ch. 6 ; c'est le **Sprint 49** qui apporte le changement de fond (RAM totale vs `.bss` seul),
+  intégré au message clé n°2 ci-dessus.
+- ~~Confirmer le chiffre « 1 000 B Sprint 20 »~~ → **confirmé** :
+  `docs/sprints/sprint_20/S2010_presentation_summary_plots.md:37` (« 3.7 µs latence, 1 000 B RAM »),
+  formulation retenue = **noyau minimal, tête EWC seule**, présenté comme borne de faisabilité et
+  non comme le chiffre du système.
+
+## Rédaction effective (S4110)
+
+La section « Mesure de la RAM cohérente » de `06_gap2_ram_latence.tex` était **vide** (elle annonçait
+les trois niveaux sans les énoncer) → rédigée avec les 3 niveaux + le 4ᵉ (RAM totale S49).
+Deux corrections mineures au fil du texte : facteur MAJ/inférence « ~4 à 5 » → **~5** (239/48 ≈ 5,0 ;
+340/65 ≈ 5,2) ; et la parité gelée est désormais énoncée comme **mesurée** (1,000 sur 7 534–7 672
+échantillons) et non supposée.

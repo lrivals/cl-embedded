@@ -1,0 +1,518 @@
+================================================================================
+CL-EMBEDDED — ACTIONS RESTANTES POUR PRODUIRE LES RESULTATS MANQUANTS
+================================================================================
+Date de l'audit : 30 juillet 2026
+Auteur          : consolidation S4110 (Sprint 41 — manuscrit final)
+Revision        : 30 juillet 2026 — revue des ch. 4, 5 et 6 du manuscrit.
+                  Ajouts : 2.6 (flag UART TinyOL, chiffre carte invalide),
+                  5.5 (tracabilite chiffre -> JSON), 5.6 (annexes vides) ;
+                  5.3 passee a PARTIEL (ch. 4/5/6 convertis, ch. 7 bloquant).
+Perimetre       : tout ce qui reste a mesurer / produire pour completer les
+                  resultats du projet et lever les "a mesurer" / N/A du manuscrit.
+
+Convention de lecture :
+  [BLOQUE]   = necessite du materiel non disponible aujourd'hui
+  [PRET]     = faisable immediatement, carte + code deja en place
+  [CODE]     = necessite du developpement (spec ecrite, implementation a faire)
+  [DETTE]    = limite connue ou dette technique, pas forcement a corriger
+  [REDAC]    = action de redaction / mise en forme du manuscrit
+
+Chaque entree indique : QUOI · POURQUOI · COMMENT · CE QUE CA DEBLOQUE.
+
+================================================================================
+SECTION 1 — PRIORITE HAUTE : le seul point scientifique reellement ouvert
+================================================================================
+
+--------------------------------------------------------------------------------
+1.1  [BLOQUE]  CAMPAGNE ENERGIE AVEC LA SONDE LPM01A
+--------------------------------------------------------------------------------
+QUOI     Mesurer l'energie reelle par inference (uJ) pour chaque couple
+         modele x encodage, puis en deduire l'autonomie sur batterie.
+
+POURQUOI C'est LE point ouvert du Gap 3. Le Sprint 50 a montre que l'INT8 ne
+         fait pas gagner de latence sur Cortex-M4 a FPU (+24 a +26 us, ~+50 %).
+         La seule justification qui resterait a la quantification, au-dela du
+         gain RAM sur les poids, est energetique. Sans mesure, la question
+         "l'INT8 consomme-t-il moins a latence egale ?" reste sans reponse.
+
+ETAT     La chaine logicielle est COMPLETE et TESTEE de bout en bout :
+           - scripts/energy_capture.py  (segmentation CSV -> uJ, integration)
+           - src/evaluation/autonomy.py (I_moy, autonomie par capacite batterie)
+           - marqueurs GPIO PA8 dans le firmware (-DENERGY_MARKERS)
+           - 16 tests dans tests/test_energy_capture.py
+         Il ne manque QUE la mesure physique. Tous les champs portent
+         litteralement "a mesurer" (regle "aucun chiffre invente").
+
+COMMENT  1. Poser la sonde X-NUCLEO-LPM01A sur la NUCLEO-F439ZI.
+         2. Renseigner configs/energy_campaign_s50.yaml (frequence
+            d'echantillonnage, calibration -> voir TODO(dorra)).
+         3. Build firmware avec -DENERGY_MARKERS.
+         4. python scripts/energy_capture.py --campaign configs/energy_campaign_s50.yaml
+            (ou --csv <export_LPM01A.csv> pour rejouer une capture existante)
+         5. Regenerer les figures : python scripts/generate_figures.py --catalog energy_real
+
+DEBLOQUE - experiments/exp_S50_energy/*.json  (8 fichiers + summary)
+         - experiments/exp_S33_energy/*.json
+         - experiments/exp_S50_energy/autonomy.json (autonomie h par capacite)
+         - Manuscrit ch. 7 §7.7 : l'arbitrage energetique INT8
+         - Manuscrit ch. 8 : la perspective energie devient un resultat
+         - Figures E1, E2, E3 de docs/figures/energy_real/ (actuellement en gris)
+         - Sprint 51 : la dimension "energie" du score composite
+         - FIGURES DU MANUSCRIT bloquees (docs/figures/manuscrit_final/) :
+             * ch7_energie_int8_vs_fp32.png — energie par inference INT8 vs FP32.
+               C'est LA figure qui trancherait la question laissee ouverte au 7.7.
+               Source attendue : exp_S50_energy/summary.json
+             * ch8_autonomie_batterie.png — autonomie (h) par capacite de batterie
+               et par modele ; argument industriel du chapitre Perspectives.
+               Source attendue : exp_S50_energy/autonomy.json
+           Une fois les JSON remplis : ajouter la fonction de figure dans
+           src/figures/catalogs/manuscrit_final.py puis
+             python scripts/generate_figures.py --catalog manuscrit_final --style manuscript
+
+LIMITE   La segmentation par phase est bridee a 1 bit (PA8) : startup /
+CONNUE   acquisition / inference partagent le niveau haut. Une granularite
+         4-phases demanderait un encodage multi-bit cote firmware.
+
+================================================================================
+SECTION 2 — MESURABLE IMMEDIATEMENT (carte + code deja en place)
+================================================================================
+
+--------------------------------------------------------------------------------
+2.1  [PRET]  NOYAU INT8 v2 SUR D'AUTRES JEUX DE DONNEES
+--------------------------------------------------------------------------------
+QUOI     Etendre la validation carte du noyau v2 au-dela de Monitoring et
+         Pronostia (cmapss, cwru, paderborn).
+POURQUOI Le Sprint 40 ne couvre que 2 jeux sur 5. L'ablation PC (S39) en couvre
+         5 : la colonne carte est donc incomplete face a la colonne PC.
+COMMENT  python scripts/run_s40_board_v2.py --dataset <cmapss|cwru|paderborn>
+DEBLOQUE Generalisation du claim "la calibration recupere la metrique" au-dela
+         des 2 jeux focus. Renforce ch. 7 §7.4.
+
+--------------------------------------------------------------------------------
+2.2  [PRET]  SUB-INT8 EN REGIME ONLINE
+--------------------------------------------------------------------------------
+QUOI     Mesurer les schemas sub-INT8 (int4 / ternaire / binaire) avec mise a
+         jour CL activee.
+POURQUOI Le Sprint 48 ne couvre QUE le regime gele (12 cellules, forward seul).
+         Or le coeur du Gap 3 est la quantification PENDANT l'entrainement
+         incremental : le regime online est donc le cas le plus pertinent, et
+         c'est justement celui qui manque.
+COMMENT  Le pipeline sub-INT8 est cable en frozen uniquement
+         (firmware/stm32f4_blink/src/pipeline.c, route EWC_SUBINT8_*). Il faut
+         etendre la route au chemin de mise a jour, puis :
+         python scripts/run_s48_board_depth.py --protocol online
+DEBLOQUE Le point le plus fort possible pour le Gap 3 : apprendre en continu
+         sous 4/2/1 bits, mesure sur carte reelle. Actuellement le manuscrit ne
+         peut affirmer sub-INT8 qu'en inference.
+         - FIGURE DU MANUSCRIT bloquee : ch7_subint8_online.png (metrique + RAM
+           des schemas sub-INT8 en regime en ligne), a ajouter dans
+           src/figures/catalogs/manuscrit_final.py.
+NOTE     C'est, apres l'energie, l'action a plus fort rendement scientifique.
+
+--------------------------------------------------------------------------------
+2.3  [PRET]  SUB-INT8 SUR D'AUTRES JEUX DE DONNEES
+--------------------------------------------------------------------------------
+QUOI     Etendre les 12 cellules S48 (2 jeux x 3 profondeurs x packe/non-packe).
+COMMENT  python scripts/run_s48_board_depth.py --dataset <cmapss|cwru|paderborn>
+DEBLOQUE Confirmation que la falaise ternaire/binaire depend bien du jeu de
+         donnees (constat actuellement etabli sur 2 jeux seulement).
+
+--------------------------------------------------------------------------------
+2.4  [PRET]  GRILLE DRIFT — CELLULES hydraulic ET synthetic SUR CARTE
+--------------------------------------------------------------------------------
+QUOI     Completer la grille detecteur x dataset du Sprint 45 : seule la colonne
+         gas_sensor_drift est mesuree sur carte (page_hinkley, ddm).
+POURQUOI La grille board est a 2 cellules sur 8 possibles ; le reste est
+         N/A honnete mais incomplet.
+COMMENT  python scripts/run_sprint45_board.py --dataset <hydraulic|synthetic> \
+                --detector <page_hinkley|ddm|psi>
+         puis python scripts/aggregate_sprint45.py
+DEBLOQUE Heatmaps board du notebook drift_detection_board (cases grises).
+
+--------------------------------------------------------------------------------
+2.5  [PRET]  RAM TOTALE DU MAHALANOBIS INT8
+--------------------------------------------------------------------------------
+QUOI     Mesurer .data + .bss + pic de pile pour Mahalanobis en INT8.
+POURQUOI Seule cellule N/A des 32 du Sprint 49 : le Maha INT8 exige un build
+         dedie (-DMAHA_INT8) hors du perimetre de la campagne S49.
+COMMENT  make EXTRA_CFLAGS="-DMAHA_INT8" puis
+         python scripts/run_ram_full_sweep.py --model mahalanobis --encoding int8
+         puis python scripts/aggregate_ram.py
+DEBLOQUE Tableau RAM complet 32/32 dans docs/context/ram_report.md.
+
+--------------------------------------------------------------------------------
+2.6  [FAIT le 30/07/2026]  FLAG UART TINYOL MANQUANT -> CELLULES CARTE "tinyol"
+--------------------------------------------------------------------------------
+FAIT     Sprint 52 / S5201 (docs/sprints/sprint_52/S5201_flag_uart_tinyol.md).
+
+         Le defaut depassait le "1 ligne de code" annonce ci-dessous. Trois
+         verrous supplementaires auraient fait tourner la route TinyOL a POIDS
+         NULS meme avec le bon flag :
+           - gardes figees TINYOL_IN == WEIGHTS_NATIVE_DIM (5) dans pipeline.c
+             ET tinyol.c -> toute condition k != 5 (Monitoring 5feat = 4 vars,
+             all, best) laissait l'auto-encodeur a zero en .bss ;
+           - aucun driver n'exportait de poids TinyOL ;
+           - export_weights_tinyol.py etait cable en dur a 5 entrees.
+         Plus un defaut latent : la route declarait float recon[EWC_IN] alors que
+         tinyol_decode ecrit TINYOL_OUT flottants (dims distinctes par modele en
+         best/all) -> debordement de pile possible.
+
+         Correctif : flag 0x80 pose ; TINYOL_NATIVE_DIM genere par l'export
+         (patron MAHA_NATIVE_DIM / EWC_HEAD_NATIVE_DIM, S3507) ; export a dim k
+         via load_condition_arrays (memes colonnes que le stream => parite par
+         construction) ; TinyOL promu MODELE A PARITE dans les drivers S35/S32.
+
+         Mesures carte NUCLEO-F439ZI : grille S35 15/15 cellules TinyOL,
+         PARITE 44/44, 0 CRC, Gap 2 respecte (69-148 us selon k, contre 3-5 us
+         pour Mahalanobis = signature d'un auto-encodeur k->32->16->k).
+         1 cellule N/A honnete : best x cmapss, ou la selection ne retient que
+         T2, capteur CONSTANT (ecart-type nul) -> seuil calibre exactement 0 et
+         comparaison stricte tranchee par l'arrondi flottant. Detectee par
+         _degenerate_reason(), consignee parity_ok=null + na_reason.
+
+         Effet de bord verifie : les 2 echecs Unity TinyOL de la dette 4.2
+         disparaissent (make test 141, 0 echec). Cause : model_weights.h etait
+         desynchronise de son golden REF_EMB_T0_SEED42, recopie a la main dans
+         test_tinyol.c ; et test_tinyol_predict_normal_zero_weights utilisait
+         TINYOL_THRESHOLD (seuil CALIBRE ~1e-5) comme oracle d'un cas a poids
+         nuls de MSE 0,0088. Le golden est desormais GENERE avec les poids
+         (tests/tinyol_reference.h). .bss par defaut invariant 105 036 B.
+
+         Aval fait : INVALID_BOARD_MODELS vide dans manuscrit_final.py, 16
+         figures regenerees, tableau 5.1 mis a jour (TinyOL carte 0,927 / 0,300
+         / 0,889), reserve remplacee par une note d'architecture (le TinyOL PC
+         a 3 couches d'encodage, celui de la carte est k->32->16->k : l'ecart
+         PC|carte de cette ligne n'est PAS imputable au seul portage), phrase
+         Paderborn corrigee (TinyOL 0,703 -> 0,000).
+
+DETTE    La selection best-features (S3501) a pu retenir une variable constante
+DECOUVERTE (T2 sur CMAPSS). Symptome local (1 cellule sur 60) mais la procedure
+         gagnerait a ecarter les colonnes a variance nulle. Hors perimetre 2.6.
+
+--- enonce d'origine, conserve pour memoire -------------------------------------
+QUOI     Corriger la selection de modele cote hote pour --model tinyol, puis
+         re-mesurer les cellules carte concernees.
+
+PROBLEME scripts/sensor_stream.py laisse model_flags = 0 pour --model tinyol
+         (commentaire ligne ~832 : "tinyol et mahalanobis n'ont pas de flag
+         dedie -- pipeline selectionne via config firmware"). Ce commentaire est
+         FAUX : firmware/stm32f4_blink/src/pipeline.c:1291 selectionne bien la
+         route TinyOL sur PROTO_FLAG_TINYOL_MODE (0x80) et retombe sur
+         MAHALANOBIS dans le "else". Les cellules carte streamees ainsi ont donc
+         execute le detecteur de Mahalanobis, et non TinyOL.
+
+PREUVE   - exp_S35_board_5feat_tinyol_* == exp_S35_board_5feat_mahalanobis_*
+           (online_accuracy, f1_faulty, latency_us_p50 = 3 us) avec le MEME
+           timestamp "2026-06-25T09:46:11" ; identique sur les 11 cellules
+           5feat/all.
+         - Les cellules "best" different, ce qui est coherent : meme noyau
+           Mahalanobis alimente par les colonnes best de TinyOL (k different).
+         - Artefact VISIBLE dans le manuscrit : tableau 5.1, ligne TinyOL carte
+           = 0,710 / 0,214 / 0,273 = ligne Mahalanobis carte, a la 3e decimale.
+
+PERIMETRE Drivers passant par sensor_stream.py --model tinyol :
+         - scripts/run_feature_condition_board.py  (grille S35, 3 conditions)
+         - scripts/run_board_threshold_sweep.py    (S32, a verifier)
+         NON touches (ils positionnent le flag correctement) :
+         - scripts/board_experiment_recorder.py:254  (0x80)
+         - scripts/run_s29_board_int8.py:42          (0x80 / 0xC0)
+         La ligne Mahalanobis reste LEGITIME : flags=0 = chemin Mahalanobis
+         voulu, parite PC<->carte verifiee a 1,000.
+
+COMMENT  1. sensor_stream.py : ajouter la branche
+              elif args.model == "tinyol": model_flags = FRAME_FLAGS_TINYOL_MODE
+            et supprimer le commentaire errone.
+         2. Verifier qu'aucun appelant ne dependait du fallback silencieux.
+         3. Re-mesurer (carte branchee) :
+              python scripts/run_feature_condition_board.py \
+                     --condition <5feat|all|best> --dataset <...>
+         4. Re-agreger puis regenerer les figures :
+              python scripts/generate_figures.py --catalog manuscrit_final \
+                     --style manuscript
+
+DEBLOQUE - Tableau 5.1 du manuscrit : la ligne TinyOL carte devient une vraie
+           mesure (elle porte aujourd'hui une reserve explicite sous le tableau).
+         - Phrase Paderborn du ch. 5 (section "Comportements par scenario") :
+           "TinyOL 0,703 -> 0,113".
+         - Colonne TinyOL des heatmaps board de la grille S35.
+
+ATTENTION Ne PAS "corriger" les chiffres du manuscrit avant la re-mesure : la
+         reserve honnete sous le tableau vaut mieux qu'une valeur devinee.
+
+================================================================================
+SECTION 3 — DEVELOPPEMENT A FAIRE (spec ecrite, code absent)
+================================================================================
+
+--------------------------------------------------------------------------------
+3.1  [CODE]  SPRINT 51 — SCORE SYSTEME COMPOSITE
+--------------------------------------------------------------------------------
+QUOI     Indicateur composite unique (RAM + latence + energie + params/MACs +
+         accuracy) permettant de CLASSER les configurations modele x carte x
+         encodage, au lieu de comparer des metriques isolees.
+POURQUOI Demande explicite du CR (§3) : aucune metrique unique ne capture
+         aujourd'hui toutes les dimensions. Structurant pour la soutenance.
+ETAT     Spec complete et detaillee (docs/sprints/sprint_51/S5100 a S5107),
+         AUCUNE implementation.
+COMMENT  Taches S5101 (definition du score) -> S5107 (tests + docs), ~18 h.
+DEPEND   Consomme les sorties S49 (RAM, disponible) et S50 (energie, EN ATTENTE
+         de 1.1). Le score est calculable sans l'energie, mais amputé d'une
+         dimension.
+ATTENTION Un score composite est un CHOIX de ponderation, pas une verite :
+         prevoir la normalisation par dimension et l'analyse de sensibilite
+         (deja actees dans la spec). TODO(arnaud) pour valider les poids.
+
+--------------------------------------------------------------------------------
+3.2  [CODE/BLOQUE]  COMPARAISON CARTE <-> CARTE
+--------------------------------------------------------------------------------
+QUOI     Remplacer la comparaison PC <-> carte (peu exploitable : architectures
+         trop differentes, PC multi-coeur avec overhead de scheduling vs carte
+         mono-coeur sequentielle) par une comparaison carte <-> carte.
+POURQUOI Demande du CR (§1). C'est la seule comparaison materielle reellement
+         interpretable.
+BLOQUANT Necessite une 2e carte cible, non garantie a ce jour.
+STATUT   Reste une perspective documentee (S5105), pas un livrable engage.
+
+--------------------------------------------------------------------------------
+3.3  [CODE]  CHEMIN SIMD / CMSIS-NN
+--------------------------------------------------------------------------------
+QUOI     Noyau INT8 exploitant les instructions SIMD du Cortex-M4 (SMLAD etc.)
+         via CMSIS-NN / CMSIS-DSP.
+POURQUOI C'est la SEULE voie identifiee pour lever le paradoxe de latence :
+         aujourd'hui le MAC entier ne bat pas la FPU (6 785 cycles) et la
+         requantification coute 3 777 cycles en pure perte.
+ETAT     Tache S2908 restee bloquee depuis le Sprint 29.
+DEBLOQUE Transformerait le constat "l'INT8 fait gagner de la RAM mais coute du
+         temps" en un vrai compromis. Impact fort sur ch. 7 §7.7.
+NOTE     Chantier consequent ; a arbitrer contre le temps restant de stage.
+
+--------------------------------------------------------------------------------
+3.4  [CODE]  MAHALANOBIS : mu_ EN Q15
+--------------------------------------------------------------------------------
+QUOI     Passer aussi le vecteur mu_ en Q15, alors que seul sigma_inv_ l'est.
+POURQUOI Constat mesure du Sprint 34 : sur tres grande dynamique (Paderborn,
+         sigma_inv ~6e5), l'erreur ABSOLUE de score Q15 depasse celle de l'INT8
+         — non par perte de fidelite (Q15 reconstruit sigma_inv 200x mieux) mais
+         parce que mu_ reste en INT8 affine et que son erreur est AMPLIFIEE par
+         les grandes valeurs que Q15 preserve fidelement.
+COMMENT  Etendre MahalanobisDetectorInt8 (quant="q15") a mu_, puis
+         mahalanobis_q15.c cote firmware, puis re-mesurer les 5 jeux.
+DEBLOQUE Fermeture propre du dossier "format vs dynamique" (ch. 7 §7.2 + ch. 8).
+
+================================================================================
+SECTION 4 — DETTES ET LIMITES CONNUES (a documenter, pas forcement a corriger)
+================================================================================
+
+--------------------------------------------------------------------------------
+4.1  [DETTE]  PSI x gas_sensor_drift : depassement SRAM
+--------------------------------------------------------------------------------
+Le detecteur PSI embarque tire son signal du Mahalanobis, dont sigma_inv est en
+O(k^2). A k=128 features (Gas Sensor), cela represente ~64 Ko et fait deborder
+la SRAM au link (.bss overflow ~69 Ko).
+=> Ce n'est PAS un bug : c'est une limite Gap 3 mesuree et publiable. Le goulot
+   est la SOURCE DU SIGNAL (Maha O(k^2)), pas l'etat du detecteur (O(bins)).
+   Conclusion a garder telle quelle : "PSI portable en basse dimension seulement".
+Correction possible (non prevue) : signal PSI derive d'une projection reduite.
+
+--------------------------------------------------------------------------------
+4.2  [DETTE]  DEUX TESTS UNITY TINYOL EN ECHEC
+--------------------------------------------------------------------------------
+`make test` passe 141 tests dont 2 echecs TinyOL preexistants, hors perimetre de
+tous les sprints recents (aucune regression introduite depuis le Sprint 26).
+=> A investiguer si le temps le permet, sinon a mentionner honnetement.
+
+--------------------------------------------------------------------------------
+4.3  [DETTE]  ENCODEUR TINYOL NON EXPORTABLE (cmapss, paderborn)
+--------------------------------------------------------------------------------
+2 cellules de la grille S29 sont NON MESURABLES (et non "non mesurees") :
+l'architecture de l'encodeur TinyOL cote carte differe de celle du PC et aucun
+checkpoint n'est exportable.
+=> Limite de construction, a declarer comme telle en annexe.
+
+--------------------------------------------------------------------------------
+4.4  [DETTE]  CONFIG BEST-FEATURES PADERBORN
+--------------------------------------------------------------------------------
+La selection best-features echoue sur Paderborn (bug historique de normalizer,
+corrige au niveau data-layer mais config best jamais regeneree).
+=> configs/best_features/ : 13 configs sur 14 attendues.
+
+--------------------------------------------------------------------------------
+4.5  [DETTE]  HDC : F1 NUL SUR CARTE
+--------------------------------------------------------------------------------
+HDC predit la classe majoritaire sur carte (accuracy correcte 0.867-0.900, F1=0).
+=> Ce n'est pas une action a corriger : c'est un RESULTAT, utilise dans le ch. 5
+   comme seconde illustration du message "accuracy trompeuse -> F1".
+   A ne pas "reparer" sans en discuter : cela affaiblirait l'argument.
+
+================================================================================
+SECTION 5 — MANUSCRIT ET REDACTION
+================================================================================
+
+--------------------------------------------------------------------------------
+5.1  [FAIT le 30/07/2026]  S4109 — FIGURES DU MANUSCRIT
+--------------------------------------------------------------------------------
+ETAT     FAIT sous forme de CATALOGUE (et non de notebook) :
+           src/figures/catalogs/manuscrit_final.py  -> 16 figures
+           docs/figures/manuscrit_final/            -> PNG + LEGENDES_FIGURES.txt
+         Regeneration :
+           python scripts/generate_figures.py --catalog manuscrit_final --style manuscript
+         Chaque tableau de valeurs des ch. 5, 6 et 7 possede desormais sa version
+         tracee. Zero valeur en dur (garde AST test_no_hardcoded_results).
+RESTE    - 3 figures bloquees par des mesures manquantes (cf. 1.1 et 2.2).
+         - Optionnel : notebook de galerie si une lecture interactive est voulue ;
+           le catalogue reste la source unique, le notebook ne ferait que
+           l'afficher.
+
+--------------------------------------------------------------------------------
+5.2  [REDAC]  S4110 RELIQUAT — COMPTAGE DE PAGES ET CHECKLIST
+--------------------------------------------------------------------------------
+QUOI     Verifier la contrainte ~30 pages de texte FR et la checklist des
+         consignes rapporteurs.
+POURQUOI Retour explicite des rapporteurs sur le manuscrit intermediaire :
+         limite de pages depassee (Poss : "un petit peu au-dessus" ;
+         Giroudeau : consigne non respectee).
+ETAT     31/07/2026 : corps ch. 1 -> ch. 8 = 38 pages (figures incluses), hors
+         appareil de tete, bibliographie et annexes. Les 16 figures en occupent
+         environ 8. A recouper avec la consigne exacte des rapporteurs avant
+         rendu ; candidats a la compression inchanges (voir ci-dessous).
+
+ATTENTION Le ch. 7 est passe de 5 a 8 sections lors de la consolidation du
+         30/07/2026 (ajout des axes moment S46 et profondeur S47/S48). Il
+         depasse tres probablement son budget de ~3.5 p.
+         Candidats a la compression ou au renvoi en annexe, dans cet ordre :
+         §7.6 (profondeur) puis §7.5 (moment) — les deux axes les moins
+         centraux au claim Gap 3.
+
+--------------------------------------------------------------------------------
+5.3  [PARTIEL le 30/07/2026]  HOMOGENEISER LE BALISAGE DES SECTIONS .tex
+--------------------------------------------------------------------------------
+CONSTAT  Le probleme etait plus grave qu'un defaut de rendu : le Markdown
+         residuel EMPECHE la compilation. Un "_" dans un backtick (`acc_final`)
+         hors mode mathematique provoque "! Missing $ inserted." et, avec
+         -halt-on-error, AUCUN PDF n'est produit.
+
+FAIT     - sections/04_methodologie.tex : converti (2 tableaux booktabs, itemize,
+           \texttt, \cite, labels + renvois \ref, transitions).
+         - sections/05_gap1_validation.tex : converti + orthographe + transitions
+           + \cite{Hurtado2023} + reserve TinyOL sous le tableau 5.1 (cf. 2.6).
+         - sections/06_gap2_ram_latence.tex : converti + orthographe + deux
+           paragraphes agrammaticaux reecrits (chapo et conclusion de section)
+           + \cite{Ren2021,Ravaglia2021} / \cite{Kwon2023,Lin2024}.
+         Verifie : ces trois chapitres compilent sans erreur, 0 reference /
+         citation / entree de glossaire indefinie, 0 debordement de marge.
+
+FAIT     31/07/2026 : verification etendue a 01, 02, 03, 08, 09 -> aucun residu
+         Markdown ni caractere Unicode non configure. Le manuscrit compile avec
+         0 erreur LaTeX, 0 reference / citation / entree de glossaire indefinie.
+
+RESTE    (historique) Le point bloquant s'etait deplace au ch. 7 :
+           sections/07_gap3_quantification.tex:12 — "**Δ ≤ 0,006**" (Markdown +
+           caractere Unicode Δ non configure).
+         Deux comportements, tous deux mauvais :
+           - pdflatex -halt-on-error : "! LaTeX Error: Unicode character Δ
+             (U+0394) not set up for use with LaTeX" -> AUCUN PDF.
+           - pdflatex sans -halt-on-error : le PDF sort (37 pages) mais LaTeX
+             SUPPRIME silencieusement le Δ -> le manuscrit imprime
+             "**  ≤ 0,006**", c.-a-d. une inegalite sans son membre de gauche.
+           Le second cas est le plus dangereux : il passe inapercu.
+         A passer au meme traitement : ch. 7, puis verifier 01, 02, 03, 08, 09.
+         Regle : Δ -> \(\Delta\), µ -> \(\mu\)s ou "µs" (teste OK), `x_y` ->
+         \texttt{x\_y}, [Cle2020] -> \cite{Cle2020}.
+
+--------------------------------------------------------------------------------
+5.5  [REDAC]  TRACABILITE DES CHIFFRES DES CH. 5 ET 6
+--------------------------------------------------------------------------------
+QUOI     Table de correspondance chiffre du manuscrit -> JSON de experiments/,
+         etablie et VERIFIEE le 30/07/2026 (a conserver pour la relecture et la
+         soutenance).
+
+CH. 5    - Maha x CMAPSS acc 0,745 / F1 0,269 .. exp_S35_PC_5feat_mahalanobis_cmapss
+         - Tableau 5.1 (12 couples PC|carte) ... exp_S35_{PC,board}_5feat_*
+           (colonne carte de TinyOL RE-MESUREE le 30/07/2026, cf. 2.6 :
+            0,927 monitoring / 0,300 cmapss / 0,889 pronostia)
+         - HDC carte acc 0,867 / 0,900 ........ exp_S35_board_5feat_hdc_*
+         - Paderborn (EWC 0,800 ; HDC 0,565->0 ;
+           TinyOL 0,703->0,113 ; Maha 0,071->0,113) exp_S35_*_5feat_*_paderborn
+         - EWC-MC 0,981 / 0,240 / AF 0,847 /
+           carte 0,243 / 0,507 ................ exp_S26_02/results.json
+CH. 6    - .bss 105 036 ; 460 + 100 152 + 4 688 = 105 300 (Monitoring) ;
+           110 192 (Pronostia) ; pile inf. 4 416  exp_S49_ram/summary.json
+         - lat. gelé 48-65 us / en ligne 239-340 us  exp_S36_summary.json
+         - parite 1,000 sur 7 534-7 672 ech. ;
+           en ligne 0,963-0,989 ............... exp_S36_parity_*.json (8)
+         - delta acc_final <= 0,007 (mesure 0,0066) exp_S36_summary.json
+                                                    (delta_pc_board)
+         - pire cas HDC ~2,1 ms (2 106 us) ... exp_S29_board_int8/
+                                               results_hdc_int8_*.json
+         - .bss pire cas 183 936 (CMAPSS k=21)  exp_S35_board_sweep_summary.json
+
+FAIT     Les deux chiffres non sources du ch. 6 ont ete tranches dans le texte :
+         la borne haute de latence est desormais attribuee a HDC INT8, et il est
+         dit explicitement que 105 036 et 100 152 sont deux BUILDS distincts
+         (Pronostia / Monitoring) — sans quoi 460 + 100 152 + 4 688 = 105 300
+         semblait contredire le chiffre de reference.
+
+--------------------------------------------------------------------------------
+5.6  [FAIT le 31/07/2026]  ANNEXES VIDES ALORS QUE TROIS CHAPITRES Y RENVOIENT
+--------------------------------------------------------------------------------
+FAIT     Les annexes textuelles sont redigees dans
+         sections/09_abstracts_annexes.tex :
+           - A.1 Detail des six jeux de donnees (tableau D1-D6 : signal, decoupe
+             en taches, loader ; + notes Monitoring 4 variables natives et
+             Paderborn mono-classe par tache) ;
+           - A.2 Grille complete 4 modeles x 5 jeux, PC | carte, condition 5feat
+             (tableau A.2, valeurs lues depuis
+              experiments/exp_S35_{PC,board}_5feat_{modele}_{jeu}/results.json) ;
+           - A.3 Limites declarees (reprise de la section 4 du present fichier :
+             encodeur TinyOL non exportable, PSI haute dimension, F1 nul de HDC
+             sur carte assume comme resultat, latence INT8, dettes selection de
+             variables / Paderborn / energie non mesuree).
+         Les trois renvois du corps pointent desormais vers des labels reels
+         (\ref{sec:annexe-datasets}, \ref{sec:annexe-grille}) ; le renvoi faux
+         "chapitre 4" du ch. 3 est corrige.
+         Legendes des figures d'annexe corrigees au passage : elles affirmaient
+         encore que "les cellules carte de TinyOL sont ecartees", faux depuis le
+         Sprint 52 (INVALID_BOARD_MODELS vide, barres tracees dans la figure).
+
+--------------------------------------------------------------------------------
+5.7  [REDAC]  CLASSE IEEEtran ABSENTE (article standalone S40)
+--------------------------------------------------------------------------------
+L'article docs/article/ewc_int8_mcu/ utilise la classe `article` faute
+d'IEEEtran dans l'environnement, avec un fallback maison facon siunitx.
+=> TODO(arnaud) : confirmer la classe cible avant soumission.
+   Sans impact sur le manuscrit de stage.
+
+================================================================================
+ORDRE D'ATTAQUE SUGGERE (si le temps est contraint)
+================================================================================
+
+0. 5.3  Ch. 7 -> LaTeX ............ FAIT le 30/07/2026 : chapitre converti,
+                                   section latence ajoutee (le TODO "parler
+                                   latence" est leve, chiffres exp_S50), le
+                                   manuscrit compile (0 erreur, 58 pages)
+1. 2.6  Flag UART TinyOL ......... FAIT le 30/07/2026 (Sprint 52 / S5201)
+2. 1.1  Energie LPM01A ........... BLOQUE : la sonde X-NUCLEO-LPM01A n'est pas
+                                   disponible. Sort de l'ordre d'attaque tant
+                                   que le materiel manque.
+3. 2.2  Sub-INT8 en online ....... le resultat le plus fort encore atteignable
+4. 5.2  Comptage de pages ........ contrainte de rendu, non negociable
+5. 5.6  Annexes .................. trois renvois pointent dans le vide
+6. 5.1  Notebook figures S4109 ... necessaire a la version finale
+7. 3.1  Sprint 51 score composite  structurant pour la soutenance
+8. 2.1 / 2.3 / 2.4 / 2.5 ......... completude des grilles, rendement decroissant
+9. 3.3  CMSIS-NN ................. fort impact mais chantier lourd
+
+Les deux premieres lignes sont d'un autre ordre que les suivantes : 5.3 bloque la
+production du PDF, et 2.6 concerne un chiffre publie qui ne mesure pas ce qu'il
+annonce. Elles passent donc avant toute nouvelle mesure.
+
+Les sections 4.x ne demandent pas d'action : elles doivent etre DECLAREES
+honnetement dans le manuscrit, ce qui est deja le cas.
+
+================================================================================
+REGLE A NE PAS ENFREINDRE
+================================================================================
+Aucun chiffre ne doit etre ecrit sans mesure. Les champs "a mesurer" et les N/A
+avec na_reason sont des resultats honnetes, pas des trous a combler par
+estimation. Toute valeur du manuscrit doit etre tracable a un JSON de
+experiments/.
+================================================================================

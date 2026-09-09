@@ -82,4 +82,19 @@ python -c "import json,glob; d=json.load(open(sorted(glob.glob('experiments/exp_
 
 ## Résolution (implémentée)
 
-_À compléter lors de l'implémentation (dès accès NUCLEO)._
+**Prérequis firmware (câblage `pipeline.c`, décision utilisateur)** : le kernel sub-INT8 (S4802) n'était **pas routé** dans `pipeline.c` — la route `0x40` exécutait le kernel v2 (S39). Ajout d'une route sub-INT8 **gardée** `#if defined(EWC_SUBINT8_WEIGHTS_PROVIDED)`, prioritaire sur le v2 : globals `g_ewc_subint8` (non-packé, réutilise `ewc_int8_v2_forward`) / `g_ewc_subint8_packed` (`ewc_subint8_packed_forward`), chargés par `memcpy` du header généré à l'init, forward frozen (pas d'`UPDATE` : S48 isole le schéma). **Garde de cohérence** `#error` si `EWC_INTx_PACKED` ≠ `EWC_SUBINT8_PACKED` (empêche le débordement `memcpy` int8→packé). **`.bss` défaut invariant 105 036 B**, `make test` 141 (2 TinyOL préexistants hors périmètre, 0 régression).
+
+**Driver `run_s48_board_depth.py`** : boucle par cellule (train réf EWC FP32 1×/dataset via `train_ewc_head` → `export_weights_c.py --ewc-subint8` → `make EXTRA_CFLAGS="-D<FLAG> [-DEWC_INTx_PACKED] -DEWC_SUBINT8_WEIGHTS_PROVIDED" EWC_IN=k` → `.bss` → flash → `ss._stream_uart` flag 0x40 frozen → parité émulateur + AUROC). Robustesse `try/except` par cellule, N/A honnête (`_na`/`_pending`), `board_samples.json` persisté. `--all`/`--dataset`/`--mode`/`--cell`/`--packed`/`--no-flash`/`--no-stream`.
+
+**12 cellules mesurées board réelle NUCLEO-F439ZI (cœur scientifique, choix utilisateur)** — packé+non-packé × {int4, ternaire, binaire} × {monitoring (k=4), pronostia (k=5)} :
+
+| Cellule | `.bss` non-packé | `.bss` packé | gain (B) | lat P50 non-pk / pk (µs) | parité | CRC |
+|---------|:---:|:---:|:---:|:---:|:---:|:---:|
+| Monitoring INT4 pc | 105 640 | 105 304 | 336 | 67 / 123 | 1.000 | 0 |
+| Monitoring ternaire pc | 105 640 | 105 136 | 504 | 67 / 123 | 1.000 | 0 |
+| Monitoring binaire pc | 105 640 | 105 068 | 572 | 67 / 125 | 1.000 | 0 |
+| Pronostia INT4 pc | 106 152 | 105 816 | 336 | 70 / 127 | 1.000 | 0 |
+| Pronostia ternaire pc | 106 152 | 105 648 | 504 | 70 / 127 | 1.000 | 0 |
+| Pronostia binaire pc | 106 152 | 105 548 | 604 | 70 / 130 | 1.000 | 0 |
+
+**Résultats clés** : (1) **`.bss` non-packé invariant par mode** (105 640 / 106 152) = nœud d'honnêteté confirmé (un sub-INT8 dans un `int8_t` n'économise rien) ; (2) **le packing matérialise le gain**, croissant quand les bits baissent (÷8 binaire > ÷4 ternaire > ÷2 INT4) ; (3) **latence dépacking ≈ +55 µs** (67→123 µs) mais **≪ 100 ms — Gap 2 ✅** ; (4) **parité board↔émulateur = 1.000 sur les 12** (0 mismatch, `max_score_err ≤ 1.2e-7`) ; (5) **0 CRC**. Aucun débordement SRAM à k≤5 (pas de N/A).

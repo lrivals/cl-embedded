@@ -7,17 +7,17 @@
   "energy_uj_per_inference_by_mhz": {
     "180": 214.6117084427564,
     "45": 170.05441263559308,
-    "90": "à mesurer"
+    "90": 192.64412015432623
   },
   "slope_ua_per_hz_by_mhz": {
     "180": 65.75113616506016,
     "45": 52.10000387119886,
-    "90": 41.55732388234566
+    "90": 59.02087014532053
   },
   "i_idle_ma_by_mhz": {
     "180": 39.87500000000001,
     "45": 18.245000000000005,
-    "90": 25.495000000000005
+    "90": 24.943333333333335
   },
   "dwt_latency_us_p50_by_mhz": {
     "180": {
@@ -32,7 +32,7 @@
     },
     "90": {
       "mahalanobis": 9.0,
-      "ewc": 99.0,
+      "ewc": 98.0,
       "hdc": 1169.0
     }
   },
@@ -57,7 +57,7 @@
       "ratio_attendu": 2.0,
       "ratio_mesure_par_modele": {
         "mahalanobis": 1.8,
-        "ewc": 1.98,
+        "ewc": 1.96,
         "hdc": 1.998
       }
     }
@@ -93,10 +93,10 @@
     },
     "90": {
       "succeeded": false,
-      "i_max_ma": 69.580078125
+      "i_max_ma": 69.82421875
     }
   },
   "tendance_energie": "croissante_avec_f",
   "tendance_rationale": "l'énergie par inférence croît de +26.2 % de 45 à 180 MHz : ralentir le MCU réduit le coût par inférence — la marge du Gap 2 est convertible en autonomie.",
-  "timestamp": "2026-09-07T11:53:54.664920+00:00"
+  "timestamp": "2026-09-08T16:32:38.997724+00:00"
 }

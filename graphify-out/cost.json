@@ -159,8 +159,38 @@
       "input_tokens": 0,
       "output_tokens": 0,
       "files": 66
+    },
+    {
+      "date": "2026-07-24T12:13:03.521004+00:00",
+      "input_tokens": 207779,
+      "output_tokens": 6000,
+      "files": 59
+    },
+    {
+      "date": "2026-07-24T15:27:13.708162+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 57
+    },
+    {
+      "date": "2026-07-24T17:11:44.756778+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 52
+    },
+    {
+      "date": "2026-07-30T16:20:02.896238+00:00",
+      "input_tokens": 115908,
+      "output_tokens": 0,
+      "files": 298
+    },
+    {
+      "date": "2026-09-09T06:52:22.216265+00:00",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "files": 133
     }
   ],
-  "total_input_tokens": 1714557,
-  "total_output_tokens": 129653
+  "total_input_tokens": 2038244,
+  "total_output_tokens": 135653
 }
