@@ -2,18 +2,56 @@
 \label{sec:setup}
 
 \paragraph{Cible matérielle.} NUCLEO-F439ZI (Cortex-M4 @ \SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM =
-\SI{192}{\kilo\byte} + \SI{64}{\kilo\byte} CCM, pas de NPU). Les latences sont mesurées par le compteur de
-cycles DWT ; l'empreinte statique est lue dans la section \texttt{.bss} du binaire. Le budget de latence
-est \SI{100}{\milli\second} par cycle inférence + mise à jour (Gap~2).
+\SI{192}{\kilo\byte} + \SI{64}{\kilo\byte} \gls{CCM}, pas de NPU). Les latences sont mesurées par le compteur de
+cycles DWT ; l'empreinte statique est lue dans le binaire et complétée par le pic de pile
+(\S\ref{sec:method}). Le budget de latence est \SI{100}{\milli\second} par cycle inférence + mise à jour
+(Gap~2). Les échantillons transitent par la liaison \gls{UART}, trame par trame, chaque trame étant protégée par
+un CRC : un taux d'erreur nul est la condition pour que les prédictions comparées soient bien celles de la
+carte.
 
 \paragraph{Jeux de données et scénarios CL.} Deux jeux industriels aux scénarios contrastés :
-\emph{Pronostia} (roulements FEMTO, \emph{class-incremental} par condition normale/défaut) et
-\emph{Monitoring} (équipements industriels, \emph{domain-incremental} par type de machine). Deux
-conditions de features sont considérées : \texttt{5feat} (sous-ensemble embarqué) et \texttt{all}
-(features natives). Sur Monitoring, \texttt{5feat} et \texttt{all} coïncident (4 features natives).
+\emph{Pronostia} (roulements FEMTO~\cite{Nectoux2012Pronostia}, \emph{class-incremental} par condition
+normale/défaut) et \emph{Monitoring} (équipements industriels, \emph{domain-incremental} par type de
+machine). Deux conditions de features sont considérées : \texttt{5feat} (sous-ensemble embarqué) et
+\texttt{all} (features natives). Sur Monitoring, \texttt{5feat} et \texttt{all} coïncident (4 features
+natives).
 
-\paragraph{Conditions identiques.} Toutes les comparaisons partagent graine, ordre et normalisation
-(\S\ref{sec:method}). Les mesures FP32 et INT8-legacy sur carte proviennent de la campagne du Sprint~36
-(\texttt{exp\_S36}) ; l'ablation émulée du Sprint~39 (\texttt{exp\_S39\_ablation}) ; la campagne carte v2
-du Sprint~40 (\texttt{exp\_S40\_board\_v2}), partielle à la date de rédaction. Toute grandeur non encore
-streamée sur carte est reportée « à mesurer », sans valeur inventée.
+\paragraph{Banc d'énergie.} Le courant est relevé par une sonde X-NUCLEO-LPM01A, la carte étant alimentée
+par la sonde elle-même. Les campagnes sont conduites à cadence d'inférence imposée et fenêtre fixe, avec
+répétitions, de sorte que l'écart entre deux cellules soit imputable au modèle et non à l'hôte. Un
+balayage de fréquence d'horloge complète le dispositif, la fréquence du bus périphérique étant maintenue
+constante pour ne pas déplacer le débit de la liaison série.
+
+\paragraph{Origine des mesures.} Le Tableau~\ref{tab:sources} récapitule les campagnes et, pour chacune,
+sa nature. Cette distinction gouverne la lecture de tout l'article : une valeur \emph{mesurée sur carte}
+et une valeur \emph{émulée sur PC} ne s'opposent pas en fiabilité --- l'émulateur reproduit exactement
+l'arithmétique du noyau C --- mais elles ne répondent pas à la même question.
+
+\begin{table}[t]
+\centering
+\caption{Origine et nature des mesures rapportées.}
+\label{tab:sources}
+\begin{tabular}{llc}
+\toprule
+Campagne & Objet & Nature \\
+\midrule
+\texttt{exp\_S36}            & Parité FP32, INT8 legacy, latence, RAM & mesuré carte \\
+\texttt{exp\_S39\_ablation}  & Échelle d'ablation, diagnostic causal   & émulé PC \\
+\texttt{exp\_S40\_board\_v2} & Récupération, kernel v2 calibré         & mesuré carte \\
+\texttt{exp\_S46\_board}     & Moment de quantification, A/B           & mesuré carte \\
+\texttt{exp\_S47\_depth}     & Profondeur et granularité               & émulé PC \\
+\texttt{exp\_S48\_summary}   & Bit-packing, \texttt{.bss} réelle       & mesuré carte \\
+\texttt{exp\_S49\_ram}       & RAM totale par composante               & mesuré carte \\
+\texttt{exp\_S50\_int8\_latency} & Latence par segment de noyau        & mesuré carte \\
+\texttt{exp\_S53\_*}         & Énergie, cadence, fréquence             & mesuré carte \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Conditions identiques et règle d'honnêteté.} Toutes les comparaisons partagent graine, ordre et
+normalisation (\S\ref{sec:method}). La campagne carte v2 couvre les quatre cellules per-canal (deux jeux
+$\times$ deux protocoles) ; le format \texttt{q15} sur carte n'a pas été streamé. Toute grandeur non
+mesurée est reportée « à mesurer », sans valeur inventée ni estimation substituée ; le registre
+complet de ces cellules, avec la raison de chacune, est donné en Annexe~\ref{app:missing}.
+Les sigles employés dans l'article sont développés à leur première occurrence et rassemblés dans la
+liste des acronymes, page~\pageref{sec:acronyms}.

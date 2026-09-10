@@ -1,11 +1,111 @@
 \section{Méthode}
 \label{sec:method}
 
+\subsection{Formulation EWC et adaptation embarquée}
+\label{sec:ewc_formulation}
+
+\paragraph{Pénalité élastique.} EWC combat l'oubli catastrophique en ancrant les paramètres jugés
+importants pour ce qui a déjà été appris \cite{Kirkpatrick2017EWC}. Après une tâche, on retient un
+point d'ancrage $\theta^\star$ --- les paramètres tels qu'ils étaient à la fin de cette tâche --- et
+une estimation $F$ de l'importance de chaque coordonnée. L'entraînement de la tâche suivante minimise
+alors la perte de tâche augmentée d'un rappel quadratique vers cet ancrage :
+\begin{equation}
+\label{eq:ewc_loss}
+\mathcal{L}(\theta) \;=\; \mathcal{L}_{\text{tâche}}(\theta)
+\;+\; \frac{\lambda}{2} \sum_{i} F_i \,\bigl(\theta_i - \theta^\star_i\bigr)^2 .
+\end{equation}
+Le coefficient $\lambda$ arbitre entre plasticité et rétention. Chaque coordonnée est rappelée avec
+une raideur qui lui est propre, $\lambda F_i$ : une coordonnée d'importance élevée devient coûteuse à
+déplacer, une coordonnée d'importance faible reste libre. La somme porte sur \emph{tous} les
+paramètres de la tête, poids et biais compris. Il n'y a qu'un seul terme quadratique, ancré sur le
+dernier $\theta^\star$, et non une somme sur les tâches passées : le coût mémoire de la
+régularisation est donc constant, deux copies des paramètres, quel que soit le nombre de tâches déjà
+vues. Sur la première tâche, $F$ et $\theta^\star$ n'existent pas encore et la pénalité est absente.
+
+\paragraph{Estimation de l'importance sur PC.} $F$ est la diagonale de la matrice d'information de
+Fisher, estimée en fin de tâche sur les données de cette tâche. Nous en retenons la forme empirique,
+c'est-à-dire évaluée sur les étiquettes réelles et non sur des étiquettes tirées sous le modèle. La
+grandeur effectivement accumulée est le carré du gradient de la perte \emph{moyennée sur un lot},
+moyenné sur les $B$ lots parcourus :
+\begin{equation}
+\label{eq:fisher}
+F_i \;=\; \frac{1}{B} \sum_{b=1}^{B}
+\left( \frac{\partial \mathcal{L}_b}{\partial \theta_i} \right)^{\!2},
+\qquad
+\mathcal{L}_b \;=\; \frac{1}{|b|} \sum_{n \in b} \ell\bigl(x_n, y_n; \theta\bigr) .
+\end{equation}
+Le budget est borné à \num{200} échantillons, ce qui suffit à ordonner les coordonnées entre elles ---
+seul cet ordre compte, puisque $\lambda$ absorbe l'échelle globale. Deux écritures de l'accumulation
+coexistent dans le projet. La variante \emph{en ligne} au sens de \cite{Schwarz2018Online} entretient
+une importance unique en la faisant décroître, $F \leftarrow \gamma F + F^{(t)}$ avec $\gamma =
+\num{0.9}$, ce qui estompe progressivement les tâches les plus anciennes. La tête effectivement
+portée sur carte, elle, \emph{remplace} son importance à chaque consolidation : l'ancrage suit
+toujours la dernière tâche consolidée.
+
+\paragraph{Ce que la carte peut faire, et ce qu'elle ne peut pas.} Le portage conserve la pénalité
+d'\eqref{eq:ewc_loss}, dont la dérivée $\lambda F_i (\theta_i - \theta^\star_i)$ s'ajoute au gradient
+de tâche. La mise à jour embarquée s'écrit, pour un poids $W$ de la couche $l$ :
+\begin{equation}
+\label{eq:board_sgd}
+W_{ji} \;\leftarrow\; W_{ji} \;-\; \eta \Bigl(
+\underbrace{\delta_j \, a_i}_{\text{gradient de tâche}}
+\;+\; \underbrace{\lambda \, F_{ji} \,\bigl(W_{ji} - W^\star_{ji}\bigr)}_{\text{rappel élastique}}
+\Bigr),
+\qquad \eta = \num{0.01} .
+\end{equation}
+La consolidation, en revanche, ne peut pas reproduire \eqref{eq:fisher} : l'estimer demanderait de
+conserver un lot d'échantillons étiquetés et d'y repasser en rétropropagation, deux choses qu'une
+carte en flux continu, sans mémoire de données, n'a pas à sa disposition. L'importance y est donc
+approximée par la \emph{magnitude} du poids lui-même, entretenue en moyenne mobile exponentielle :
+\begin{equation}
+\label{eq:board_fisher}
+F_{ji} \;\leftarrow\; \alpha \, F_{ji} \;+\; (1-\alpha) \, W_{ji}^2 ,
+\qquad
+W^\star_{ji} \;\leftarrow\; W_{ji} ,
+\qquad \alpha = \num{0.99} .
+\end{equation}
+Il faut nommer cette substitution pour ce qu'elle est : $W^2$ n'est pas le Fisher, c'est un
+substitut d'importance qui n'exige ni donnée, ni étiquette, ni passe arrière, et dont le coût est une
+lecture-écriture par poids. Il fait l'hypothèse que les coordonnées de grande magnitude sont celles
+qui portent la fonction apprise. Deux conséquences suivent. La pénalité embarquée ne couvre que les
+matrices de poids, les biais n'ayant ni importance ni ancrage stockés, ce qui économise le tiers de
+l'état de régularisation. Et à l'initialisation $F \equiv 0$ : tant qu'aucune consolidation n'a eu
+lieu, le rappel élastique est nul et la carte apprend en descente de gradient pure.
+
+\begin{table}[htbp]
+\centering
+\caption{Adaptation du modèle sous contrainte embarquée. La pénalité d'\eqref{eq:ewc_loss} est
+conservée à l'identique ; ce sont son estimateur d'importance et son régime d'optimisation qui sont
+simplifiés.}
+\label{tab:ewc_port}
+\footnotesize
+\begin{tabular}{@{}p{30mm}p{35mm}p{50mm}@{}}
+\toprule
+ & \textbf{PC (PyTorch)} & \textbf{Carte (\texttt{ewc\_head.c})} \\
+\midrule
+Estimateur d'importance & carré du gradient, éq.~\eqref{eq:fisher} & magnitude $W^2$, éq.~\eqref{eq:board_fisher} \\
+Données requises        & un lot étiqueté par tâche & aucune \\
+Accumulation            & remplacement à chaque consolidation & moyenne mobile, $\alpha = \num{0.99}$ \\
+Portée de la pénalité   & poids et biais & poids seulement \\
+Optimisation            & lots, momentum, plusieurs époques & un échantillon, sans momentum, une passe \\
+$\lambda$               & \num{1000} & \num{400} \\
+Déclenchement           & fin de tâche & drapeau de trame, ou détection de dérive \\
+État initial de $F$     & premier calcul en fin de tâche $1$ & nul, donc pas de rappel avant consolidation \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Un dernier écart, purement numérique, mérite d'être signalé car il éclaire les mesures de parité :
+la carte met chaque poids à jour sur place puis propage l'erreur vers la couche précédente avec le
+poids \emph{déjà modifié}, là où le cadre PC utilise partout les poids d'avant le pas. En inférence
+gelée, les deux plateformes exécutent la même fonction et la parité est exacte ; en régime de mise à
+jour, cet écart et le lot unitaire suffisent à expliquer qu'elle ne l'est plus tout à fait.
+
 \subsection{Modèle EWC et portage C}
 
 Le modèle est un perceptron multicouche à tête EWC (\texttt{EWCMlpMulticlass}, $k \to 32 \to 16 \to 2$)
-entraîné en régime incrémental avec pénalité de Fisher en ligne. La tête est portée en C
-(\texttt{ewc\_head.c}) pour la carte : le \emph{forward pass} et la mise à jour SGD s'exécutent tous deux
+entraîné en régime incrémental selon la Section~\ref{sec:ewc_formulation}. La tête est portée en C
+(\texttt{ewc\_head.c}) pour la carte : le \emph{forward pass} et la mise à jour \gls{SGD} s'exécutent tous deux
 sur le Cortex-M4 en FP32 (le F439ZI ne dispose pas de NPU). Les poids sont exportés du checkpoint PyTorch
 vers un en-tête C généré (\texttt{model\_weights\_ewc.h}) --- jamais édité à la main --- de sorte que la
 carte et le PC partagent \emph{exactement} les mêmes paramètres.
@@ -18,19 +118,187 @@ tableaux sont produits par une source unique). Deux protocoles sont évalués : 
 seule, poids figés) et \emph{en ligne} (inférence puis mise à jour continue). La \emph{parité} est le taux
 d'accord prédiction-à-prédiction entre les deux plateformes.
 
-\subsection{Schémas de quantification}
+\subsection{Formulation de la quantification}
+\label{sec:quant_formulation}
 
-Nous comparons plusieurs kernels INT8 de la tête de décision, du plus naïf au plus soigné :
+\paragraph{Le mapping et son échelle.} Quantifier un tenseur, c'est remplacer ses valeurs réelles par
+des entiers sur une grille régulière, plus une échelle qui rend cette grille au monde flottant. Pour un
+poids sur $b$ bits en représentation symétrique signée, avec $q_{\max} = 2^{\,b-1} - 1$ :
+\begin{equation}
+\label{eq:quant_map}
+Q_{ji} = \mathrm{clip}\!\left( \mathrm{round}\!\left( \frac{W_{ji}}{s_j} \right),\, -q_{\max},\, q_{\max} \right),
+\qquad
+\widehat{W}_{ji} = s_j \, Q_{ji} .
+\end{equation}
+Tout le comportement du schéma tient dans le choix de $s_j$. Nous en comparons trois, qui forment une
+seule famille et non des méthodes séparées :
+\begin{equation}
+\label{eq:scale_gran}
+s_j \;=\;
+\underbrace{\frac{1}{128}}_{\text{figée}}
+\qquad\text{ou}\qquad
+\underbrace{\frac{\max_{j,i} |W_{ji}|}{q_{\max}}}_{\text{par-tenseur}}
+\qquad\text{ou}\qquad
+\underbrace{\frac{\max_i |W_{ji}|}{q_{\max}}}_{\text{par-canal de sortie}} .
+\end{equation}
+L'échelle figée est celle du noyau embarqué d'origine. Elle ne dépend pas des poids : tout coefficient
+de module supérieur à $127/128$ est écrasé sur la borne de la grille, et tous les coefficients plus
+petits que le pas se confondent avec zéro.
+
+\paragraph{La couche entière.} Les activations reçoivent le même traitement, avec une échelle $s_a$
+issue d'une calibration. Une couche s'écrit alors comme une accumulation entière suivie d'un unique
+retour au flottant :
+\begin{equation}
+\label{eq:int_layer}
+\mathrm{acc}_j = \sum_i Q_{ji} \, q^a_i ,
+\qquad
+y_j = \mathrm{acc}_j \cdot s_j \cdot s_a + b_j .
+\end{equation}
+C'est dans \eqref{eq:int_layer} que se lit la granularité : l'indice $j$ porté par $s_j$ signifie qu'un
+neurone de sortie dont les poids sont de faible amplitude reçoit sa propre échelle, au lieu de partager
+celle du coefficient le plus grand de toute la matrice. La calibration retenue est un maximum absolu
+par couche, mesuré sur un lot en précision flottante ($s_a = \mathrm{act\_max}/q^a_{\max}$).
+
+\paragraph{Ce que le schéma d'origine prescrit, et ce que nous en gardons.} La formulation entière de
+référence \cite{Jacob2018,Krishnamoorthi2018} vise une inférence \emph{entièrement} entière : le retour
+à l'échelle suivante s'y fait par un multiplicateur entier et un décalage, les biais sont portés en
+\texttt{int32} à l'échelle du produit, et un zéro-point décale la grille des activations. Notre cible
+n'a pas les mêmes contraintes : le Cortex-M4F possède une unité flottante matérielle, et la tête ne
+compte que trois couches. Nous conservons donc l'accumulation entière et les échelles par-canal, mais
+nous revenons au flottant entre les couches. Le tableau~\ref{tab:quant_ref} récapitule les écarts.
+
+\begin{table}[htbp]
+\centering
+\caption{Schéma entier de référence et mise en {\oe}uvre embarquée. Les écarts sont dictés par la cible
+(unité flottante présente, réseau court) et non par une simplification de commodité.}
+\label{tab:quant_ref}
+\footnotesize
+\begin{tabular}{@{}p{30mm}p{40mm}p{45mm}@{}}
+\toprule
+ & \textbf{Référence \cite{Jacob2018}} & \textbf{Noyau v2 (\texttt{ewc\_head\_int8\_v2.c})} \\
+\midrule
+Retour d'échelle    & multiplicateur entier et décalage & déquantification flottante sur l'unité matérielle \\
+Biais               & \texttt{int32} à l'échelle du produit & flottants exacts, jamais quantifiés \\
+Zéro-point          & sur les activations et les poids & poids symétriques sans zéro-point ; activations symétriques, affine en option \\
+Granularité         & par-tenseur, par-canal en extension & par-canal de sortie par défaut \\
+Calibration         & histogramme ou centile & maximum absolu par couche sur un lot \\
+Fusion normalisation & requise avant quantification & sans objet, le réseau n'en contient pas \\
+Accumulateur        & \texttt{int32} & \texttt{int32}, élargi en \texttt{int64} pour la variante Q15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Axe du format : l'échelle d'ablation.} Le noyau embarqué d'origine cumule quatre écarts à
+\eqref{eq:quant_map}--\eqref{eq:int_layer} : échelle figée, arrondi remplacé par une troncature vers
+zéro, accumulateur \texttt{int16} qui reboucle silencieusement, et activations repliées sur une grille
+Q7. Plutôt que de les corriger d'un bloc, nous parcourons une trajectoire dans la famille
+\eqref{eq:scale_gran}, chaque marche n'activant qu'un changement :
 \begin{itemize}
-  \item \texttt{legacy\_c} : accumulateur \texttt{int8}, échelle par-tenseur non calibrée (le kernel v1
+  \item \texttt{legacy\_c} : échelle figée, troncature, accumulateur \texttt{int16} (le noyau v1
         d'origine sur carte) ;
-  \item \texttt{fix\_acc32} : accumulateur élargi à \texttt{int32} (correction partielle) ;
-  \item \texttt{per\_tensor\_calib} : accumulateur \texttt{int32} + échelle par-tenseur \emph{calibrée} sur
-        les activations ;
+  \item \texttt{fix\_acc32} : accumulateur élargi à \texttt{int32}, tout le reste inchangé ;
+  \item \texttt{per\_tensor\_calib} : échelle par-tenseur \emph{calibrée} et arrondi au plus proche ;
   \item \texttt{per\_channel\_int8} : échelle \emph{par-canal} de sortie ;
-  \item \texttt{q15} : poids en virgule fixe \texttt{int16} Q15 (RAM $\div 2$ au lieu de $\div 4$).
+  \item \texttt{q15} : grille 16 bits, $q_{\max} = 32767$ (RAM $\div 2$ au lieu de $\div 4$).
 \end{itemize}
-Le kernel v2 firmware (Sprint~40) implémente l'accumulateur \texttt{int32} et les échelles calibrées
-par-canal, avec une variante Q15 optionnelle (\texttt{-DEWC\_INT8\_Q15}) ; le chemin FP32 v1 reste
-inchangé. L'ablation est \emph{émulée bit-à-bit sur PC} (\texttt{src/utils/int8\_c\_emulation.py}) afin
-d'isoler la contribution de chaque correctif indépendamment de l'accès à la carte.
+Le noyau v2 du firmware implémente les deux dernières marches, avec une variante Q15 optionnelle
+(\texttt{-DEWC\_INT8\_Q15}) ; le chemin v1 reste inchangé pour permettre la comparaison sur la même
+carte. L'ablation est \emph{émulée bit-à-bit sur PC} (\texttt{src/utils/int8\_c\_emulation.py}) afin
+d'isoler la contribution de chaque correctif indépendamment de l'accès à la carte. Les échelles ne sont
+pas recalculées à bord : elles sont produites sur PC par les mêmes fonctions que l'émulateur, puis
+écrites dans un en-tête C généré, ce qui rend la parité vraie \emph{par construction} plutôt que
+constatée après coup.
+
+\paragraph{Où s'arrête la quantification en régime d'apprentissage.} Un point de portée doit être posé
+avant de lire les cellules « en ligne » de la Section~\ref{sec:results}, car il en commande
+l'interprétation. Le noyau entier n'expose qu'une passe avant : il n'existe pas de descente de gradient
+dans le domaine quantifié. La carte conserve donc une tête FP32 \emph{maîtresse}, sur laquelle
+s'appliquent \eqref{eq:board_sgd} et \eqref{eq:board_fisher}, et dont la représentation entière n'est
+qu'une \emph{vue}, reconstruite par \eqref{eq:quant_map} après chaque pas. Deux conséquences en découlent,
+et nous les assumons plutôt que de les taire. D'abord la division par quatre de la mémoire des poids vaut
+pour l'inférence seule : en régime d'apprentissage, la carte porte simultanément la tête flottante, sa vue
+entière, l'importance et l'ancrage, soit davantage que le FP32 seul. Ensuite la requantification de toutes
+les matrices à chaque échantillon entre dans le budget de latence, ce que la
+Section~\ref{sec:recovery-board} chiffre. Autrement dit, ce travail établit une quantification
+\emph{compatible} avec l'apprentissage incrémental --- l'inférence est entière, l'apprentissage continue
+de fonctionner à travers elle --- et non un apprentissage \emph{conduit} en arithmétique entière, qui reste
+un problème ouvert.
+
+\paragraph{Ce que coûte le par-canal.} Une échelle par neurone de sortie n'est pas gratuite : elle
+ajoute un tableau de flottants parallèle à chaque matrice, soit une valeur sur quatre octets par ligne
+de sortie. Sur la tête portée, ces échelles ramènent le gain mémoire réel des poids sous le facteur
+quatre annoncé par le seul changement de type. C'est le prix de la robustesse : le par-canal isole les
+neurones de grande amplitude, qui autrement imposeraient leur échelle à toute la couche.
+
+\subsection{Axe du moment : quand quantifier}
+
+À format fixé, la même tête peut être quantifiée à trois instants. \emph{Avant} l'entraînement, par QAT :
+un \emph{fake-quant} inséré dans la boucle fait apprendre les poids sous la contrainte de précision
+réduite. \emph{Après}, par PTQ : le modèle FP32 entraîné est converti une fois pour toutes. Et \emph{les
+deux}, c'est-à-dire un entraînement QAT dont les poids sont ensuite exportés vers le kernel entier
+calibré. Ce dernier chemin est le seul fidèle au déploiement réel, puisque c'est bien le noyau embarqué
+qui exécute l'inférence, et non la simulation de quantification du cadre d'entraînement. Les trois
+moments sont comparés à modèle, jeu et graine identiques.
+
+\subsection{Axe de la profondeur : bits, granularité, symétrie}
+
+Sous l'INT8, trois paramètres décrivent un schéma : le nombre de \emph{bits de poids} (4, 2, ternaire,
+binaire), la \emph{granularité} de l'échelle (par-tenseur ou par-canal de sortie) et la \emph{symétrie}
+(symétrique, ou affine avec zéro-point). Les deux premiers se lisent directement dans
+\eqref{eq:quant_map} et \eqref{eq:scale_gran} : descendre en profondeur, c'est diminuer $q_{\max}$, et
+changer de granularité, c'est changer la portée du maximum qui définit $s_j$.
+
+Aux très basses profondeurs, la grille linéaire cède la place à deux schémas dédiés, que nous reprenons
+tels quels. En ternaire \cite{Li2016TWN}, un seuil par canal décide quels poids survivent, et l'échelle
+est la moyenne des seuls poids retenus :
+\begin{equation}
+\label{eq:twn}
+\begin{gathered}
+\Delta_j = \num{0.7} \cdot \overline{|W_{j\cdot}|},
+\qquad
+Q_{ji} = \mathrm{sign}(W_{ji}) \cdot \mathbf{1}\bigl[\,|W_{ji}| > \Delta_j\,\bigr], \\[2pt]
+\alpha_j = \overline{\bigl\{ |W_{ji}| : |W_{ji}| > \Delta_j \bigr\}} .
+\end{gathered}
+\end{equation}
+En binaire \cite{Rastegari2016XNOR}, plus aucun poids n'est mis à zéro et l'échelle est la moyenne des
+modules du canal : $Q_{ji} = \mathrm{sign}(W_{ji})$, $\alpha_j = \overline{|W_{j\cdot}|}$. Ces deux
+schémas portent une échelle par canal \emph{par construction}, si bien que l'axe de la granularité cesse
+de s'appliquer une fois qu'on les atteint.
+
+La symétrie, elle, concerne les activations. Après une fonction d'activation positive, la moitié
+négative d'une grille symétrique ne sert à rien, ce qui coûte d'autant plus cher que les bits sont
+rares. La variante affine décale la grille d'un zéro-point :
+\begin{equation}
+\label{eq:affine_act}
+q = \mathrm{round}\!\left(\frac{a}{s_a}\right) + z,
+\qquad
+\widehat{a} = (q - z)\, s_a .
+\end{equation}
+Les poids, dont la distribution est centrée, restent symétriques sans zéro-point dans tous les schémas
+que nous évaluons.
+
+Un point mérite enfin d'être posé, car il commande
+l'interprétation des gains annoncés : tant que les poids restent rangés dans un conteneur
+\texttt{int8\_t}, réduire le nombre de bits ne libère \emph{aucun} octet. Le gain mémoire n'existe qu'avec
+un \emph{bit-packing} effectif, qui se paie en revanche par un dépacking à l'exécution. Nous distinguons
+donc systématiquement la RAM \emph{théorique} du schéma et la RAM \emph{mesurée} du binaire.
+
+\subsection{Méthodologie de mesure}
+
+Les grandeurs rapportées en Section~\ref{sec:system} appellent trois instrumentations distinctes.
+
+\paragraph{Mémoire.} La RAM d'un binaire n'est pas l'empreinte de ses poids. Nous rapportons la
+\emph{RAM totale} $= \texttt{.data} + \texttt{.bss} + \text{pic de pile}$, les deux premiers termes étant
+lus dans le binaire et le troisième mesuré à l'exécution par marquage de la pile, en retenant le maximum
+entre la phase d'inférence et la phase de mise à jour.
+
+\paragraph{Latence.} Le compteur de cycles \gls{DWT} chronomètre le noyau au cycle près. Pour le chemin INT8, il
+est instrumenté en \emph{trois segments} --- déquantification, \gls{MAC} entier, requantification --- afin de
+répondre non pas « l'INT8 est-il plus lent ? » mais « quel poste coûte ? ». Les cycles sont rapportés
+bruts, la conversion en microsecondes tronquant l'information à cette échelle.
+
+\paragraph{Énergie.} Le courant est mesuré à la sonde X-NUCLEO-LPM01A par trois méthodes indépendantes :
+régression du courant en fonction de la cadence d'inférence, différence contre un repos \gls{WFI}, et
+lot d'inférences par trame isolant le calcul du coût de la liaison. Nous les rapportons \emph{côte à côte}
+sans jamais les moyenner : elles ne mesurent pas la même frontière, et leur désaccord est lui-même un
+résultat. Toute cellule non mesurée est reportée « à mesurer » plutôt qu'estimée.

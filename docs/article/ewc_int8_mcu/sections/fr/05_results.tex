@@ -10,11 +10,14 @@ décision. Le Tableau~\ref{tab:parity} récapitule ; la Figure~\ref{fig:parity} 
 
 \begin{table}[t]
 \centering
-\caption{Parité FP32 PC$\leftrightarrow$carte et performance (\emph{mesuré sur carte}, \texttt{exp\_S36}).}
+\caption{Parité FP32 PC$\leftrightarrow$carte et performance (\emph{mesuré sur carte}, \texttt{exp\_S36}).
+Le F1 est celui de la carte ; il égale celui du PC aux décimales rapportées, la parité gelée valant
+\num{1.000}. Monitoring n'a que quatre features natives, ses conditions \texttt{5feat} et \texttt{all}
+coïncident donc et ne donnent qu'une ligne.}
 \label{tab:parity}
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccc}
 \toprule
-Jeu & Cond. & F1 (PC/carte) & Parité gelé & Parité en ligne \\
+Jeu & Cond. & F1 carte & Parité gelé & Parité en ligne \\
 \midrule
 Pronostia  & 5feat & \num{0.9164} & \num{1.000} & \num{0.9754} \\
 Pronostia  & all   & \num{0.9180} & \num{1.000} & \num{0.9626} \\
@@ -68,13 +71,18 @@ Monitoring & \num{0.9194} & \num{0.1337} & \num{0.5955} & $\times 4$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Diagnostic et récupération (émulé PC bit-exact)}
+\subsection{Diagnostic de l'effondrement (émulé PC bit-exact)}
 
-Une ablation \emph{émulée bit-à-bit sur PC} (référence exacte du kernel) isole la cause et démontre la
-récupération (Tableau~\ref{tab:ablation}, Figure~\ref{fig:ablation}). Le facteur dominant est
-l'\emph{échelle par-tenseur calibrée} sur accumulateur \texttt{int32} : \texttt{per\_tensor\_calib}
-restaure $+\,\num{0.88}$ de F1 (Pronostia \num{0.9462}, Monitoring \num{0.9201}). Le format \texttt{q15}
-égale exactement le FP32.
+L'effondrement mesuré ne dit pas \emph{ce qui} l'a causé. Une ablation \emph{émulée bit-à-bit sur PC} ---
+référence exacte de l'arithmétique du kernel --- isole la contribution de chaque correctif
+(Tableau~\ref{tab:ablation}, Figure~\ref{fig:ablation}). Le facteur dominant est l'\emph{échelle
+par-tenseur calibrée} sur accumulateur \texttt{int32} : \texttt{per\_tensor\_calib} restaure
+$+\,\num{0.88}$ de F1 (Pronostia \num{0.9462}, Monitoring \num{0.9201}). Le format \texttt{q15} égale
+exactement le FP32.
+
+La cause est donc identifiée, et l'émulateur \emph{prédit} la récupération. Reste à savoir si le noyau
+corrigé la produit effectivement une fois flashé : c'est l'objet de la sous-section suivante, où la
+question passe de l'émulation à la mesure.
 
 \begin{table}[t]
 \centering
@@ -136,6 +144,18 @@ Pronostia  & en ligne & \num{0.9212} & \num{0.9736} & \num{0.8100} & 606 & 10615
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Le surcoût de latence est bien plus lourd en apprentissage qu'en inférence.} La colonne des
+latences du Tableau~\ref{tab:recovery} porte le chiffre le plus net de cette campagne, et il ne concerne
+pas le mode gelé. En inférence seule, l'INT8 coûte 65 et 68~\micro s contre 48 et 50 en FP32, soit
+l'écart d'environ moitié que la Section~\ref{sec:system} décompose poste par poste. En apprentissage
+continu, l'écart change d'ordre : 577 et 606~\micro s contre 239 et 251 en FP32, soit un facteur~\num{2.4}.
+La cause est celle exposée en \S\ref{sec:method} : chaque pas de gradient s'applique à la tête FP32
+maîtresse, et la vue entière doit être intégralement reconstruite derrière lui. Le budget Gap~2 reste tenu
+avec deux ordres de grandeur de marge, mais la lecture est sans ambiguïté --- \textbf{c'est précisément
+dans le régime que l'apprentissage continu impose que la quantification coûte le plus cher}. Une
+requantification restreinte aux lignes effectivement modifiées par le pas est la voie naturelle pour
+ramener ce facteur près de un ; elle reste à implémenter.
 
 Deux nuances méritent d'être dites. D'une part l'accord INT8$\leftrightarrow$FP32 chute en mode en ligne
 (\num{0.8337} et \num{0.8100} contre $>\,\num{0.99}$ en gelé) : la mise à jour continue fait diverger les

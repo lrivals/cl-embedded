@@ -34,3 +34,15 @@ cd docs/article/ewc_int8_mcu && make en    # main_en.pdf compile sans erreur
 
 > **Invariant** : les chiffres clés (parité, F1, latences, ratios RAM) doivent être **identiques** entre
 > `main_fr.tex` et `main_en.tex` — vérifié automatiquement en S4007.
+
+
+## Passe de rédaction locale (septembre 2026)
+
+Miroir anglais strict de la passe décrite dans `S4005` : `01`, `02`, `03`, `04` et
+`07` réécrits dans la même passe que le français, abstract aligné sur `0.138` /
+`0.1337`, glossaire `glossary_en.tex` (24 acronymes, mêmes clés que le français).
+
+Le miroir numérique reste vérifié par `test_fr_en_key_values`, qui compare
+l'ensemble des décimales de `main_*.tex` et `sections/<lang>/*.tex`. Les fichiers de
+glossaire vivent à la racine de l'article, donc hors du périmètre de ce test : leur
+parité de clés est à contrôler à la main (`diff` des motifs `\newacronym`).

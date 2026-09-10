@@ -5,7 +5,8 @@ Carte de travail : **NUCLEO-F439ZI** (Cortex-M4 @ 180 MHz, 256 Ko SRAM, pas de N
 
 **Public** : Arnaud Dion (ISAE-SUPAERO), Dorra Ben Khalifa (quantification / matériel),
 Frédéric Zbierski (Edge Spectrum).
-**Durée visée** : 35–40 min + questions. **Format** : 26 slides, 6 blocs.
+**Durée visée** : 35–40 min + questions, plus une **annexe énergie optionnelle** de
+~12 min. **Format** : 28 slides en 6 blocs + 10 slides d'annexe.
 
 ## Ordre de lecture
 
@@ -22,6 +23,7 @@ qui lit `experiments/` via `src.figures.loaders.load_experiment` :
 
 ```bash
 python scripts/generate_figures.py --catalog seminaire_s44_s53 --style slide
+python scripts/generate_figures.py --catalog energy_pedagogy --style slide
 ```
 
 Une cellule non mesurée est tracée **en gris avec sa mention** — le sentinel littéral
@@ -55,6 +57,30 @@ Une cellule non mesurée est tracée **en gris avec sa mention** — le sentinel
 | 27 | `seminaire_s44_s53/e6_s53_statut_mesures.png` | `exp_S53_{wfi,rate_sweep,phase_profile,build_isolation}/`, `exp_S50_energy/` |
 
 Slides sans figure (texte et tableau uniquement) : 3 (plan), 8, 15, 18, 21, 26, 28.
+
+### Annexe A — pédagogie de la mesure d'énergie
+
+Dix slides optionnelles, à dérouler si la question « d'où viennent ces µJ ? » est posée.
+Toutes les figures viennent du catalogue `energy_pedagogy`
+(`src/figures/catalogs/energy_pedagogy.py`).
+
+| Slide | Figure | Source de données |
+|---|---|---|
+| A1 | `energy_pedagogy/a1_chaine_de_mesure.png` | schéma (aucune donnée) — câblage : `docs/context/lpm01a_setup.md` |
+| A2 | `energy_pedagogy/a2_statique_vs_dynamique.png` | `exp_S53_freq_sweep/summary.json` (`acqmode_dyn_by_mhz`) |
+| A3 | `energy_pedagogy/b1_probleme_isoler.png` | `exp_S53_rate_sweep/ewc_fp32.json` |
+| A4 | `energy_pedagogy/b2_trois_estimateurs.png` | `exp_S53_wfi/delta_recovery.json`, `exp_S53_rate_sweep/summary.json`, `exp_S53_wfi/batch_sweep.json` |
+| A5 | `energy_pedagogy/c1_methode_delta.png` | `exp_S53_wfi/delta_recovery.json` |
+| A6 | `energy_pedagogy/c2_methode_regression.png` | `exp_S53_rate_sweep/ewc_fp32.json` |
+| A7 | `energy_pedagogy/c3_methode_lot.png` | `exp_S53_wfi/batch_sweep.json` |
+| A8 | `energy_pedagogy/d1_pieges_du_banc.png` | `exp_S53_wfi/idle_reference.json`, `exp_S53_counterbalance/counterbalance.json`, `exp_S53_rate_sweep/ewc_fp32.json`, `exp_S53_wfi/batch_sweep.json` |
+| A9 | `energy_pedagogy/d2_repos_nest_pas_repos.png` | `exp_S53_counterbalance/idle_states_power_cycle.json`, `exp_S53_wfi/idle_reference.json` |
+| A10 | `energy_pedagogy/e1_de_la_mesure_a_lautonomie.png` | `exp_S53_wfi/autonomy_delta.json` |
+
+**Règle propre à cette annexe** : les trois estimateurs de µJ par inférence (delta,
+régression de cadence, régression par lot) sont affichés **côte à côte et jamais
+moyennés** — leur écart mesure le coût de la trame UART et sert de contrôle de validité
+à la campagne.
 
 ## Sources rédactionnelles
 

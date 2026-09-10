@@ -1,0 +1,22 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{RAM components, in bytes (\emph{measured on-board}). The total is the sum of the first three rows, the stack peak being the maximum of the two phases.}
+\label{tab:annex-ram}
+\begin{tabular}{lcccc}
+\toprule
+Component & \multicolumn{2}{c}{Monitoring} & \multicolumn{2}{c}{Pronostia} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & FP32 & INT8 & FP32 & INT8 \\
+\midrule
+\texttt{.data} & \num{460} & \num{460} & \num{460} & \num{460} \\
+\texttt{.bss} & \num{100152} & \num{100152} & \num{105036} & \num{105036} \\
+Stack peak (inference) & \num{4416} & \num{4328} & \num{4424} & \num{4336} \\
+Stack peak (update) & \num{4688} & \num{4712} & \num{4696} & \num{4720} \\
+Total & \num{105300} & \num{105324} & \num{110192} & \num{110216} \\
+\midrule
+Ratio & \multicolumn{2}{c}{\num{1.0002}} & \multicolumn{2}{c}{\num{1.0002}} \\
+\bottomrule
+\end{tabular}
+\end{table}

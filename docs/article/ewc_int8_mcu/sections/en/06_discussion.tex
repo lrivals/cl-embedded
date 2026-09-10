@@ -8,8 +8,12 @@ the kernel (Section~\ref{sec:system}) says where: across both datasets, the inte
 total settles at \SI{74}{\micro\second} against \SIrange{48}{50}{\micro\second} in FP32. Two causes therefore
 compound: the integer MAC has nothing to gain against a hardware FPU already efficient in single precision,
 and requantization --- an item that does not exist in the floating-point path --- consumes a third of the
-budget on its own. The direct lead remains a port to integer SIMD kernels (CMSIS-NN), which would attack the
+budget on its own. The direct lead remains a port to integer \gls{SIMD} kernels, such as those of
+\gls{CMSISNN}~\cite{Lai2018CMSISNN}, which would attack the
 first item; the second rather calls for a power-of-two scale chain.
+This balance concerns inference. Under continual learning the overhead is heavier still, by a factor
+of~\num{2.4} (Section~\ref{sec:recovery-board}), since rebuilding the integer view follows every gradient
+step. That is the regime on-device learning claims, and therefore where the paradox weighs most.
 
 \paragraph{An energy paradox compounds the latency paradox.} One could hope that INT8, failing to be faster,
 would at least be leaner. Measurement says otherwise: \SI{67.47}{\micro\joule} per inference in INT8 against

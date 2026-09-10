@@ -1,15 +1,21 @@
 \section{Budget système : mémoire, latence, énergie, calcul}
 \label{sec:system}
 
-Un gain de quantification ne se juge pas sur les poids seuls. Cette section rassemble les quatre budgets
-d'une même tête EWC déployée, tous mesurés sur la même carte.
+Un gain de quantification ne se juge pas sur les poids seuls. C'est ici que se tranche l'argument
+tripartite rappelé en introduction --- moins de mémoire, moins de temps, moins d'énergie : cette section
+rassemble les quatre budgets d'une même tête EWC déployée, tous mesurés sur la même carte, et prend chaque
+promesse séparément. Les trois instrumentations correspondantes (composantes de la RAM, segmentation du
+noyau au compteur de cycles, estimateurs d'énergie) sont décrites en \S\ref{sec:method}.
 
 \subsection{La RAM des poids n'est pas la RAM du système}
 
 L'INT8 divise bien par~4 la RAM \emph{des poids} (\num{2688} à \num{672}~octets sur Monitoring,
-\num{2816} à \num{704} sur Pronostia). Mais la RAM réellement consommée par le système est
+\num{2816} à \num{704} sur Pronostia). Ce décompte porte sur les matrices de poids seules, celles que la
+quantification touche ; les biais restent flottants et exacts (\S\ref{sec:method}), si bien que le nombre
+de paramètres de la tête, \num{722} et \num{754}, est légèrement supérieur. Mais la RAM réellement consommée par le système est
 $\texttt{.data} + \texttt{.bss} + \text{pic de pile}$, et cette somme ne bouge pratiquement pas : elle passe
-de \num{105300} à \num{105324}~octets sur Monitoring, soit un rapport INT8/FP32 de \num{1.0002}. Les deux
+de \num{105300} à \num{105324}~octets sur Monitoring, soit un rapport INT8/FP32 de \num{1.0002}.
+Le détail par composante est en Annexe~\ref{app:budget} (Tableau~\ref{tab:annex-ram}). Les deux
 configurations occupent \num{40.17}\,\% et \num{40.18}\,\% du budget de \SI{256}{\kilo\byte}
 (\num{42.03}\,\% et \num{42.04}\,\% sur Pronostia).
 
@@ -46,7 +52,8 @@ L'énergie a été mesurée à la sonde X-NUCLEO-LPM01A par trois méthodes ind�
 courant en fonction de la cadence donne \SI{67.65}{\micro\joule} par inférence en FP32 et
 \SI{67.47}{\micro\joule} en INT8 ; le delta contre un repos \texttt{WFI} donne \SI{146.77}{\micro\joule} et
 \SI{145.03}{\micro\joule} ; le lot d'inférences par trame, qui isole le calcul du coût de la trame UART,
-donne \SI{5.08}{\micro\joule}. L'ordre de grandeur commun aux deux premières et l'écart d'un facteur~10 avec
+donne \SI{5.08}{\micro\joule}. Le Tableau~\ref{tab:annex-energy} les range côte à côte.
+L'ordre de grandeur commun aux deux premières et l'écart d'un facteur~10 avec
 la troisième délimitent exactement ce que chacune mesure : les deux premières intègrent le coût de
 communication, la dernière non.
 
@@ -55,12 +62,14 @@ mesuré est de \SI{0.18}{\micro\joule} pour une incertitude combinée de \SI{2.3
 seuil de signification. Le paradoxe de la latence se double donc d'un paradoxe d'énergie, et la
 justification de l'INT8 se réduit à la mémoire.
 
-Le balayage de fréquence ouvre en revanche un levier réel : l'énergie par inférence croît de
-\SI{170.05}{\micro\joule} à \SI{45}{\mega\hertz} jusqu'à \SI{214.61}{\micro\joule} à \SI{180}{\mega\hertz},
-pendant que la latence reste très en deçà du budget Gap~2 (\SI{198}{\micro\second} à \SI{45}{\mega\hertz}).
-Autrement dit, \emph{la marge de latence est convertible en autonomie}. Deux cellules restent « à mesurer » :
-l'énergie par mise à jour continue, dont les régressions ne sont pas publiables en l'état, et le profil par
-phase.
+Le balayage de fréquence ouvre en revanche un levier réel. L'énergie par inférence croît
+monotonement avec l'horloge --- \SI{170.05}{\micro\joule} à \SI{45}{\mega\hertz},
+\SI{192.64}{\micro\joule} à \SI{90}{\mega\hertz}, \SI{214.61}{\micro\joule} à
+\SI{180}{\mega\hertz} --- pendant que la latence reste très en deçà du budget Gap~2, jusqu'à
+\SI{198}{\micro\second} au point le plus lent. Autrement dit, \emph{la marge de latence est convertible
+en autonomie} : au régime le plus sobre mesuré, une pile de \SI{2000}{\milli\ampere\hour} tient
+\SI{72.95}{\hour} à une inférence par seconde. Deux cellules restent « à mesurer » : l'énergie par mise à
+jour continue, dont les régressions ne sont pas publiables en l'état, et le profil par phase.
 
 \begin{figure}[t]
 \centering
@@ -73,13 +82,13 @@ l'arbitrage fréquence, où la marge de latence s'échange contre de l'énergie.
 \subsection{Coût de calcul}
 
 Analytiquement, la tête compte \num{722} paramètres sur Monitoring (\num{754} sur Pronostia), pour
-\num{672} MAC et \num{1344} FLOP par inférence (\num{704} et \num{1408}). Le compte en \emph{opérations
+\num{672} MAC et \num{1344} \gls{FLOP} par inférence (\num{704} et \num{1408}). Le compte en \emph{opérations
 binaires} donne le ratio théorique attendu : \num{1376256} BOPs en FP32 contre \num{86016} en INT8, soit un
 facteur~16 --- c'est-à-dire $(32/8)^2$.
 
 Ce facteur~16 est précisément ce que la carte \emph{ne} restitue pas. Confronter les deux colonnes de la
 Figure~\ref{fig:cost} est la manière la plus directe de voir pourquoi une métrique de coût analytique ne
-peut pas remplacer une mesure : le BOP compte des bits d'opérande, pas des cycles d'une unité flottante
+peut pas remplacer une mesure : le \gls{BOP} compte des bits d'opérande, pas des cycles d'une unité flottante
 existante.
 
 \begin{figure}[t]

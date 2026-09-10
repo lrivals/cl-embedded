@@ -19,8 +19,16 @@
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
 \usepackage{caption}
+\usepackage[acronym,toc]{glossaries}
+
 
 \graphicspath{{figures/}}
+
+%% Glossaire des acronymes (liste imprimee en fin de document).
+%% La chaine DOIT passer par makeglossaries : pdflatex ne produit que le .acn,
+%% c'est makeglossaries qui ecrit le .acr effectivement lu par \printglossary.
+\makeglossaries
+\input{glossary_fr}
 
 % ── Fallback léger façon siunitx (paquet siunitx absent de l'environnement) ──
 % Permet \num, \numrange, \SI, \SIrange et les macros d'unités sans dépendance.
@@ -36,6 +44,9 @@
 \providecommand{\mega}{M}
 \providecommand{\hertz}{Hz}
 \providecommand{\joule}{J}
+\providecommand{\ampere}{A}
+\providecommand{\hour}{h}
+\providecommand{\si}[1]{#1}
 
 \title{Apprentissage incrémental EWC sur microcontrôleur :\\
 parité FP32 mesurée, effondrement de la quantification naïve\\
@@ -55,7 +66,7 @@ d'échantillons, même normalisation) entre l'exécution PC et la carte. \textbf
 PC$\leftrightarrow$carte est \emph{exacte} en mode gelé (\num{1.000}) et quasi exacte en mode en ligne
 (\numrange{0.963}{0.989}), pour une latence inférence + mise à jour continue $\ll$ \SI{100}{\milli\second}
 (Gap~2). \textbf{(2)} La quantification post-entraînement (PTQ) \emph{naïve} de la tête EWC binaire
-s'effondre sur la carte : le F1 chute de $\approx\!\num{0.92}$ à \numrange{0.05}{0.15}. \textbf{(3)} Une
+s'effondre sur la carte : le F1 chute de $\approx\!\num{0.92}$ à \num{0.138} et \num{0.1337}. \textbf{(3)} Une
 ablation bit-exacte émulée sur PC isole la cause (accumulateur \texttt{int8}, échelle par-tenseur
 non calibrée) et démontre la \emph{récupération} par un kernel calibré : le schéma
 \texttt{per\_tensor\_calib} restaure $+\!\num{0.88}$ de F1 (Pronostia \num{0.9462}, Monitoring \num{0.9201}),
@@ -83,7 +94,67 @@ maintenance prédictive ; TinyML.
 \input{sections/fr/06_discussion}
 \input{sections/fr/07_conclusion}
 
+%% ── Disponibilité et remerciements ──────────────────────────
+\section*{Disponibilité du code et des données}
+\addcontentsline{toc}{section}{Disponibilité du code et des données}
+
+Le firmware C, les noyaux de quantification, l'émulateur bit-exact, les pilotes de campagne et les
+scripts de figures appartiennent au dépôt du projet CL-Embedded. Chaque valeur rapportée ici provient d'un
+fichier de résultats versionné, rassemblé sans recalcul dans un agrégat unique dont les figures et les
+tables sont dérivées : aucune valeur n'est saisie à la main dans le texte ni dans les figures. Les jeux de
+données sont publics et cités en \S\ref{sec:setup}.
+
+\section*{Remerciements}
+\addcontentsline{toc}{section}{Remerciements}
+
+Ce travail a été mené à l'ISAE-SUPAERO (DISC), en collaboration avec l'ENAC (LII) et Edge Spectrum.
+L'auteur remercie ses encadrants pour leurs relectures et leurs orientations sur la quantification
+embarquée et sur la conduite des campagnes de mesure.
+
 \bibliographystyle{plain}
 \bibliography{references}
+
+%% ── Annexes ─────────────────────────────────────────────────
+%% Tables générées par scripts/generate_article_tables.py depuis l'agrégat.
+%% Ne pas éditer tables/*.tex à la main.
+\appendix
+
+\section{Balayage de profondeur et de symétrie}
+\label{app:depth}
+
+La Section~\ref{sec:quant-axes} ne cite que les points de décision du balayage
+sub-INT8. Les Tableaux~\ref{tab:annex-depth} et~\ref{tab:annex-symmetry} donnent la
+grille complète en $\Delta$AUROC, dont se déduisent la frontière ternaire de cette
+métrique et l'inutilité du zéro-point affine. Le F1 mesuré sur carte des mêmes schémas,
+qui déplace cette frontière à l'INT4, est donné au Tableau~\ref{tab:depth-board}.
+
+\input{tables/annex_depth_fr}
+\input{tables/annex_symmetry_fr}
+
+\section{Détail du budget système}
+\label{app:budget}
+
+Le Tableau~\ref{tab:annex-ram} décompose la RAM que la Section~\ref{sec:system}
+n'agrège qu'en total : on y lit directement que le \texttt{.bss} est \emph{identique}
+entre FP32 et INT8, l'écart de total ne venant que du pic de pile. Le
+Tableau~\ref{tab:annex-energy} range les trois estimateurs d'énergie côte à côte.
+
+\input{tables/annex_ram_fr}
+\input{tables/annex_energy_fr}
+
+\section{Registre des mesures manquantes}
+\label{app:missing}
+
+Le Tableau~\ref{tab:annex-missing} liste les cellules que l'article laisse
+explicitement « à mesurer », avec la raison de chacune. Publier ce registre est le
+pendant de la règle « aucun chiffre inventé » : il rend l'absence vérifiable au lieu
+de la laisser deviner.
+
+\input{tables/annex_missing_fr}
+
+%% ── Acronymes ───────────────────────────────────────────────
+%% Seules les entrees citees via \gls{} dans le corps sont imprimees.
+\printglossary[type=\acronymtype,title=Acronymes]
+\label{sec:acronyms}
 
 \end{document}

@@ -1,35 +1,299 @@
 \section{Method}
 \label{sec:method}
 
+\subsection{EWC formulation and embedded adaptation}
+\label{sec:ewc_formulation}
+
+\paragraph{Elastic penalty.} EWC fights catastrophic forgetting by anchoring the parameters deemed
+important for what has already been learned \cite{Kirkpatrick2017EWC}. After a task, we keep an
+anchor point $\theta^\star$ --- the parameters as they stood at the end of that task --- and an
+estimate $F$ of the importance of each coordinate. Training on the next task then minimizes the task
+loss augmented with a quadratic pull towards that anchor:
+\begin{equation}
+\label{eq:ewc_loss}
+\mathcal{L}(\theta) \;=\; \mathcal{L}_{\text{task}}(\theta)
+\;+\; \frac{\lambda}{2} \sum_{i} F_i \,\bigl(\theta_i - \theta^\star_i\bigr)^2 .
+\end{equation}
+The coefficient $\lambda$ arbitrates between plasticity and retention. Each coordinate is pulled back
+with its own stiffness, $\lambda F_i$: a coordinate of high importance becomes expensive to move, a
+coordinate of low importance stays free. The sum runs over \emph{all} parameters of the head, weights
+and biases alike. There is a single quadratic term, anchored on the latest $\theta^\star$, rather
+than a sum over past tasks: the memory cost of the regularizer is therefore constant, two copies of
+the parameters, whatever the number of tasks already seen. On the first task, $F$ and $\theta^\star$
+do not exist yet and the penalty is absent.
+
+\paragraph{Estimating importance on PC.} $F$ is the diagonal of the Fisher information matrix,
+estimated at the end of a task on that task's data. We use its empirical form, that is, evaluated on
+the real labels rather than on labels drawn from the model. The quantity actually accumulated is the
+squared gradient of the loss \emph{averaged over a batch}, averaged over the $B$ batches traversed:
+\begin{equation}
+\label{eq:fisher}
+F_i \;=\; \frac{1}{B} \sum_{b=1}^{B}
+\left( \frac{\partial \mathcal{L}_b}{\partial \theta_i} \right)^{\!2},
+\qquad
+\mathcal{L}_b \;=\; \frac{1}{|b|} \sum_{n \in b} \ell\bigl(x_n, y_n; \theta\bigr) .
+\end{equation}
+The budget is capped at \num{200} samples, which is enough to rank the coordinates against one
+another --- only that ranking matters, since $\lambda$ absorbs the global scale. Two writings of the
+accumulation coexist in the project. The \emph{online} variant in the sense of
+\cite{Schwarz2018Online} maintains a single importance and lets it decay, $F \leftarrow \gamma F +
+F^{(t)}$ with $\gamma = \num{0.9}$, which gradually fades the oldest tasks. The head actually ported
+to the board instead \emph{replaces} its importance at every consolidation: the anchor always follows
+the last consolidated task.
+
+\paragraph{What the board can do, and what it cannot.} The port keeps the penalty of
+\eqref{eq:ewc_loss}, whose derivative $\lambda F_i (\theta_i - \theta^\star_i)$ adds to the task
+gradient. The embedded update reads, for a weight $W$ of layer $l$:
+\begin{equation}
+\label{eq:board_sgd}
+W_{ji} \;\leftarrow\; W_{ji} \;-\; \eta \Bigl(
+\underbrace{\delta_j \, a_i}_{\text{task gradient}}
+\;+\; \underbrace{\lambda \, F_{ji} \,\bigl(W_{ji} - W^\star_{ji}\bigr)}_{\text{elastic pull}}
+\Bigr),
+\qquad \eta = \num{0.01} .
+\end{equation}
+Consolidation, on the other hand, cannot reproduce \eqref{eq:fisher}: estimating it would require
+keeping a batch of labelled samples and running a backward pass over them, neither of which a board
+in continuous streaming, with no data memory, has at hand. Importance is therefore approximated by
+the \emph{magnitude} of the weight itself, maintained as an exponential moving average:
+\begin{equation}
+\label{eq:board_fisher}
+F_{ji} \;\leftarrow\; \alpha \, F_{ji} \;+\; (1-\alpha) \, W_{ji}^2 ,
+\qquad
+W^\star_{ji} \;\leftarrow\; W_{ji} ,
+\qquad \alpha = \num{0.99} .
+\end{equation}
+This substitution must be named for what it is: $W^2$ is not the Fisher, it is an importance proxy
+that requires no data, no label and no backward pass, and whose cost is one read-write per weight. It
+assumes that large-magnitude coordinates are the ones carrying the learned function. Two consequences
+follow. The embedded penalty covers the weight matrices only, biases having neither importance nor
+anchor stored, which saves a third of the regularization state. And at initialization $F \equiv 0$:
+until a consolidation has occurred, the elastic pull is zero and the board learns by plain gradient
+descent.
+
+\begin{table}[htbp]
+\centering
+\caption{Adaptation of the model under embedded constraints. The penalty of \eqref{eq:ewc_loss} is
+kept identical; what is simplified is its importance estimator and its optimization regime.}
+\label{tab:ewc_port}
+\footnotesize
+\begin{tabular}{@{}p{30mm}p{35mm}p{50mm}@{}}
+\toprule
+ & \textbf{PC (PyTorch)} & \textbf{Board (\texttt{ewc\_head.c})} \\
+\midrule
+Importance estimator & squared gradient, Eq.~\eqref{eq:fisher} & magnitude $W^2$, Eq.~\eqref{eq:board_fisher} \\
+Data required        & one labelled batch per task & none \\
+Accumulation         & replaced at every consolidation & moving average, $\alpha = \num{0.99}$ \\
+Penalty scope        & weights and biases & weights only \\
+Optimization         & batches, momentum, several epochs & one sample, no momentum, single pass \\
+$\lambda$            & \num{1000} & \num{400} \\
+Trigger              & end of task & frame flag, or drift detection \\
+Initial state of $F$ & first computed at the end of task $1$ & zero, hence no pull before consolidation \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+One last, purely numerical divergence is worth flagging, as it sheds light on the parity
+measurements: the board updates each weight in place and then propagates the error to the previous
+layer using the \emph{already modified} weight, where the PC framework uses the pre-step weights
+throughout. Under frozen inference, both platforms execute the same function and parity is exact;
+under the update regime, this divergence and the unit batch are enough to explain why it no longer
+quite is.
+
 \subsection{EWC model and C port}
 
 The model is a multilayer perceptron with an EWC head (\texttt{EWCMlpMulticlass}, $k \to 32 \to 16 \to 2$)
-trained incrementally with an online Fisher penalty. The head is ported to C (\texttt{ewc\_head.c}) for the
-board: both the \emph{forward pass} and the SGD update run on the Cortex-M4 in FP32 (the F439ZI has no NPU).
-Weights are exported from the PyTorch checkpoint to a generated C header
-(\texttt{model\_weights\_ewc.h}) --- never hand-edited --- so that board and PC share \emph{exactly} the same
-parameters.
+trained incrementally as described in Section~\ref{sec:ewc_formulation}. The head is ported to C (\texttt{ewc\_head.c}) for the
+board: both the forward pass and the \gls{SGD} update run on the Cortex-M4 in FP32 (the F439ZI has no NPU).
+Weights are exported from the PyTorch checkpoint into a generated C header
+(\texttt{model\_weights\_ewc.h}) --- never hand-edited --- so that board and PC share \emph{exactly} the
+same parameters.
 
 \subsection{Paired PC$\leftrightarrow$board protocol}
 
-To make the comparison honest, board and PC consume the same sequence: same seed ($\texttt{seed}=42$), same
-sample order, same normalization (feature indices and arrays are produced by a single source). Two protocols
-are evaluated: \emph{frozen} (inference only, fixed weights) and \emph{online} (inference then continual
-update). \emph{Parity} is the prediction-by-prediction agreement rate between the two platforms.
+To make the comparison honest, board and PC consume the same sequence: same seed ($\texttt{seed}=42$),
+same sample order, same normalization (feature indices and arrays are produced by a single source). Two
+protocols are evaluated: \emph{frozen} (inference only, weights fixed) and \emph{online} (inference then
+continual update). \emph{Parity} is the prediction-to-prediction agreement rate between the two platforms.
 
-\subsection{Quantization schemes}
+\subsection{Quantization formulation}
+\label{sec:quant_formulation}
 
-We compare several INT8 kernels of the decision head, from the most naive to the most careful:
+\paragraph{The mapping and its scale.} Quantizing a tensor means replacing its real values by integers
+on a regular grid, plus a scale that maps that grid back to the floating-point world. For a weight on
+$b$ bits in signed symmetric representation, with $q_{\max} = 2^{\,b-1} - 1$:
+\begin{equation}
+\label{eq:quant_map}
+Q_{ji} = \mathrm{clip}\!\left( \mathrm{round}\!\left( \frac{W_{ji}}{s_j} \right),\, -q_{\max},\, q_{\max} \right),
+\qquad
+\widehat{W}_{ji} = s_j \, Q_{ji} .
+\end{equation}
+The whole behaviour of a scheme lies in the choice of $s_j$. We compare three of them, which form a
+single family rather than separate methods:
+\begin{equation}
+\label{eq:scale_gran}
+s_j \;=\;
+\underbrace{\frac{1}{128}}_{\text{fixed}}
+\qquad\text{or}\qquad
+\underbrace{\frac{\max_{j,i} |W_{ji}|}{q_{\max}}}_{\text{per tensor}}
+\qquad\text{or}\qquad
+\underbrace{\frac{\max_i |W_{ji}|}{q_{\max}}}_{\text{per output channel}} .
+\end{equation}
+The fixed scale is the one of the original embedded kernel. It does not depend on the weights: any
+coefficient with modulus above $127/128$ is clamped onto the edge of the grid, and every coefficient
+smaller than the step collapses onto zero.
+
+\paragraph{The integer layer.} Activations receive the same treatment, with a scale $s_a$ obtained from
+a calibration. A layer then reads as an integer accumulation followed by a single return to floating
+point:
+\begin{equation}
+\label{eq:int_layer}
+\mathrm{acc}_j = \sum_i Q_{ji} \, q^a_i ,
+\qquad
+y_j = \mathrm{acc}_j \cdot s_j \cdot s_a + b_j .
+\end{equation}
+Granularity is read off \eqref{eq:int_layer}: the index $j$ carried by $s_j$ means that an output neuron
+whose weights are of small amplitude gets its own scale, instead of sharing the one set by the largest
+coefficient of the whole matrix. The calibration used is a per-layer absolute maximum, measured on a
+batch in floating-point precision ($s_a = \mathrm{act\_max}/q^a_{\max}$).
+
+\paragraph{What the original scheme prescribes, and what we keep of it.} The reference integer
+formulation \cite{Jacob2018,Krishnamoorthi2018} aims at \emph{fully} integer inference: the return to
+the next scale is done there by an integer multiplier and a shift, biases are carried in \texttt{int32}
+at the scale of the product, and a zero point offsets the activation grid. Our target has different
+constraints: the Cortex-M4F has a hardware floating-point unit, and the head has only three layers. We
+therefore keep the integer accumulation and the per-channel scales, but return to floating point
+between layers. Table~\ref{tab:quant_ref} summarizes the divergences.
+
+\begin{table}[htbp]
+\centering
+\caption{Reference integer scheme and embedded implementation. The divergences are dictated by the
+target (floating-point unit present, short network) and not by a convenience simplification.}
+\label{tab:quant_ref}
+\footnotesize
+\begin{tabular}{@{}p{30mm}p{40mm}p{45mm}@{}}
+\toprule
+ & \textbf{Reference \cite{Jacob2018}} & \textbf{v2 kernel (\texttt{ewc\_head\_int8\_v2.c})} \\
+\midrule
+Scale return      & integer multiplier and shift & floating-point dequantization on the hardware unit \\
+Biases            & \texttt{int32} at the product scale & exact floats, never quantized \\
+Zero point        & on activations and weights & symmetric weights with no zero point; symmetric activations, affine optional \\
+Granularity       & per tensor, per channel as an extension & per output channel by default \\
+Calibration       & histogram or percentile & per-layer absolute maximum on a batch \\
+Normalization folding & required before quantization & not applicable, the network has none \\
+Accumulator       & \texttt{int32} & \texttt{int32}, widened to \texttt{int64} for the Q15 variant \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{The format axis: the ablation ladder.} The original embedded kernel accumulates four
+divergences from \eqref{eq:quant_map}--\eqref{eq:int_layer}: a fixed scale, rounding replaced by
+truncation towards zero, an \texttt{int16} accumulator that silently wraps, and activations folded onto
+a Q7 grid. Rather than fixing them all at once, we walk a trajectory inside family
+\eqref{eq:scale_gran}, each step enabling one change only:
 \begin{itemize}
-  \item \texttt{legacy\_c}: \texttt{int8} accumulator, uncalibrated per-tensor scale (the original v1 board
-        kernel);
-  \item \texttt{fix\_acc32}: accumulator widened to \texttt{int32} (partial fix);
-  \item \texttt{per\_tensor\_calib}: \texttt{int32} accumulator + per-tensor scale \emph{calibrated} on the
-        activations;
-  \item \texttt{per\_channel\_int8}: \emph{per-channel} output scale;
-  \item \texttt{q15}: \texttt{int16} Q15 fixed-point weights (RAM $\div 2$ instead of $\div 4$).
+  \item \texttt{legacy\_c}: fixed scale, truncation, \texttt{int16} accumulator (the original v1 kernel
+        on the board);
+  \item \texttt{fix\_acc32}: accumulator widened to \texttt{int32}, everything else unchanged;
+  \item \texttt{per\_tensor\_calib}: \emph{calibrated} per-tensor scale and round-to-nearest;
+  \item \texttt{per\_channel\_int8}: \emph{per-output-channel} scale;
+  \item \texttt{q15}: 16-bit grid, $q_{\max} = 32767$ (RAM $\div 2$ instead of $\div 4$).
 \end{itemize}
-The v2 firmware kernel (Sprint~40) implements the \texttt{int32} accumulator and per-channel calibrated
-scales, with an optional Q15 variant (\texttt{-DEWC\_INT8\_Q15}); the v1 FP32 path is unchanged. The
-ablation is \emph{bit-exactly emulated on PC} (\texttt{src/utils/int8\_c\_emulation.py}) to isolate the
-contribution of each fix independently of board access.
+The v2 firmware kernel implements the last two steps, with an optional Q15 variant
+(\texttt{-DEWC\_INT8\_Q15}); the v1 path is unchanged so that both can be compared on the same board.
+The ablation is \emph{bit-exactly emulated on PC} (\texttt{src/utils/int8\_c\_emulation.py}) so as to
+isolate the contribution of each fix independently of board access. Scales are not recomputed on the
+board: they are produced on PC by the very functions the emulator uses, then written into a generated C
+header, which makes parity true \emph{by construction} rather than observed after the fact.
+
+\paragraph{Where quantization stops under the learning regime.} A scope statement must be made before
+reading the "online" cells of Section~\ref{sec:results}, because it governs their interpretation. The
+integer kernel exposes a forward pass only: there is no gradient descent in the quantized domain. The
+board therefore keeps a \emph{master} FP32 head, to which \eqref{eq:board_sgd} and
+\eqref{eq:board_fisher} apply, and whose integer representation is only a \emph{view}, rebuilt through
+\eqref{eq:quant_map} after each step. Two consequences follow, and we state them rather than leave them
+implicit. First, the fourfold reduction of weight memory holds for inference alone: under the learning
+regime the board simultaneously carries the floating head, its integer view, the importance and the
+anchor, that is more than FP32 alone. Second, requantizing every matrix at each sample enters the latency
+budget, which Section~\ref{sec:recovery-board} quantifies. In other words, this work establishes a
+quantization \emph{compatible} with incremental learning --- inference is integer, and learning keeps
+working through it --- not learning \emph{carried out} in integer arithmetic, which remains an open
+problem.
+
+\paragraph{What per-channel costs.} A scale per output neuron is not free: it adds an array of floats
+parallel to each matrix, one four-byte value per output row. On the ported head, these scales bring the
+actual weight-memory gain below the factor of four advertised by the type change alone. That is the
+price of robustness: per-channel isolates the large-amplitude neurons, which would otherwise impose
+their scale on the whole layer.
+
+\subsection{The moment axis: when to quantize}
+
+At a fixed format, the same head can be quantized at three instants. \emph{Before} training, through QAT:
+a \emph{fake-quant} inserted in the loop makes the weights learn under the reduced-precision constraint.
+\emph{After}, through PTQ: the trained FP32 model is converted once and for all. And \emph{both}, that is
+a QAT training whose weights are then exported to the calibrated integer kernel. Only this last path is
+faithful to the actual deployment, since it is the embedded kernel that runs inference, not the
+quantization simulation of the training framework. The three moments are compared at identical model,
+dataset and seed.
+
+\subsection{The depth axis: bits, granularity, symmetry}
+
+Below INT8, three parameters describe a scheme: the number of \emph{weight bits} (4, 2, ternary, binary),
+the \emph{granularity} of the scale (per tensor or per output channel) and the \emph{symmetry}
+(symmetric, or affine with a zero point). The first two are read directly off \eqref{eq:quant_map} and
+\eqref{eq:scale_gran}: going deeper means lowering $q_{\max}$, and changing granularity means changing
+the scope of the maximum that defines $s_j$.
+
+At very low depths, the linear grid gives way to two dedicated schemes, which we take as they stand. In
+ternary \cite{Li2016TWN}, a per-channel threshold decides which weights survive, and the scale is the
+mean of the surviving weights alone:
+\begin{equation}
+\label{eq:twn}
+\begin{gathered}
+\Delta_j = \num{0.7} \cdot \overline{|W_{j\cdot}|},
+\qquad
+Q_{ji} = \mathrm{sign}(W_{ji}) \cdot \mathbf{1}\bigl[\,|W_{ji}| > \Delta_j\,\bigr], \\[2pt]
+\alpha_j = \overline{\bigl\{ |W_{ji}| : |W_{ji}| > \Delta_j \bigr\}} .
+\end{gathered}
+\end{equation}
+In binary \cite{Rastegari2016XNOR}, no weight is set to zero any more and the scale is the mean modulus
+of the channel: $Q_{ji} = \mathrm{sign}(W_{ji})$, $\alpha_j = \overline{|W_{j\cdot}|}$. Both schemes
+carry a per-channel scale \emph{by construction}, so the granularity axis stops applying once they are
+reached.
+
+Symmetry, for its part, concerns activations. After a positive activation function, the negative half of
+a symmetric grid is of no use, which costs all the more as bits are scarce. The affine variant offsets
+the grid by a zero point:
+\begin{equation}
+\label{eq:affine_act}
+q = \mathrm{round}\!\left(\frac{a}{s_a}\right) + z,
+\qquad
+\widehat{a} = (q - z)\, s_a .
+\end{equation}
+Weights, whose distribution is centred, stay symmetric with no zero point in every scheme we evaluate.
+
+One point finally deserves to be stated, as it governs how the
+advertised gains must be read: as long as weights remain stored in an \texttt{int8\_t} container, reducing
+the number of bits frees \emph{no} byte. The memory gain exists only with effective \emph{bit-packing},
+which in turn costs unpacking at run time. We therefore systematically distinguish the \emph{theoretical}
+RAM of a scheme from the \emph{measured} RAM of the binary.
+
+\subsection{Measurement methodology}
+
+The quantities reported in Section~\ref{sec:system} call for three distinct instrumentations.
+
+\paragraph{Memory.} The RAM of a binary is not the footprint of its weights. We report \emph{total RAM}
+$= \texttt{.data} + \texttt{.bss} + \text{stack peak}$, the first two terms being read from the binary and
+the third measured at run time by stack painting, keeping the maximum between the inference phase and the
+update phase.
+
+\paragraph{Latency.} The \gls{DWT} cycle counter times the kernel to the cycle. For the INT8 path it is
+instrumented in \emph{three segments} --- dequantization, integer \gls{MAC}, requantization --- so as to answer
+not "is INT8 slower?" but "which item costs?". Cycles are reported raw, since conversion to microseconds
+truncates the information at this scale.
+
+\paragraph{Energy.} Current is measured with an X-NUCLEO-LPM01A probe through three independent methods:
+regression of current against inference rate, difference against a \gls{WFI} idle state, and a batch of
+inferences per frame isolating computation from the link cost. We report them \emph{side by side} without
+ever averaging them: they do not measure the same boundary, and their disagreement is itself a result. Any
+unmeasured cell is reported as "to be measured" rather than estimated.

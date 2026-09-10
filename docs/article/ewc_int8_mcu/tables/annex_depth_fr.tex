@@ -1,0 +1,22 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{Balayage de profondeur complet : $\Delta$AUROC contre la référence FP32, par profondeur et granularité (\emph{émulé PC bit-exact}). Un $\Delta$ négatif est une dégradation.}
+\label{tab:annex-depth}
+\begin{tabular}{lcccc}
+\toprule
+Profondeur & \multicolumn{2}{c}{Monitoring} & \multicolumn{2}{c}{Pronostia} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & Par tenseur & Par canal & Par tenseur & Par canal \\
+\midrule
+\texttt{int8} & \num{0.0000} & \num{0.0002} & \num{-0.0009} & \num{-0.0009} \\
+\texttt{int6} & \num{-0.0000} & \num{0.0003} & \num{-0.0005} & \num{-0.0007} \\
+\texttt{int4} & \num{0.0011} & \num{-0.0005} & \num{-0.0012} & \num{-0.0016} \\
+\texttt{int3} & \num{0.0026} & \num{-0.0026} & \num{-0.0021} & \num{-0.0021} \\
+\texttt{int2} & \num{-0.0028} & \num{-0.0069} & \num{-0.0464} & \num{-0.0086} \\
+\texttt{ternaire} & \num{-0.0021} & \num{-0.0021} & \num{-0.0153} & \num{-0.0153} \\
+\texttt{binaire} & \num{-0.0117} & \num{-0.0117} & \num{-0.0275} & \num{-0.0275} \\
+\bottomrule
+\end{tabular}
+\end{table}

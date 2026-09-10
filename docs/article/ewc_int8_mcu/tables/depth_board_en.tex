@@ -1,0 +1,18 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{Sub-INT8 schemes \emph{measured on-board}: AUROC and \texttt{faulty}-class F1 on the same cells. AUROC stays high where F1 breaks down, depth not moving the two metrics together.}
+\label{tab:depth-board}
+\begin{tabular}{lcccc}
+\toprule
+Depth & \multicolumn{2}{c}{Monitoring} & \multicolumn{2}{c}{Pronostia} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & AUROC & F1 & AUROC & F1 \\
+\midrule
+\texttt{int4} & \num{0.98787} & \num{0.9210} & \num{0.99995} & \num{0.9887} \\
+\texttt{ternary} & \num{0.98409} & \num{0.9042} & \num{0.99907} & \num{0.3790} \\
+\texttt{binary} & \num{0.96784} & \num{0.6878} & \num{0.96616} & \num{0.0000} \\
+\bottomrule
+\end{tabular}
+\end{table}

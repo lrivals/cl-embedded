@@ -1,0 +1,131 @@
+%% ============================================================
+%%  Acronymes — article « EWC INT8 sur MCU » (version française)
+%%  Léonard Rivals — Sprint 40, CL-Embedded
+%%
+%%  Usage : \usepackage[acronym,toc]{glossaries} puis \makeglossaries
+%%          \input{glossary_fr}
+%%          \printglossary[type=\acronymtype]
+%%
+%%  Patron repris du manuscrit (docs/rapport_de_stage/.../glossary_entries.tex),
+%%  restreint aux sigles réellement employés dans cet article.
+%% ============================================================
+
+%% Les descriptions citent les autres sigles en clair, jamais via \gls{...} :
+%% une entrée non citée dans le texte n'est pas imprimée, et le lien pointerait
+%% alors vers une ancre inexistante.
+\glsnoexpandfields
+
+%% Style : « forme longue (SIGLE) » à la première occurrence, description dans la liste.
+\setacronymstyle{long-short-desc}
+
+% ------------------------------------------------------------------
+%  APPRENTISSAGE CONTINU
+% ------------------------------------------------------------------
+\newacronym[description={Apprentissage d'une suite de tâches sans accès aux données
+  passées, où le modèle doit intégrer le nouveau sans effacer l'ancien}]%
+  {CL}{CL}{Continual Learning}
+\newacronym[description={Méthode anti-oubli qui ajoute à la perte une pénalité quadratique
+  freinant la modification des poids jugés importants pour les tâches passées, l'importance
+  étant estimée par l'information de Fisher. Elle ne stocke aucune donnée passée, ce qui la
+  rend compatible avec un microcontrôleur}]%
+  {EWC}{EWC}{Elastic Weight Consolidation}
+\newacronym[description={Algorithme d'optimisation mettant à jour les poids dans la
+  direction opposée au gradient, estimé sur un petit lot d'exemples ; c'est la mise à jour
+  exécutée à bord dans le protocole en ligne}]%
+  {SGD}{SGD}{Stochastic Gradient Descent}
+\newacronym[description={Approche où un réseau préentraîné est gelé en Flash et où seule une
+  couche entraînable légère est mise à jour en RAM, échantillon par échantillon}]%
+  {TinyOL}{TinyOL}{Tiny Online Learning}
+\newacronym[description={Paradigme non neuronal encodant les signaux dans des vecteurs de
+  très haute dimension ; l'apprentissage s'y réduit à des opérations élémentaires
+  (addition, vote majoritaire), sans rétropropagation}]%
+  {HDC}{HDC}{Hyperdimensional Computing}
+\newacronym[description={Apprentissage automatique sur microcontrôleur, caractérisé par
+  trois contraintes cumulatives : pas de mémoire externe, pas de système d'exploitation,
+  et une mémoire vive inférieure à 256\,Ko}]%
+  {TinyML}{TinyML}{Tiny Machine Learning}
+
+% ------------------------------------------------------------------
+%  QUANTIFICATION
+% ------------------------------------------------------------------
+\newacronym[description={Quantification appliquée à un modèle déjà entraîné : simple à
+  mettre en \oe uvre, mais sujette à des pertes lorsque l'échelle est fixée sans
+  calibration ou que la dynamique des tenseurs est large. C'est le régime dont cet article
+  mesure l'effondrement puis la récupération}]%
+  {PTQ}{PTQ}{Post-Training Quantization}
+\newacronym[description={Quantification simulée à chaque pas d'entraînement par
+  \emph{fake-quant}, de sorte que le modèle apprenne directement sous contrainte de
+  précision réduite ; plus coûteuse à l'entraînement, elle n'apporte ici aucun gain décisif
+  face à une PTQ correctement calibrée}]%
+  {QAT}{QAT}{Quantization-Aware Training}
+
+% ------------------------------------------------------------------
+%  CIBLE MATÉRIELLE ET MÉMOIRE
+% ------------------------------------------------------------------
+\newacronym[description={Processeur intégrant sur une même puce cœur, mémoire et
+  périphériques, destiné aux systèmes embarqués autonomes}]%
+  {MCU}{MCU}{Microcontroller Unit}
+\newacronym[description={Mémoire vive volatile où résident les variables et les tampons du
+  programme ; ressource la plus critique de la cible}]%
+  {RAM}{RAM}{Random Access Memory}
+\newacronym[description={Mémoire vive statique intégrée au microcontrôleur, rapide mais
+  coûteuse en surface de silicium, donc disponible en très faible quantité. C'est elle qui
+  fixe le budget mémoire de ce travail}]%
+  {SRAM}{SRAM}{Static Random Access Memory}
+\newacronym[description={Mémoire rapide directement rattachée au cœur du processeur, non
+  accessible à certains périphériques ; sur la carte cible elle complète la mémoire vive
+  statique principale}]%
+  {CCM}{CCM}{Core Coupled Memory}
+\newacronym[description={Circuit spécialisé dans les opérations de réseaux de neurones,
+  capable d'exécuter des multiplications-accumulations entières massivement en parallèle.
+  Son absence sur la carte cible explique qu'INT8 n'y apporte aucun gain de vitesse}]%
+  {NPU}{NPU}{Neural Processing Unit}
+\newacronym[description={Unité matérielle de calcul en virgule flottante ; sur la carte
+  cible elle rend les opérations FP32 aussi rapides que les opérations entières, ce qui
+  annule le bénéfice de vitesse attendu de la quantification}]%
+  {FPU}{FPU}{Floating-Point Unit}
+\newacronym[description={Jeu d'instructions appliquant une même opération à plusieurs
+  données en un cycle ; c'est le levier qui manque au chemin entier de ce travail pour
+  convertir le gain de format en gain de temps}]%
+  {SIMD}{SIMD}{Single Instruction, Multiple Data}
+\newacronym[description={Bibliothèque de noyaux de réseaux de neurones optimisés pour les
+  cœurs Cortex-M, exploitant les instructions vectorielles ; piste directe pour lever le
+  paradoxe de latence constaté ici}]%
+  {CMSISNN}{CMSIS-NN}{Common Microcontroller Software Interface Standard --- Neural Network}
+\newacronym[description={Instruction mettant le cœur en sommeil jusqu'à la prochaine
+  interruption ; son emploi dans l'attente de la liaison série abaisse le courant de repos
+  et rend exploitable la mesure d'énergie par différence}]%
+  {WFI}{WFI}{Wait For Interrupt}
+
+% ------------------------------------------------------------------
+%  INSTRUMENTATION ET LIAISON
+% ------------------------------------------------------------------
+\newacronym[description={Unité de débogage du cœur Cortex-M dont le compteur de cycles
+  permet de chronométrer une section de code au cycle près, puis de la convertir en
+  microsecondes à partir de la fréquence d'horloge. Toutes les latences de cet article en
+  sont issues}]%
+  {DWT}{DWT}{Data Watchpoint and Trace}
+\newacronym[description={Liaison série asynchrone reliant la carte à l'hôte ; elle achemine
+  les échantillons trame par trame et rapporte les prédictions}]%
+  {UART}{UART}{Universal Asynchronous Receiver-Transmitter}
+\newacronym[description={Somme de contrôle calculée sur chaque trame transmise ; un taux
+  d'erreur nul garantit que les prédictions comparées sont bien celles produites par la
+  carte et non le produit d'une transmission corrompue}]%
+  {CRC}{CRC}{Cyclic Redundancy Check}
+
+% ------------------------------------------------------------------
+%  COÛT DE CALCUL ET MÉTRIQUES
+% ------------------------------------------------------------------
+\newacronym[description={Opération élémentaire multipliant deux valeurs et ajoutant le
+  produit à un accumulateur ; unité de compte du coût d'une couche dense}]%
+  {MAC}{MAC}{Multiply-Accumulate}
+\newacronym[description={Opération élémentaire en virgule flottante ; une
+  multiplication-accumulation en compte deux}]%
+  {FLOP}{FLOP}{Floating-Point Operation}
+\newacronym[description={Coût exprimé au niveau du bit, proportionnel au produit des largeurs
+  des opérandes ; il prédit un facteur 16 entre FP32 et INT8 que la carte ne restitue pas,
+  ce qui illustre les limites d'une métrique analytique}]%
+  {BOP}{BOP}{Bit Operation}
+\newacronym[description={Aire sous la courbe ROC : probabilité qu'un échantillon anormal
+  reçoive un score plus élevé qu'un échantillon normal. Indépendante du seuil de décision}]%
+  {AUROC}{AUROC}{Area Under the ROC Curve}

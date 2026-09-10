@@ -2,7 +2,9 @@
 \label{sec:quant-axes}
 
 Les sections précédentes font varier la \emph{calibration} du kernel à format fixe. Deux autres degrés de
-liberté commandent le résultat : \emph{quand} on quantifie et \emph{combien de bits} on garde.
+liberté commandent le résultat : \emph{quand} on quantifie et \emph{combien de bits} on garde. Les trois
+placements comparés ici et les paramètres d'un schéma sub-INT8 sont définis en
+\S\ref{sec:method}.
 
 \subsection{Moment : avant, après, ou les deux}
 
@@ -11,7 +13,7 @@ boucle) ; \emph{après} (PTQ sur un modèle FP32 déjà entraîné) ; et \emph{l
 entraînement QAT dont les poids sont ensuite exportés vers le kernel entier calibré --- seul ce dernier
 chemin est fidèle au déploiement réel.
 
-En émulation, les trois moments préservent l'AUROC sur Monitoring (\num{0.974477} avant, \num{0.974649}
+En émulation, les trois moments préservent l'\gls{AUROC} sur Monitoring (\num{0.974477} avant, \num{0.974649}
 après, \num{0.974663} les deux, contre \num{0.97464} en FP32) : à cette échelle de modèle, aucun moment
 n'est disqualifiant. La question tranchée l'est \emph{sur carte}. Le chemin « les deux » a été flashé et
 streamé : il donne \num{0.9213} de F1 sur Monitoring et \num{0.9072} sur Pronostia, contre respectivement
@@ -36,15 +38,33 @@ l'A/B \emph{mesuré sur carte} entre la PTQ calibrée seule et le chemin QAT$\to
 Sous les 8 bits, la question devient : à partir de quelle profondeur la métrique décroche, et la
 granularité du facteur d'échelle change-t-elle cette limite ? Le balayage émulé répond aux deux.
 
-La limite dépend du jeu. Sur Monitoring, la dégradation reste contenue jusqu'au binaire
+La limite dépend du jeu ; la grille complète est en Annexe~\ref{app:depth}
+(Tableau~\ref{tab:annex-depth}). Sur Monitoring, la dégradation reste contenue jusqu'au binaire
 ($\Delta$AUROC $=-\,\num{0.0117}$). Sur Pronostia, le binaire décroche ($-\,\num{0.0275}$) mais le ternaire
-tient ($-\,\num{0.0153}$) : la frontière exploitable est donc le \emph{ternaire}, le binaire n'étant
-défendable que sur le jeu le plus facile.
+tient ($-\,\num{0.0153}$) : lue en AUROC, la frontière exploitable serait donc le \emph{ternaire}, le
+binaire n'étant défendable que sur le jeu le plus facile.
+
+\paragraph{La frontière dépend de la métrique de sélection.} Cette lecture ne survit pas à la confrontation
+avec le F1 \emph{mesuré sur carte} des mêmes schémas, que le Tableau~\ref{tab:depth-board} place à côté de
+l'AUROC. Sur Pronostia, le ternaire conserve une AUROC de \num{0.99907} mais son F1 tombe à \num{0.379} ;
+le binaire garde une AUROC de \num{0.96616} pour un F1 \emph{nul}, c'est-à-dire un modèle qui ne prédit
+plus jamais la classe de défaut. L'ordre des scores reste bon là où le seuil de décision, lui, ne l'est
+plus : une métrique de rang est insensible au déséquilibre des classes, un F1 ne l'est pas. Sur les deux
+jeux, le seul schéma sub-INT8 qui préserve réellement la métrique d'exploitation est l'\textbf{INT4}
+(\num{0.921} et \num{0.9887}).
+
+Nous rapportons les deux lectures plutôt que d'en choisir une, car leur écart est lui-même le résultat :
+\textbf{ce n'est pas la profondeur seule qui fixe la frontière, c'est le couple profondeur--métrique de
+sélection}. Un travail qui ne rapporterait que l'AUROC conclurait au ternaire et déploierait, sur
+Pronostia, un détecteur qui ne détecte rien.
+
+\input{tables/depth_board_fr}
 
 La granularité, elle, repousse le décrochage. À 2 bits sur Pronostia, passer d'une échelle par-tenseur à
 une échelle par-canal fait passer $\Delta$AUROC de $-\,\num{0.0464}$ à $-\,\num{0.0086}$. Un point négatif
 mérite d'être rapporté aussi : le \emph{zéro-point} affine ne rachète rien --- à 2 bits sur Monitoring il
-dégrade même nettement ($-\,\num{0.0619}$ contre $-\,\num{0.0069}$ en symétrique).
+dégrade même nettement ($-\,\num{0.0619}$ contre $-\,\num{0.0069}$ en symétrique), et le
+Tableau~\ref{tab:annex-symmetry} montre que le constat vaut aux trois profondeurs testées.
 
 \paragraph{Le gain RAM n'existe que packé.} Le point crucial est que la RAM annoncée par ces schémas est
 \emph{théorique} tant que les poids restent stockés dans un conteneur \texttt{int8}. Mesuré sur carte, le
@@ -58,7 +78,8 @@ cellules mesurées : le schéma est porté sans perte.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{fig7_quant_depth_packing.png}
-\caption{Profondeur sub-INT8. À gauche, $\Delta$AUROC par profondeur et granularité (\emph{émulé PC}) ;
+\caption{Profondeur sub-INT8. À gauche, $\Delta$AUROC par profondeur et granularité (\emph{émulé PC}) ---
+la lecture en F1 mesuré sur carte, qui déplace la frontière, est au Tableau~\ref{tab:depth-board} ;
 à droite, les octets de \texttt{.bss} réellement économisés par le bit-packing (\emph{mesuré sur carte}).}
 \label{fig:depth}
 \end{figure}

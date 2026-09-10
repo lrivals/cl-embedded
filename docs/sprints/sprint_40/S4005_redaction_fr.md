@@ -62,3 +62,78 @@ l'exécution réelle.
 ```bash
 cd docs/article/ewc_int8_mcu && make fr    # main_fr.pdf compile sans erreur
 ```
+
+
+## Passe de rédaction locale (septembre 2026)
+
+Rédaction reprise en local sur la chaîne LaTeX du rapport de stage. Trois constats
+mesurés motivaient la reprise, au-delà du confort d'édition.
+
+1. **`01_intro` et `07_conclusion` étaient en deçà de leurs propres résultats.** La
+   contribution (iii) annonçait la récupération INT8 comme *émulée* alors que la
+   campagne v2 en mesure quatre cellules per-canal sur carte, et la conclusion
+   donnait encore comme « priorité immédiate » de compléter cette campagne. C'est le
+   défaut qui avait motivé la refonte S4008–S4010, corrigé dans l'abstract et la
+   section 5 mais **pas** dans ces deux sections. Le diagnostic reste émulé, la
+   récupération ne l'est plus : le texte le dit désormais.
+2. **Les sections 5b et 5c n'existaient dans aucune des sections amont.** Les
+   contributions de l'intro, la revue (`02`), la méthode (`03`) et le dispositif
+   (`04`) s'arrêtaient à la calibration du noyau. La méthode ne décrivait donc pas
+   les mesures que l'article rapporte : moment, profondeur, RAM totale
+   (`.data + .bss + pic de pile`), segments DWT, trois estimateurs d'énergie. Trois
+   sous-sections ajoutées à `03`, tableau de provenance ajouté à `04`.
+3. **Le Gap 2 était énoncé « sous 100 ko de RAM », contredit par la section 5c** qui
+   mesure 105 300 o de RAM totale. Reformulé en budget mémoire et latence mesuré,
+   256 ko de SRAM et 100 ms par cycle.
+
+Fil conducteur explicité dans l'intro, la discussion et la conclusion : l'INT8 est
+justifié par un argument tripartite (mémoire, temps, énergie) que l'article
+**dissocie** — la première promesse est tenue mais porte sur un poste minoritaire,
+les deux autres ne le sont pas.
+
+Abstract aligné sur les valeurs mesurées carte (`0.138` / `0.1337`) : la fourchette
+`0.05`–`0.15` empruntait sa borne basse à l'ablation émulée alors que la phrase dit
+« sur la carte ».
+
+Glossaire de 24 acronymes ajouté en fin de document (voir S4004).
+
+État : `make all` → 21 pages FR et EN, 0 erreur LaTeX, 0 référence indéfinie,
+0 lien de glossaire cassé ; `pytest tests/test_sprint40_article.py
+tests/test_article_metrics.py` → 24 passés, 2 ignorés (cellules de banc).
+
+### Passe de cohérence et fraîcheur (suite)
+
+**Vérification de fraîcheur des résultats, faite avant de toucher au texte.** Aucun
+JSON source n'est postérieur à `exp_S40_article_metrics/summary.json` ; l'agrégat
+régénéré par `scripts/aggregate_article_ewc.py` est **identique hors `_meta`** à celui
+versionné ; les 101 valeurs citées dans le texte français ont été confrontées une à
+une à l'agrégat. Les valeurs de la condition `all` du Tableau `tab:parity`
+(`0.9180`, `0.9626`) ne sont pas dans l'agrégat, qui est `5feat` par construction :
+elles ont été vérifiées directement contre `exp_S36_summary.json`.
+
+**Deux résultats récents n'étaient pas exploités.** La cellule **90 MHz** du balayage
+de fréquence (`192.64` µJ) était `N/A` avant son refit (r²=0.999, correctif S4010) :
+la section 7.3 ne donnait que les deux extrémités, elle affiche désormais les trois
+points et parle de croissance **monotone**. L'**autonomie mesurée** (`72.95` h à
+2000 mAh, 1 inférence/s) chiffrait l'affirmation « la marge de latence est
+convertible en autonomie », jusque-là qualitative. Unités `\ampere`/`\hour` ajoutées
+au bloc de repli siunitx.
+
+**Corrections de cohérence.**
+- 5.3 « Diagnostic et récupération (émulé PC) » contredisait 5.4 « Récupération
+  mesurée sur carte » : la sous-section 5.3 devient « Diagnostic de l'effondrement »
+  et se clôt sur un renvoi explicite vers la mesure. Dernier reste du cadrage
+  d'avant la refonte S4008–S4010.
+- Les sous-sections de méthode ajoutées dupliquaient les titres des sections de
+  résultats (3.4 ≡ 6.1, 3.5 ≈ 6.2). Renommées en « Axe du … » : la méthode nomme la
+  définition, les résultats le constat.
+- Les sections 6 et 7 ne renvoyaient nulle part à la méthode alors que 3.6 décrit
+  leur instrumentation. Renvois `\S\ref{sec:method}` ajoutés en tête de chacune.
+- Le fil des « trois promesses » s'arrêtait aux extrémités du texte ; l'accroche de
+  la section 7, qui est celle qui y répond, le reprend désormais.
+
+**Parties standard ajoutées** avant la bibliographie, en FR et EN : disponibilité du
+code et des données (règle « aucune valeur saisie à la main »), remerciements.
+
+État : `make all` → **22 pages** FR et EN, 0 erreur, 0 référence indéfinie, 0 lien de
+glossaire cassé ; 24 tests passés, 2 ignorés.

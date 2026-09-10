@@ -1,0 +1,16 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{Les trois estimateurs d'énergie, côte à côte et jamais fusionnés (\emph{mesuré sur carte}). En \si{\micro\joule} par inférence.}
+\label{tab:annex-energy}
+\begin{tabular}{lcc}
+\toprule
+Estimateur & FP32 & INT8 \\
+\midrule
+Régression en cadence & \num{67.65} & \num{67.47} \\
+Différence contre repos \texttt{WFI} & \num{146.77} & \num{145.03} \\
+Lot d'inférences par trame & \num{5.08} & -- \\
+\bottomrule
+\end{tabular}
+\end{table}

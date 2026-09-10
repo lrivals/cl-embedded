@@ -1,0 +1,23 @@
+# Artefacts de compilation LaTeX (pdflatex + bibtex).
+# Les sources sont les .tex, references.bib et figures/ ; tout le reste se régénère
+# par `make all` et n'a pas à polluer les diffs pendant la rédaction.
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+sections/*/*.aux
+
+# PDF compilés : régénérables, non suivis.
+main_fr.pdf
+main_en.pdf
+
+# Artefacts du glossaire (produits par makeglossaries).
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.ist

@@ -8,8 +8,13 @@ coûte en moyenne \num{6785}~cycles et la requantification \num{3777.25}, la dé
 \num{200}. Le total INT8 s'établit à \SI{74}{\micro\second} contre \SIrange{48}{50}{\micro\second} en FP32.
 Deux causes se cumulent donc : le MAC entier n'a rien à gagner face à un FPU matériel déjà efficace en
 simple précision, et la requantification --- un poste qui n'existe pas dans le chemin flottant --- consomme à
-elle seule un tiers du budget. La piste directe reste le portage sur noyaux SIMD entiers (CMSIS-NN), qui
+elle seule un tiers du budget. La piste directe reste le portage sur des noyaux entiers \gls{SIMD}, tels ceux de
+\gls{CMSISNN}~\cite{Lai2018CMSISNN}, qui
 attaquerait le premier poste ; le second appelle plutôt une chaîne à échelles en puissance de deux.
+Ce bilan porte sur l'inférence. En apprentissage continu, le surcoût est plus lourd encore, d'un facteur
+\num{2.4} (Section~\ref{sec:recovery-board}), car la reconstruction de la vue entière suit chaque pas de
+gradient. C'est le régime que revendique l'apprentissage embarqué, et c'est donc là que le paradoxe pèse
+le plus.
 
 \paragraph{Un paradoxe d'énergie s'ajoute au paradoxe de latence.} On pourrait espérer que l'INT8, à défaut
 d'être plus rapide, soit plus sobre. La mesure dit le contraire : \SI{67.47}{\micro\joule} par inférence en

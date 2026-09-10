@@ -3,20 +3,48 @@
 
 Industrial predictive maintenance increasingly requires models able to \emph{learn continually} on the
 equipment itself, without a round-trip to a server: operating conditions drift (wear, regime or machine
-change), and a frozen model degrades. Continual learning (CL) answers this
-need~\cite{DeLange2021Survey,Hurtado2023CLPdM}, yet its deployment on microcontrollers (MCUs) remains
-constrained: SRAM in the range of a hundred kilobytes, no neural accelerator, a strict latency budget.
+change), and a frozen model degrades. \gls{CL} answers this
+need~\cite{DeLange2021Survey,Hurtado2023CLPdM}, yet its deployment on an \gls{MCU} remains
+constrained: \gls{SRAM} in the range of a hundred kilobytes, no neural accelerator, a strict latency budget.
+
+Against these constraints, INT8 quantization is the best-established reflex of the embedded
+literature~\cite{Ravaglia2021QLRCL,Capogrosso2023TinyML}. It is almost always justified by a threefold
+argument --- less memory, less time, less energy --- that is seldom verified \emph{on the target} for each
+of the three terms separately. This is precisely what we measure here, and the three terms do not behave
+alike.
 
 This work targets a \textbf{triple gap} that few studies close simultaneously: (Gap~1) validation on real
-industrial time series; (Gap~2) operation under \SI{100}{\kilo\byte} of RAM with \emph{measured} figures
-and bounded latency; (Gap~3) INT8 quantization compatible with incremental training. We instantiate these
-three axes on an EWC classifier~\cite{Kirkpatrick2017EWC} ported to C on a NUCLEO-F439ZI board (Cortex-M4
-\SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM, no NPU).
+industrial time series; (Gap~2) operation under a \emph{strict and measured} memory and latency budget ---
+here \SI{256}{\kilo\byte} of SRAM and \SI{100}{\milli\second} per inference + update cycle; (Gap~3) INT8
+quantization compatible with incremental training. We instantiate these three axes on an \gls{EWC}
+classifier~\cite{Kirkpatrick2017EWC} ported to C on a NUCLEO-F439ZI board (Cortex-M4
+\SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM, no \gls{NPU}), evaluated on two industrial datasets with
+contrasting continual scenarios.
 
 \paragraph{Contributions.} (i)~A \emph{paired} PC$\leftrightarrow$board protocol (same seed, same sample
-order, same normalization) establishing an \emph{exact} FP32 parity in the frozen protocol and an
-inference + learning latency $\ll$~\SI{100}{\milli\second}. (ii)~The demonstration, \emph{on real
-hardware}, of the collapse of naive PTQ of the binary EWC head (F1 $0.92 \to 0.05$--$0.15$). (iii)~A
-\emph{bit-exact PC-emulated} ablation that isolates the cause of the collapse and demonstrates recovery
-through a calibrated kernel (per-tensor, per-channel, Q15), with a strict methodological distinction
-between what is \emph{measured on-board} and what is \emph{emulated on PC}.
+order, same normalization) establishing an \emph{exact} FP32 parity in the frozen protocol (\num{1.000}),
+near-exact online (from \num{0.9626} to \num{0.9887} across the three cells), for an inference + learning
+latency
+$\ll$~\SI{100}{\milli\second}. (ii)~The demonstration, \emph{on real hardware}, of the collapse of naive
+\gls{PTQ} of the binary EWC head: F1 falls from $\approx\!\num{0.92}$ to \num{0.138} and \num{0.1337} even
+though weight \gls{RAM} is indeed divided by~4. (iii)~The isolation of the cause through a \emph{bit-exact
+emulated} ablation, then the \emph{recovery measured on-board} with a calibrated-scale kernel: F1 returns
+to \num{0.9173} and \num{0.8995}, with a frozen parity of \num{1.000} against the emulator and no \gls{CRC}
+error. (iv)~Two complementary quantization axes: the \emph{moment}, where \gls{QAT} training adds no decisive
+gain over a properly calibrated PTQ, and the \emph{depth}, where the boundary depends on the metric chosen
+--- ternary in AUROC, INT4 in on-board measured F1 --- and where the memory gain exists only with genuine
+bit-packing. (v)~A complete system budget measured on the same
+board, which \emph{decouples the three promises of INT8}: weight RAM is indeed divided by~4, but total
+system RAM is unchanged, latency increases by about half, and energy does not move.
+
+This last point is the guiding thread of the article. On this target, \textbf{INT8 is justified by memory,
+neither by speed nor by energy} --- and even then, by a memory whose nature must be stated. Throughout the
+text and the captions we systematically distinguish what is \emph{measured on-board} from what is
+\emph{bit-exactly emulated on PC}, and we explicitly leave "to be measured" any cell not yet streamed,
+rather than estimating it.
+
+\paragraph{Organization.} Section~\ref{sec:related} positions the work, Section~\ref{sec:method} describes
+the model, the paired protocol and the quantization schemes, Section~\ref{sec:setup} the setup. Results
+come in three stages: parity, collapse and recovery (Section~\ref{sec:results}), moment and depth
+(Section~\ref{sec:quant-axes}), system budget (Section~\ref{sec:system}). Section~\ref{sec:discussion}
+discusses both paradoxes and the limitations.

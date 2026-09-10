@@ -1,5 +1,5 @@
 """
-Timeline Gantt de l'évolution du projet CL-Embedded — Sprints 1 → 40.
+Timeline Gantt de l'évolution du projet CL-Embedded — Sprints 1 → 53.
 
 Usage:
     python scripts/generate_project_timeline.py
@@ -7,7 +7,8 @@ Usage:
     python scripts/generate_project_timeline.py --show
 
 Produit `project_timeline.png` : une barre par sprint positionnée sur l'axe
-calendaire réel (avril–août 2026), couleur par phase (Phase 1 PC / Phase 2 MCU),
+calendaire réel (avril–septembre 2026), couleur par phase (Phase 1 PC / Phase 2 MCU /
+rédaction & valorisation),
 jalons verticaux (réunions CR, gaps, bornes du stage, deadline manuscrit).
 
 Sources des dates — AUCUNE date inventée, chaque fenêtre est traçable :
@@ -16,6 +17,8 @@ Sources des dates — AUCUNE date inventée, chaque fenêtre est traçable :
 - `docs/sprints/sprint_NN/SNN00_*.md` (champs Semaine/Statut, dates « Implémenté (…) »)
 - `git log` du dépôt (dates de commit des sprints)
 - `scripts/generate_presentation_plots.py::plot_sprint_timeline` (jalons S16–S32)
+- dates de modification des artefacts `experiments/exp_SNN*/` (preuve d'exécution
+  la plus fiable pour les sprints ≥ 39, dont les commits sont groupés)
 
 Convention : les fenêtres marquées `approx=True` (« ≈ » sur la figure) sont
 encadrées par recoupement de ces sources (les champs « Semaine » des docs
@@ -48,6 +51,7 @@ matplotlib.rcParams.update({
 COLORS = {
     "phase1": "#2a78d6",   # Phase 1 — PC Python
     "phase2": "#1baf7a",   # Phase 2 — MCU NUCLEO-F439ZI
+    "phase3": "#b5761b",   # Rédaction & valorisation (article, manuscrit, figures)
     "surface": "#fcfcfb",
     "ink": "#0b0b0b",
     "ink2": "#52514e",
@@ -99,8 +103,22 @@ SPRINTS = [
     ("S36", date(2026, 6, 27), date(2026, 6, 28), "Comparaison appariée PC↔board EWC + INT8 vs FP32", "phase2", "done", True),
     ("S37", date(2026, 6, 28), date(2026, 6, 29), "Pipeline publication GitLab (export sanitisé)", "phase2", "done", True),
     ("S38", date(2026, 6, 29), date(2026, 6, 30), "EWC autonome : gate de nouveauté embarqué", "phase2", "done", False),
-    ("S39", date(2026, 6, 30), date(2026, 7, 4),  "Diagnostic INT8 : émulateur bit-exact + kernel v2", "phase2", "in_progress", False),
-    ("S40", date(2026, 7, 5),  date(2026, 7, 11), "Article standalone EWC PC↔board & INT8 vs FP32", "phase2", "planned", False),
+    ("S39", date(2026, 6, 30), date(2026, 7, 4),  "Diagnostic INT8 : émulateur bit-exact + kernel v2 board", "phase2", "done", False),
+    ("S41", date(2026, 7, 3),  date(2026, 7, 30), "Rédaction du manuscrit final M2 (ch. 1–8, 16 figures)", "phase3", "in_progress", False),
+    ("S40", date(2026, 7, 5),  date(2026, 7, 16), "Article standalone FR+EN « EWC INT8 sur MCU »", "phase3", "done", True),
+    ("S42", date(2026, 7, 7),  date(2026, 7, 8),  "Bibliothèque de figures + stratégies de quantification", "phase3", "done", False),
+    ("S43", date(2026, 7, 8),  date(2026, 7, 8),  "Corpus de datasets à drift labellisé (Gas Sensor…)", "phase2", "done", False),
+    ("S44", date(2026, 7, 8),  date(2026, 7, 9),  "Détecteurs de drift PC — grille 9 × 4 datasets", "phase2", "done", False),
+    ("S45", date(2026, 7, 9),  date(2026, 7, 16), "Portage board des détecteurs (PH, DDM, PSI)", "phase2", "done", False),
+    ("S46", date(2026, 7, 17), date(2026, 7, 21), "Moments de quantification (avant / après / les deux)", "phase2", "done", False),
+    ("S47", date(2026, 7, 21), date(2026, 7, 21), "Profondeur sub-INT8 × granularité × symétrie (PC)", "phase2", "done", False),
+    ("S48", date(2026, 7, 23), date(2026, 7, 24), "Portage board sub-INT8 : bit-packing, RAM réelle", "phase2", "done", False),
+    ("S49", date(2026, 7, 24), date(2026, 7, 24), "RAM complète : .data + .bss + pic de pile", "phase2", "done", False),
+    ("S50", date(2026, 7, 24), date(2026, 8, 5),  "Latence INT8 poste par poste + énergie LPM01A", "phase2", "done", True),
+    ("S52", date(2026, 7, 30), date(2026, 7, 30), "Correctif du flag UART TinyOL (audit S4110)", "phase2", "done", False),
+    ("S53", date(2026, 8, 5),  date(2026, 9, 8),  "Campagne énergie élargie : WFI, cadence, fréquence", "phase2", "in_progress", False),
+    ("S51", date(2026, 8, 6),  date(2026, 8, 9),  "Score système composite (RAM × énergie × perf)", "phase2", "planned", True),
+    ("S40r", date(2026, 9, 8), date(2026, 9, 9),  "Refonte article : agrégat de métriques + 10 figures", "phase3", "done", False),
 ]
 
 # (date, label, style) — style : "bound" bornes stage · "cr" réunion · "gap" jalon scientifique
@@ -115,13 +133,14 @@ MILESTONES = [
     (date(2026, 6, 9),  "CR réunion", "cr"),
     (date(2026, 6, 15), "Gap 2 ✓ RAM/latence board", "gap"),
     (date(2026, 6, 21), "Gap 3 ✓ INT8 en ligne", "gap"),
+    (date(2026, 7, 16), "CR réunion", "cr"),
     (date(2026, 8, 6),  "Fin stage", "bound"),
 ]
 
 
 def plot_project_timeline(out_dir: str | None, show: bool) -> None:
-    """Gantt calendaire des sprints 1–40 avec jalons projet."""
-    fig, ax = plt.subplots(figsize=(15, 13.5))
+    """Gantt calendaire des sprints 1–53 avec jalons projet."""
+    fig, ax = plt.subplots(figsize=(15, 18))
     fig.patch.set_facecolor(COLORS["surface"])
     ax.set_facecolor(COLORS["surface"])
 
@@ -171,7 +190,7 @@ def plot_project_timeline(out_dir: str | None, show: bool) -> None:
     ax.xaxis.set_major_locator(mdates.MonthLocator())
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b 2026"))
     ax.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
-    ax.set_xlim(mdates.date2num(date(2026, 3, 12)), mdates.date2num(date(2026, 8, 12)))
+    ax.set_xlim(mdates.date2num(date(2026, 3, 12)), mdates.date2num(date(2026, 9, 16)))
     ax.grid(axis="x", which="major", color=COLORS["grid"], linewidth=0.8, zorder=0)
     ax.grid(axis="x", which="minor", color=COLORS["grid"], linewidth=0.4, alpha=0.5, zorder=0)
     ax.tick_params(axis="x", colors=COLORS["muted"], labelsize=9)
@@ -182,18 +201,20 @@ def plot_project_timeline(out_dir: str | None, show: bool) -> None:
 
     legend_items = [
         mpatches.Patch(color=COLORS["phase1"], label="Phase 1 — PC Python (S1–S15)"),
-        mpatches.Patch(color=COLORS["phase2"], label="Phase 2 — MCU NUCLEO-F439ZI (S16–S40)"),
+        mpatches.Patch(color=COLORS["phase2"], label="Phase 2 — MCU NUCLEO-F439ZI (S16–S53)"),
+        mpatches.Patch(color=COLORS["phase3"], label="Rédaction & valorisation (S40–S42)"),
         mpatches.Patch(facecolor=COLORS["phase2"], hatch="///", edgecolor="white", label="En cours"),
         mpatches.Patch(facecolor="none", edgecolor=COLORS["phase2"], label="Planifié"),
     ]
     ax.legend(handles=legend_items, loc="lower left", fontsize=9, framealpha=0.95)
 
-    fig.suptitle("CL-Embedded — Timeline des sprints 1–40 (stage 16 mars – 6 août 2026)",
+    fig.suptitle("CL-Embedded — Timeline des sprints 1–53 (stage 16 mars – 6 août 2026, travaux poursuivis en septembre)",
                  fontweight="bold", color=COLORS["ink"], y=0.995, fontsize=14)
     fig.text(0.01, 0.005,
              "≈ : fenêtre d'exécution estimée par recoupement (roadmaps, git log, docs sprint) — "
              "les « semaines » planifiées des docs sprint ≥ 25 sont postérieures à l'exécution réelle. "
-             "▾ : réunions CR (17 mars, 8 avr, 22 avr, 19 mai, 9 juin).",
+             "▾ : réunions CR (17 mars, 8 avr, 22 avr, 19 mai, 9 juin, 16 juil). "
+             "Sprints ≥ 39 : fenêtres datées par les artefacts `experiments/exp_SNN*/` (les commits sont groupés).",
              fontsize=7.5, color=COLORS["muted"])
     fig.tight_layout(rect=(0, 0.015, 1, 0.985))
 
@@ -208,7 +229,7 @@ def plot_project_timeline(out_dir: str | None, show: bool) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Timeline Gantt du projet CL-Embedded (sprints 1–40)")
+    parser = argparse.ArgumentParser(description="Timeline Gantt du projet CL-Embedded (sprints 1–53)")
     parser.add_argument("--output", default="docs/figures/", help="Répertoire de sortie PNG")
     parser.add_argument("--show", action="store_true", help="Afficher sans sauvegarder")
     args = parser.parse_args()

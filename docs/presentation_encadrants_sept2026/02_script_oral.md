@@ -209,3 +209,94 @@ qui se fait sur PC et n'a pas été fait ici.
 **« Et le Sprint 51 ? »**
 Spécifié, non exécuté. Il dépend d'une normalisation par dimension dont les entrées
 viennent justement de S49 et S53, qui n'étaient pas stabilisées.
+
+---
+
+## Annexe A — pédagogie de la mesure d'énergie · ~12 min
+
+À dérouler seulement si la question vient. Le fil : **on ne peut pas lire un µJ, on le
+construit** — et chaque construction laisse entrer autre chose que le calcul.
+
+**A1 — le câblage.** Insister sur un point : le périmètre de mesure est une **décision de
+câblage**, pas une hypothèse de calcul. On retire `JP5`, le courant du MCU n'a plus
+d'autre chemin que la sonde. Dedans : le STM32 et tout ce que porte `VDD_MCU`, PHY
+compris. Dehors : ST-LINK, LED, régulateur. Finir sur `E = V × ∫I dt` : la tension est
+connue, tout le sprint tient dans « mesurer I au bon instant ».
+
+**A2 — pourquoi c'est difficile.** Le mode dynamique aurait donné le profil temporel
+directement. Il est **refusé par le matériel** (la carte dépasse le plafond de courant de
+la sonde) — le dire ainsi, pas « on a choisi le mode statique ». Toute la campagne
+consiste à reconstruire statistiquement ce que ce mode aurait montré.
+
+**A3 — l'ordre de grandeur du problème.** 0,5 % de la période. Laisser le chiffre agir :
+l'instrument rapporte 99,5 % d'autre chose que ce qu'on cherche.
+
+**A4 — le cœur de l'annexe, prendre son temps.** Trois estimateurs, un facteur 29. Dire
+d'emblée : « ce n'est pas une contradiction, c'est une mesure ». L'écart quantifie le coût
+de la trame UART. Puis la règle : conservés séparément dans les JSON, **jamais moyennés**,
+parce que leur comparaison est notre contrôle de validité. Corollaire à énoncer : un
+chiffre d'énergie sans son estimateur ne veut rien dire.
+
+**A5 — delta.** La méthode naïve, et pourquoi elle a échoué au Sprint 50 : tout repose sur
+`I_repos`, or la référence était prise en tête de session sur un firmware qui scrutait
+l'UART.
+
+**A6 — régression de cadence.** L'idée élégante : ce qui ne dépend pas de la cadence tombe
+dans l'ordonnée à l'origine et disparaît de la pente. On n'a plus besoin de connaître le
+repos. Détailler les trois précautions (répétitions pondérées, ordre tiré au sort,
+saturation détectée sur la cadence **atteinte**) — c'est là que se juge le sérieux du banc.
+
+**A7 — régression par lot.** La plus propre : à cadence de trames constante, seule la
+charge de calcul varie. Mentionner le contrôle de parité 1.000 entre lots : le groupage ne
+change pas ce que le modèle calcule.
+
+**A8 — les quatre pièges.** Les présenter comme des **mécanismes qui produisent un chiffre
+crédible et faux**. Assumer : trois nous ont effectivement piégés avant d'être identifiés.
+
+**A9 — la définition du repos.** À gauche, l'hôte est disculpé (l'écart tient dans la
+dispersion). À droite, la vraie cause : le firmware. Formule à garder : *sur un banc
+énergie, ce qu'on croit mesurer dépend de ce que le firmware fait quand il ne fait rien.*
+
+**A10 — la conclusion utile.** La chaîne mène à l'autonomie, chaque flèche ajoutant une
+hypothèse déclarée. Le message de conception est le **plateau** : passé une certaine
+période, l'autonomie est fixée par le repos, pas par le modèle. C'est ce qui remet en
+perspective le bloc 4 — l'INT8 ne touche ni la latence ni l'énergie, alors que la
+fréquence et la veille sont, elles, des leviers mesurés.
+
+### Chiffres de l'annexe
+
+| Sujet | Chiffre |
+|---|---|
+| Part de la période occupée par le calcul | **0,5 %** (50 µs sur 10 000) |
+| Trois estimateurs (EWC) | delta **146,77** · cadence **67,65 ± 0,70** · lot **5,076 µJ** |
+| Écart entre estimateurs | facteur **29** = coût de la trame UART |
+| Qualité des ajustements | r² **0,9996** (cadence) et **0,9998** (lot) |
+| Contrôle du groupage | parité de prédiction **1.000** entre lots |
+| Saturation UART | 200 Hz demandés → **169 Hz** atteints (écarté) |
+| Biais de première acquisition | ≈ **60 mA** au lieu de ≈ 50 |
+| Dérive d'établissement de session | **50 → 40 mA** |
+| Repos scrutation → WFI | **49,77 → 27,37 mA** (−45,0 %) |
+| Autonomie à 1 Hz / 2000 mAh | ≈ **73 h**, plateau fixé par le repos |
+
+### Questions anticipées sur l'annexe
+
+**« Lequel des trois chiffres est le bon ? »**
+Chacun répond à une question différente. Pour dimensionner une batterie sur ce protocole
+UART, c'est le delta. Pour comparer deux modèles à protocole égal, c'est la pente de
+cadence. Pour le coût du calcul lui-même, c'est le lot. Les fusionner reviendrait à
+oublier laquelle des trois questions on pose.
+
+**« Pourquoi ne pas simplement supprimer l'UART de la mesure ? »**
+Parce que le firmware doit bien recevoir ses échantillons de quelque part. La régression
+par lot est justement la façon de retirer l'UART **sans** le retirer physiquement : on le
+rend constant au lieu de le supprimer.
+
+**« Le PHY Ethernet est dans le périmètre — est-ce que ça ne fausse pas tout ? »**
+Il ajoute un offset constant, qui disparaît dans toute méthode par pente ou par
+différence. Il pénalise en revanche l'autonomie absolue : c'est déclaré dans le champ
+`scope_mesure` du JSON, et c'est aussi ce qui interdit le mode dynamique.
+
+**« Combien de temps a pris cette campagne ? »**
+Trois séances de banc (5–6 août, puis 7 septembre), dont une entièrement consacrée à
+identifier pourquoi les premiers résultats étaient faux. C'est le prix d'une mesure
+physique à laquelle on peut se fier.

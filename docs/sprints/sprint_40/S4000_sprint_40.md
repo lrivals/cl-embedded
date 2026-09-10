@@ -82,6 +82,7 @@ notebook de synthèse ; (c) rédige un **article standalone LaTeX en deux versio
 
 | ID | Tâche | Prio | Fichier cible | Statut |
 |----|-------|:---:|---------------|:------:|
+| S4014 | **Correctifs d'exactitude** (frontière profondeur en F1 mesuré carte · portée de l'INT8 en ligne · latence d'apprentissage ×2,4) — sans nouvelle mesure | 🔴 | `sections/{fr,en}/`, `scripts/generate_article_tables.py`, `tests/test_sprint40_article.py` | ✅ |
 | S4007 | Tests Python (figures↔JSON, FR≡EN) + build LaTeX + roadmap/`triple_gap.md`/`CLAUDE.md` + `graphify_sprint_update` | 🟡 | `tests/test_sprint40_article.py`, `docs/roadmap_phase2.md`, `docs/triple_gap.md` | 📝 Doc |
 
 ## Ordre d'exécution recommandé

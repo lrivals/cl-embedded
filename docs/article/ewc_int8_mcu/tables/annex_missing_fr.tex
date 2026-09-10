@@ -1,0 +1,41 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{Registre des cellules non mesurées. Elles portent « à mesurer » dans le texte et ne sont jamais remplacées par une estimation.}
+\label{tab:annex-missing}
+\begin{tabular}{p{0.42\linewidth}p{0.5\linewidth}}
+\toprule
+Cellule & Raison \\
+\midrule
+\texttt{energy.estimators.delta\_wfi.cells.ewc\_fp32\_energy\_uj\_per\_update} & campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec… \\
+\texttt{energy.estimators.delta\_wfi.cells.ewc\_int8\_energy\_uj\_per\_update} & campagne d'inférence seule ; isoler la MAJ CL exige la même mesure avec… \\
+\texttt{energy.estimators.policy\_update.cells.monitoring\_energy\_uj\_per\_update} & différence non calculable : la régression de always, frozen n'est pas… \\
+\texttt{energy.estimators.policy\_update.cells.pronostia\_energy\_uj\_per\_update} & différence non calculable : la régression de always, frozen n'est pas… \\
+\texttt{monitoring.ram.fp32\_pc\_bss} & valeur absente de experiments/exp\_S49\_ram/summary.json \\
+\texttt{monitoring.ram.fp32\_pc\_data} & valeur absente de experiments/exp\_S49\_ram/summary.json \\
+\texttt{monitoring.ram.fp32\_pc\_stack\_peak\_update} & valeur absente de experiments/exp\_S49\_ram/summary.json \\
+\texttt{monitoring.ram.int8\_pc\_bss} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{monitoring.ram.int8\_pc\_data} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{monitoring.ram.int8\_pc\_stack\_peak\_inference} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{monitoring.ram.int8\_pc\_stack\_peak\_update} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{monitoring.ram.int8\_pc\_total} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{monitoring.recovery\_board.int8\_legacy\_frozen\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{monitoring.recovery\_board.int8\_legacy\_online\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{monitoring.recovery\_board.q15\_frozen\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{monitoring.recovery\_board.q15\_online\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{pronostia.ram.fp32\_pc\_bss} & valeur absente de experiments/exp\_S49\_ram/summary.json \\
+\texttt{pronostia.ram.fp32\_pc\_data} & valeur absente de experiments/exp\_S49\_ram/summary.json \\
+\texttt{pronostia.ram.fp32\_pc\_stack\_peak\_update} & valeur absente de experiments/exp\_S49\_ram/summary.json \\
+\texttt{pronostia.ram.int8\_pc\_bss} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{pronostia.ram.int8\_pc\_data} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{pronostia.ram.int8\_pc\_stack\_peak\_inference} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{pronostia.ram.int8\_pc\_stack\_peak\_update} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{pronostia.ram.int8\_pc\_total} & PC = proxy tracemalloc FP32 ; le gain INT8 (poids ÷4) est analytique — la… \\
+\texttt{pronostia.recovery\_board.int8\_legacy\_frozen\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{pronostia.recovery\_board.int8\_legacy\_online\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{pronostia.recovery\_board.q15\_frozen\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\texttt{pronostia.recovery\_board.q15\_online\_f1\_faulty} & cellule de la grille S4002 non streamée (carte requise) \\
+\bottomrule
+\end{tabular}
+\end{table}

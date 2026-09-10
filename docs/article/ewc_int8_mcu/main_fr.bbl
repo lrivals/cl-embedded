@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{Benatti2019HDC}
 Simone Benatti, Fabio Montagna, Victor Kartsch, Abbas Rahimi, Davide Rossi, and
@@ -19,6 +19,14 @@ Jhair Hurtado, Alain Salvati, Andrea Cossu, Antonio Carta, and Davide Bacciu.
   challenges.
 \newblock {\em Intelligent Systems with Applications}, 2023.
 
+\bibitem{Jacob2018}
+Benoit Jacob, Skirmantas Kligys, Bo~Chen, Menglong Zhu, Matthew Tang, Andrew
+  Howard, Hartwig Adam, and Dmitry Kalenichenko.
+\newblock Quantization and training of neural networks for efficient
+  integer-arithmetic-only inference.
+\newblock In {\em IEEE Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, 2018.
+
 \bibitem{Kirkpatrick2017EWC}
 James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume
   Desjardins, Andrei~A. Rusu, Kieran Milan, John Quan, Tiago Ramalho, Agnieszka
@@ -26,6 +34,12 @@ James Kirkpatrick, Razvan Pascanu, Neil Rabinowitz, Joel Veness, Guillaume
   Raia Hadsell.
 \newblock Overcoming catastrophic forgetting in neural networks.
 \newblock {\em Proceedings of the National Academy of Sciences}, 2017.
+
+\bibitem{Krishnamoorthi2018}
+Raghuraman Krishnamoorthi.
+\newblock Quantizing deep convolutional networks for efficient inference: A
+  whitepaper.
+\newblock arXiv:1806.08342, 2018.
 
 \bibitem{Kwon2023LifeLearner}
 Young~D. Kwon, Jagmohan Chauhan, Hong Jia, Stylianos~I. Venieris, and Cecilia
@@ -35,6 +49,12 @@ Young~D. Kwon, Jagmohan Chauhan, Hong Jia, Stylianos~I. Venieris, and Cecilia
 \newblock In {\em ACM Conference on Embedded Networked Sensor Systems
   (SenSys)}, 2023.
 
+\bibitem{Lai2018CMSISNN}
+Liangzhen Lai, Naveen Suda, and Vikas Chandra.
+\newblock {CMSIS-NN}: Efficient neural network kernels for {Arm Cortex-M}
+  {CPUs}.
+\newblock arXiv:1801.06601, 2018.
+
 \bibitem{DeLange2021Survey}
 Matthias~De Lange, Rahaf Aljundi, Marc Masana, Sarah Parisot, Xu~Jia,
   Ale{\v{s}} Leonardis, Gregory Slabaugh, and Tinne Tuytelaars.
@@ -43,17 +63,42 @@ Matthias~De Lange, Rahaf Aljundi, Marc Masana, Sarah Parisot, Xu~Jia,
 \newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
   2021.
 
+\bibitem{Li2016TWN}
+Fengfu Li, Bo~Zhang, and Bin Liu.
+\newblock Ternary weight networks.
+\newblock arXiv:1605.04711, 2016.
+
+\bibitem{Nectoux2012Pronostia}
+Patrick Nectoux, Rafael Gouriveau, Kamal Medjaher, Emmanuel Ramasso, Bechir
+  Chebel-Morello, Noureddine Zerhouni, and Christophe Varnier.
+\newblock {PRONOSTIA}: An experimental platform for bearings accelerated
+  degradation tests.
+\newblock In {\em IEEE International Conference on Prognostics and Health
+  Management (PHM)}, 2012.
+
+\bibitem{Rastegari2016XNOR}
+Mohammad Rastegari, Vicente Ordonez, Joseph Redmon, and Ali Farhadi.
+\newblock {XNOR-Net}: {ImageNet} classification using binary convolutional
+  neural networks.
+\newblock In {\em European Conference on Computer Vision (ECCV)}, 2016.
+
 \bibitem{Ravaglia2021QLRCL}
 Leonardo Ravaglia, Manuele Rusci, Davide Nadalini, Alessandro Capotondi,
   Francesco Conti, and Luca Benini.
 \newblock A {TinyML} platform for on-device continual learning with quantized
   latent replays.
-\newblock {\em IEEE Transactions on Circuits and Systems for Video Technology},
-  2021.
+\newblock {\em IEEE Journal on Emerging and Selected Topics in Circuits and
+  Systems}, 11(4):789--802, 2021.
 
 \bibitem{Ren2021TinyOL}
 Haoyu Ren, Darko Anicic, and Thomas~A. Runkler.
 \newblock {TinyOL}: {TinyML} with online-learning on microcontrollers.
 \newblock arXiv:2103.08295, 2021.
+
+\bibitem{Schwarz2018Online}
+Jonathan Schwarz, Wojciech Czarnecki, Jelena Luketina, Agnieszka
+  Grabska-Barwinska, Yee~Whye Teh, Razvan Pascanu, and Raia Hadsell.
+\newblock Progress \& compress: A scalable framework for continual learning.
+\newblock In {\em International Conference on Machine Learning (ICML)}, 2018.
 
 \end{thebibliography}

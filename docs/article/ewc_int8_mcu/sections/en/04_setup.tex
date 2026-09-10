@@ -2,18 +2,53 @@
 \label{sec:setup}
 
 \paragraph{Hardware target.} NUCLEO-F439ZI (Cortex-M4 @ \SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM =
-\SI{192}{\kilo\byte} + \SI{64}{\kilo\byte} CCM, no NPU). Latencies are measured with the DWT cycle counter;
-the static footprint is read from the binary's \texttt{.bss} section. The latency budget is
-\SI{100}{\milli\second} per inference + update cycle (Gap~2).
+\SI{192}{\kilo\byte} + \SI{64}{\kilo\byte} \gls{CCM}, no NPU). Latencies are measured with the DWT cycle
+counter; the static footprint is read from the binary and completed by the stack peak
+(\S\ref{sec:method}). The latency budget is \SI{100}{\milli\second} per inference + update cycle (Gap~2).
+Samples travel over the \gls{UART} link frame by frame, each frame protected by a CRC: a zero error rate is the
+condition for the compared predictions to be the board's own.
 
 \paragraph{Datasets and CL scenarios.} Two industrial datasets with contrasting scenarios:
-\emph{Pronostia} (FEMTO bearings, \emph{class-incremental} by normal/fault condition) and
-\emph{Monitoring} (industrial equipment, \emph{domain-incremental} by machine type). Two feature conditions
-are considered: \texttt{5feat} (embedded subset) and \texttt{all} (native features). On Monitoring,
-\texttt{5feat} and \texttt{all} coincide (4 native features).
+\emph{Pronostia} (FEMTO bearings~\cite{Nectoux2012Pronostia}, \emph{class-incremental} by normal/fault
+condition) and \emph{Monitoring} (industrial equipment, \emph{domain-incremental} by machine type). Two
+feature conditions are considered: \texttt{5feat} (embedded subset) and \texttt{all} (native features). On
+Monitoring, \texttt{5feat} and \texttt{all} coincide (4 native features).
 
-\paragraph{Identical conditions.} All comparisons share seed, order and normalization (\S\ref{sec:method}).
-The on-board FP32 and INT8-legacy measurements come from the Sprint~36 campaign (\texttt{exp\_S36}); the
-emulated ablation from Sprint~39 (\texttt{exp\_S39\_ablation}); the board-v2 campaign from Sprint~40
-(\texttt{exp\_S40\_board\_v2}), partial at the time of writing. Any quantity not yet streamed on-board is
-reported as "to be measured", with no invented value.
+\paragraph{Energy bench.} Current is recorded with an X-NUCLEO-LPM01A probe, the board being powered by
+the probe itself. Campaigns are run at an imposed inference rate over a fixed window, with repetitions, so
+that the gap between two cells is attributable to the model and not to the host. A clock-frequency sweep
+completes the setup, the peripheral bus frequency being held constant so as not to shift the serial link
+rate.
+
+\paragraph{Provenance of the measurements.} Table~\ref{tab:sources} lists the campaigns and, for each, its
+nature. This distinction governs the reading of the whole article: a value \emph{measured on-board} and a
+value \emph{emulated on PC} do not differ in reliability --- the emulator reproduces the C kernel's
+arithmetic exactly --- but they do not answer the same question.
+
+\begin{table}[t]
+\centering
+\caption{Provenance and nature of the reported measurements.}
+\label{tab:sources}
+\begin{tabular}{llc}
+\toprule
+Campaign & Object & Nature \\
+\midrule
+\texttt{exp\_S36}            & FP32 parity, INT8 legacy, latency, RAM & measured board \\
+\texttt{exp\_S39\_ablation}  & Ablation ladder, causal diagnosis      & emulated PC \\
+\texttt{exp\_S40\_board\_v2} & Recovery, calibrated v2 kernel         & measured board \\
+\texttt{exp\_S46\_board}     & Quantization moment, A/B               & measured board \\
+\texttt{exp\_S47\_depth}     & Depth and granularity                  & emulated PC \\
+\texttt{exp\_S48\_summary}   & Bit-packing, actual \texttt{.bss}      & measured board \\
+\texttt{exp\_S49\_ram}       & Total RAM by component                 & measured board \\
+\texttt{exp\_S50\_int8\_latency} & Latency by kernel segment          & measured board \\
+\texttt{exp\_S53\_*}         & Energy, rate, frequency                & measured board \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Identical conditions and honesty rule.} All comparisons share seed, order and normalization
+(\S\ref{sec:method}). The board-v2 campaign covers the four per-channel cells (two datasets $\times$ two
+protocols); the \texttt{q15} format was not streamed on-board. Any unmeasured quantity is reported as "to
+be measured", with no invented value and no substituted estimate; the full registry of these cells,
+with the reason for each, is given in Appendix~\ref{app:missing}. Acronyms used in the article are
+expanded at first use and collected in the list of acronyms, page~\pageref{sec:acronyms}.

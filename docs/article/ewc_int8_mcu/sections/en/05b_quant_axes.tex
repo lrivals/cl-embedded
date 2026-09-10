@@ -2,7 +2,8 @@
 \label{sec:quant-axes}
 
 The previous sections vary the \emph{calibration} of the kernel at a fixed format. Two further degrees of
-freedom drive the outcome: \emph{when} one quantizes, and \emph{how many bits} one keeps.
+freedom drive the outcome: \emph{when} one quantizes, and \emph{how many bits} one keeps. The three
+placements compared here, and the parameters of a sub-INT8 scheme, are defined in \S\ref{sec:method}.
 
 \subsection{Moment: before, after, or both}
 
@@ -10,7 +11,7 @@ Three placements are possible for the same EWC head. \emph{Before} training (QAT
 \emph{after} (PTQ on an already trained FP32 model); and \emph{both}, that is a QAT run whose weights are
 then exported to the calibrated integer kernel --- only this last path is faithful to the actual deployment.
 
-Under emulation, all three moments preserve AUROC on Monitoring (\num{0.974477} before, \num{0.974649}
+Under emulation, all three moments preserve \gls{AUROC} on Monitoring (\num{0.974477} before, \num{0.974649}
 after, \num{0.974663} both, against \num{0.97464} in FP32): at this model scale no moment is disqualifying.
 The question is settled \emph{on-board}. The "both" path was flashed and streamed: it yields \num{0.9213}
 F1 on Monitoring and \num{0.9072} on Pronostia, against respectively \num{0.9173} and \num{0.8995} for the
@@ -34,15 +35,31 @@ reading whereby a PTQ collapse would necessarily call for retraining.
 Below 8 bits the question becomes: at which depth does the metric break down, and does the granularity of
 the scale factor move that limit? The emulated sweep answers both.
 
-The limit depends on the dataset. On Monitoring, degradation stays contained down to binary
+The limit depends on the dataset; the full grid is in Appendix~\ref{app:depth}
+(Table~\ref{tab:annex-depth}). On Monitoring, degradation stays contained down to binary
 ($\Delta$AUROC $=-\,\num{0.0117}$). On Pronostia, binary breaks down ($-\,\num{0.0275}$) but ternary holds
-($-\,\num{0.0153}$): the usable frontier is therefore \emph{ternary}, binary being defensible only on the
-easier dataset.
+($-\,\num{0.0153}$): read in AUROC, the usable frontier would therefore be \emph{ternary}, binary being
+defensible only on the easier dataset.
+
+\paragraph{The frontier depends on the selection metric.} That reading does not survive confrontation with
+the \emph{on-board measured} F1 of the very same schemes, which Table~\ref{tab:depth-board} places next to
+AUROC. On Pronostia, ternary keeps an AUROC of \num{0.99907} but its F1 falls to \num{0.379}; binary keeps
+an AUROC of \num{0.96616} for a \emph{null} F1, that is, a model that never predicts the fault class again.
+The ranking of scores stays good where the decision threshold no longer does: a ranking metric is
+insensitive to class imbalance, an F1 is not. On both datasets, the only sub-INT8 scheme that genuinely
+preserves the operational metric is \textbf{INT4} (\num{0.921} and \num{0.9887}).
+
+We report both readings rather than picking one, because their divergence is itself the result:
+\textbf{it is not depth alone that sets the frontier, it is the depth--selection-metric pair}. Work
+reporting AUROC only would conclude ternary and deploy, on Pronostia, a detector that detects nothing.
+
+\input{tables/depth_board_en}
 
 Granularity, in turn, pushes the breakdown back. At 2 bits on Pronostia, moving from a per-tensor to a
 per-channel scale takes $\Delta$AUROC from $-\,\num{0.0464}$ to $-\,\num{0.0086}$. A negative result
 deserves reporting too: the affine \emph{zero-point} buys nothing --- at 2 bits on Monitoring it even
-degrades markedly ($-\,\num{0.0619}$ against $-\,\num{0.0069}$ symmetric).
+degrades markedly ($-\,\num{0.0619}$ against $-\,\num{0.0069}$ symmetric), and
+Table~\ref{tab:annex-symmetry} shows the finding holds at all three depths tested.
 
 \paragraph{The RAM gain only exists packed.} The crucial point is that the RAM advertised by these schemes
 is \emph{theoretical} as long as weights stay in an \texttt{int8} container. Measured on-board, the
@@ -56,7 +73,8 @@ ported losslessly.
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\linewidth]{fig7_quant_depth_packing.png}
-\caption{Sub-INT8 depth. Left, $\Delta$AUROC by depth and granularity (\emph{PC-emulated}); right, the
+\caption{Sub-INT8 depth. Left, $\Delta$AUROC by depth and granularity (\emph{PC-emulated}) --- the
+on-board measured F1 reading, which moves the frontier, is in Table~\ref{tab:depth-board}; right, the
 \texttt{.bss} bytes actually saved by bit-packing (\emph{measured on-board}).}
 \label{fig:depth}
 \end{figure}

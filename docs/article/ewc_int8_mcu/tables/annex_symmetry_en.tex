@@ -1,0 +1,18 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{Quantization symmetry: $\Delta$AUROC, symmetric against affine with a zero point (\emph{bit-exact PC emulation}).}
+\label{tab:annex-symmetry}
+\begin{tabular}{lcccc}
+\toprule
+Scheme & \multicolumn{2}{c}{Monitoring} & \multicolumn{2}{c}{Pronostia} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & Symmetric & Affine & Symmetric & Affine \\
+\midrule
+\texttt{int4} & \num{-0.0005} & \num{-0.0554} & \num{-0.0016} & \num{-0.0019} \\
+\texttt{int3} & \num{-0.0026} & \num{-0.0591} & \num{-0.0021} & \num{-0.0028} \\
+\texttt{int2} & \num{-0.0069} & \num{-0.0619} & \num{-0.0086} & \num{-0.0125} \\
+\bottomrule
+\end{tabular}
+\end{table}

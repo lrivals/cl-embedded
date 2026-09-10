@@ -1,0 +1,22 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{Composantes de la RAM, en octets (\emph{mesuré sur carte}). Le total est la somme des trois premières lignes, le pic de pile étant le maximum des deux phases.}
+\label{tab:annex-ram}
+\begin{tabular}{lcccc}
+\toprule
+Composante & \multicolumn{2}{c}{Monitoring} & \multicolumn{2}{c}{Pronostia} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & FP32 & INT8 & FP32 & INT8 \\
+\midrule
+\texttt{.data} & \num{460} & \num{460} & \num{460} & \num{460} \\
+\texttt{.bss} & \num{100152} & \num{100152} & \num{105036} & \num{105036} \\
+Pic de pile (inférence) & \num{4416} & \num{4328} & \num{4424} & \num{4336} \\
+Pic de pile (mise à jour) & \num{4688} & \num{4712} & \num{4696} & \num{4720} \\
+Total & \num{105300} & \num{105324} & \num{110192} & \num{110216} \\
+\midrule
+Rapport & \multicolumn{2}{c}{\num{1.0002}} & \multicolumn{2}{c}{\num{1.0002}} \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -3,22 +3,48 @@
 
 La maintenance prédictive industrielle exige de plus en plus des modèles capables d'\emph{apprendre en
 continu} sur l'équipement lui-même, sans retour vers un serveur : les conditions d'opération dérivent
-(usure, changement de régime, de machine), et un modèle figé se dégrade. L'apprentissage continu
-(\emph{continual learning}, CL) répond à ce besoin~\cite{DeLange2021Survey,Hurtado2023CLPdM}, mais son
-déploiement sur microcontrôleur (MCU) reste contraint : mémoire vive de l'ordre de la centaine de
+(usure, changement de régime, de machine), et un modèle figé se dégrade. L'apprentissage continu, ou \gls{CL}, répond à ce besoin~\cite{DeLange2021Survey,Hurtado2023CLPdM}, mais son
+déploiement sur un \gls{MCU} reste contraint : mémoire vive de l'ordre de la centaine de
 kilo-octets, absence d'accélérateur neuronal, budget de latence strict.
 
+Face à ces contraintes, la quantification INT8 est le réflexe le mieux établi de la littérature
+embarquée~\cite{Ravaglia2021QLRCL,Capogrosso2023TinyML}. Elle est presque toujours justifiée par un
+argument tripartite --- moins de mémoire, moins de temps, moins d'énergie --- rarement vérifié
+\emph{sur la cible} pour chacun des trois termes séparément. C'est précisément ce que nous mesurons ici, et
+les trois termes ne se comportent pas de la même manière.
+
 Le présent travail se positionne sur un \textbf{triple gap} que peu de travaux comblent simultanément :
-(Gap~1) validation sur des séries temporelles industrielles réelles ; (Gap~2) fonctionnement sous
-\SI{100}{\kilo\byte} de RAM avec des chiffres \emph{mesurés} et une latence bornée ; (Gap~3)
-quantification INT8 compatible avec l'entraînement incrémental. Nous instancions ces trois axes sur un
-classifieur EWC~\cite{Kirkpatrick2017EWC} porté en C sur une carte NUCLEO-F439ZI (Cortex-M4
-\SI{180}{\mega\hertz}, \SI{256}{\kilo\byte} SRAM, sans NPU).
+(Gap~1) validation sur des séries temporelles industrielles réelles ; (Gap~2) fonctionnement sous un budget
+mémoire et de latence \emph{strict et mesuré} --- ici \SI{256}{\kilo\byte} de \gls{SRAM} et
+\SI{100}{\milli\second} par cycle inférence + mise à jour ; (Gap~3) quantification INT8 compatible avec
+l'entraînement incrémental. Nous instancions ces trois axes sur un classifieur
+\gls{EWC}~\cite{Kirkpatrick2017EWC} porté en C sur une carte NUCLEO-F439ZI (Cortex-M4 \SI{180}{\mega\hertz},
+\SI{256}{\kilo\byte} SRAM, sans \gls{NPU}), évalué sur deux jeux industriels aux scénarios continus contrastés.
 
 \paragraph{Contributions.} (i)~Un protocole \emph{apparié} PC$\leftrightarrow$carte (même graine, même
-ordre d'échantillons, même normalisation) établissant une parité FP32 \emph{exacte} en mode gelé et une
-latence inférence + apprentissage $\ll$~\SI{100}{\milli\second}. (ii)~La mise en évidence, \emph{sur
-carte réelle}, de l'effondrement de la PTQ naïve de la tête EWC binaire (F1 $0.92 \to 0.05$--$0.15$).
-(iii)~Une ablation \emph{émulée bit-exacte} qui isole la cause de l'effondrement et démontre la
-récupération par un kernel calibré (par-tenseur, par-canal, Q15), avec une distinction méthodologique
-stricte entre ce qui est \emph{mesuré sur carte} et ce qui est \emph{émulé sur PC}.
+ordre d'échantillons, même normalisation) établissant une parité FP32 \emph{exacte} en mode gelé
+(\num{1.000}), quasi exacte en mode en ligne (de \num{0.9626} à \num{0.9887} sur les trois cellules),
+pour une latence inférence +
+apprentissage $\ll$~\SI{100}{\milli\second}. (ii)~La mise en évidence, \emph{sur carte réelle}, de
+l'effondrement de la \gls{PTQ} naïve de la tête EWC binaire : le F1 tombe de $\approx\!\num{0.92}$ à \num{0.138}
+et \num{0.1337} alors même que la \gls{RAM} des poids est bien divisée par~4. (iii)~L'isolation de la cause par
+ablation \emph{émulée bit-exacte}, puis la \emph{récupération mesurée sur carte} avec un kernel à échelle
+calibrée : le F1 revient à \num{0.9173} et \num{0.8995}, avec une parité gelée de \num{1.000} contre
+l'émulateur et aucune erreur \gls{CRC}. (iv)~Deux axes complémentaires de quantification : le \emph{moment}, où
+un entraînement \gls{QAT} n'ajoute pas de gain décisif face à une PTQ correctement calibrée, et la
+\emph{profondeur}, où la frontière dépend de la métrique retenue --- ternaire en AUROC, INT4 en F1 mesuré
+sur carte --- et où le gain mémoire n'existe qu'avec un véritable bit-packing. (v)~Un budget système complet mesuré sur la même carte, qui \emph{dissocie les trois
+promesses de l'INT8} : la RAM des poids est bien divisée par~4, mais la RAM totale du système est
+inchangée, la latence augmente d'environ la moitié et l'énergie ne bouge pas.
+
+Ce dernier point est le fil conducteur de l'article. Sur cette cible, \textbf{l'INT8 se justifie par la
+mémoire, ni par la vitesse ni par l'énergie} --- et encore, par une mémoire dont il faut préciser laquelle.
+Nous distinguons systématiquement, dans le texte comme dans les légendes, ce qui est \emph{mesuré sur
+carte} de ce qui est \emph{émulé bit-à-bit sur PC}, et laissons explicitement « à mesurer » toute cellule
+non encore streamée, plutôt que de l'estimer.
+
+\paragraph{Organisation.} La Section~\ref{sec:related} situe le travail, la Section~\ref{sec:method}
+décrit le modèle, le protocole apparié et les schémas de quantification, la Section~\ref{sec:setup} le
+dispositif. Les résultats se lisent en trois temps : parité, effondrement et récupération
+(Section~\ref{sec:results}), moment et profondeur (Section~\ref{sec:quant-axes}), budget système
+(Section~\ref{sec:system}). La Section~\ref{sec:discussion} discute les deux paradoxes et les limites.

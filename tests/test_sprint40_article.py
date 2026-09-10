@@ -436,6 +436,44 @@ class TestArticleCoherence:
         assert not only_fr and not only_en, \
             f"divergence numérique FR/EN — seulement FR={sorted(only_fr)} seulement EN={sorted(only_en)}"
 
+    def test_depth_reports_both_metrics(self):
+        """L'axe profondeur ne peut pas conclure sur la seule AUROC.
+
+        Le balayage émulé (S47) ne rapporte qu'un ΔAUROC ; la carte (S48) a mesuré AUROC **et**
+        F1 sur les mêmes schémas, et les deux ne décrochent pas à la même profondeur (Pronostia
+        ternaire : AUROC 0.999, F1 0.379). Conclure « frontière = ternaire » sur l'AUROC seule
+        contredit une mesure déjà en main. Ce test verrouille la présence de la lecture F1.
+        """
+        agg = _load(AGGREGATE)
+        if agg is None:
+            pytest.skip("agrégat S4008 absent")
+        for lang in ("fr", "en"):
+            src = _tex_sources(lang)
+            assert f"tables/depth_board_{lang}" in src, \
+                f"table de profondeur mesurée carte non incluse en {lang}"
+            assert "tab:depth-board" in src or "depth_board" in src
+        # La table est générée depuis l'agrégat : les cellules doivent y être mesurées.
+        for ds in DATASETS:
+            block = agg[ds]["depth_board"]
+            for key in ("bits4", "bits2", "bits1"):
+                entry = block.get(f"{key}_per_channel_nonpacked_f1_faulty")
+                assert isinstance(entry, dict) and isinstance(entry.get("value"), (int, float)), \
+                    f"F1 board manquant pour {ds}/{key}"
+                assert entry.get("platform") == "mesuré board"
+
+    def test_online_int8_scope_is_stated(self):
+        """Le régime « en ligne » INT8 apprend en FP32 : la portée doit être écrite.
+
+        ``ewc_head_int8_v2.h`` n'expose qu'un forward et ``pipeline.c`` applique le pas de
+        gradient à la tête FP32 maîtresse avant de requantifier. Sans cette réserve, l'article
+        laisserait lire un Gap 3 « quantification pendant l'apprentissage » qu'il ne mesure pas.
+        """
+        fr, en = _tex_sources("fr"), _tex_sources("en")
+        assert "maîtresse" in fr or "maître" in fr, \
+            "réserve « tête FP32 maîtresse » absente de la version FR"
+        assert "master" in en and "FP32" in en, \
+            "réserve « master FP32 head » absente de la version EN"
+
     def test_board_v2_na_honest(self):
         """Les grandeurs board v2 non mesurées restent « à mesurer » (aucun chiffre inventé) :
         marqueur d'honnêteté présent dans les deux versions, et lignes board v2 vides en amont."""

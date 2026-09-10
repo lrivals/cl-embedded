@@ -1,0 +1,126 @@
+%% ============================================================
+%%  Acronyms — article "EWC INT8 on MCU" (English version)
+%%  Léonard Rivals — Sprint 40, CL-Embedded
+%%
+%%  Usage: \usepackage[acronym,toc]{glossaries} then \makeglossaries
+%%         \input{glossary_en}
+%%         \printglossary[type=\acronymtype]
+%%
+%%  Strict mirror of glossary_fr.tex: same 24 keys, same order.
+%% ============================================================
+
+%% Descriptions name other acronyms in plain words, never through \gls{...}:
+%% an entry not cited in the text is not printed, and the link would then point
+%% to a non-existent anchor.
+\glsnoexpandfields
+
+%% Style: "long form (SHORT)" at first use, description in the printed list.
+\setacronymstyle{long-short-desc}
+
+% ------------------------------------------------------------------
+%  CONTINUAL LEARNING
+% ------------------------------------------------------------------
+\newacronym[description={Learning a sequence of tasks without access to past data, where
+  the model must absorb the new without erasing the old}]%
+  {CL}{CL}{Continual Learning}
+\newacronym[description={Anti-forgetting method adding to the loss a quadratic penalty that
+  restrains changes to the weights deemed important for past tasks, importance being
+  estimated by the Fisher information. It stores no past data, which makes it compatible
+  with a microcontroller}]%
+  {EWC}{EWC}{Elastic Weight Consolidation}
+\newacronym[description={Optimization algorithm updating the weights along the direction
+  opposite to the gradient, estimated on a small batch of examples; this is the update run
+  on-board in the online protocol}]%
+  {SGD}{SGD}{Stochastic Gradient Descent}
+\newacronym[description={Approach where a pretrained network is frozen in Flash and only a
+  lightweight trainable layer is updated in RAM, sample by sample}]%
+  {TinyOL}{TinyOL}{Tiny Online Learning}
+\newacronym[description={Non-neural paradigm encoding signals into very high-dimensional
+  vectors; learning reduces to elementary operations (addition, majority vote), without
+  backpropagation}]%
+  {HDC}{HDC}{Hyperdimensional Computing}
+\newacronym[description={Machine learning on microcontrollers, characterized by three
+  cumulative constraints: no external memory, no operating system, and less than 256\,kB of
+  volatile memory}]%
+  {TinyML}{TinyML}{Tiny Machine Learning}
+
+% ------------------------------------------------------------------
+%  QUANTIZATION
+% ------------------------------------------------------------------
+\newacronym[description={Quantization applied to an already trained model: simple to
+  implement, but prone to losses when the scale is set without calibration or when tensor
+  dynamics are wide. This is the regime whose collapse and recovery this article measures}]%
+  {PTQ}{PTQ}{Post-Training Quantization}
+\newacronym[description={Quantization simulated at every training step through
+  \emph{fake-quant}, so that the model learns directly under reduced-precision constraints;
+  costlier to train, it brings no decisive gain here over a properly calibrated PTQ}]%
+  {QAT}{QAT}{Quantization-Aware Training}
+
+% ------------------------------------------------------------------
+%  HARDWARE TARGET AND MEMORY
+% ------------------------------------------------------------------
+\newacronym[description={Processor integrating core, memory and peripherals on a single
+  chip, intended for self-contained embedded systems}]%
+  {MCU}{MCU}{Microcontroller Unit}
+\newacronym[description={Volatile memory holding the program's variables and buffers; the
+  most critical resource of the target}]%
+  {RAM}{RAM}{Random Access Memory}
+\newacronym[description={Static volatile memory integrated in the microcontroller, fast but
+  expensive in silicon area, hence available in very small amounts. It sets the memory
+  budget of this work}]%
+  {SRAM}{SRAM}{Static Random Access Memory}
+\newacronym[description={Fast memory attached directly to the processor core, not reachable
+  by some peripherals; on the target board it complements the main static memory}]%
+  {CCM}{CCM}{Core Coupled Memory}
+\newacronym[description={Circuit specialized in neural-network operations, able to run
+  integer multiply-accumulates massively in parallel. Its absence on the target board
+  explains why INT8 brings no speed gain there}]%
+  {NPU}{NPU}{Neural Processing Unit}
+\newacronym[description={Hardware floating-point unit; on the target board it makes FP32
+  operations as fast as integer ones, which cancels the speed benefit expected from
+  quantization}]%
+  {FPU}{FPU}{Floating-Point Unit}
+\newacronym[description={Instruction set applying one operation to several data items in a
+  single cycle; this is the lever the integer path of this work lacks to turn a format gain
+  into a time gain}]%
+  {SIMD}{SIMD}{Single Instruction, Multiple Data}
+\newacronym[description={Library of neural-network kernels optimized for Cortex-M cores,
+  exploiting vector instructions; the direct route to lifting the latency paradox observed
+  here}]%
+  {CMSISNN}{CMSIS-NN}{Common Microcontroller Software Interface Standard --- Neural Network}
+\newacronym[description={Instruction putting the core to sleep until the next interrupt;
+  using it while waiting on the serial link lowers the idle current and makes the
+  difference-based energy measurement usable}]%
+  {WFI}{WFI}{Wait For Interrupt}
+
+% ------------------------------------------------------------------
+%  INSTRUMENTATION AND LINK
+% ------------------------------------------------------------------
+\newacronym[description={Debug unit of the Cortex-M core whose cycle counter times a code
+  section to the cycle, then converts it to microseconds from the clock frequency. Every
+  latency in this article comes from it}]%
+  {DWT}{DWT}{Data Watchpoint and Trace}
+\newacronym[description={Asynchronous serial link between board and host; it carries the
+  samples frame by frame and reports the predictions}]%
+  {UART}{UART}{Universal Asynchronous Receiver-Transmitter}
+\newacronym[description={Checksum computed on every transmitted frame; a zero error rate
+  guarantees that the compared predictions are those produced by the board and not the
+  product of a corrupted transmission}]%
+  {CRC}{CRC}{Cyclic Redundancy Check}
+
+% ------------------------------------------------------------------
+%  COMPUTE COST AND METRICS
+% ------------------------------------------------------------------
+\newacronym[description={Elementary operation multiplying two values and adding the product
+  to an accumulator; the counting unit for the cost of a dense layer}]%
+  {MAC}{MAC}{Multiply-Accumulate}
+\newacronym[description={Elementary floating-point operation; one multiply-accumulate counts
+  as two}]%
+  {FLOP}{FLOP}{Floating-Point Operation}
+\newacronym[description={Cost expressed at the bit level, proportional to the product of
+  operand widths; it predicts a factor of 16 between FP32 and INT8 that the board does not
+  deliver, illustrating the limits of an analytical metric}]%
+  {BOP}{BOP}{Bit Operation}
+\newacronym[description={Area under the ROC curve: the probability that an anomalous sample
+  receives a higher score than a normal one. Independent of the decision threshold}]%
+  {AUROC}{AUROC}{Area Under the ROC Curve}

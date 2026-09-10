@@ -10,11 +10,14 @@ Table~\ref{tab:parity} summarizes; Figure~\ref{fig:parity} illustrates.
 
 \begin{table}[t]
 \centering
-\caption{FP32 PC$\leftrightarrow$board parity and performance (\emph{measured on-board}, \texttt{exp\_S36}).}
+\caption{FP32 PC$\leftrightarrow$board parity and performance (\emph{measured on-board},
+\texttt{exp\_S36}). F1 is the board's; it equals the PC's at the decimals reported, frozen parity being
+\num{1.000}. Monitoring has only four native features, so its \texttt{5feat} and \texttt{all} conditions
+coincide and yield a single row.}
 \label{tab:parity}
-\begin{tabular}{lccccc}
+\begin{tabular}{lcccc}
 \toprule
-Dataset & Cond. & F1 (PC/board) & Frozen parity & Online parity \\
+Dataset & Cond. & Board F1 & Frozen parity & Online parity \\
 \midrule
 Pronostia  & 5feat & \num{0.9164} & \num{1.000} & \num{0.9754} \\
 Pronostia  & all   & \num{0.9180} & \num{1.000} & \num{0.9626} \\
@@ -68,12 +71,18 @@ Monitoring & \num{0.9194} & \num{0.1337} & \num{0.5955} & $\times 4$ \\
 \end{tabular}
 \end{table}
 
-\subsection{Diagnosis and recovery (bit-exact PC emulation)}
+\subsection{Diagnosing the collapse (bit-exact PC emulation)}
 
-A \emph{bit-exact PC-emulated} ablation (exact kernel reference) isolates the cause and demonstrates recovery
+The measured collapse does not tell \emph{what} caused it. A \emph{bit-exact PC-emulated} ablation ---
+an exact reference for the kernel's arithmetic --- isolates the contribution of each fix
 (Table~\ref{tab:ablation}, Figure~\ref{fig:ablation}). The dominant factor is the \emph{calibrated
-per-tensor scale} on an \texttt{int32} accumulator: \texttt{per\_tensor\_calib} restores $+\,\num{0.88}$ F1
-(Pronostia \num{0.9462}, Monitoring \num{0.9201}). The \texttt{q15} format exactly matches FP32.
+per-tensor scale} on an \texttt{int32} accumulator: \texttt{per\_tensor\_calib} restores
+$+\,\num{0.88}$ F1 (Pronostia \num{0.9462}, Monitoring \num{0.9201}). The \texttt{q15} format exactly
+matches FP32.
+
+The cause is thus identified, and the emulator \emph{predicts} recovery. Whether the corrected kernel
+actually delivers it once flashed is the subject of the next subsection, where the question moves from
+emulation to measurement.
 
 \begin{table}[t]
 \centering
@@ -135,6 +144,17 @@ Pronostia  & online & \num{0.9212} & \num{0.9736} & \num{0.8100} & 606 & 106152 
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{The latency overhead is far heavier under learning than under inference.} The latency column of
+Table~\ref{tab:recovery} carries the sharpest figure of this campaign, and it does not concern the frozen
+mode. Under inference alone, INT8 costs 65 and 68~\micro s against 48 and 50 in FP32, the roughly one-half
+overhead that Section~\ref{sec:system} breaks down item by item. Under continual learning the gap changes
+order: 577 and 606~\micro s against 239 and 251 in FP32, a factor of~\num{2.4}. The cause is the one set
+out in \S\ref{sec:method}: every gradient step applies to the master FP32 head, and the integer view must
+be rebuilt in full behind it. The Gap~2 budget still holds with two orders of magnitude to spare, but the
+reading is unambiguous --- \textbf{it is precisely in the regime that continual learning imposes that
+quantization costs the most}. Requantizing only the rows actually modified by the step is the natural way
+to bring that factor back near one; it remains to be implemented.
 
 Two caveats deserve to be stated. First, the INT8$\leftrightarrow$FP32 agreement drops online
 (\num{0.8337} and \num{0.8100} against $>\,\num{0.99}$ frozen): the continual update makes the two weight

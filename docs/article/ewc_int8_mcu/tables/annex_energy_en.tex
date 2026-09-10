@@ -1,0 +1,16 @@
+% Généré par scripts/generate_article_tables.py — NE PAS ÉDITER À LA MAIN.
+% Source : experiments/exp_S40_article_metrics/summary.json
+\begin{table}[htbp]
+\centering
+\caption{The three energy estimators, side by side and never merged (\emph{measured on-board}). In \si{\micro\joule} per inference.}
+\label{tab:annex-energy}
+\begin{tabular}{lcc}
+\toprule
+Estimator & FP32 & INT8 \\
+\midrule
+Rate regression & \num{67.65} & \num{67.47} \\
+Difference against \texttt{WFI} idle & \num{146.77} & \num{145.03} \\
+Batch of inferences per frame & \num{5.08} & -- \\
+\bottomrule
+\end{tabular}
+\end{table}

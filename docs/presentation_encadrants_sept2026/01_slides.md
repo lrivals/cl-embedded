@@ -552,3 +552,178 @@ Ce qui reste « à mesurer », avec sa raison :
 - **S53** — 3ᵉ estimateur d'énergie (voie B : soudure PA8 → D7) ; énergie d'une mise à
   jour CL ; décomposition MCU / périphériques (câblage séparé).
 - **Réglage** des seuils de détection de drift (travail PC, distinct du portage).
+# Annexe A — Comment on mesure une énergie
+
+> Bloc optionnel, à dérouler si la question « d'où viennent ces µJ ? » est posée.
+> Dix figures, ~12 min. Chaque schéma de principe est étiqueté comme tel ; toute valeur
+> chiffrée vient de `experiments/exp_S53_*`.
+
+---
+
+# A1. Ce que la sonde mesure — et ce qu'elle ignore
+
+![Chaîne de mesure](../figures/energy_pedagogy/a1_chaine_de_mesure.png)
+
+**Le montage.** Le cavalier `JP5` de la Nucleo relie normalement le régulateur 3,3 V au
+`VDD_MCU`. On le **retire** et on insère la sonde à sa place : le courant du MCU n'a plus
+d'autre chemin que la sonde.
+
+**Le périmètre est donc une décision de câblage, pas une hypothèse.** Sont comptés le
+STM32 et tout ce que porte `VDD_MCU` — PHY Ethernet inclus. Sont exclus le ST-LINK, les
+LED et le régulateur.
+
+`E = V × ∫ I dt`. La tension est fixée et connue ; toute la difficulté du sprint tient
+dans la mesure de `I` **au bon instant**.
+
+---
+
+# A2. Deux modes d'acquisition — il ne nous en reste qu'un
+
+![Modes statique et dynamique](../figures/energy_pedagogy/a2_statique_vs_dynamique.png)
+
+Le LPM01A sait faire deux choses :
+
+- **mode dynamique** — échantillonnage rapide, donc un **profil temporel** : on verrait
+  l'inférence se détacher du repos ;
+- **mode statique** — un seul courant moyen par fenêtre, sans aucune structure temporelle.
+
+Le mode dynamique impose un plafond de courant que **la carte dépasse** : refusé à 180 et
+à 90 MHz. Le profil temporel nous est donc interdit **par le matériel**, ce n'est pas un
+choix de confort.
+
+**Conséquence de méthode** : tout le reste de la campagne consiste à retrouver, par
+l'inférence statistique, ce que le mode dynamique aurait donné directement.
+
+---
+
+# A3. Pourquoi une inférence ne se mesure pas
+
+![Le signal cherché est noyé](../figures/energy_pedagogy/b1_probleme_isoler.png)
+
+À 100 Hz, une période dure 10 000 µs ; l'inférence EWC en occupe **50**, soit **0,5 %**.
+La sonde intègre sur une fenêtre de 10 s.
+
+Autrement dit : **le signal cherché représente un demi-pour-cent de ce que l'instrument
+rapporte**, et les 99,5 % restants sont de la réception UART et de l'attente. Aucune
+lecture directe n'est possible — il faut construire un estimateur.
+
+---
+
+# A4. Trois estimateurs, trois valeurs — et l'écart est un résultat
+
+![Trois estimateurs](../figures/energy_pedagogy/b2_trois_estimateurs.png)
+
+La **même** grandeur (énergie d'une inférence EWC), sur la même carte, le même jour :
+
+| Estimateur | Valeur | Ce qu'il laisse entrer |
+|---|---|---|
+| protocole delta | **146,77 µJ** | trame UART comptée |
+| régression de cadence | **67,65 µJ** | trame UART comptée, repos éliminé |
+| régression par lot | **5,08 µJ** | trame et repos éliminés |
+
+Un facteur **29** entre le premier et le dernier. **Ce n'est pas une contradiction** :
+c'est la mesure de ce que coûte la communication autour du calcul.
+
+C'est pourquoi les trois chiffres sont conservés **séparément** dans les JSON et **jamais
+moyennés** — leur comparaison est le contrôle de validité de la campagne. Un chiffre
+d'énergie n'a de sens qu'accompagné de son estimateur.
+
+---
+
+# A5. Méthode 1 — le protocole delta
+
+![Protocole delta](../figures/energy_pedagogy/c1_methode_delta.png)
+
+`E = (I_charge − I_repos) × V × T ÷ N`. Simple, et **entièrement suspendu à `I_repos`**.
+
+C'est exactement ce qui a fait échouer le Sprint 50 : la référence de repos, prise en tête
+de session et sur un firmware qui scrutait l'UART, ressortait **au-dessus** de la charge.
+La soustraction rendait des µJ négatifs.
+
+Parade : sommeil UART, et référence prise sur une **session établie**.
+
+---
+
+# A6. Méthode 2 — la pente de I(cadence)
+
+![Régression de cadence](../figures/energy_pedagogy/c2_methode_regression.png)
+
+On fait varier la cadence et on lit la **pente**. Tout ce qui ne dépend pas de la cadence
+— repos, hôte, dérive lente — se retrouve dans l'**ordonnée à l'origine** et disparaît de
+la pente par construction. On n'a plus besoin de connaître `I_repos`.
+
+Trois précautions rendent la pente crédible :
+
+1. **3 répétitions par point**, dont l'écart-type pondère l'ajustement (`1/σ²`) ;
+2. **l'ordre des cadences est tiré au sort** (graine 42) — sans quoi la dérive de session
+   se lirait comme un effet de la cadence ;
+3. **la saturation est détectée sur la cadence atteinte**, pas demandée : à 200 Hz la carte
+   n'en tient que 169, le point est écarté (sinon la pente serait sous-estimée).
+
+Résultat : **67,65 ± 0,70 µJ**, r² = 0,9996.
+
+---
+
+# A7. Méthode 3 — la régression par lot
+
+![Régression par lot](../figures/energy_pedagogy/c3_methode_lot.png)
+
+On garde la cadence de trames constante et on fait varier le **nombre d'inférences par
+trame** (`-DINFER_BATCH_N`). Le coût de la trame ne bouge plus : la pente ne peut porter
+que le calcul. C'est l'estimateur le plus propre.
+
+**EWC 5,076 µJ · Mahalanobis 0,437 µJ**, r² = 0,9998, et un contrôle qui compte :
+la **parité de prédiction entre lots vaut 1.000** — grouper les inférences ne change pas
+ce que le modèle calcule.
+
+---
+
+# A8. Quatre pièges du banc, mesurés puis neutralisés
+
+![Pièges du banc](../figures/energy_pedagogy/d1_pieges_du_banc.png)
+
+| Piège | Ce qu'on observe | Parade |
+|---|---|---|
+| (a) la première acquisition ment | ~60 mA au lieu de ~50 | préchauffage systématiquement rebuté |
+| (b) le repos dérive à l'établissement | 50 → 40 mA sur une session | référence sur session établie |
+| (c) l'ordre confond les effets | — | cadences tirées au sort |
+| (d) l'UART sature en silence | 100 Hz demandés, 66 atteints | point écarté sous 95 % de la consigne |
+
+Chacun de ces pièges est un mécanisme par lequel un banc **produit un chiffre crédible et
+faux**. Trois d'entre eux nous ont effectivement piégés avant d'être identifiés.
+
+---
+
+# A9. « Repos » est une définition, pas un état
+
+![Le repos n'est pas un état](../figures/energy_pedagogy/d2_repos_nest_pas_repos.png)
+
+À gauche, quatre états de l'hôte à firmware identique : port fermé, port ouvert sans
+trame, flux, puis retour au repos. L'écart entre « port fermé » et « après le flux » tient
+dans la dispersion — **ce n'était donc pas l'hôte** qui expliquait l'anomalie du
+Sprint 50.
+
+À droite, la vraie cause : le firmware. En scrutation active, « ne rien faire » coûte
+**49,77 mA** ; sous `__WFI()`, **27,37 mA**, soit **−45 %**.
+
+> Sur un banc énergie, ce que l'on croit mesurer dépend de ce que le firmware fait
+> **quand il ne fait rien**.
+
+---
+
+# A10. Ce que la chaîne permet enfin de conclure
+
+![De la mesure à l'autonomie](../figures/energy_pedagogy/e1_de_la_mesure_a_lautonomie.png)
+
+Courant mesuré → µJ par inférence → courant moyen selon la période → autonomie selon la
+batterie. Chaque flèche ajoute une hypothèse **déclarée** (période de scénario, capacité) ;
+aucune n'est cachée dans le chiffre final.
+
+**≈ 73 h à 1 Hz sur 2000 mAh.** Et surtout, un enseignement de conception : la courbe
+**plafonne**. Au-delà d'une certaine période, l'autonomie est fixée par le courant de repos
+(27,37 mA) et non par le modèle.
+
+> Optimiser le modèle ne sert plus à rien passé ce point : **c'est le sommeil qu'il faut
+> travailler.** C'est aussi ce qui remet en perspective le résultat du bloc 4 — l'INT8 ne
+> touche ni la latence ni l'énergie, mais la fréquence et la veille, elles, sont des
+> leviers mesurés.

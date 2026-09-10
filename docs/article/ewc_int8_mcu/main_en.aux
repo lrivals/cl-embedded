@@ -6,8 +6,20 @@
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \citation{DeLange2021Survey}
 \citation{Hurtado2023CLPdM}
+\providecommand\@newglossary[4]{}
+\@newglossary{main}{glg}{gls}{glo}
+\@newglossary{acronym}{alg}{acr}{acn}
+\providecommand\@glsorder[1]{}
+\providecommand\@istfilename[1]{}
+\@istfilename{main_en.ist}
+\@glsorder{word}
 \babel@aux{english}{}
+\citation{Ravaglia2021QLRCL}
+\citation{Capogrosso2023TinyML}
 \citation{Kirkpatrick2017EWC}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{2}{Introduction}{section.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
 \citation{DeLange2021Survey}
 \citation{Kirkpatrick2017EWC}
 \citation{Ren2021TinyOL}
@@ -15,89 +27,168 @@
 \citation{Kwon2023LifeLearner}
 \citation{Ravaglia2021QLRCL}
 \citation{Capogrosso2023TinyML}
-\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{section.1}\protected@file@percent }
-\newlabel{sec:intro}{{1}{2}{Introduction}{section.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{2}{section.2}\protected@file@percent }
-\newlabel{sec:related}{{2}{2}{Related work}{section.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Embedded continual learning.}{2}{section*.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{INT8 quantization and learning.}{2}{section*.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Method}{3}{section.3}\protected@file@percent }
-\newlabel{sec:method}{{3}{3}{Method}{section.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}EWC model and C port}{3}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Paired PC$\leftrightarrow $board protocol}{3}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Quantization schemes}{3}{subsection.3.3}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces FP32 PC$\leftrightarrow $board parity and performance (\emph  {measured on-board}, \texttt  {exp\_S36}).}}{4}{table.caption.7}\protected@file@percent }
+\citation{Hurtado2023CLPdM}
+\citation{Jacob2018}
+\citation{Krishnamoorthi2018}
+\@writefile{toc}{\contentsline {paragraph}{Organization.}{3}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related work}{3}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{3}{Related work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Embedded continual learning.}{3}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Quantizing: three degrees of freedom, rarely crossed.}{3}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{What is rarely verified: the three promises, separately.}{3}{section*.5}\protected@file@percent }
+\citation{Kirkpatrick2017EWC}
+\citation{Schwarz2018Online}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Method}{4}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{4}{Method}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}EWC formulation and embedded adaptation}{4}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:ewc_formulation}{{3.1}{4}{EWC formulation and embedded adaptation}{subsection.3.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Elastic penalty.}{4}{section*.6}\protected@file@percent }
+\newlabel{eq:ewc_loss}{{1}{4}{Elastic penalty}{equation.3.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Estimating importance on PC.}{4}{section*.7}\protected@file@percent }
+\newlabel{eq:fisher}{{2}{4}{Estimating importance on PC}{equation.3.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{What the board can do, and what it cannot.}{5}{section*.8}\protected@file@percent }
+\newlabel{eq:board_sgd}{{3}{5}{What the board can do, and what it cannot}{equation.3.3}{}}
+\newlabel{eq:board_fisher}{{4}{5}{What the board can do, and what it cannot}{equation.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}EWC model and C port}{5}{subsection.3.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Adaptation of the model under embedded constraints. The penalty of \eqref  {eq:ewc_loss} is kept identical; what is simplified is its importance estimator and its optimization regime.}}{6}{table.caption.9}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{tab:parity}{{1}{4}{FP32 PC$\leftrightarrow $board parity and performance (\emph {measured on-board}, \texttt {exp\_S36})}{table.caption.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental setup}{4}{section.4}\protected@file@percent }
-\newlabel{sec:setup}{{4}{4}{Experimental setup}{section.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Hardware target.}{4}{section*.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Datasets and CL scenarios.}{4}{section*.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Identical conditions.}{4}{section*.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{4}{section.5}\protected@file@percent }
-\newlabel{sec:results}{{5}{4}{Results}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}FP32 PC$\leftrightarrow $board parity (measured on-board)}{4}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Latency and RAM (Gap~2/Gap~3).}{4}{section*.9}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces FP32 PC$\leftrightarrow $board parity: frozen (1.000) vs online. \emph  {Measured on-board} (\texttt  {exp\_S36\_parity\_*.json}).}}{5}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:parity}{{1}{5}{FP32 PC$\leftrightarrow $board parity: frozen (\num {1.000}) vs online. \emph {Measured on-board} (\texttt {exp\_S36\_parity\_*.json})}{figure.caption.8}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces INT8 \emph  {legacy} vs FP32 on-board (\emph  {measured}, \texttt  {exp\_S36}). RAM $\div 4$ but collapsed F1.}}{5}{table.caption.11}\protected@file@percent }
-\newlabel{tab:int8board}{{2}{5}{INT8 \emph {legacy} vs FP32 on-board (\emph {measured}, \texttt {exp\_S36}). RAM $\div 4$ but collapsed F1}{table.caption.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Collapse of naive PTQ (measured on-board)}{5}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Diagnosis and recovery (bit-exact PC emulation)}{5}{subsection.5.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Board latencies (inference vs inference + update) against the Gap~2 budget (100\,ms). \emph  {Measured on-board} (\texttt  {exp\_S36\_summary.json}).}}{6}{figure.caption.10}\protected@file@percent }
-\newlabel{fig:latency}{{2}{6}{Board latencies (inference vs inference + update) against the Gap~2 budget (\SI {100}{\milli \second }). \emph {Measured on-board} (\texttt {exp\_S36\_summary.json})}{figure.caption.10}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces INT8 ablation ladder (F1, \emph  {bit-exact PC emulation}, \texttt  {exp\_S39\_ablation}).}}{6}{table.caption.12}\protected@file@percent }
-\newlabel{tab:ablation}{{3}{6}{INT8 ablation ladder (F1, \emph {bit-exact PC emulation}, \texttt {exp\_S39\_ablation})}{table.caption.12}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Recovery measured on-board (calibrated v2 kernel)}{6}{subsection.5.4}\protected@file@percent }
-\newlabel{sec:recovery-board}{{5.4}{6}{Recovery measured on-board (calibrated v2 kernel)}{subsection.5.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}RAM $\times $ F1 $\times $ latency trade-off}{6}{subsection.5.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Ablation ladder \texttt  {legacy\_c}$\to $\texttt  {per\_tensor\_calib}$\to $\texttt  {per\_channel} $\to $\texttt  {q15}. \emph  {Bit-exact PC emulation} (\texttt  {exp\_S39\_ablation}).}}{7}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:ablation}{{3}{7}{Ablation ladder \texttt {legacy\_c}$\to $\texttt {per\_tensor\_calib}$\to $\texttt {per\_channel} $\to $\texttt {q15}. \emph {Bit-exact PC emulation} (\texttt {exp\_S39\_ablation})}{figure.caption.13}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces INT8 recovery \emph  {measured on-board} (per-channel v2 kernel, \texttt  {exp\_S40\_board\_v2}). Parity = agreement with the bit-exact emulator; agreement = INT8 against FP32 on the same samples.}}{7}{table.caption.15}\protected@file@percent }
-\newlabel{tab:recovery}{{4}{7}{INT8 recovery \emph {measured on-board} (per-channel v2 kernel, \texttt {exp\_S40\_board\_v2}). Parity = agreement with the bit-exact emulator; agreement = INT8 against FP32 on the same samples}{table.caption.15}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Two further quantization axes: moment and depth}{7}{section.6}\protected@file@percent }
-\newlabel{sec:quant-axes}{{6}{7}{Two further quantization axes: moment and depth}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Moment: before, after, or both}{7}{subsection.6.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces INT8 vs FP32: \emph  {legacy} collapse then recovery. Collapse and recovery are both \emph  {measured on-board} (Sprints~36 and~40); the \emph  {PC-emulated} per-channel column (Sprint~39) is recalled with hatching. The \texttt  {q15} format on-board remains "to be measured".}}{8}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:recovery}{{4}{8}{INT8 vs FP32: \emph {legacy} collapse then recovery. Collapse and recovery are both \emph {measured on-board} (Sprints~36 and~40); the \emph {PC-emulated} per-channel column (Sprint~39) is recalled with hatching. The \texttt {q15} format on-board remains "to be measured"}{figure.caption.14}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Depth: how far below 8 bits}{8}{subsection.6.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces RAM $\times $ F1 $\times $ latency trade-off front. Mixed \emph  {measured}/\emph  {emulated} sources annotated per point.}}{9}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:pareto}{{5}{9}{RAM $\times $ F1 $\times $ latency trade-off front. Mixed \emph {measured}/\emph {emulated} sources annotated per point}{figure.caption.16}{}}
-\@writefile{toc}{\contentsline {paragraph}{The RAM gain only exists packed.}{9}{section*.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}System budget: memory, latency, energy, compute}{9}{section.7}\protected@file@percent }
-\newlabel{sec:system}{{7}{9}{System budget: memory, latency, energy, compute}{section.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Weight RAM is not system RAM}{9}{subsection.7.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Quantization moment. Left, the three moments \emph  {PC-emulated} (hatched); right, the \emph  {on-board measured} A/B between calibrated PTQ alone and the QAT$\to $PTQ path.}}{10}{figure.caption.17}\protected@file@percent }
-\newlabel{fig:moment}{{6}{10}{Quantization moment. Left, the three moments \emph {PC-emulated} (hatched); right, the \emph {on-board measured} A/B between calibrated PTQ alone and the QAT$\to $PTQ path}{figure.caption.17}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Sub-INT8 depth. Left, $\Delta $AUROC by depth and granularity (\emph  {PC-emulated}); right, the \texttt  {.bss} bytes actually saved by bit-packing (\emph  {measured on-board}).}}{10}{figure.caption.19}\protected@file@percent }
-\newlabel{fig:depth}{{7}{10}{Sub-INT8 depth. Left, $\Delta $AUROC by depth and granularity (\emph {PC-emulated}); right, the \texttt {.bss} bytes actually saved by bit-packing (\emph {measured on-board})}{figure.caption.19}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Where INT8 latency goes}{10}{subsection.7.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Total RAM \emph  {measured on-board}: \texttt  {.data} $+$ \texttt  {.bss} $+$ stack peak, against the SRAM budget. The INT8 total equals the FP32 total, even though weights are divided by 4.}}{11}{figure.caption.20}\protected@file@percent }
-\newlabel{fig:ram}{{8}{11}{Total RAM \emph {measured on-board}: \texttt {.data} $+$ \texttt {.bss} $+$ stack peak, against the SRAM budget. The INT8 total equals the FP32 total, even though weights are divided by 4}{figure.caption.20}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Energy: three estimators, never merged}{11}{subsection.7.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Energy \emph  {measured on-board}. Left, the three estimators side by side; right, the frequency trade-off, where latency headroom is exchanged for energy.}}{12}{figure.caption.21}\protected@file@percent }
-\newlabel{fig:energy}{{9}{12}{Energy \emph {measured on-board}. Left, the three estimators side by side; right, the frequency trade-off, where latency headroom is exchanged for energy}{figure.caption.21}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \emph  {Theoretical} compute cost (left, hatched) against \emph  {on-board measured} latency (right). The 16$\times $ BOP gain translates into no time gain at all.}}{12}{figure.caption.22}\protected@file@percent }
-\newlabel{fig:cost}{{10}{12}{\emph {Theoretical} compute cost (left, hatched) against \emph {on-board measured} latency (right). The \num {16}$\times $ BOP gain translates into no time gain at all}{figure.caption.22}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Compute cost}{12}{subsection.7.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8}Discussion}{13}{section.8}\protected@file@percent }
-\newlabel{sec:discussion}{{8}{13}{Discussion}{section.8}{}}
-\@writefile{toc}{\contentsline {paragraph}{The INT8 latency paradox, quantified.}{13}{section*.23}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{An energy paradox compounds the latency paradox.}{13}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{"Measured" vs "emulated" honesty.}{13}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Limitation: forgetting is not stressed on these two datasets.}{13}{section*.26}\protected@file@percent }
+\newlabel{tab:ewc_port}{{1}{6}{Adaptation of the model under embedded constraints. The penalty of \eqref {eq:ewc_loss} is kept identical; what is simplified is its importance estimator and its optimization regime}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Paired PC$\leftrightarrow $board protocol}{6}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Quantization formulation}{6}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:quant_formulation}{{3.4}{6}{Quantization formulation}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{The mapping and its scale.}{6}{section*.10}\protected@file@percent }
+\newlabel{eq:quant_map}{{5}{6}{The mapping and its scale}{equation.3.5}{}}
+\citation{Jacob2018}
+\citation{Krishnamoorthi2018}
+\citation{Jacob2018}
+\newlabel{eq:scale_gran}{{6}{7}{The mapping and its scale}{equation.3.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{The integer layer.}{7}{section*.11}\protected@file@percent }
+\newlabel{eq:int_layer}{{7}{7}{The integer layer}{equation.3.7}{}}
+\@writefile{toc}{\contentsline {paragraph}{What the original scheme prescribes, and what we keep of it.}{7}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The format axis: the ablation ladder.}{7}{section*.14}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Reference integer scheme and embedded implementation. The divergences are dictated by the target (floating-point unit present, short network) and not by a convenience simplification.}}{8}{table.caption.13}\protected@file@percent }
+\newlabel{tab:quant_ref}{{2}{8}{Reference integer scheme and embedded implementation. The divergences are dictated by the target (floating-point unit present, short network) and not by a convenience simplification}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {paragraph}{Where quantization stops under the learning regime.}{8}{section*.15}\protected@file@percent }
+\citation{Li2016TWN}
+\citation{Rastegari2016XNOR}
+\@writefile{toc}{\contentsline {paragraph}{What per-channel costs.}{9}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}The moment axis: when to quantize}{9}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}The depth axis: bits, granularity, symmetry}{9}{subsection.3.6}\protected@file@percent }
+\newlabel{eq:twn}{{8}{9}{The depth axis: bits, granularity, symmetry}{equation.3.8}{}}
+\newlabel{eq:affine_act}{{9}{10}{The depth axis: bits, granularity, symmetry}{equation.3.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}Measurement methodology}{10}{subsection.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Memory.}{10}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Latency.}{10}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Energy.}{10}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental setup}{10}{section.4}\protected@file@percent }
+\newlabel{sec:setup}{{4}{10}{Experimental setup}{section.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Hardware target.}{10}{section*.20}\protected@file@percent }
+\citation{Nectoux2012Pronostia}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Provenance and nature of the reported measurements.}}{11}{table.caption.24}\protected@file@percent }
+\newlabel{tab:sources}{{3}{11}{Provenance and nature of the reported measurements}{table.caption.24}{}}
+\@writefile{toc}{\contentsline {paragraph}{Datasets and CL scenarios.}{11}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Energy bench.}{11}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Provenance of the measurements.}{11}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Identical conditions and honesty rule.}{11}{section*.25}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces FP32 PC$\leftrightarrow $board parity and performance (\emph  {measured on-board}, \texttt  {exp\_S36}). F1 is the board's; it equals the PC's at the decimals reported, frozen parity being 1.000. Monitoring has only four native features, so its \texttt  {5feat} and \texttt  {all} conditions coincide and yield a single row.}}{12}{table.caption.26}\protected@file@percent }
+\newlabel{tab:parity}{{4}{12}{FP32 PC$\leftrightarrow $board parity and performance (\emph {measured on-board}, \texttt {exp\_S36}). F1 is the board's; it equals the PC's at the decimals reported, frozen parity being \num {1.000}. Monitoring has only four native features, so its \texttt {5feat} and \texttt {all} conditions coincide and yield a single row}{table.caption.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces FP32 PC$\leftrightarrow $board parity: frozen (1.000) vs online. \emph  {Measured on-board} (\texttt  {exp\_S36\_parity\_*.json}).}}{12}{figure.caption.27}\protected@file@percent }
+\newlabel{fig:parity}{{1}{12}{FP32 PC$\leftrightarrow $board parity: frozen (\num {1.000}) vs online. \emph {Measured on-board} (\texttt {exp\_S36\_parity\_*.json})}{figure.caption.27}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{12}{section.5}\protected@file@percent }
+\newlabel{sec:results}{{5}{12}{Results}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}FP32 PC$\leftrightarrow $board parity (measured on-board)}{12}{subsection.5.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Board latencies (inference vs inference + update) against the Gap~2 budget (100\,ms). \emph  {Measured on-board} (\texttt  {exp\_S36\_summary.json}).}}{13}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:latency}{{2}{13}{Board latencies (inference vs inference + update) against the Gap~2 budget (\SI {100}{\milli \second }). \emph {Measured on-board} (\texttt {exp\_S36\_summary.json})}{figure.caption.29}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces INT8 \emph  {legacy} vs FP32 on-board (\emph  {measured}, \texttt  {exp\_S36}). RAM $\div 4$ but collapsed F1.}}{13}{table.caption.30}\protected@file@percent }
+\newlabel{tab:int8board}{{5}{13}{INT8 \emph {legacy} vs FP32 on-board (\emph {measured}, \texttt {exp\_S36}). RAM $\div 4$ but collapsed F1}{table.caption.30}{}}
+\@writefile{toc}{\contentsline {paragraph}{Latency and RAM (Gap~2/Gap~3).}{13}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Collapse of naive PTQ (measured on-board)}{13}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Diagnosing the collapse (bit-exact PC emulation)}{13}{subsection.5.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces INT8 ablation ladder (F1, \emph  {bit-exact PC emulation}, \texttt  {exp\_S39\_ablation}).}}{14}{table.caption.31}\protected@file@percent }
+\newlabel{tab:ablation}{{6}{14}{INT8 ablation ladder (F1, \emph {bit-exact PC emulation}, \texttt {exp\_S39\_ablation})}{table.caption.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Ablation ladder \texttt  {legacy\_c}$\to $\texttt  {per\_tensor\_calib}$\to $\texttt  {per\_channel} $\to $\texttt  {q15}. \emph  {Bit-exact PC emulation} (\texttt  {exp\_S39\_ablation}).}}{14}{figure.caption.32}\protected@file@percent }
+\newlabel{fig:ablation}{{3}{14}{Ablation ladder \texttt {legacy\_c}$\to $\texttt {per\_tensor\_calib}$\to $\texttt {per\_channel} $\to $\texttt {q15}. \emph {Bit-exact PC emulation} (\texttt {exp\_S39\_ablation})}{figure.caption.32}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Recovery measured on-board (calibrated v2 kernel)}{14}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:recovery-board}{{5.4}{14}{Recovery measured on-board (calibrated v2 kernel)}{subsection.5.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{The latency overhead is far heavier under learning than under inference.}{14}{section*.35}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces INT8 vs FP32: \emph  {legacy} collapse then recovery. Collapse and recovery are both \emph  {measured on-board} (Sprints~36 and~40); the \emph  {PC-emulated} per-channel column (Sprint~39) is recalled with hatching. The \texttt  {q15} format on-board remains "to be measured".}}{15}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:recovery}{{4}{15}{INT8 vs FP32: \emph {legacy} collapse then recovery. Collapse and recovery are both \emph {measured on-board} (Sprints~36 and~40); the \emph {PC-emulated} per-channel column (Sprint~39) is recalled with hatching. The \texttt {q15} format on-board remains "to be measured"}{figure.caption.33}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces INT8 recovery \emph  {measured on-board} (per-channel v2 kernel, \texttt  {exp\_S40\_board\_v2}). Parity = agreement with the bit-exact emulator; agreement = INT8 against FP32 on the same samples.}}{15}{table.caption.34}\protected@file@percent }
+\newlabel{tab:recovery}{{7}{15}{INT8 recovery \emph {measured on-board} (per-channel v2 kernel, \texttt {exp\_S40\_board\_v2}). Parity = agreement with the bit-exact emulator; agreement = INT8 against FP32 on the same samples}{table.caption.34}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces RAM $\times $ F1 $\times $ latency trade-off front. Mixed \emph  {measured}/\emph  {emulated} sources annotated per point.}}{16}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:pareto}{{5}{16}{RAM $\times $ F1 $\times $ latency trade-off front. Mixed \emph {measured}/\emph {emulated} sources annotated per point}{figure.caption.36}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}RAM $\times $ F1 $\times $ latency trade-off}{16}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Two further quantization axes: moment and depth}{16}{section.6}\protected@file@percent }
+\newlabel{sec:quant-axes}{{6}{16}{Two further quantization axes: moment and depth}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Moment: before, after, or both}{16}{subsection.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Quantization moment. Left, the three moments \emph  {PC-emulated} (hatched); right, the \emph  {on-board measured} A/B between calibrated PTQ alone and the QAT$\to $PTQ path.}}{17}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:moment}{{6}{17}{Quantization moment. Left, the three moments \emph {PC-emulated} (hatched); right, the \emph {on-board measured} A/B between calibrated PTQ alone and the QAT$\to $PTQ path}{figure.caption.37}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Depth: how far below 8 bits}{17}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The frontier depends on the selection metric.}{17}{section*.38}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Sub-INT8 schemes \emph  {measured on-board}: AUROC and \texttt  {faulty}-class F1 on the same cells. AUROC stays high where F1 breaks down, depth not moving the two metrics together.}}{18}{table.caption.39}\protected@file@percent }
+\newlabel{tab:depth-board}{{8}{18}{Sub-INT8 schemes \emph {measured on-board}: AUROC and \texttt {faulty}-class F1 on the same cells. AUROC stays high where F1 breaks down, depth not moving the two metrics together}{table.caption.39}{}}
+\@writefile{toc}{\contentsline {paragraph}{The RAM gain only exists packed.}{18}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}System budget: memory, latency, energy, compute}{18}{section.7}\protected@file@percent }
+\newlabel{sec:system}{{7}{18}{System budget: memory, latency, energy, compute}{section.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Sub-INT8 depth. Left, $\Delta $AUROC by depth and granularity (\emph  {PC-emulated}) --- the on-board measured F1 reading, which moves the frontier, is in Table~\ref {tab:depth-board}; right, the \texttt  {.bss} bytes actually saved by bit-packing (\emph  {measured on-board}).}}{19}{figure.caption.41}\protected@file@percent }
+\newlabel{fig:depth}{{7}{19}{Sub-INT8 depth. Left, $\Delta $AUROC by depth and granularity (\emph {PC-emulated}) --- the on-board measured F1 reading, which moves the frontier, is in Table~\ref {tab:depth-board}; right, the \texttt {.bss} bytes actually saved by bit-packing (\emph {measured on-board})}{figure.caption.41}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}Weight RAM is not system RAM}{19}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Where INT8 latency goes}{19}{subsection.7.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Total RAM \emph  {measured on-board}: \texttt  {.data} $+$ \texttt  {.bss} $+$ stack peak, against the SRAM budget. The INT8 total equals the FP32 total, even though weights are divided by 4.}}{20}{figure.caption.42}\protected@file@percent }
+\newlabel{fig:ram}{{8}{20}{Total RAM \emph {measured on-board}: \texttt {.data} $+$ \texttt {.bss} $+$ stack peak, against the SRAM budget. The INT8 total equals the FP32 total, even though weights are divided by 4}{figure.caption.42}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Energy: three estimators, never merged}{20}{subsection.7.3}\protected@file@percent }
+\citation{Lai2018CMSISNN}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Energy \emph  {measured on-board}. Left, the three estimators side by side; right, the frequency trade-off, where latency headroom is exchanged for energy.}}{21}{figure.caption.43}\protected@file@percent }
+\newlabel{fig:energy}{{9}{21}{Energy \emph {measured on-board}. Left, the three estimators side by side; right, the frequency trade-off, where latency headroom is exchanged for energy}{figure.caption.43}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces \emph  {Theoretical} compute cost (left, hatched) against \emph  {on-board measured} latency (right). The 16$\times $ BOP gain translates into no time gain at all.}}{21}{figure.caption.44}\protected@file@percent }
+\newlabel{fig:cost}{{10}{21}{\emph {Theoretical} compute cost (left, hatched) against \emph {on-board measured} latency (right). The \num {16}$\times $ BOP gain translates into no time gain at all}{figure.caption.44}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Compute cost}{21}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Discussion}{22}{section.8}\protected@file@percent }
+\newlabel{sec:discussion}{{8}{22}{Discussion}{section.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{The INT8 latency paradox, quantified.}{22}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{An energy paradox compounds the latency paradox.}{22}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{"Measured" vs "emulated" honesty.}{22}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Limitation: forgetting is not stressed on these two datasets.}{22}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Scope.}{23}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion and future work}{23}{section.9}\protected@file@percent }
+\newlabel{sec:conclusion}{{9}{23}{Conclusion and future work}{section.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{What INT8 delivers, and what it does not.}{23}{section*.50}\protected@file@percent }
 \bibstyle{plain}
 \bibdata{references}
 \bibcite{Benatti2019HDC}{1}
 \bibcite{Capogrosso2023TinyML}{2}
+\@writefile{toc}{\contentsline {paragraph}{Future work.}{24}{section*.51}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{Code and data availability}{24}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{Acknowledgements}{24}{section*.53}\protected@file@percent }
 \bibcite{Hurtado2023CLPdM}{3}
-\bibcite{Kirkpatrick2017EWC}{4}
-\@writefile{toc}{\contentsline {paragraph}{Scope.}{14}{section*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9}Conclusion and future work}{14}{section.9}\protected@file@percent }
-\newlabel{sec:conclusion}{{9}{14}{Conclusion and future work}{section.9}{}}
-\bibcite{Kwon2023LifeLearner}{5}
-\bibcite{DeLange2021Survey}{6}
-\bibcite{Ravaglia2021QLRCL}{7}
-\bibcite{Ren2021TinyOL}{8}
-\gdef \@abspage@last{15}
+\bibcite{Jacob2018}{4}
+\bibcite{Kirkpatrick2017EWC}{5}
+\bibcite{Krishnamoorthi2018}{6}
+\bibcite{Kwon2023LifeLearner}{7}
+\bibcite{Lai2018CMSISNN}{8}
+\bibcite{DeLange2021Survey}{9}
+\bibcite{Li2016TWN}{10}
+\bibcite{Nectoux2012Pronostia}{11}
+\bibcite{Rastegari2016XNOR}{12}
+\bibcite{Ravaglia2021QLRCL}{13}
+\bibcite{Ren2021TinyOL}{14}
+\bibcite{Schwarz2018Online}{15}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Depth and symmetry sweep}{26}{appendix.A}\protected@file@percent }
+\newlabel{app:depth}{{A}{26}{Depth and symmetry sweep}{appendix.A}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Full depth sweep: $\Delta $AUROC against the FP32 reference, by depth and granularity (\emph  {bit-exact PC emulation}). A negative $\Delta $ is a degradation.}}{26}{table.caption.55}\protected@file@percent }
+\newlabel{tab:annex-depth}{{9}{26}{Full depth sweep: $\Delta $AUROC against the FP32 reference, by depth and granularity (\emph {bit-exact PC emulation}). A negative $\Delta $ is a degradation}{table.caption.55}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Quantization symmetry: $\Delta $AUROC, symmetric against affine with a zero point (\emph  {bit-exact PC emulation}).}}{27}{table.caption.56}\protected@file@percent }
+\newlabel{tab:annex-symmetry}{{10}{27}{Quantization symmetry: $\Delta $AUROC, symmetric against affine with a zero point (\emph {bit-exact PC emulation})}{table.caption.56}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}System budget in detail}{27}{appendix.B}\protected@file@percent }
+\newlabel{app:budget}{{B}{27}{System budget in detail}{appendix.B}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces RAM components, in bytes (\emph  {measured on-board}). The total is the sum of the first three rows, the stack peak being the maximum of the two phases.}}{27}{table.caption.57}\protected@file@percent }
+\newlabel{tab:annex-ram}{{11}{27}{RAM components, in bytes (\emph {measured on-board}). The total is the sum of the first three rows, the stack peak being the maximum of the two phases}{table.caption.57}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces The three energy estimators, side by side and never merged (\emph  {measured on-board}). In \textmu J per inference.}}{27}{table.caption.58}\protected@file@percent }
+\newlabel{tab:annex-energy}{{12}{27}{The three energy estimators, side by side and never merged (\emph {measured on-board}). In \si {\micro \joule } per inference}{table.caption.58}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Registry of missing measurements}{28}{appendix.C}\protected@file@percent }
+\newlabel{app:missing}{{C}{28}{Registry of missing measurements}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{Acronyms}{28}{section*.60}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Registry of unmeasured cells. They carry "to be measured" in the text and are never replaced by an estimate.}}{29}{table.caption.59}\protected@file@percent }
+\newlabel{tab:annex-missing}{{13}{29}{Registry of unmeasured cells. They carry "to be measured" in the text and are never replaced by an estimate}{table.caption.59}{}}
+\newlabel{sec:acronyms}{{C}{31}{Registry of missing measurements}{section*.61}{}}
+\gdef \@abspage@last{31}

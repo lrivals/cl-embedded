@@ -4,12 +4,37 @@
 We ported a predictive-maintenance EWC classifier onto a Cortex-M4 microcontroller and established, under a
 paired protocol, an exact FP32 PC$\leftrightarrow$board parity in the frozen protocol, with an inference +
 online learning latency $\ll$~\SI{100}{\milli\second} and a footprint below \SI{256}{\kilo\byte} (Gaps~2
-and~3). We \emph{measured on-board} the collapse of naive INT8 quantization of the binary head, then
-\emph{isolated its cause} and \emph{demonstrated its recovery} through a bit-exact emulated ablation: a
-calibrated per-tensor scale on an \texttt{int32} accumulator restores $+\,\num{0.88}$ F1, and the Q15 format
-matches FP32, for a weight RAM divided by~4 (INT8) or~2 (Q15).
+and~3). On that same board we \emph{measured} the collapse of naive INT8 quantization of the binary head,
+\emph{isolated its cause} through a bit-exact emulated ablation --- an uncalibrated per-tensor scale on too
+narrow an accumulator --- then \emph{measured its recovery} with a calibrated kernel, with F1 back to
+\num{0.9173} and \num{0.8995} and a frozen parity of \num{1.000} against the emulator. The diagnosis
+remains emulated; the recovery no longer is.
 
-The latency paradox (RAM $\div 4$ with no FPU speed-up) is acknowledged as an honest finding and steers
-future work toward integer SIMD kernels (CMSIS-NN). The immediate priority is to \emph{complete the board-v2
-campaign} (\texttt{exp\_S40\_board\_v2}) to confirm, on a real MCU and across the full grid, the recovery so
-far established by emulation --- with the cells not yet streamed remaining explicitly "to be measured".
+Two complementary axes sharpen this result. On the quantization \emph{moment}, kernel calibration recovers
+what matters and QAT training adds no decisive gain: when the training pipeline cannot be modified, a
+properly calibrated PTQ suffices. On \emph{depth}, the boundary is not set by bits alone but by the
+depth--metric pair: ternary holds in AUROC and breaks down in on-board measured F1, where the boundary
+returns to INT4. Per-channel granularity pushes back the breakdown, and the memory gain advertised below
+8 bits exists only with genuine
+bit-packing --- which costs about \SI{55}{\micro\second} of unpacking, without threatening the budget.
+
+\paragraph{What INT8 delivers, and what it does not.} The measured system budget decouples the three usual
+promises. Weight RAM is indeed divided by~4, but total system RAM is unchanged (ratio \num{1.0002}),
+because at this model scale the weights are not the dominant item; and that $\div 4$ holds for inference,
+the floating head staying in memory as soon as the board learns. Latency \emph{increases} by about half
+under inference and by a factor of~\num{2.4} under continual learning, requantization --- an item absent
+from the floating-point path --- consuming one third of the inference budget on its own. Energy, finally, does not move: the measured gap is an order of magnitude below its uncertainty. On
+this target INT8 is therefore justified by memory alone, and the energy lever lies elsewhere --- in the
+clock frequency, where the latency margin we amply hold can be traded for battery life.
+
+\paragraph{Future work.} The latency paradox points toward integer SIMD kernels (CMSIS-NN) for the MAC
+item, and toward a power-of-two scale chain for the requantization item; this is the most direct route for
+the memory gain to stop being paid in time. The learning regime calls for two routes of its own:
+requantizing only the rows modified by the gradient step, which attacks the factor of~\num{2.4} directly,
+and running gradient descent in the integer domain, the only way for the memory gain to bear on learning
+itself rather than on inference alone. The "total RAM does not move" finding further calls for a
+replication on a model where the weights \emph{do} dominate the footprint, a regime in which the $\div 4$
+would become decisive again. Finally, three cells remain explicitly "to be measured": the \texttt{q15}
+format on-board, the energy per online update, and the per-phase energy profile. We leave them empty
+rather than estimate them --- the same rule that, throughout this article, separates what is measured
+on-board from what is emulated on PC.

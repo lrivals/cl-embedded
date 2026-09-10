@@ -65,6 +65,16 @@ EXTRA_LAYOUT_WHITELIST: dict[str, set[float]] = {
     # axes×gaps, carte de quantification), hauteurs/largeurs de boîtes, pas de rangée,
     # marges et wspace. Aucune n'est un résultat — toutes les valeurs tracées passent
     # par load_experiment sur experiments/.
+    # energy_pedagogy.py : coordonnées des schémas de principe (chaîne de mesure,
+    # chronogramme, encarts de méthode), largeurs/hauteurs de boîtes, marges et
+    # positions d'annotation. Aucune n'est un résultat — courants, µJ, pentes et r²
+    # viennent tous de load_experiment sur experiments/exp_S53_*.
+    "energy_pedagogy.py": {
+        0.018, 0.04, 0.07, 0.078, 0.08, 0.09, 0.1, 0.11, 0.13, 0.135, 0.16, 0.17,
+        0.18, 0.22, 0.225, 0.24, 0.26, 0.27, 0.28, 0.283, 0.34, 0.38, 0.42, 0.47,
+        0.475, 0.48, 0.512, 0.543, 0.56, 0.62, 0.63, 0.645, 0.68, 0.7, 0.74, 0.76,
+        0.77, 0.845, 0.85, 0.88, 0.93, 0.95, 0.97, 0.99, 1.01, 1.6,
+    },
     "seminaire_s44_s53.py": {
         0.04, 0.09, 0.115, 0.125, 0.13, 0.14, 0.155, 0.185, 0.22, 0.24, 0.245, 0.26,
         0.32, 0.45, 0.62, 0.7, 0.74, 0.84, 0.95, 1.12,
@@ -92,6 +102,7 @@ HARDCODE_GUARDED_SRCS: list[Path] = [
     _CATALOGS_DIR / "soutenance.py",
     _CATALOGS_DIR / "article_ewc.py",
     _CATALOGS_DIR / "seminaire_s44_s53.py",
+    _CATALOGS_DIR / "energy_pedagogy.py",
 ]
 
 

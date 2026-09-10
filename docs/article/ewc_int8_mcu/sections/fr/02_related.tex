@@ -5,18 +5,33 @@
 par régularisation, par rejeu et par architecture~\cite{DeLange2021Survey}. EWC~\cite{Kirkpatrick2017EWC}
 appartient à la première famille : une pénalité quadratique pondérée par l'information de Fisher protège
 les paramètres importants pour les tâches passées, sans stocker de données --- une propriété précieuse
-sous contrainte mémoire. Sur MCU, TinyOL~\cite{Ren2021TinyOL} a montré la faisabilité de l'apprentissage
-en ligne d'une couche additionnelle, et HDC~\cite{Benatti2019HDC} celle d'un apprentissage non neuronal à
+sous contrainte mémoire. Sur MCU, \gls{TinyOL}~\cite{Ren2021TinyOL} a montré la faisabilité de l'apprentissage
+en ligne d'une couche additionnelle, et \gls{HDC}~\cite{Benatti2019HDC} celle d'un apprentissage non neuronal à
 très basse consommation. LifeLearner~\cite{Kwon2023LifeLearner} et les plateformes à rejeu latent
 quantifié~\cite{Ravaglia2021QLRCL} adressent le compromis mémoire/précision sur des cibles embarquées. Les
-panoramas TinyML récents~\cite{Capogrosso2023TinyML} soulignent que l'entraînement \emph{sur l'appareil}
-reste sous-exploré comparé à l'inférence seule.
+panoramas \gls{TinyML} récents~\cite{Capogrosso2023TinyML} soulignent que l'entraînement \emph{sur l'appareil}
+reste sous-exploré comparé à l'inférence seule, et les travaux appliqués à la maintenance
+prédictive~\cite{Hurtado2023CLPdM} restent majoritairement évalués hors cible.
 
-\paragraph{Quantification INT8 et apprentissage.} La quantification post-entraînement (PTQ) et
-l'entraînement conscient de la quantification (QAT) réduisent l'empreinte mémoire d'un facteur~4
-(FP32~$\to$~INT8). Toutefois, la PTQ \emph{naïve} d'une tête de décision peut détruire la séparabilité
-lorsque l'accumulation se fait en \texttt{int8} ou lorsque l'échelle de quantification est fixée sans
-calibration. Notre contribution empirique est de \emph{mesurer} cet effondrement sur MCU réel, puis d'en
-isoler la cause et de démontrer la récupération par un kernel calibré, plutôt que de la masquer par un QAT
-en amont. La quantification par-canal et le format Q15 (entier \num{16} bits en virgule fixe) apparaissent
-comme les leviers déterminants pour préserver la métrique tout en tenant le budget RAM (Gap~3).
+\paragraph{Quantifier : trois degrés de liberté, rarement croisés.} On résume souvent la quantification à
+un choix de \emph{format} --- FP32 vers INT8, ou virgule fixe Q15. Deux autres degrés la commandent
+pourtant tout autant. Le \emph{moment} d'abord~\cite{Jacob2018,Krishnamoorthi2018} : quantifier après l'entraînement, en PTQ, est immédiat mais
+sensible à la calibration de l'échelle, tandis que quantifier pendant, en QAT, coûte un réentraînement et
+suppose un accès au pipeline d'apprentissage, ce dont on ne dispose pas toujours en contexte industriel.
+La \emph{profondeur} ensuite, avec la granularité qui l'accompagne : descendre sous 8 bits ne vaut que si
+l'échelle est estimée assez finement, par canal plutôt que par tenseur, et que si le stockage suit
+réellement le format annoncé. Ces trois axes sont le plus souvent étudiés séparément ; nous les faisons
+varier sur \emph{une même tête, un même jeu et une même carte}, ce qui permet de les comparer plutôt que
+de les juxtaposer.
+
+\paragraph{Ce qui est rarement vérifié : les trois promesses, séparément.} La quantification est
+habituellement justifiée par un argument tripartite --- moins de mémoire, moins de temps, moins d'énergie
+--- hérité de cibles disposant d'unités entières dédiées. Sur un cœur généraliste doté d'une \gls{FPU}, rien ne
+garantit que les trois termes se comportent de la même façon, et les rapporter conjointement suppose une
+instrumentation que peu de travaux mettent en place : mesurer la mémoire \emph{totale} du système et non
+la seule empreinte des poids, chronométrer le noyau poste par poste, et intégrer un courant réel à la
+sonde. Notre contribution empirique est de traiter ces trois promesses comme trois questions distinctes,
+mesurées sur la même carte : nous montrons que la première est tenue mais porte sur un poste minoritaire,
+et que les deux autres ne le sont pas. Nous établissons au passage l'effondrement de la PTQ naïve d'une
+tête de décision, en isolons la cause plutôt que de la masquer par un QAT en amont, et en démontrons la
+récupération par un noyau calibré.

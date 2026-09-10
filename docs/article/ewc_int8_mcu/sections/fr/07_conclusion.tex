@@ -3,14 +3,42 @@
 
 Nous avons porté un classifieur EWC de maintenance prédictive sur un microcontrôleur Cortex-M4 et établi,
 dans un protocole apparié, une parité FP32 PC$\leftrightarrow$carte exacte en mode gelé, avec une latence
-inférence + apprentissage continu $\ll$~\SI{100}{\milli\second} et une empreinte sous \SI{256}{\kilo\byte}
-(Gaps~2 et~3). Nous avons \emph{mesuré sur carte} l'effondrement de la quantification INT8 naïve de la tête
-binaire, puis \emph{isolé sa cause} et \emph{démontré sa récupération} par ablation émulée bit-exacte : une
-échelle par-tenseur calibrée sur accumulateur \texttt{int32} restaure $+\,\num{0.88}$ de F1, et le format
-Q15 égale le FP32, pour une RAM des poids divisée par~4 (INT8) ou par~2 (Q15).
+inférence + apprentissage continu $\ll$~\SI{100}{\milli\second} et une empreinte sous
+\SI{256}{\kilo\byte} (Gaps~2 et~3). Sur cette même carte, nous avons \emph{mesuré} l'effondrement de la
+quantification INT8 naïve de la tête binaire, \emph{isolé sa cause} par ablation émulée bit-exacte --- une
+échelle par-tenseur non calibrée sur accumulateur trop étroit --- puis \emph{mesuré sa récupération} par un
+kernel calibré, avec un F1 revenu à \num{0.9173} et \num{0.8995} et une parité gelée de \num{1.000} contre
+l'émulateur. Le diagnostic reste émulé, la récupération ne l'est plus.
 
-Le paradoxe de latence (RAM $\div 4$ sans accélération sur FPU) est assumé comme un constat honnête et
-oriente les travaux futurs vers des noyaux SIMD entiers (CMSIS-NN). La priorité immédiate est de
-\emph{compléter la campagne carte v2} (\texttt{exp\_S40\_board\_v2}) pour confirmer, sur MCU réel et sur
-l'ensemble de la grille, la récupération aujourd'hui établie par émulation --- les cellules non encore
-streamées restant explicitement « à mesurer ».
+Deux axes complémentaires précisent ce résultat. Sur le \emph{moment} de la quantification, la calibration
+du noyau récupère l'essentiel et un entraînement QAT n'ajoute pas de gain décisif : quand le pipeline
+d'entraînement ne peut pas être modifié, une PTQ correctement calibrée suffit. Sur la \emph{profondeur}, la
+frontière n'est pas fixée par les bits seuls mais par le couple profondeur--métrique : le ternaire tient en
+AUROC et décroche en F1 mesuré sur carte, où la frontière redevient l'INT4. La granularité par-canal
+repousse le décrochage, et le gain mémoire
+annoncé sous 8 bits n'existe qu'avec un véritable bit-packing --- qui se paie environ
+\SI{55}{\micro\second} de dépacking, sans menacer le budget.
+
+\paragraph{Ce que l'INT8 apporte, et ce qu'il n'apporte pas.} Le budget système mesuré dissocie les trois
+promesses habituelles. La RAM des poids est bien divisée par~4, mais la RAM totale du système est
+inchangée (rapport \num{1.0002}), parce qu'à cette échelle de modèle les poids ne sont pas le poste
+dominant ; et ce $\div 4$ vaut pour l'inférence, la tête flottante restant en mémoire dès que la carte
+apprend. La latence \emph{augmente} d'environ la moitié en inférence et d'un facteur \num{2.4} en
+apprentissage continu, la requantification --- un poste absent du chemin flottant --- consommant à elle
+seule un tiers du budget d'inférence. L'énergie, enfin, ne bouge pas : l'écart mesuré
+est un ordre de grandeur sous son incertitude. Sur cette cible, l'INT8 se justifie donc par la mémoire
+seule, et le levier énergétique se trouve ailleurs --- dans la fréquence, où la marge de latence dont nous
+disposons largement s'échange contre de l'autonomie.
+
+\paragraph{Travaux futurs.} Le paradoxe de latence oriente vers des noyaux SIMD entiers (CMSIS-NN) pour le
+poste MAC, et vers une chaîne à échelles en puissance de deux pour le poste de requantification ; c'est la
+voie la plus directe pour que le gain mémoire cesse de se payer en temps. Le régime d'apprentissage appelle
+en propre deux pistes : une requantification restreinte aux lignes modifiées par le pas de gradient, qui
+attaque directement le facteur \num{2.4}, et une descente de gradient conduite dans le domaine entier, seule
+manière de faire porter le gain mémoire sur l'apprentissage lui-même et non sur la seule inférence. Le
+constat « la RAM totale ne
+bouge pas » appelle par ailleurs une réplication sur un modèle où les poids \emph{dominent} l'empreinte,
+régime dans lequel le $\div 4$ redeviendrait décisif. Enfin, trois cellules restent explicitement « à
+mesurer » : le format \texttt{q15} sur carte, l'énergie par mise à jour continue et le profil énergétique
+par phase. Nous les laissons vides plutôt que de les estimer --- la même règle qui, tout au long de cet
+article, sépare ce qui est mesuré sur carte de ce qui est émulé sur PC.
